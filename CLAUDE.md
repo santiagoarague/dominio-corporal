@@ -145,7 +145,11 @@ The daily target is split into tappable sets. `sdcNSets(total)` gives 3 sets at 
 
 `Is` renders the chips and `sdcSerie(group, k)` handles the tap. Tapping chip `k` marks sets 1..k, so a player who did three sets in a row confirms with one tap and undoes the last with a second.
 
-**`i5` is still the only function that settles XP.** `sdcSer` (completed set counts) is component state, never persisted, and the XP shown in the header during a session is a live projection: `u.currentXP + sdcTotalHechas()`. `pg` passes `sdcRepsHechas()` to `i5`, not the raw targets. Keep it that way — moving the ledger into the tap would break `Deshacer registro de hoy` and risk double counting.
+The **pending** set also carries a `− N +`, so a player who fell short on the last set records that without disturbing the others (`sdcAjuste[group][index]`, read through `sdcRepsSerie`). Adjusting a set changes what you *did*, never the day's goal: `sdcTotalMeta()` deliberately sums the raw `Aa` targets, because `i5` grades against `Oy()` and a button reading `30/30` would claim a completion the game scores as 94%.
+
+**`i5` is still the only function that settles XP.** `sdcSer` (completed set counts) and `sdcAjuste` are component state, never persisted, and the XP shown in the header during a session is a live projection: `u.currentXP + sdcTotalHechas()`. `pg` passes `sdcRepsHechas()` to `i5`, not the raw targets. Keep it that way — moving the ledger into the tap would break `Deshacer registro de hoy` and risk double counting.
+
+When the day is registered the card is replaced by a summary: reps per group, the personal best in each, and the week's totals. The ★ only appears when `lifetimeReps[g]` exceeds today's reps, because otherwise every group is a record in the first session and the mark means nothing.
 
 Exercises measured in time rather than reps declare it in their own `alt` ("1 rep = 3 segundos…"). `sdcSegs(alt)` parses that and the UI shows the seconds without the player opening anything. It **ignores conversions in parentheses**, which describe the substitute: the pull-group `alt` mentions "superman en el suelo (1 rep = 3 s)" and that does not make towel rows a hold.
 
@@ -183,7 +187,13 @@ Dominion Points: 3 for a 100% routine, 1 for ≥50%, first session of the day on
 
 XP base is literally the reps performed, plus a flat **30** for a 100% routine. That bonus was 20, which made the first routine worth 44 XP against the 48 `li(1)` costs — a new player could not level up in their first session. **Any change to `li`, to the bonus, or to the volume model must keep that first level-up intact;** it is the cheapest, most load-bearing reward in the game.
 
-Known gaps, deliberate and unfixed: the streak has four counters and pays only the `salud` profile (+15% at ≥3), the 88 achievements in `Jo` grant nothing, every shop item is a consumable so PD has no long-term sink, and the low-effort penalty takes a percentage of `currentXP` — which means it bites hardest right before a level-up and not at all just after.
+The multipliers stack in `i5`, each with its own `Math.round`: `t5` (focus, plus the `salud`-only +15% at streak ≥3), `sdcRacha` (+2% per consecutive day, capped at +30%, every profile), `flexBuff`, `Ka` (day buffs from the shop), `sdcPerk` (permanent perks) and the multi-modality bonus. A 12-day streak with both perks turns a 62 XP routine into 97.
+
+`Ey` now ends with two **permanent** purchases, `memoria` (40 PD, +5% XP) and `nucleo` (90 PD, raises it to +10% and requires `memoria`). They live in `dominion.perks`, which `ei` backfills and `Ay()` creates — the first array that needed a migration default in a while, so treat it as the worked example. Everything else in the shop is a consumable.
+
+`da()` pays PD by achievement tier (E/D 1, C/B 2, A 3, S 4, Z 5). The 88 entries in `Jo` used to grant nothing at all.
+
+**There is no XP penalty any more.** Both sites that had one — a sub-50% session in `i5` and a missed day in `ei` — took a percentage of `currentXP`, which meant the game punished hardest right before a level-up and not at all just after. Losing the streak is the whole consequence now. If you reintroduce a penalty, do not make it proportional to `currentXP`.
 
 ### Fitness test and calibre
 
