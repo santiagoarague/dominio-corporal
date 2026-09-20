@@ -177,6 +177,18 @@ There were two `@keyframes` in the whole app and neither fired on a reward. Now 
 
 `b5` classifies each notice string with `sdcTier` into `epic` / `good` / `bad` / `info`, sorts epic to the top and styles it accordingly, plus a "Cerrar todo". Tiering is done by matching the text because the notice pipeline (`i5` → `misRevisar` → `Ea` → `da` → `ni`) passes plain strings; **if you reword "Subiste a nivel" or "Ascendiste", update `sdcTier` too** or a level-up will render like a bookkeeping line again.
 
+### Variety
+
+`Oy()` never received the date, so the routine was byte-identical every day for the ~50 levels rank E lasts. `sdcMods` now holds **six modifiers per modality** — they are not interchangeable, so gym gets drop sets and sets to failure while flow gets longer holds and unbroken transitions — and `sdcModDia(modality, date)` picks one by hashing both together. The bonus only applies when the player claims it (`sdcModOk`, passed to `i5` as a fourth argument); nothing can verify it, but it demands a deliberate act rather than handing out XP.
+
+Dungeons draw from `sdcPortales`, ten name/challenge pairs. They used to be two independent lists, so "Guarida del Lobo Sombrío" could ask for thirty minutes on a bike.
+
+`sdcMascota(state, pct, isPR)` gives the pet a line about the session just recorded — a personal best, a streak of seven or more, a full routine or a partial one. It used to speak only when you failed. Keep new phrases species-neutral: the pet can be a dog or a cat.
+
+### Combat
+
+The attack was typing the word "hecho" into an input. It now reuses the routine's set chips: `sdcCombChips(phase, reps)` renders them, `sdcCombTocar` handles the tap, and `sdcGolpe` lands the hit — the same thing the old `Rd` did minus the text check. The strike button stays disabled until every phase is complete, and bosses keep their superset by rendering one chip row per phase. `sdcCombSer` resets on any change of villain, exercise or phase.
+
 ### Dates
 
 Use `__fechaLocal(date)` / `ue()`. **Never `toISOString().slice(0,10)`** — that is UTC, which rolled the day over at 21:00 in Argentina and broke streaks for anyone training at night. The same bug existed in five places.
