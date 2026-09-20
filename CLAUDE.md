@@ -96,13 +96,17 @@ Testing notes that save time:
 
 ## Deploying
 
-`git push` to `main` is the deploy. GitHub (`santiagoarague/dominio-corporal`, private) triggers Netlify, which publishes the repo root per `netlify.toml`. There is no build command.
+`git push` to `main` is the deploy. GitHub Pages serves the repo root from `main` at **https://santiagoarague.github.io/dominio-corporal/**, usually live about 30 seconds after the push. There is no build command; `.nojekyll` keeps Pages from running Jekyll, which would otherwise drop anything starting with a dot — including the `.well-known/assetlinks.json` a TWA needs.
+
+Netlify was dropped: it silently stopped deploying and sat five commits behind while every push reported success. `netlify.toml` is still in the repo and is now dead weight. The repo had to be made **public**, because Pages on a private repo requires a paid plan.
 
 Always confirm the change actually reached production rather than trusting the push:
 
 ```bash
-until curl -s "https://glittering-snickerdoodle-2b7928.netlify.app/" | grep -q '<marcador>'; do sleep 10; done
+until curl -s "https://santiagoarague.github.io/dominio-corporal/" | grep -q '<marcador>'; do sleep 10; done
 ```
+
+Note for packaging: the app lives in a **subdirectory**, so `assetlinks.json` cannot sit at the domain root. A TWA will need the repo renamed to `santiagoarague.github.io` or a custom domain.
 
 ## Architecture
 
