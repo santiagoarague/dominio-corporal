@@ -1,7 +1,11 @@
 {
+  "id": "/dominio-corporal/",
   "name": "Sistema de Dominio Corporal",
   "short_name": "Dominio",
-  "description": "Entrenamiento de peso corporal gamificado.",
+  "description": "Entrenamiento de peso corporal, gimnasio y flow, gamificado: rangos, ascensiones y progreso medido.",
+  "lang": "es-AR",
+  "dir": "ltr",
+  "categories": ["health", "fitness", "lifestyle"],
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -9,8 +13,8 @@
   "background_color": "#0a0e1a",
   "theme_color": "#0a0e1a",
   "icons": [
-    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png" },
-    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }

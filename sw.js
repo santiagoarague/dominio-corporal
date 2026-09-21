@@ -1,11 +1,12 @@
-const CACHE = 'dominio-corporal-v1';
+const CACHE = 'dominio-corporal-v2';
 const ASSETS = [
   './',
   './index.html',
   './storage.js',
   './manifest.webmanifest',
   './icon-192.png',
-  './icon-512.png'
+  './icon-512.png',
+  './icon-maskable-512.png'
 ];
 
 self.addEventListener('install', (event) => {
@@ -24,17 +25,23 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Red primero: con internet siempre se ve la versión recién publicada,
-// sin internet se sirve la última copia guardada.
+// Red primero: con internet siempre se ve la version recien publicada,
+// sin internet se sirve la ultima copia guardada.
+// Solo se guarda una respuesta si es 200 y del mismo origen: si no, un 404
+// o un error del servidor quedaba guardado y se servia como "la copia offline".
 self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
+  const req = event.request;
+  if (req.method !== 'GET') return;
+  const sameOrigin = new URL(req.url).origin === self.location.origin;
   event.respondWith(
-    fetch(event.request)
+    fetch(req)
       .then((response) => {
-        const copy = response.clone();
-        caches.open(CACHE).then((cache) => cache.put(event.request, copy)).catch(() => {});
+        if (sameOrigin && response.ok && response.type === 'basic') {
+          const copy = response.clone();
+          caches.open(CACHE).then((cache) => cache.put(req, copy)).catch(() => {});
+        }
         return response;
       })
-      .catch(() => caches.match(event.request).then((hit) => hit || caches.match('./index.html')))
+      .catch(() => caches.match(req).then((hit) => hit || caches.match('./index.html')))
   );
 });
