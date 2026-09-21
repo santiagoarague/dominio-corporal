@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **There is no source code for the bundle.** It began life as a Claude Artifact and was ported to a standalone site. You cannot rebuild it — every change is a surgical text edit to minified JavaScript. Treat `index.html` as the source of truth and edit it in place.
 
-Deployed files: `index.html`, `storage.js`, `sw.js`, `manifest.webmanifest`, and three icons — `icon-192`, `icon-512` and `icon-maskable-512`, the last one padded to 78% so a round Android mask does not crop the logo. `PENDIENTES.md` tracks what is left before publishing and is worth reading before starting work.
+Deployed files: `index.html`, `storage.js`, `sw.js`, `manifest.webmanifest`, `privacidad.html`, and three icons — `icon-192`, `icon-512` and `icon-maskable-512`, the last one padded to 78% so a round Android mask does not crop the logo. `PENDIENTES.md` tracks what is left before publishing and is worth reading before starting work.
 
 `storage.js` must load **before** the bundle: it defines `window.claude.use("db")` against `localStorage`, replacing the Claude Artifacts database the app was written for. All progress lives in one key, `dominio-corporal:player/state`. There is no server and no account.
 
@@ -79,6 +79,10 @@ sub span {
 Start from the index of `i.default.createElement(ge,{id:"<cardId>"`. Children are comma-separated, so removing a block means removing it *and* its trailing comma.
 
 **Prefer not moving blocks at all.** To reorder cards, wrap the container in a flex column and set `order` on the one card that must move — that is how "Rutina de hoy" is pinned to the top of the Entreno tab. Moving text risks far more than a style property does.
+
+### Touch targets
+
+Measured, not guessed: the tab bar was 34 px tall and the meta steppers 32 px, both well under the 44–48 px that Android and iOS ask for. They are now `minHeight:48` and `44×44`. `button` also carries `touch-action:manipulation`, which drops the 300 ms double-tap-zoom delay. Still small and not yet raised, because raising them changes the visual density of every card: the collapsible headers (21 px, but full width), `💡 alternativa` (21 px) and the `?` in the header (22 px).
 
 ### Styling constraint
 
@@ -180,7 +184,7 @@ Two patterns worth knowing:
 
 There were two `@keyframes` in the whole app and neither fired on a reward. Now the head `<style>` also defines `sdcPop` (floating `+N XP`), `sdcRise` (notices) and `.sdc-chip`, all suppressed under `prefers-reduced-motion` — the browser pane has that on, so animations will look dead there while the numbers still render.
 
-`sdcWakeUse()` is a hook that holds a screen wake lock for as long as its component is mounted, re-acquiring it on `visibilitychange` because the browser drops the lock whenever the tab is hidden. `T5` (rest timer) and `Ly` (fitness test) both call it — the two moments where the phone is on the floor and the screen used to sleep mid-set. It swallows its own errors, so it is safe to add to any other component.
+`sdcWakeUse()` is a hook that holds a screen wake lock for as long as its component is mounted, re-acquiring it on `visibilitychange` because the browser drops the lock whenever the tab is hidden. `sdcWakeSi(on)` is the conditional variant, for a timer that lives inside a component that is always mounted; the main component calls it with the combat and Primal countdowns. `T5` (rest timer) and `Ly` (fitness test) call the mount-based `sdcWakeUse()` — the two moments where the phone is on the floor and the screen used to sleep mid-set. It swallows its own errors, so it is safe to add to any other component.
 
 `sdcBeep(hz, ms)` wraps the existing `Ie()` oscillator and `sdcVib(pattern)` guards `navigator.vibrate`; both swallow their own errors, so call them anywhere. A set tap beeps, vibrates, floats the XP gained (`sdcFlota`) and starts the rest timer. `sdcDesc` scales that rest with the size of the set just completed (`base + reps × 1.5`, capped at 180 s) — `ag` alone gave Resistencia the most reps and the shortest rest.
 
@@ -228,6 +232,12 @@ Two axes, kept separate on purpose:
 - **Calibre** is what you measure — `sdcCalibre(profile)` returns the `vy` label, `sdcPuntaje(profile)` the score. It shows under the name, and Perfil → Prueba de aptitud lists all six bands with the current one marked and the points still missing.
 
 `vy` also carries `rank` and `focus` fields. `focus` is display text; `rank` is dead by design (see Exercise selection).
+
+### Backup reminder
+
+A card in Entreno asks for a backup once the player has 10 days of `history`, and hides for a week on "Más tarde" or for a month after an actual export. Its two dates live in **`localStorage` directly** — `dominio-corporal:ultimoRespaldo` and `:respaldoPospuesto` — and deliberately **not** in the game state. They describe this device, not this player: restoring a backup on a new phone should not carry over "you already backed up". Keeping them out of the state object also means no new default in `ei` and no migration risk.
+
+`sdcRespaldoOk()` is called from both export paths (`bkDescargar` and `ug`). Neither of those dates triggers a re-render on its own, so the "Más tarde" button also pushes a notice — that state change is what makes the card disappear.
 
 ### Missions
 

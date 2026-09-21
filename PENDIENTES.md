@@ -22,6 +22,19 @@ Estado al 20/09/2026. Producción: https://santiagoarague.github.io/dominio-corp
 - `netlify.toml` eliminado.
 - Curva de XP: `li(50)` costaba **375** contra `li(49)=192`. Ahora es continua (`5e−55`).
 
+### Segunda pasada
+
+- **La app mentía sobre los XP en cuatro lugares más**: la ayuda ("Meta semanal" y "Escudo de
+  Racha"), la descripción del escudo en la tienda y la meta semanal de Perfil seguían diciendo que
+  perdías XP. No se pierde XP en ningún caso desde que se sacó la penalización.
+- **Áreas táctiles**, medidas en el navegador, no supuestas: la barra de pestañas pasó de 34 a
+  48 px y los steppers `− +` de 32 a 44. `touch-action:manipulation` en todos los botones.
+- **`privacidad.html`**: política de privacidad completa, enlazada desde Perfil. Es requisito
+  bloqueante de Play Console. **Falta completar el correo de contacto** (está marcado en la página).
+- **Recordatorio de respaldo** en Entreno, a los 10 días de historial. "Más tarde" lo calla una
+  semana; exportar, un mes.
+- **Wake lock** extendido a los cronómetros de combate e Instinto Primal.
+
 ### Dos pendientes que resultaron falsos
 
 - **`coger` ×3** — son las tres `encoger` ("sin encoger los hombros"). No hay peninsularismo ahí.
@@ -85,13 +98,19 @@ define la forma del juego durante años y es tu decisión, no mía.**
 1. **Bloqueante para TWA:** la app vive en `/dominio-corporal/` y `assetlinks.json` tiene que estar
    en la raíz del dominio. Hay que **renombrar el repo a `santiagoarague.github.io`** o usar un
    dominio propio.
-2. **Política de privacidad** (bloqueante para Play Console).
+2. ~~Política de privacidad~~ — hecha (`privacidad.html`). **Falta poner el correo de contacto.**
 3. Cuenta de Play Console (25 USD), capturas, *feature graphic*.
 4. `screenshots` en el manifest (faltan; necesitan la UI final).
 5. Autoalojar Chakra Petch e Inter: hoy la primera pintada depende de Google Fonts.
 6. Notificación diaria.
-7. Respaldo: recordatorio periódico de exportar. Hoy `persist()` ayuda pero no garantiza nada.
-8. Auditar áreas táctiles de 48 px.
+7. ~~Recordatorio de respaldo~~ — hecho.
+8. Áreas táctiles: hechas las dos que importaban. Quedan las cabeceras plegables (21 px), la
+   `💡 alternativa` (21 px) y el `?` de la cabecera (22 px); subirlas cambia la densidad visual de
+   todas las tarjetas, así que es una decisión de diseño.
+9. **Autoalojar las fuentes es ahora también un tema legal**: la política de privacidad tiene que
+   declarar que Google recibe tu IP porque las tipografías se cargan desde `fonts.googleapis.com`.
+   Autoalojarlas borra ese párrafo y acelera la primera pintada. Requiere descargar los archivos de
+   fuente al repo.
 9. **12 testers × 14 días continuos.** Es el único plazo que no se acelera: conviene arrancar la
    prueba cerrada apenas esté resuelto el punto 1.
 
@@ -99,4 +118,8 @@ define la forma del juego durante años y es tu decisión, no mía.**
 
 - El sitio viejo de Netlify sigue online sirviendo código viejo. Conviene borrarlo para no tener dos
   apps en el teléfono (y exportar antes la partida que tengas ahí).
-- `sdcWakeUse()` solo corre en el descanso y en la prueba. Podría cubrir toda la sesión.
+- El wake lock cubre descanso, prueba de aptitud, combate e Instinto Primal. No cubre la sesión
+  entera, que es lo que haría falta si el teléfono se apaga entre series sin cronómetro.
+- La notificación diaria no es trivial en una PWA: sin servidor no hay push, y las APIs que lo
+  permitirían (Notification Triggers, Periodic Background Sync) o no existen o son solo de Chrome y
+  poco fiables. Conviene decidir si vale la pena antes de invertir en ello.
