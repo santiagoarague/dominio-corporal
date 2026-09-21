@@ -99,6 +99,17 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
   piernas estiradas (cinco opciones, de las rodillas a las palmas en el piso). Cuando mejorás,
   entra en **Primeras veces**. Era la única sección que no te enseñaba nada de tu cuerpo.
 
+- ~~La guía no alcanzaba para alguien que nunca jugó nada~~ — resuelto. Pasó de 17 temas a 26,
+  agrupados en cinco secciones. Explicaba el juego con las palabras del juego: hablaba del
+  *Umbral* tres temas antes de definirlo y de *los cuatro patrones* sin que nada en la app
+  dijera nunca qué es un patrón. Y faltaba lo más importante: no había un tema para la rutina
+  del día, ni para **cómo se anota una serie** (la única interacción de la que depende todo),
+  ni para el estiramiento, Primeras veces, el mapa del cuerpo, el calendario, los logros o el
+  calibre. Lo peor: **nada le decía al jugador que su partida vive solo en ese teléfono.** Ese
+  es ahora el último tema.
+- Y se lee: títulos de 16 px, texto de 15 px con interlineado 1,65 y más contraste. Antes era
+  el mismo 12 px apretado que usan las etiquetas.
+
 ## C · Decisiones de diseño que quedaron abiertas
 
 - **Tamaño de texto ajustable** y **poder apagar sistemas**: quedaron explícitamente fuera de

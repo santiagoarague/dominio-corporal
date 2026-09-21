@@ -239,7 +239,21 @@ Measured at 375×812 with every card collapsed. **This is the number to re-measu
 Almost all of it was one thing: **the guide rendered open by default, on all six tabs.** It is not a tab card — it sits above the tab bar, so 1976 px of manual (17 topics, 3852 characters) pushed the game's own navigation nearly three screens down, on every tab, from the first launch. `af` does not contain `"ayuda"`, so "Minimizar todo" never touched it. Three things changed:
 
 - `ei` now defaults `collapsed.ayuda` to `!1`, and `ui.ayudaAuto` hides it **once** for saves that already had it open. A stored `true` from an old save is not a preference — it is the old default.
-- The topics are individually collapsible (`sdcTema`, component state, an object of open titles). It opens with **Los rangos, Niveles y XP and Meta semanal** already expanded, so the first thing a player reads is the core loop and not an index.
+- The topics are individually collapsible (`sdcTema`, component state, an object of open titles). It opens with **Tu rutina de hoy, Cómo se anota lo que hacés and Niveles y XP** already expanded, so the first thing a player reads is the core loop and not an index.
+
+### The guide has to work for someone who has never played anything
+
+`j2` went from 17 topics to **26**, each carrying a `g` (group) so the render emits a section header whenever the group changes: **PARA EMPEZAR · CÓMO PROGRESÁS · LOS SISTEMAS · CUANDO NO PODÉS · LO DEMÁS**.
+
+Two things were wrong and neither was the writing style:
+
+**It explained the game in the game's own words.** "Los rangos" used *Umbral* three topics before Umbral was defined; "El Umbral" said "los cuatro patrones" and **nothing in the app ever said what a patrón is**; "Modalidades" never said what *flow* means. Every term is now defined the first time it appears, and `patrones` is introduced in the very first topic.
+
+**The most important things were missing.** There was no topic for the daily routine, none for **how you record a set** (the single interaction the whole game runs on), none for the stretching rework, Primeras veces, the body map, the streak calendar, achievements, calibre, or why systems appear as you level. The worst omission: **nothing told the player their save lives only on this phone.** There is no account and no server, so "Guardá tu progreso" is now the closing topic and says so plainly.
+
+Presentation, for readers who are not 25: topic titles at 16 px, body at **15 px with 1.65 line-height in `#c8d0e4`** — the shared `text-xs` (12 px / 1.0 line-height) in `#9aa4bd` was never meant for paragraphs. Rows measure 49 px, above the 44 px floor. Closed, the guide still costs nothing: the tab bar stays at y=362.
+
+**When you change a system, change its topic.** The guide now describes combat's "Empezar", the two stretching routines and the weekly flexibility check — reword any of those and the manual starts lying.
 - The `?` circle became a labelled `¿Cómo funciona?` button. A bare glyph is not discoverable enough to be the only door to the manual, and the circle was the one `borderRadius` in the file.
 
 The collapsed cards themselves were never the problem — they are 54–55 px each and read fine stacked. What was wrong in Perfil was **eight of them**, three of which were the same kind of thing: `atributos`, `volumen` and `hazanas` were all numbers you read and never touch. They are now one card, `numeros` ("Tus números"), with three labelled sections and the lifetime rep total on the collapsed bar. Six bars left, and the three old ids are gone from `af`. Stale keys left behind in a real save's `ui.collapsed` are harmless.
