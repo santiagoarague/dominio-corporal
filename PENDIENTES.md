@@ -82,6 +82,12 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
   tarjeta, **Tus números**, con tres secciones adentro. Quedan seis barras. No se sacó ni un
   dato.
 
+- ~~Constancia mostraba cuadraditos vacíos de días que ya pasaron~~ — resuelto. La grilla armaba
+  28 días siempre, así que un jugador nuevo veía **27 cuadros vacíos y uno real**, con una
+  leyenda de seis colores que nunca había tenido. Ahora la grilla arranca el primer día con
+  registro: día uno son 1 cuadro y 1 referencia (326 px → 220). **Los huecos del medio se
+  mantienen**: son días que sí faltaste, y taparlos dibujaría una racha que no existió.
+
 ## C · Decisiones de diseño que quedaron abiertas
 
 - **Tamaño de texto ajustable** y **poder apagar sistemas**: quedaron explícitamente fuera de

@@ -214,6 +214,14 @@ Two patterns worth knowing:
 
 `af` lists the ids that "Minimizar todo" collapses; remove an id from it when a card stops being an ordinary collapsible.
 
+### The streak grid shows your history, not a calendar
+
+`x5(history, today, todayStatus, 28)` used to build all 28 days unconditionally, so anything with no record fell to `empty` (#161b2e, "Sin registro") — a near-invisible square you can tap and learn nothing from. **A player on day one saw 27 of them and one real square**, four rows of a past they were not there for, under a six-item legend for colours they had never had.
+
+`x5` now drops `empty` days **from the front only**, and the legend filters to the statuses actually present (plus "Hoy" for `pending`, and "Sin registro" when a gap really is in view — `h5` items take an optional `borde` so those two near-black swatches are distinguishable). Day one: 1 square, 1 legend entry, card 326→220 px. A player returning after 40 idle days gets one square too, which is the truth.
+
+**Gaps in the middle are kept on purpose.** `ei`'s rollover only writes a status for the day that is ending, so a week of not opening the app leaves five days with no record at all. Those are days the player did miss; collapsing them would draw a continuous streak that never happened. The trim is leading-only for exactly this reason. Verified with a save carrying all eight statuses plus a two-day hole: the hole survives, the 28-day cap still holds for a veteran.
+
 ### Density: what a tab costs before you touch anything
 
 Measured at 375×812 with every card collapsed. **This is the number to re-measure after adding a card**, because nothing else makes the cost visible:
