@@ -6,9 +6,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 "Sistema de Dominio Corporal" is a gamified bodyweight-training web app in Spanish (RPG framing: ranks, XP, dungeons, a pet companion). It is a **single-page app with no build step**: `index.html` (~440 KB) contains an already-minified React 19 bundle inline.
 
-**There is no source code for the bundle.** It began life as a Claude Artifact and was ported to a standalone site. You cannot rebuild it — every change is a surgical text edit to minified JavaScript. Treat `index.html` as the source of truth and edit it in place.
+**There is no source code for the bundle.** It began life as a Claude Artifact and was ported to a standalone site. You cannot rebuild it â every change is a surgical text edit to minified JavaScript. Treat `index.html` as the source of truth and edit it in place.
 
-Deployed files: `index.html`, `storage.js`, `sw.js`, `manifest.webmanifest`, `privacidad.html`, `fuentes/` (five woff2 files), and three icons — `icon-192`, `icon-512` and `icon-maskable-512`, the last one padded to 78% so a round Android mask does not crop the logo. `PENDIENTES.md` tracks what is left before publishing and is worth reading before starting work.
+Deployed files: `index.html`, `storage.js`, `sw.js`, `manifest.webmanifest`, `privacidad.html`, `fuentes/` (five woff2 files), and three icons â `icon-192`, `icon-512` and `icon-maskable-512`, the last one padded to 78% so a round Android mask does not crop the logo. `PENDIENTES.md` tracks what is left before publishing and is worth reading before starting work.
 
 `storage.js` must load **before** the bundle: it defines `window.claude.use("db")` against `localStorage`, replacing the Claude Artifacts database the app was written for. All progress lives in one key, `dominio-corporal:player/state`. There is no server and no account.
 
@@ -18,13 +18,13 @@ This is the part that will bite you. Follow it exactly.
 
 **Always verify the match count before replacing.** Never run a blind `s///`. Count occurrences, abort unless the count is what you expect, then replace. A pattern that silently matches zero times leaves you debugging a change that never landed; one that matches twice corrupts unrelated code.
 
-**Beware perl variable interpolation in patterns.** `"$Qtienda$Q,"` parses as the variable `$Qtienda`, not `$Q . "tienda" . $Q`. This exact bug once deleted the first `",` in the whole file — inside React's own code — producing a `SyntaxError` far from anything being edited. Use `${Q}tienda${Q}` or build strings with explicit concatenation.
+**Beware perl variable interpolation in patterns.** `"$Qtienda$Q,"` parses as the variable `$Qtienda`, not `$Q . "tienda" . $Q`. This exact bug once deleted the first `",` in the whole file â inside React's own code â producing a `SyntaxError` far from anything being edited. Use `${Q}tienda${Q}` or build strings with explicit concatenation.
 
-**Two incompatible encodings coexist.** The original bundle writes non-ASCII as escapes (`m\xE1s`, `—`, `\xBF`), while text added later is real UTF-8. When matching original strings you must reproduce the literal backslash sequences — build them with `chr(92)."xE1"` rather than typing them, because an em dash typed as `—` can arrive as a real `—` byte and silently fail to match. For **new** strings prefer real UTF-8 (the file is UTF-8 and `<meta charset>` is set); write them via the Write tool to a scratch file and splice that in, which sidesteps escaping entirely.
+**Two incompatible encodings coexist.** The original bundle writes non-ASCII as escapes (`m\xE1s`, `â`, `\xBF`), while text added later is real UTF-8. When matching original strings you must reproduce the literal backslash sequences â build them with `chr(92)."xE1"` rather than typing them, because an em dash typed as `â` can arrive as a real `â` byte and silently fail to match. For **new** strings prefer real UTF-8 (the file is UTF-8 and `<meta charset>` is set); write them via the Write tool to a scratch file and splice that in, which sidesteps escaping entirely.
 
-**Name everything you add with an `sdc` prefix.** The minifier's own identifiers are one or two characters (`Is`, `jd`, `Aa`, `b5`), so a plain name risks colliding with one you have not read yet, and a collision inside a 450 KB single line is close to undebuggable. `sdcBase`, `sdcSplit`, `sdcSerie`, `sdcTier` and friends are all hand-written; `grep -o 'sdcFoo' index.html | wc -l` before adding one tells you instantly whether the name is free. Note that `grep -c` is useless here — the file is one line, so it always answers 1.
+**Name everything you add with an `sdc` prefix.** The minifier's own identifiers are one or two characters (`Is`, `jd`, `Aa`, `b5`), so a plain name risks colliding with one you have not read yet, and a collision inside a 450 KB single line is close to undebuggable. `sdcBase`, `sdcSplit`, `sdcSerie`, `sdcTier` and friends are all hand-written; `grep -o 'sdcFoo' index.html | wc -l` before adding one tells you instantly whether the name is free. Note that `grep -c` is useless here â the file is one line, so it always answers 1.
 
-**Check what a grep actually matched before "fixing" it.** An audit once flagged `coger` three times as peninsular Spanish; all three were `encoger` ("sin encoger los hombros"). The same audit reported `el móvil`, `pulsa` and `aquí`, none of which were real. The app's text is neutral tuteo, not Spanish from Spain — moving it to voseo would be a decision about tone, not a correction.
+**Check what a grep actually matched before "fixing" it.** An audit once flagged `coger` three times as peninsular Spanish; all three were `encoger` ("sin encoger los hombros"). The same audit reported `el mÃ³vil`, `pulsa` and `aquÃ­`, none of which were real. The app's text is neutral tuteo, not Spanish from Spain â moving it to voseo would be a decision about tone, not a correction.
 
 
 **Validate after every edit:**
@@ -33,7 +33,7 @@ This is the part that will bite you. Follow it exactly.
 perl -MEncode -0777 -ne 'my $ok=eval{Encode::decode("UTF-8",$_,Encode::FB_CROAK);1}; print $ok?"UTF-8 valido\n":"BYTES INVALIDOS\n";' index.html
 ```
 
-**If the app breaks with a syntax error**, find the corruption by diffing against the last good commit — the first divergence should be inside your edit, and if it is not, that is the damage:
+**If the app breaks with a syntax error**, find the corruption by diffing against the last good commit â the first divergence should be inside your edit, and if it is not, that is the damage:
 
 ```bash
 git show HEAD:index.html > /tmp/head.html && perl -0777 -e '
@@ -78,44 +78,52 @@ sub span {
 
 Start from the index of `i.default.createElement(ge,{id:"<cardId>"`. Children are comma-separated, so removing a block means removing it *and* its trailing comma.
 
-**Prefer not moving blocks at all.** To reorder cards, wrap the container in a flex column and set `order` on the one card that must move — that is how "Rutina de hoy" is pinned to the top of the Entreno tab. Moving text risks far more than a style property does.
+**Prefer not moving blocks at all.** To reorder cards, wrap the container in a flex column and set `order` on the one card that must move â that is how "Rutina de hoy" is pinned to the top of the Entreno tab. Moving text risks far more than a style property does.
+
+### The metronome
+
+`D5({active, tempo})` is the tempo guide above the four exercise rows. It cycles BAJA → PAUSA → SUBE with a beep per phase and counts nothing: it never sees your target, your sets or the rest timer.
+
+Its default is 2s/1s/2s, but `sdcTempoMod(modifier)` overrides that from the day’s modifier text, because otherwise the screen contradicted itself — on a **Tempo** day the modifier said "baja en 3 segundos" while the metronome insisted on 2, and following one broke the other. It reads `/baja(?: el peso)? en (\d+) segundos?/i` and doubles both movement phases on "mitad de velocidad". Three of the eighteen modifiers adjust: Tempo (bodyweight and gym) to 3/1/2 and flow’s Control to 4/1/4. **If you reword a modifier, re-check that regex** — "Drop set" says *baja el peso* and "Carga alta" says *baja las repeticiones*, and both must keep falling through to the default.
+
+Two known gaps, deliberately left open because they are design calls: the fitness test uses a **different** cadence (2s down, 1s up, no pause, so 3s per rep against the metronome’s 5s) and both are called "la cadencia del Sistema"; and one global metronome sits above four exercises even when one of them is a hold, where an up/down cycle means nothing. The help topic says so out loud rather than pretending otherwise.
 
 ### The body diagram
 
-`g5({view, colors, glow, ratios, selected, onSelect})` draws the figure in "Tu cuerpo". It used to be six rounded rectangles; it is now an angular anatomical figure built from paths, but **the contract is unchanged** and must stay that way: `viewBox "0 0 200 300"`, the same four groups (`squat`, `pushup`, `back`, `abs`), and every interactive part spreading `r(group)` so it gets its fill from `Rs(ratio)` — a ramp from `rgb(42,49,72)` to `#ff6b4a` — plus the white stroke when selected and `sdcPulse` at 100%.
+`g5({view, colors, glow, ratios, selected, onSelect})` draws the figure in "Tu cuerpo". It used to be six rounded rectangles; it is now an angular anatomical figure built from paths, but **the contract is unchanged** and must stay that way: `viewBox "0 0 200 300"`, the same four groups (`squat`, `pushup`, `back`, `abs`), and every interactive part spreading `r(group)` so it gets its fill from `Rs(ratio)` â a ramp from `rgb(42,49,72)` to `#ff6b4a` â plus the white stroke when selected and `sdcPulse` at 100%.
 
-Three local helpers keep it readable: `sdcPar(d, group)` draws a path and its mirror (`translate(200,0) scale(-1,1)`, so x becomes 200-x), `sdcSim(d, group)` draws a part that is already symmetric and must not be doubled, and `sdcIne(d, dup)` draws inert anatomy. Parts that the game does not measure separately are folded in rather than given their own colour: forearms and hands go with `pushup`, calves with `squat`, and neck, hips, knees and feet stay inert. **Do not colour a part as its own group unless the game actually tracks it** — the figure would be claiming to measure something it does not.
+Three local helpers keep it readable: `sdcPar(d, group)` draws a path and its mirror (`translate(200,0) scale(-1,1)`, so x becomes 200-x), `sdcSim(d, group)` draws a part that is already symmetric and must not be doubled, and `sdcIne(d, dup)` draws inert anatomy. Parts that the game does not measure separately are folded in rather than given their own colour: forearms and hands go with `pushup`, calves with `squat`, and neck, hips, knees and feet stay inert. **Do not colour a part as its own group unless the game actually tracks it** â the figure would be claiming to measure something it does not.
 
 ### Touch targets
 
-Measured, not guessed: the tab bar was 34 px tall and the meta steppers 32 px, both well under the 44–48 px that Android and iOS ask for. They are now `minHeight:48` and `44×44`. `button` also carries `touch-action:manipulation`, which drops the 300 ms double-tap-zoom delay. Still small and not yet raised, because raising them changes the visual density of every card: the collapsible headers (21 px, but full width), `💡 alternativa` (21 px) and the `?` in the header (22 px).
+Measured, not guessed: the tab bar was 34 px tall and the meta steppers 32 px, both well under the 44â48 px that Android and iOS ask for. They are now `minHeight:48` and `44Ã44`. `button` also carries `touch-action:manipulation`, which drops the 300 ms double-tap-zoom delay. Still small and not yet raised, because raising them changes the visual density of every card: the collapsible headers (21 px, but full width), `ð¡ alternativa` (21 px) and the `?` in the header (22 px).
 
 ### Fonts
 
-**The app makes zero network requests after it loads.** Chakra Petch (400/500/600/700) and Inter (one variable file, 100–900) live in `fuentes/` and are declared with `@font-face` at the top of the head `<style>`, latin subset only — which covers every accent and `¿¡` Spanish needs. They used to come from Google Fonts, twice: a `<link>` in `<head>` and an `@import` React injected in `w5`.
+**The app makes zero network requests after it loads.** Chakra Petch (400/500/600/700) and Inter (one variable file, 100â900) live in `fuentes/` and are declared with `@font-face` at the top of the head `<style>`, latin subset only â which covers every accent and `Â¿Â¡` Spanish needs. They used to come from Google Fonts, twice: a `<link>` in `<head>` and an `@import` React injected in `w5`.
 
 Self-hosting was not only about speed. A request to `fonts.googleapis.com` hands Google the user's IP, which a privacy policy has to declare; now `privacidad.html` can say "ninguna" and mean it. If you ever add a CDN, a web font or an analytics tag, **section 4 of `privacidad.html` becomes false** and has to be updated in the same commit.
 
 ### Styling constraint
 
-The CSS at the top of `index.html` is a small hand-written subset that *looks* like Tailwind but is not. Only the classes defined there exist — `justify-end`, for example, does **not**, and silently does nothing. Check the `<style>` block before using a utility class, or use an inline `style` object.
+The CSS at the top of `index.html` is a small hand-written subset that *looks* like Tailwind but is not. Only the classes defined there exist â `justify-end`, for example, does **not**, and silently does nothing. Check the `<style>` block before using a utility class, or use an inline `style` object.
 
 ## Running locally
 
-Node and Python are not installed on this machine (`python` is the Microsoft Store stub). `.claude/serve.ps1` serves the folder with a PowerShell `System.Net.HttpListener`, and `.claude/launch.json` points the Browser pane's `preview_start` at it (config name `dominio-corporal`, port 8787). It binds to `http://localhost:<port>/`, which needs no elevation, sends `Cache-Control: no-store`, and rejects paths that escape the root. `localhost` is not reachable from a phone on the LAN — to test on a real device, deploy.
+Node and Python are not installed on this machine (`python` is the Microsoft Store stub). `.claude/serve.ps1` serves the folder with a PowerShell `System.Net.HttpListener`, and `.claude/launch.json` points the Browser pane's `preview_start` at it (config name `dominio-corporal`, port 8787). It binds to `http://localhost:<port>/`, which needs no elevation, sends `Cache-Control: no-store`, and rejects paths that escape the root. `localhost` is not reachable from a phone on the LAN â to test on a real device, deploy.
 
 Testing notes that save time:
-- **15–20 s pass before the first button appears, but only ~5 s of that is the typewriter** (140 characters at 28–40 ms). The rest is the 450 KB bundle. Wait for it; do not assume a blank page is a crash.
-- Driving the app by clicking a `ref` is unreliable here: refs resolve to stale coordinates when the page scrolls between the `find` and the click, and a miss can silently hit "Usar mi día de descanso" and burn the day. Prefer `javascript_tool` to click by text when scripting a test run.
+- **15â20 s pass before the first button appears, but only ~5 s of that is the typewriter** (140 characters at 28â40 ms). The rest is the 450 KB bundle. Wait for it; do not assume a blank page is a crash.
+- Driving the app by clicking a `ref` is unreliable here: refs resolve to stale coordinates when the page scrolls between the `find` and the click, and a miss can silently hit "Usar mi dÃ­a de descanso" and burn the day. Prefer `javascript_tool` to click by text when scripting a test run.
 - Reuse a **fresh browser tab** to read console errors. The console buffer persists across navigations, so a fixed error keeps reappearing.
 - Clear `localStorage`, unregister the service worker and delete caches between runs, otherwise you test a stale bundle.
 - "Saltar y empezar con valores por defecto" skips onboarding, but only activates the bodyweight modality.
-- `get_page_text` returns DOM order, not visual order — it will not reflect flexbox `order`. Use a screenshot.
+- `get_page_text` returns DOM order, not visual order â it will not reflect flexbox `order`. Use a screenshot.
 - The Perfil tab still has the **Panel de pruebas** for jumping ranks and forcing ascension without training, but it no longer announces itself: the entry point is a dim `v1.0` at the bottom of Perfil that opens it after **five taps** (`sdcDevN`). Sixteen destructive actions, one of them `Desbloquear todos los logros`, should not be one tap away from a curious player.
 
 ## Deploying
 
-`git push` to `main` is the deploy. GitHub Pages serves the repo root from `main` at **https://santiagoarague.github.io/dominio-corporal/**, usually live about 30 seconds after the push. There is no build command; `.nojekyll` keeps Pages from running Jekyll, which would otherwise drop anything starting with a dot — including the `.well-known/assetlinks.json` a TWA needs.
+`git push` to `main` is the deploy. GitHub Pages serves the repo root from `main` at **https://santiagoarague.github.io/dominio-corporal/**, usually live about 30 seconds after the push. There is no build command; `.nojekyll` keeps Pages from running Jekyll, which would otherwise drop anything starting with a dot â including the `.well-known/assetlinks.json` a TWA needs.
 
 Netlify was dropped: it silently stopped deploying and sat five commits behind while every push reported success. `netlify.toml` has been deleted. The repo had to be made **public**, because Pages on a private repo requires a paid plan. The old Netlify site is still online serving stale code and should be deleted by hand.
 
@@ -131,11 +139,11 @@ Note for packaging: the app lives in a **subdirectory**, so `assetlinks.json` ca
 
 `sw.js` is network-first, so with a connection the player always sees the latest deploy and without one they get the last copy. Two things about it are load-bearing and were both wrong until recently:
 
-**The HTML is fetched with `cache: 'reload'`.** Without it, network-first was a lie: the service worker's own `fetch()` goes through the browser's HTTP cache, GitHub Pages sends `max-age=600`, and the worker cheerfully served — and then re-cached — a copy up to ten minutes old. Measured in production: the plain fetch returned 470,323 bytes (the previous deploy) while `cache: 'reload'` returned 470,860 (the one just pushed). This is exactly the "why can't I see my changes on my phone" symptom. Only documents get this treatment; fonts and icons are fetched normally.
+**The HTML is fetched with `cache: 'reload'`.** Without it, network-first was a lie: the service worker's own `fetch()` goes through the browser's HTTP cache, GitHub Pages sends `max-age=600`, and the worker cheerfully served â and then re-cached â a copy up to ten minutes old. Measured in production: the plain fetch returned 470,323 bytes (the previous deploy) while `cache: 'reload'` returned 470,860 (the one just pushed). This is exactly the "why can't I see my changes on my phone" symptom. Only documents get this treatment; fonts and icons are fetched normally.
 
 **Only same-origin 200s are cached.** It used to cache any response, so a 404 or a 500 became the stored offline copy.
 
-Bump `CACHE` when the asset list changes; `activate` deletes every other cache name. If the app seems frozen on an old version during testing, unregister the worker and delete caches rather than assuming the deploy failed — but check production with `curl` first, because that distinction is the whole reason Netlify went unnoticed for five commits.
+Bump `CACHE` when the asset list changes; `activate` deletes every other cache name. If the app seems frozen on an old version during testing, unregister the worker and delete caches rather than assuming the deploy failed â but check production with `curl` first, because that distinction is the whole reason Netlify went unnoticed for five commits.
 
 ## Architecture
 
@@ -148,48 +156,48 @@ One plain object holds everything, deep-cloned with `M(e)` before mutation and s
 
 ### The two functions that matter
 
-`i5(state, mode, reps)` records a completed routine: accumulates reps into lifetime/week/month, updates records and `lastTrained`, awards Dominion Points, applies the streak and history bookkeeping, computes XP, then runs `misRevisar` → `Ea` → `da` (achievements) → `ni` (training-load warning).
+`i5(state, mode, reps)` records a completed routine: accumulates reps into lifetime/week/month, updates records and `lastTrained`, awards Dominion Points, applies the streak and history bookkeeping, computes XP, then runs `misRevisar` â `Ea` â `da` (achievements) â `ni` (training-load warning).
 
-`Ea(state, notices)` is the level-up loop: while `currentXP >= li(level)` it levels up; when `level >= au[rank]` it flags an Ascension instead. `li(e)` is the XP cost curve: `e<50 ? 45+3e : 5e-55`. The two branches used to be `45+3e` and `125+5e`, which met badly — `li(49)` was 192 and `li(50)` was **375**, a 95% jump inside one level. The second branch was rebased so the curve is continuous at 50 while keeping the steeper slope. `li(1)` is still 48, and it has to stay there. Because XP only converts to levels inside `Ea`, **anything that grants XP must be followed by `Ea`**, and `ei` calls it on load so curve changes apply retroactively.
+`Ea(state, notices)` is the level-up loop: while `currentXP >= li(level)` it levels up; when `level >= au[rank]` it flags an Ascension instead. `li(e)` is the XP cost curve: `e<50 ? 45+3e : 5e-55`. The two branches used to be `45+3e` and `125+5e`, which met badly â `li(49)` was 192 and `li(50)` was **375**, a 95% jump inside one level. The second branch was rebased so the curve is continuous at 50 while keeping the steeper slope. `li(1)` is still 48, and it has to stay there. Because XP only converts to levels inside `Ea`, **anything that grants XP must be followed by `Ea`**, and `ei` calls it on load so curve changes apply retroactively.
 
 ### Multi-session days
 
-A day can hold one routine per modality. `today.doneModalities` lists the ones finished; the second and third sessions get +25% and +50% XP. Day-level bookkeeping — streak, `week.trained`, `week.fullDays`, `history`, the low-effort penalty and Dominion Points — must fire **only on the first session**, gated on that array being empty. `Dl()` is already idempotent per day for the streak, but the rest is not.
+A day can hold one routine per modality. `today.doneModalities` lists the ones finished; the second and third sessions get +25% and +50% XP. Day-level bookkeeping â streak, `week.trained`, `week.fullDays`, `history`, the low-effort penalty and Dominion Points â must fire **only on the first session**, gated on that array being empty. `Dl()` is already idempotent per day for the streak, but the rest is not.
 
 ### Exercise selection
 
-Rank (`ve` = E→Z) picks the exercise **variant**; the fitness test picks the **volume**. Tables: `by` (bodyweight), `F2` (gym), `P2` (flow — only `squat` and `abs`; push and pull fall back to `by`), resolved by `_d(group, rank, modality)`. Every entry has an `alt` string, surfaced by the "💡 alternativa" button, which must name a real equipment-free substitute rather than a technique tip. Targets come from `Oy(state)`; the four groups are always `squat`, `pushup`, `back`, `abs`.
+Rank (`ve` = EâZ) picks the exercise **variant**; the fitness test picks the **volume**. Tables: `by` (bodyweight), `F2` (gym), `P2` (flow â only `squat` and `abs`; push and pull fall back to `by`), resolved by `_d(group, rank, modality)`. Every entry has an `alt` string, surfaced by the "ð¡ alternativa" button, which must name a real equipment-free substitute rather than a technique tip. Targets come from `Oy(state)`; the four groups are always `squat`, `pushup`, `back`, `abs`.
 
-Everyone starts at **rank E, level 1** regardless of the test. The test sets volume and calibre only, so stronger players do more work and climb faster without being handed dangerous movements. This is deliberate — do not wire the test's `rank` field (it is computed in `vy` and intentionally discarded).
+Everyone starts at **rank E, level 1** regardless of the test. The test sets volume and calibre only, so stronger players do more work and climb faster without being handed dangerous movements. This is deliberate â do not wire the test's `rank` field (it is computed in `vy` and intentionally discarded).
 
 ### Volume
 
-`jd(rank, classification, focus, modality, testResults)` = `round(base × W2[rank] × repFactor × repMult[focus])`, per group. `Oy(state, rank)` is the only caller that has the state, and it passes `state.profile.testResults`; `I2` (ascension test) and `hd`/`uy` (combat) take it as a trailing argument so every path prescribes the same volume.
+`jd(rank, classification, focus, modality, testResults)` = `round(base Ã W2[rank] Ã repFactor Ã repMult[focus])`, per group. `Oy(state, rank)` is the only caller that has the state, and it passes `state.profile.testResults`; `I2` (ascension test) and `hd`/`uy` (combat) take it as a trailing argument so every path prescribes the same volume.
 
 `base` comes from `sdcBase(testResults, classification, modality)`, and **each modality has its own model** because they are programmed differently:
 
-- **bodyweight** — derived from the player's measured maxima: `max(yy[classification][g], min(340, round(testMax × 1.15)))`. `W2.E` is `0.6`, so at rank E the daily total lands near 0.7× a single all-out set. `back` uses the measured pull result, falling back to `pushup × 0.85` only for saves that predate the pull test.
-- **gym / flow** — fixed tables in `sdcModBase`, ignoring the test. In the gym the variable is the load, not the reps, and the player adjusts with the `kg` field; `repMult` then lands the sets in the right ranges (fuerza 8/7/5, salud 12/10/8, resistencia 17/14/11).
+- **bodyweight** â derived from the player's measured maxima: `max(yy[classification][g], min(340, round(testMax Ã 1.15)))`. `W2.E` is `0.6`, so at rank E the daily total lands near 0.7Ã a single all-out set. `back` uses the measured pull result, falling back to `pushup Ã 0.85` only for saves that predate the pull test.
+- **gym / flow** â fixed tables in `sdcModBase`, ignoring the test. In the gym the variable is the load, not the reps, and the player adjusts with the `kg` field; `repMult` then lands the sets in the right ranges (fuerza 8/7/5, salud 12/10/8, resistencia 17/14/11).
 
 `yy[classification]` survives only as a **floor** on the bodyweight path, so this can raise a target but never lower one. Before this existed, the ceiling at rank E was 14 squats a day for everyone, including a player who did 114 in the test.
 
 ### Sets
 
-The daily target is split into tappable sets. `sdcNSets(total)` gives 3 sets at ≥6 reps, 2 at ≥3, else 1 — so no set is ever worth 0. `sdcSplit(total, n)` distributes them **descending** (40/33/27, or 55/45 for two) because a flat split pretends the last set is as cheap as the first; it is not, and the fatigue lands exactly where the player is least able to absorb it. `sdcSuma(total, n, k)` returns the reps inside the first `k` sets.
+The daily target is split into tappable sets. `sdcNSets(total)` gives 3 sets at â¥6 reps, 2 at â¥3, else 1 â so no set is ever worth 0. `sdcSplit(total, n)` distributes them **descending** (40/33/27, or 55/45 for two) because a flat split pretends the last set is as cheap as the first; it is not, and the fatigue lands exactly where the player is least able to absorb it. `sdcSuma(total, n, k)` returns the reps inside the first `k` sets.
 
 `Is` renders the chips and `sdcSerie(group, k)` handles the tap. Tapping chip `k` marks sets 1..k, so a player who did three sets in a row confirms with one tap and undoes the last with a second.
 
-The **pending** set also carries a `− N +`, so a player who fell short on the last set records that without disturbing the others (`sdcAjuste[group][index]`, read through `sdcRepsSerie`). Adjusting a set changes what you *did*, never the day's goal: `sdcTotalMeta()` deliberately sums the raw `Aa` targets, because `i5` grades against `Oy()` and a button reading `30/30` would claim a completion the game scores as 94%.
+The **pending** set also carries a `â N +`, so a player who fell short on the last set records that without disturbing the others (`sdcAjuste[group][index]`, read through `sdcRepsSerie`). Adjusting a set changes what you *did*, never the day's goal: `sdcTotalMeta()` deliberately sums the raw `Aa` targets, because `i5` grades against `Oy()` and a button reading `30/30` would claim a completion the game scores as 94%.
 
-**`i5` is still the only function that settles XP.** `sdcSer` (completed set counts) and `sdcAjuste` are component state, never persisted, and the XP shown in the header during a session is a live projection: `u.currentXP + sdcTotalHechas()`. `pg` passes `sdcRepsHechas()` to `i5`, not the raw targets. Keep it that way — moving the ledger into the tap would break `Deshacer registro de hoy` and risk double counting.
+**`i5` is still the only function that settles XP.** `sdcSer` (completed set counts) and `sdcAjuste` are component state, never persisted, and the XP shown in the header during a session is a live projection: `u.currentXP + sdcTotalHechas()`. `pg` passes `sdcRepsHechas()` to `i5`, not the raw targets. Keep it that way â moving the ledger into the tap would break `Deshacer registro de hoy` and risk double counting.
 
-When the day is registered the card is replaced by a summary: reps per group, the personal best in each, and the week's totals. The ★ only appears when `lifetimeReps[g]` exceeds today's reps, because otherwise every group is a record in the first session and the mark means nothing.
+When the day is registered the card is replaced by a summary: reps per group, the personal best in each, and the week's totals. The â only appears when `lifetimeReps[g]` exceeds today's reps, because otherwise every group is a record in the first session and the mark means nothing.
 
-Exercises measured in time rather than reps declare it in their own `alt` ("1 rep = 3 segundos…"). `sdcSegs(alt)` parses that and the UI shows the seconds without the player opening anything. It **ignores conversions in parentheses**, which describe the substitute: the pull-group `alt` mentions "superman en el suelo (1 rep = 3 s)" and that does not make towel rows a hold.
+Exercises measured in time rather than reps declare it in their own `alt` ("1 rep = 3 segundosâ¦"). `sdcSegs(alt)` parses that and the UI shows the seconds without the player opening anything. It **ignores conversions in parentheses**, which describe the substitute: the pull-group `alt` mentions "superman en el suelo (1 rep = 3 s)" and that does not make towel rows a hold.
 
 ### Unlocks
 
-`au` is the rank ladder — the level at which each rank offers its Ascension: `{E:50, D:100, C:140, B:180, A:220, S:260}`. It used to be `{E:50, D:100, C:300, B:700, A:1500, S:3000}`, which with the XP curve meant rank B cost 255k XP (about 12 years of training four times a week) and rank Z 22.9M. The game had three reachable ranks out of seven. The current ladder puts D at ~5 months, C at 1.3 years, B at 2.6, A at 4.4, S at 6.7 and Z at 9.4. Z has no entry because there is nothing above it, and the header correctly hides the Ascension line there.
+`au` is the rank ladder â the level at which each rank offers its Ascension: `{E:50, D:100, C:140, B:180, A:220, S:260}`. It used to be `{E:50, D:100, C:300, B:700, A:1500, S:3000}`, which with the XP curve meant rank B cost 255k XP (about 12 years of training four times a week) and rank Z 22.9M. The game had three reachable ranks out of seven. The current ladder puts D at ~5 months, C at 1.3 years, B at 2.6, A at 4.4, S at 6.7 and Z at 9.4. Z has no entry because there is nothing above it, and the header correctly hides the Ascension line there.
 
 `$e` maps systems to a required level and rank; `ye(state, id)` and `yt(state, id)` test it. The rank requirements are all `"E"` on purpose: rank D needs level 50 and rank C level 100, so the original level-8/12/15 gates paired with rank D/C were unreachable. Keep new entries at rank `"E"` and gate by level alone. Levels in use: 3, 5, 8, 10, 12, 15, 20, 25, 30.
 
@@ -199,71 +207,71 @@ Exercises measured in time rather than reps declare it in their own `alt` ("1 re
 
 Two patterns worth knowing:
 - **Collapsed by default, migration-safe:** `collapsed: H&&H.collapsed&&H.collapsed.X!==void 0 ? me("X") : !0`. Inverting the flag instead breaks saves that already stored it.
-- **Hidden until requested:** the help panel and the shop render only when their flag is truthy, so nothing shows when closed — not even a title bar. The `?` button and the PD badge toggle those flags.
+- **Hidden until requested:** the help panel and the shop render only when their flag is truthy, so nothing shows when closed â not even a title bar. The `?` button and the PD badge toggle those flags.
 
 `af` lists the ids that "Minimizar todo" collapses; remove an id from it when a card stops being an ordinary collapsible.
 
-**The header is permanent UI, not a card.** It carries the name, the calibre, the PD badge, the XP bar (`qa`), `Ascenso: level/threshold` and the next system to unlock. All of that used to live inside the `rango` collapsible, which started closed — so a new player never saw their XP bar move and never learned anything was coming. That card is gone; do not reintroduce one that duplicates the header.
+**The header is permanent UI, not a card.** It carries the name, the calibre, the PD badge, the XP bar (`qa`), `Ascenso: level/threshold` and the next system to unlock. All of that used to live inside the `rango` collapsible, which started closed â so a new player never saw their XP bar move and never learned anything was coming. That card is gone; do not reintroduce one that duplicates the header.
 
 ### Feedback
 
-There were two `@keyframes` in the whole app and neither fired on a reward. Now the head `<style>` also defines `sdcPop` (floating `+N XP`), `sdcRise` (notices) and `.sdc-chip`, all suppressed under `prefers-reduced-motion` — the browser pane has that on, so animations will look dead there while the numbers still render.
+There were two `@keyframes` in the whole app and neither fired on a reward. Now the head `<style>` also defines `sdcPop` (floating `+N XP`), `sdcRise` (notices) and `.sdc-chip`, all suppressed under `prefers-reduced-motion` â the browser pane has that on, so animations will look dead there while the numbers still render.
 
-`sdcWakeUse()` is a hook that holds a screen wake lock for as long as its component is mounted, re-acquiring it on `visibilitychange` because the browser drops the lock whenever the tab is hidden. `sdcWakeSi(on)` is the conditional variant, for a timer that lives inside a component that is always mounted; the main component calls it with the combat and Primal countdowns. `T5` (rest timer) and `Ly` (fitness test) call the mount-based `sdcWakeUse()` — the two moments where the phone is on the floor and the screen used to sleep mid-set. It swallows its own errors, so it is safe to add to any other component.
+`sdcWakeUse()` is a hook that holds a screen wake lock for as long as its component is mounted, re-acquiring it on `visibilitychange` because the browser drops the lock whenever the tab is hidden. `sdcWakeSi(on)` is the conditional variant, for a timer that lives inside a component that is always mounted; the main component calls it with the combat and Primal countdowns. `T5` (rest timer) and `Ly` (fitness test) call the mount-based `sdcWakeUse()` â the two moments where the phone is on the floor and the screen used to sleep mid-set. It swallows its own errors, so it is safe to add to any other component.
 
-`sdcBeep(hz, ms)` wraps the existing `Ie()` oscillator and `sdcVib(pattern)` guards `navigator.vibrate`; both swallow their own errors, so call them anywhere. A set tap beeps, vibrates, floats the XP gained (`sdcFlota`) and starts the rest timer. `sdcDesc` scales that rest with the size of the set just completed (`base + reps × 1.5`, capped at 180 s) — `ag` alone gave Resistencia the most reps and the shortest rest.
+`sdcBeep(hz, ms)` wraps the existing `Ie()` oscillator and `sdcVib(pattern)` guards `navigator.vibrate`; both swallow their own errors, so call them anywhere. A set tap beeps, vibrates, floats the XP gained (`sdcFlota`) and starts the rest timer. `sdcDesc` scales that rest with the size of the set just completed (`base + reps Ã 1.5`, capped at 180 s) â `ag` alone gave Resistencia the most reps and the shortest rest.
 
-`b5` classifies each notice string with `sdcTier` into `epic` / `good` / `bad` / `info`, sorts epic to the top and styles it accordingly, plus a "Cerrar todo". Tiering is done by matching the text because the notice pipeline (`i5` → `misRevisar` → `Ea` → `da` → `ni`) passes plain strings; **if you reword "Subiste a nivel" or "Ascendiste", update `sdcTier` too** or a level-up will render like a bookkeeping line again.
+`b5` classifies each notice string with `sdcTier` into `epic` / `good` / `bad` / `info`, sorts epic to the top and styles it accordingly, plus a "Cerrar todo". Tiering is done by matching the text because the notice pipeline (`i5` â `misRevisar` â `Ea` â `da` â `ni`) passes plain strings; **if you reword "Subiste a nivel" or "Ascendiste", update `sdcTier` too** or a level-up will render like a bookkeeping line again.
 
 ### Variety
 
-`Oy()` never received the date, so the routine was byte-identical every day for the ~50 levels rank E lasts. `sdcMods` now holds **six modifiers per modality** — they are not interchangeable, so gym gets drop sets and sets to failure while flow gets longer holds and unbroken transitions — and `sdcModDia(modality, date)` picks one by hashing both together. The bonus only applies when the player claims it (`sdcModOk`, passed to `i5` as a fourth argument); nothing can verify it, but it demands a deliberate act rather than handing out XP.
+`Oy()` never received the date, so the routine was byte-identical every day for the ~50 levels rank E lasts. `sdcMods` now holds **six modifiers per modality** â they are not interchangeable, so gym gets drop sets and sets to failure while flow gets longer holds and unbroken transitions â and `sdcModDia(modality, date)` picks one by hashing both together. The bonus only applies when the player claims it (`sdcModOk`, passed to `i5` as a fourth argument); nothing can verify it, but it demands a deliberate act rather than handing out XP.
 
-Dungeons draw from `sdcPortales`, ten name/challenge pairs. They used to be two independent lists, so "Guarida del Lobo Sombrío" could ask for thirty minutes on a bike.
+Dungeons draw from `sdcPortales`, ten name/challenge pairs. They used to be two independent lists, so "Guarida del Lobo SombrÃ­o" could ask for thirty minutes on a bike.
 
-`sdcMascota(state, pct, isPR)` gives the pet a line about the session just recorded — a personal best, a streak of seven or more, a full routine or a partial one. It used to speak only when you failed. Keep new phrases species-neutral: the pet can be a dog or a cat.
+`sdcMascota(state, pct, isPR)` gives the pet a line about the session just recorded â a personal best, a streak of seven or more, a full routine or a partial one. It used to speak only when you failed. Keep new phrases species-neutral: the pet can be a dog or a cat.
 
 ### Combat
 
-The attack was typing the word "hecho" into an input. It now reuses the routine's set chips: `sdcCombChips(phase, reps)` renders them, `sdcCombTocar` handles the tap, and `sdcGolpe` lands the hit — the same thing the old `Rd` did minus the text check. The strike button stays disabled until every phase is complete, and bosses keep their superset by rendering one chip row per phase. `sdcCombSer` resets on any change of villain, exercise or phase.
+The attack was typing the word "hecho" into an input. It now reuses the routine's set chips: `sdcCombChips(phase, reps)` renders them, `sdcCombTocar` handles the tap, and `sdcGolpe` lands the hit â the same thing the old `Rd` did minus the text check. The strike button stays disabled until every phase is complete, and bosses keep their superset by rendering one chip row per phase. `sdcCombSer` resets on any change of villain, exercise or phase.
 
 ### Dates
 
-Use `__fechaLocal(date)` / `ue()`. **Never `toISOString().slice(0,10)`** — that is UTC, which rolled the day over at 21:00 in Argentina and broke streaks for anyone training at night. The same bug existed in five places.
+Use `__fechaLocal(date)` / `ue()`. **Never `toISOString().slice(0,10)`** â that is UTC, which rolled the day over at 21:00 in Argentina and broke streaks for anyone training at night. The same bug existed in five places.
 
 ### Economy
 
-Dominion Points: 3 for a 100% routine, 1 for ≥50%, first session of the day only. The shop is `Ey` (id, cost, name, desc) and `M2(state, id)` applies each purchase; add a branch there for every new item. The XP buff multiplier is `dominion.xpBuffMult`, read by `Ka()` — do not hardcode 1.25 again.
+Dominion Points: 3 for a 100% routine, 1 for â¥50%, first session of the day only. The shop is `Ey` (id, cost, name, desc) and `M2(state, id)` applies each purchase; add a branch there for every new item. The XP buff multiplier is `dominion.xpBuffMult`, read by `Ka()` â do not hardcode 1.25 again.
 
-XP base is literally the reps performed, plus a flat **30** for a 100% routine. That bonus was 20, which made the first routine worth 44 XP against the 48 `li(1)` costs — a new player could not level up in their first session. **Any change to `li`, to the bonus, or to the volume model must keep that first level-up intact;** it is the cheapest, most load-bearing reward in the game.
+XP base is literally the reps performed, plus a flat **30** for a 100% routine. That bonus was 20, which made the first routine worth 44 XP against the 48 `li(1)` costs â a new player could not level up in their first session. **Any change to `li`, to the bonus, or to the volume model must keep that first level-up intact;** it is the cheapest, most load-bearing reward in the game.
 
-The multipliers stack in `i5`, each with its own `Math.round`: `t5` (focus, plus the `salud`-only +15% at streak ≥3), `sdcRacha` (+2% per consecutive day, capped at +30%, every profile), `flexBuff`, `Ka` (day buffs from the shop), `sdcPerk` (permanent perks) and the multi-modality bonus. A 12-day streak with both perks turns a 62 XP routine into 97.
+The multipliers stack in `i5`, each with its own `Math.round`: `t5` (focus, plus the `salud`-only +15% at streak â¥3), `sdcRacha` (+2% per consecutive day, capped at +30%, every profile), `flexBuff`, `Ka` (day buffs from the shop), `sdcPerk` (permanent perks) and the multi-modality bonus. A 12-day streak with both perks turns a 62 XP routine into 97.
 
-`Ey` now ends with two **permanent** purchases, `memoria` (40 PD, +5% XP) and `nucleo` (90 PD, raises it to +10% and requires `memoria`). They live in `dominion.perks`, which `ei` backfills and `Ay()` creates — the first array that needed a migration default in a while, so treat it as the worked example. Everything else in the shop is a consumable.
+`Ey` now ends with two **permanent** purchases, `memoria` (40 PD, +5% XP) and `nucleo` (90 PD, raises it to +10% and requires `memoria`). They live in `dominion.perks`, which `ei` backfills and `Ay()` creates â the first array that needed a migration default in a while, so treat it as the worked example. Everything else in the shop is a consumable.
 
 `da()` pays PD by achievement tier (E/D 1, C/B 2, A 3, S 4, Z 5). The 88 entries in `Jo` used to grant nothing at all.
 
-**There is no XP penalty any more.** Both sites that had one — a sub-50% session in `i5` and a missed day in `ei` — took a percentage of `currentXP`, which meant the game punished hardest right before a level-up and not at all just after. Losing the streak is the whole consequence now. If you reintroduce a penalty, do not make it proportional to `currentXP`.
+**There is no XP penalty any more.** Both sites that had one â a sub-50% session in `i5` and a missed day in `ei` â took a percentage of `currentXP`, which meant the game punished hardest right before a level-up and not at all just after. Losing the streak is the whole consequence now. If you reintroduce a penalty, do not make it proportional to `currentXP`.
 
 ### Fitness test and calibre
 
-`Ly` runs **four** timed tests at a 2 s / 1 s cadence: `sq`, `pu`, `ab`, `bk` (inverted rows, superman as the equipment-free fallback). The arrays are `J` (onboarding) and `ci` (retest in Perfil) — they hold different hint text, so a new exercise has to be added to both, along with its state, its `onFinish` branch, the numeric shortcut and the summary row.
+`Ly` runs **four** timed tests at a 2 s / 1 s cadence: `sq`, `pu`, `ab`, `bk` (inverted rows, superman as the equipment-free fallback). The arrays are `J` (onboarding) and `ci` (retest in Perfil) â they hold different hint text, so a new exercise has to be added to both, along with its state, its `onFinish` branch, the numeric shortcut and the summary row.
 
-`iu(sq, pu, ab, bk)` = `sq + 2·pu + ab + 2·bk`, and `wy`/`Uy` band it through `vy`. The pull term was added later and the six band thresholds were **rescaled ~20%** to absorb it, so nobody changed calibre just because a term appeared. Results persist as `profile.testResults` and feed the volume model.
+`iu(sq, pu, ab, bk)` = `sq + 2Â·pu + ab + 2Â·bk`, and `wy`/`Uy` band it through `vy`. The pull term was added later and the six band thresholds were **rescaled ~20%** to absorb it, so nobody changed calibre just because a term appeared. Results persist as `profile.testResults` and feed the volume model.
 
 Two axes, kept separate on purpose:
 
 - **Rank** is what you earn. Same ladder and same ascensions for everybody.
-- **Calibre** is what you measure — `sdcCalibre(profile)` returns the `vy` label, `sdcPuntaje(profile)` the score. It shows under the name, and Perfil → Prueba de aptitud lists all six bands with the current one marked and the points still missing.
+- **Calibre** is what you measure â `sdcCalibre(profile)` returns the `vy` label, `sdcPuntaje(profile)` the score. It shows under the name, and Perfil â Prueba de aptitud lists all six bands with the current one marked and the points still missing.
 
 `vy` also carries `rank` and `focus` fields. `focus` is display text; `rank` is dead by design (see Exercise selection).
 
 ### Backup reminder
 
-A card in Entreno asks for a backup once the player has 10 days of `history`, and hides for a week on "Más tarde" or for a month after an actual export. Its two dates live in **`localStorage` directly** — `dominio-corporal:ultimoRespaldo` and `:respaldoPospuesto` — and deliberately **not** in the game state. They describe this device, not this player: restoring a backup on a new phone should not carry over "you already backed up". Keeping them out of the state object also means no new default in `ei` and no migration risk.
+A card in Entreno asks for a backup once the player has 10 days of `history`, and hides for a week on "MÃ¡s tarde" or for a month after an actual export. Its two dates live in **`localStorage` directly** â `dominio-corporal:ultimoRespaldo` and `:respaldoPospuesto` â and deliberately **not** in the game state. They describe this device, not this player: restoring a backup on a new phone should not carry over "you already backed up". Keeping them out of the state object also means no new default in `ei` and no migration risk.
 
-`sdcRespaldoOk()` is called from both export paths (`bkDescargar` and `ug`). Neither of those dates triggers a re-render on its own, so the "Más tarde" button also pushes a notice — that state change is what makes the card disappear.
+`sdcRespaldoOk()` is called from both export paths (`bkDescargar` and `ug`). Neither of those dates triggers a re-render on its own, so the "MÃ¡s tarde" button also pushes a notice â that state change is what makes the card disappear.
 
 ### Missions
 
-Unlocked at level 10. `misRevisar` generates one weekly and one monthly objective from `lastTrained` (most-neglected muscle group) or from an unused modality, tracks them against `week`/`month` counters, and pays out. Targets are deliberately ~50% above what the prescribed routine yields, so they cannot be satisfied by training normally. There are intentionally **no daily missions** — the routine, dungeon, combat and Primal already fill that role.
+Unlocked at level 10. `misRevisar` generates one weekly and one monthly objective from `lastTrained` (most-neglected muscle group) or from an unused modality, tracks them against `week`/`month` counters, and pays out. Targets are deliberately ~50% above what the prescribed routine yields, so they cannot be satisfied by training normally. There are intentionally **no daily missions** â the routine, dungeon, combat and Primal already fill that role.
