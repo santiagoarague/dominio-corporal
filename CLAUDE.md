@@ -317,6 +317,15 @@ One world now: **your body is the territory you are surveying.** `Dominio` in Sp
 | Mazmorras · Portales | **Travesías** |
 | Modo Sombra (Rango Z) | *el último rango* |
 | Cazador (default name) · Sombra (default pet) | Atleta · (empty → "Tu compañero") |
+| Ruinas Orbitales · Cartógrafo del Vacío | see **Explorar** below |
+
+### Explorar: the one place where the map is literal
+
+Exploration counted real kilometres and dressed them as haunted castles → space stations → a multiverse. It was the third incompatible fiction, and the odd part is that this system never needed one: you are actually covering ground with your own body.
+
+The 27 nodes of `pt` are now **what distance shows you** — places that exist and observations that are true (*La Subida de Siempre*, *El Último Farol*, *El Kilómetro Aburrido*, *El Día que No Querías*). Each `relic` is something you genuinely take away: Aliento Corto, Vista Larga, Pendiente Vencida, Señal Temprana. The last node kept its name and relic because it already said the right thing.
+
+`Po` runs outward from the city (La Manzana → Tu Propio Mapa) and `ay` is the walker's ladder (Primeros Pasos → Sin Distancia). **Four km achievements mirror `ay` by design** — change one, change the other.
 
 **Do not reintroduce a narrating entity.** When a sentence needed an actor, the real actor already existed and it was the metronome, not a system.
 

@@ -57,12 +57,11 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
 
 ## B · Lo que falta de la pasada de identidad
 
-- **Explorar y el Códice** son la tercera ficción que queda en pie: `pt` (27 nodos, el mejor
-  texto del juego), `Po` (7 sectores) y `ay` (escalera). Siguen en registro sci-fi
-  (*Ruinas Orbitales*, *Cartógrafo del Vacío*, *Portal Dimensional*). Es un trabajo de
-  escritura, no de ingeniería, y conviene hacerlo en su propia sesión.
 - **Explorar sigue siendo un botón de honor**: los km se tipean a mano y el Códice está detrás
-  de 400 km declarados. Engancharlo a hitos de entrenamiento.
+  de 400 km declarados. Engancharlo a hitos de entrenamiento. El texto ya está reescrito; lo
+  que falta es la mecánica.
+- **Las Travesías siguen siendo un botón que confirma que lo hiciste.** Mismo problema que
+  Explorar, misma decisión pendiente.
 
 ## C · Decisiones de diseño que quedaron abiertas
 
