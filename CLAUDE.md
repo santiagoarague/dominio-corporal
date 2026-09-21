@@ -236,7 +236,11 @@ The *travesias* (long cardio sessions, formerly "dungeons") draw from `sdcPortal
 
 ### Combat
 
-The attack was typing the word "hecho" into an input. It now reuses the routine's set chips: `sdcCombChips(phase, reps)` renders them, `sdcCombTocar` handles the tap, and `sdcGolpe` lands the hit â the same thing the old `Rd` did minus the text check. The strike button stays disabled until every phase is complete, and bosses keep their superset by rendering one chip row per phase. `sdcCombSer` resets on any change of villain, exercise or phase.
+The attack was typing the word "hecho" into an input. It now reuses the routine's set chips: `sdcCombChips(phase, reps)` renders them, `sdcCombTocar` handles the tap, and `sdcGolpe` lands the hit â the same thing the old `Rd` did minus the text check. The strike button stays disabled until every phase is complete, and bosses keep their superset by rendering one chip row per phase. `sdcCombSer` resets on any change of villain, exercise or phase, and on cancel.
+
+**The clock never starts on its own.** It used to: entering `phase:"resting"` — which happens when you pick a pattern *and after every successful strike* — armed a 12 s (20 s boss) prep countdown that rolled straight into the attack window, and letting that window run out costs a heart via `x2`. So the game started counting against you while you were still reading the screen, once per hit. Now that effect only loads the numbers (`mu`/`ql`) and leaves `du`/`fu` false; a **"Cuando estés listo"** card shows the prescription and the seconds you will get, and its `Empezar` button is the only thing that sets `_l(!0)`. Three render states share `phase:"resting"`: `!du&&!fu` (ready), `du` (prep, skippable with "Comenzar ahora"), `fu` (window). The time limit itself is untouched — it is what makes combat different from the routine — it just cannot start without you.
+
+Two related holes closed with it: leaving the combat tab mid-window used to keep the countdown running in the always-mounted component and take a heart while you were somewhere else (the effect's `Da!=="combat"` branch now cancels instead), and `dg` ("Cancelar (sin perder vida)") re-armed the prep countdown without clearing `sdcCombSer`, so the next window opened with `GOLPEAR` already enabled.
 
 ### Dates
 

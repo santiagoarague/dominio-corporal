@@ -2,8 +2,8 @@
 
 Estado al 21/09/2026. Producción: https://santiagoarague.github.io/dominio-corporal/
 
-> **Ojo: la rama `rediseno/identidad-propia` tiene 13 commits sin publicar.** Todo lo que
-> figura como "hecho" más abajo vive ahí, no en `main`. `git push` a `main` *es* el deploy.
+> Todo lo que figura como "hecho" más abajo ya está en `main` y en producción.
+> `git push` a `main` *es* el deploy.
 
 ---
 
@@ -60,6 +60,16 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
 - ~~Explorar y las Travesías eran botones de honor~~ — resuelto. Las dos ahora son sesiones
   que la app acompaña con el tiempo corriendo. No era un problema de tramposos (la app es de
   un solo jugador): era que te pedían llenar un formulario en vez de estar con vos.
+
+## B2 · Errores encontrados jugando
+
+- ~~En Combate el reloj arrancaba solo~~ — resuelto. Elegías el tren y la cuenta empezaba
+  sin que tocaras nada; si no llegabas, perdías un corazón. Y volvía a pasar **después de
+  cada golpe acertado**. Ahora hay una tarjeta *"Cuando estés listo"* que te dice cuántas
+  reps y cuántos segundos vas a tener, y el reloj recién arranca cuando tocás **Empezar**.
+  El límite de tiempo sigue existiendo: es lo que diferencia al combate de la rutina.
+- De paso: irte a otra pestaña en medio de la ventana ya no te cuesta un corazón, y
+  "Cancelar (sin perder vida)" ahora borra las series marcadas.
 
 ## C · Decisiones de diseño que quedaron abiertas
 
