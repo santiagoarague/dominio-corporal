@@ -12,6 +12,7 @@ $types = @{
   '.png'         = 'image/png'
   '.svg'         = 'image/svg+xml'
   '.ico'         = 'image/x-icon'
+  '.woff2'       = 'font/woff2'
 }
 
 $listener = New-Object System.Net.HttpListener

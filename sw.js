@@ -5,6 +5,11 @@ const ASSETS = [
   './storage.js',
   './manifest.webmanifest',
   './privacidad.html',
+  './fuentes/chakra-400.woff2',
+  './fuentes/chakra-500.woff2',
+  './fuentes/chakra-600.woff2',
+  './fuentes/chakra-700.woff2',
+  './fuentes/inter-var.woff2',
   './icon-192.png',
   './icon-512.png',
   './icon-maskable-512.png'

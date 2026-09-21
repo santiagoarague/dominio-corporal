@@ -44,29 +44,13 @@ Estado al 20/09/2026. Producción: https://santiagoarague.github.io/dominio-corp
 
 ---
 
-## A · Decisión pendiente: los rangos B, A, S y Z son inalcanzables
+## A · ~~Los rangos B, A, S y Z son inalcanzables~~ — resuelto
 
-Es lo más grande que queda, y es tuya.
-
-`au = {E:50, D:100, C:300, B:700, A:1500, S:3000}` son **niveles**, y con la curva actual eso es:
+`au` pasó de `{E:50, D:100, C:300, B:700, A:1500, S:3000}` a
+`{E:50, D:100, C:140, B:180, A:220, S:260}`. Antes el juego tenía tres rangos reales de siete:
+el rango B costaba 255.000 XP (12,6 años entrenando cuatro veces por semana) y el Z, 22,9 millones.
 
 | Rango | Nivel | XP acumulada | Sesiones a 80 XP | Años a 4/semana |
-|---|---:|---:|---:|---:|
-| D | 50 | 5.880 | 73 | 0,4 |
-| C | 100 | 21.755 | 272 | 1,3 |
-| B | 300 | 210.255 | 2.628 | **12,6** |
-| A | 700 | 1.187.255 | 14.840 | 71 |
-| S | 1500 | 5.541.255 | 69.265 | 333 |
-| Z | 3000 | 22.330.005 | 279.125 | 1.342 |
-
-En la práctica el juego tiene **tres rangos**, no siete, y la ascensión —que es el corazón del
-diseño— ocurre dos veces en la vida del jugador.
-
-Arreglarlo es una línea: bajar `au`. Una propuesta con la curva ya corregida:
-
-`au = {E:50, D:100, C:140, B:180, A:220, S:260}`
-
-| Rango | Nivel | XP acumulada | Sesiones | Años a 4/semana |
 |---|---:|---:|---:|---:|
 | D | 50 | 5.880 | 73 | 0,4 |
 | C | 100 | 21.755 | 272 | 1,3 |
@@ -75,10 +59,7 @@ Arreglarlo es una línea: bajar `au`. Una propuesta con la curva ya corregida:
 | S | 220 | 110.855 | 1.386 | 6,7 |
 | Z | 260 | 156.555 | 1.957 | 9,4 |
 
-Z a ~9 años de entrenar en serio. Si te parece largo, bajar el último tramo. **No lo toqué porque
-define la forma del juego durante años y es tu decisión, no mía.**
-
----
+Verificado saltando rango por rango con el panel de pruebas.
 
 ## B · Sistemas que siguen siendo botones de honor
 
@@ -101,16 +82,14 @@ define la forma del juego durante años y es tu decisión, no mía.**
 2. ~~Política de privacidad~~ — hecha (`privacidad.html`). **Falta poner el correo de contacto.**
 3. Cuenta de Play Console (25 USD), capturas, *feature graphic*.
 4. `screenshots` en el manifest (faltan; necesitan la UI final).
-5. Autoalojar Chakra Petch e Inter: hoy la primera pintada depende de Google Fonts.
-6. Notificación diaria.
-7. ~~Recordatorio de respaldo~~ — hecho.
-8. Áreas táctiles: hechas las dos que importaban. Quedan las cabeceras plegables (21 px), la
+5. Notificación diaria (ver nota en E: no es trivial en una PWA).
+6. ~~Recordatorio de respaldo~~ — hecho.
+7. Áreas táctiles: hechas las dos que importaban. Quedan las cabeceras plegables (21 px), la
    `💡 alternativa` (21 px) y el `?` de la cabecera (22 px); subirlas cambia la densidad visual de
    todas las tarjetas, así que es una decisión de diseño.
-9. **Autoalojar las fuentes es ahora también un tema legal**: la política de privacidad tiene que
-   declarar que Google recibe tu IP porque las tipografías se cargan desde `fonts.googleapis.com`.
-   Autoalojarlas borra ese párrafo y acelera la primera pintada. Requiere descargar los archivos de
-   fuente al repo.
+8. ~~Autoalojar las fuentes~~ — hecho. Chakra Petch e Inter viven en `fuentes/` (5 archivos
+   woff2, 88 KB). **La app ya no hace ninguna petición externa**, y la política de privacidad puede
+   decir "ninguna conexión a terceros" y ser cierta.
 9. **12 testers × 14 días continuos.** Es el único plazo que no se acelera: conviene arrancar la
    prueba cerrada apenas esté resuelto el punto 1.
 

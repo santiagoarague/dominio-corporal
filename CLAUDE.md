@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **There is no source code for the bundle.** It began life as a Claude Artifact and was ported to a standalone site. You cannot rebuild it — every change is a surgical text edit to minified JavaScript. Treat `index.html` as the source of truth and edit it in place.
 
-Deployed files: `index.html`, `storage.js`, `sw.js`, `manifest.webmanifest`, `privacidad.html`, and three icons — `icon-192`, `icon-512` and `icon-maskable-512`, the last one padded to 78% so a round Android mask does not crop the logo. `PENDIENTES.md` tracks what is left before publishing and is worth reading before starting work.
+Deployed files: `index.html`, `storage.js`, `sw.js`, `manifest.webmanifest`, `privacidad.html`, `fuentes/` (five woff2 files), and three icons — `icon-192`, `icon-512` and `icon-maskable-512`, the last one padded to 78% so a round Android mask does not crop the logo. `PENDIENTES.md` tracks what is left before publishing and is worth reading before starting work.
 
 `storage.js` must load **before** the bundle: it defines `window.claude.use("db")` against `localStorage`, replacing the Claude Artifacts database the app was written for. All progress lives in one key, `dominio-corporal:player/state`. There is no server and no account.
 
@@ -84,6 +84,12 @@ Start from the index of `i.default.createElement(ge,{id:"<cardId>"`. Children ar
 
 Measured, not guessed: the tab bar was 34 px tall and the meta steppers 32 px, both well under the 44–48 px that Android and iOS ask for. They are now `minHeight:48` and `44×44`. `button` also carries `touch-action:manipulation`, which drops the 300 ms double-tap-zoom delay. Still small and not yet raised, because raising them changes the visual density of every card: the collapsible headers (21 px, but full width), `💡 alternativa` (21 px) and the `?` in the header (22 px).
 
+### Fonts
+
+**The app makes zero network requests after it loads.** Chakra Petch (400/500/600/700) and Inter (one variable file, 100–900) live in `fuentes/` and are declared with `@font-face` at the top of the head `<style>`, latin subset only — which covers every accent and `¿¡` Spanish needs. They used to come from Google Fonts, twice: a `<link>` in `<head>` and an `@import` React injected in `w5`.
+
+Self-hosting was not only about speed. A request to `fonts.googleapis.com` hands Google the user's IP, which a privacy policy has to declare; now `privacidad.html` can say "ninguna" and mean it. If you ever add a CDN, a web font or an analytics tag, **section 4 of `privacidad.html` becomes false** and has to be updated in the same commit.
+
 ### Styling constraint
 
 The CSS at the top of `index.html` is a small hand-written subset that *looks* like Tailwind but is not. Only the classes defined there exist — `justify-end`, for example, does **not**, and silently does nothing. Check the `<style>` block before using a utility class, or use an inline `style` object.
@@ -93,7 +99,7 @@ The CSS at the top of `index.html` is a small hand-written subset that *looks* l
 Node and Python are not installed on this machine (`python` is the Microsoft Store stub). `.claude/serve.ps1` serves the folder with a PowerShell `System.Net.HttpListener`, and `.claude/launch.json` points the Browser pane's `preview_start` at it (config name `dominio-corporal`, port 8787). It binds to `http://localhost:<port>/`, which needs no elevation, sends `Cache-Control: no-store`, and rejects paths that escape the root. `localhost` is not reachable from a phone on the LAN — to test on a real device, deploy.
 
 Testing notes that save time:
-- **15–20 s pass before the first button appears, but only ~5 s of that is the typewriter** (140 characters at 28–40 ms). The rest is the 450 KB bundle plus a render-blocking Google Fonts `@import` that React injects in `w5` — duplicating the `<link>` already in `<head>`. Wait for it; do not assume a blank page is a crash.
+- **15–20 s pass before the first button appears, but only ~5 s of that is the typewriter** (140 characters at 28–40 ms). The rest is the 450 KB bundle. Wait for it; do not assume a blank page is a crash.
 - Driving the app by clicking a `ref` is unreliable here: refs resolve to stale coordinates when the page scrolls between the `find` and the click, and a miss can silently hit "Usar mi día de descanso" and burn the day. Prefer `javascript_tool` to click by text when scripting a test run.
 - Reuse a **fresh browser tab** to read console errors. The console buffer persists across navigations, so a fixed error keeps reappearing.
 - Clear `localStorage`, unregister the service worker and delete caches between runs, otherwise you test a stale bundle.
@@ -165,6 +171,8 @@ When the day is registered the card is replaced by a summary: reps per group, th
 Exercises measured in time rather than reps declare it in their own `alt` ("1 rep = 3 segundos…"). `sdcSegs(alt)` parses that and the UI shows the seconds without the player opening anything. It **ignores conversions in parentheses**, which describe the substitute: the pull-group `alt` mentions "superman en el suelo (1 rep = 3 s)" and that does not make towel rows a hold.
 
 ### Unlocks
+
+`au` is the rank ladder — the level at which each rank offers its Ascension: `{E:50, D:100, C:140, B:180, A:220, S:260}`. It used to be `{E:50, D:100, C:300, B:700, A:1500, S:3000}`, which with the XP curve meant rank B cost 255k XP (about 12 years of training four times a week) and rank Z 22.9M. The game had three reachable ranks out of seven. The current ladder puts D at ~5 months, C at 1.3 years, B at 2.6, A at 4.4, S at 6.7 and Z at 9.4. Z has no entry because there is nothing above it, and the header correctly hides the Ascension line there.
 
 `$e` maps systems to a required level and rank; `ye(state, id)` and `yt(state, id)` test it. The rank requirements are all `"E"` on purpose: rank D needs level 50 and rank C level 100, so the original level-8/12/15 gates paired with rank D/C were unreachable. Keep new entries at rank `"E"` and gate by level alone. Levels in use: 3, 5, 8, 10, 12, 15, 20, 25, 30.
 
