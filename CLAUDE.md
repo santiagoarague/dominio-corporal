@@ -214,6 +214,28 @@ Two patterns worth knowing:
 
 `af` lists the ids that "Minimizar todo" collapses; remove an id from it when a card stops being an ordinary collapsible.
 
+### Density: what a tab costs before you touch anything
+
+Measured at 375×812 with every card collapsed. **This is the number to re-measure after adding a card**, because nothing else makes the cost visible:
+
+| | was | is |
+|---|---|---|
+| Entreno | 3242 px | 1256 |
+| Explorar | 3424 | 1437 |
+| Logros | 3382 | 1399 |
+| Perfil | 3286 | 1159 |
+| Combate | 2918 | 931 |
+| Primal | 2751 | 812 |
+| **tab bar starts at** | **y=2354** | **y=363** |
+
+Almost all of it was one thing: **the guide rendered open by default, on all six tabs.** It is not a tab card — it sits above the tab bar, so 1976 px of manual (17 topics, 3852 characters) pushed the game's own navigation nearly three screens down, on every tab, from the first launch. `af` does not contain `"ayuda"`, so "Minimizar todo" never touched it. Three things changed:
+
+- `ei` now defaults `collapsed.ayuda` to `!1`, and `ui.ayudaAuto` hides it **once** for saves that already had it open. A stored `true` from an old save is not a preference — it is the old default.
+- The topics are individually collapsible (`sdcTema`, component state, an object of open titles). It opens with **Los rangos, Niveles y XP and Meta semanal** already expanded, so the first thing a player reads is the core loop and not an index.
+- The `?` circle became a labelled `¿Cómo funciona?` button. A bare glyph is not discoverable enough to be the only door to the manual, and the circle was the one `borderRadius` in the file.
+
+The collapsed cards themselves were never the problem — they are 54–55 px each and read fine stacked. What was wrong in Perfil was **eight of them**, three of which were the same kind of thing: `atributos`, `volumen` and `hazanas` were all numbers you read and never touch. They are now one card, `numeros` ("Tus números"), with three labelled sections and the lifetime rep total on the collapsed bar. Six bars left, and the three old ids are gone from `af`. Stale keys left behind in a real save's `ui.collapsed` are harmless.
+
 **The header is permanent UI, not a card.** It carries the name, the calibre, the PD badge, the XP bar (`qa`), `Ascenso: level/threshold` and the next system to unlock. All of that used to live inside the `rango` collapsible, which started closed â so a new player never saw their XP bar move and never learned anything was coming. That card is gone; do not reintroduce one that duplicates the header.
 
 ### Feedback

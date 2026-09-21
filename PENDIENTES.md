@@ -71,6 +71,17 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
 - De paso: irte a otra pestaña en medio de la ventana ya no te cuesta un corazón, y
   "Cancelar (sin perder vida)" ahora borra las series marcadas.
 
+- ~~Con todo minimizado igual saturaba~~ — resuelto. La guía de 17 temas se mostraba **abierta
+  y en las seis pestañas**: 1.976 px que dejaban la botonera del juego en el pixel 2.354, casi
+  tres pantallazos abajo. `Minimizar todo` no la tocaba porque no estaba en `af`. Ahora arranca
+  cerrada, se abre desde un botón que dice **¿Cómo funciona?** en vez de un `?` suelto, y cada
+  tema se despliega solo si lo tocás (los tres básicos vienen abiertos). Las pestañas pasaron
+  de 2.751–3.424 px a 812–1.437.
+- ~~Perfil tenía ocho barras plegadas~~ — resuelto. **Atributos**, **Volumen de por vida** y
+  **Hazañas totales** eran lo mismo: números que mirás y nunca tocás. Ahora son una sola
+  tarjeta, **Tus números**, con tres secciones adentro. Quedan seis barras. No se sacó ni un
+  dato.
+
 ## C · Decisiones de diseño que quedaron abiertas
 
 - **Tamaño de texto ajustable** y **poder apagar sistemas**: quedaron explícitamente fuera de
