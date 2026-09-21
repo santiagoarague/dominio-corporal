@@ -121,7 +121,18 @@ until curl -s "https://santiagoarague.github.io/dominio-corporal/" | grep -q '<m
 
 Note for packaging: the app lives in a **subdirectory**, so `assetlinks.json` cannot sit at the domain root. A TWA will need the repo renamed to `santiagoarague.github.io` or a custom domain.
 
+## The service worker
+
+`sw.js` is network-first, so with a connection the player always sees the latest deploy and without one they get the last copy. Two things about it are load-bearing and were both wrong until recently:
+
+**The HTML is fetched with `cache: 'reload'`.** Without it, network-first was a lie: the service worker's own `fetch()` goes through the browser's HTTP cache, GitHub Pages sends `max-age=600`, and the worker cheerfully served — and then re-cached — a copy up to ten minutes old. Measured in production: the plain fetch returned 470,323 bytes (the previous deploy) while `cache: 'reload'` returned 470,860 (the one just pushed). This is exactly the "why can't I see my changes on my phone" symptom. Only documents get this treatment; fonts and icons are fetched normally.
+
+**Only same-origin 200s are cached.** It used to cache any response, so a 404 or a 500 became the stored offline copy.
+
+Bump `CACHE` when the asset list changes; `activate` deletes every other cache name. If the app seems frozen on an old version during testing, unregister the worker and delete caches rather than assuming the deploy failed — but check production with `curl` first, because that distinction is the whole reason Netlify went unnoticed for five commits.
+
 ## Architecture
+
 
 ### State and persistence
 

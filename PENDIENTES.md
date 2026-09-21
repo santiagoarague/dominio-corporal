@@ -97,6 +97,8 @@ Verificado saltando rango por rango con el panel de pruebas.
 
 - El sitio viejo de Netlify sigue online sirviendo código viejo. Conviene borrarlo para no tener dos
   apps en el teléfono (y exportar antes la partida que tengas ahí).
+- El service worker servía una copia vieja aunque pidiera por red: `fetch()` pasaba por el caché HTTP
+  del navegador. Arreglado con `cache:.reload.` para el HTML. Si volvés a tocar `sw.js`, no lo rompas.
 - El wake lock cubre descanso, prueba de aptitud, combate e Instinto Primal. No cubre la sesión
   entera, que es lo que haría falta si el teléfono se apaga entre series sin cronómetro.
 - La notificación diaria no es trivial en una PWA: sin servidor no hay push, y las APIs que lo
