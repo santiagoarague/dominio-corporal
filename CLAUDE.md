@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **There is no source code for the bundle.** It began life as a Claude Artifact and was ported to a standalone site. You cannot rebuild it — every change is a surgical text edit to minified JavaScript. Treat `index.html` as the source of truth and edit it in place.
 
-Deployed files: `index.html`, `storage.js`, `sw.js`, `manifest.webmanifest`, the two icons, `netlify.toml`.
+Deployed files: `index.html`, `storage.js`, `sw.js`, `manifest.webmanifest`, and three icons — `icon-192`, `icon-512` and `icon-maskable-512`, the last one padded to 78% so a round Android mask does not crop the logo. `PENDIENTES.md` tracks what is left before publishing and is worth reading before starting work.
 
 `storage.js` must load **before** the bundle: it defines `window.claude.use("db")` against `localStorage`, replacing the Claude Artifacts database the app was written for. All progress lives in one key, `dominio-corporal:player/state`. There is no server and no account.
 
@@ -23,6 +23,9 @@ This is the part that will bite you. Follow it exactly.
 **Two incompatible encodings coexist.** The original bundle writes non-ASCII as escapes (`m\xE1s`, `—`, `\xBF`), while text added later is real UTF-8. When matching original strings you must reproduce the literal backslash sequences — build them with `chr(92)."xE1"` rather than typing them, because an em dash typed as `—` can arrive as a real `—` byte and silently fail to match. For **new** strings prefer real UTF-8 (the file is UTF-8 and `<meta charset>` is set); write them via the Write tool to a scratch file and splice that in, which sidesteps escaping entirely.
 
 **Name everything you add with an `sdc` prefix.** The minifier's own identifiers are one or two characters (`Is`, `jd`, `Aa`, `b5`), so a plain name risks colliding with one you have not read yet, and a collision inside a 450 KB single line is close to undebuggable. `sdcBase`, `sdcSplit`, `sdcSerie`, `sdcTier` and friends are all hand-written; `grep -o 'sdcFoo' index.html | wc -l` before adding one tells you instantly whether the name is free. Note that `grep -c` is useless here — the file is one line, so it always answers 1.
+
+**Check what a grep actually matched before "fixing" it.** An audit once flagged `coger` three times as peninsular Spanish; all three were `encoger` ("sin encoger los hombros"). The same audit reported `el móvil`, `pulsa` and `aquí`, none of which were real. The app's text is neutral tuteo, not Spanish from Spain — moving it to voseo would be a decision about tone, not a correction.
+
 
 **Validate after every edit:**
 
@@ -92,13 +95,13 @@ Testing notes that save time:
 - Clear `localStorage`, unregister the service worker and delete caches between runs, otherwise you test a stale bundle.
 - "Saltar y empezar con valores por defecto" skips onboarding, but only activates the bodyweight modality.
 - `get_page_text` returns DOM order, not visual order — it will not reflect flexbox `order`. Use a screenshot.
-- The Perfil tab has a **Panel de pruebas** for jumping ranks and forcing ascension without training.
+- The Perfil tab still has the **Panel de pruebas** for jumping ranks and forcing ascension without training, but it no longer announces itself: the entry point is a dim `v1.0` at the bottom of Perfil that opens it after **five taps** (`sdcDevN`). Sixteen destructive actions, one of them `Desbloquear todos los logros`, should not be one tap away from a curious player.
 
 ## Deploying
 
 `git push` to `main` is the deploy. GitHub Pages serves the repo root from `main` at **https://santiagoarague.github.io/dominio-corporal/**, usually live about 30 seconds after the push. There is no build command; `.nojekyll` keeps Pages from running Jekyll, which would otherwise drop anything starting with a dot — including the `.well-known/assetlinks.json` a TWA needs.
 
-Netlify was dropped: it silently stopped deploying and sat five commits behind while every push reported success. `netlify.toml` is still in the repo and is now dead weight. The repo had to be made **public**, because Pages on a private repo requires a paid plan.
+Netlify was dropped: it silently stopped deploying and sat five commits behind while every push reported success. `netlify.toml` has been deleted. The repo had to be made **public**, because Pages on a private repo requires a paid plan. The old Netlify site is still online serving stale code and should be deleted by hand.
 
 Always confirm the change actually reached production rather than trusting the push:
 
@@ -120,7 +123,7 @@ One plain object holds everything, deep-cloned with `M(e)` before mutation and s
 
 `i5(state, mode, reps)` records a completed routine: accumulates reps into lifetime/week/month, updates records and `lastTrained`, awards Dominion Points, applies the streak and history bookkeeping, computes XP, then runs `misRevisar` → `Ea` → `da` (achievements) → `ni` (training-load warning).
 
-`Ea(state, notices)` is the level-up loop: while `currentXP >= li(level)` it levels up; when `level >= au[rank]` it flags an Ascension instead. `li(e)` is the XP cost curve, cheaper below level 50. Because XP only converts to levels inside `Ea`, **anything that grants XP must be followed by `Ea`**, and `ei` calls it on load so curve changes apply retroactively.
+`Ea(state, notices)` is the level-up loop: while `currentXP >= li(level)` it levels up; when `level >= au[rank]` it flags an Ascension instead. `li(e)` is the XP cost curve: `e<50 ? 45+3e : 5e-55`. The two branches used to be `45+3e` and `125+5e`, which met badly — `li(49)` was 192 and `li(50)` was **375**, a 95% jump inside one level. The second branch was rebased so the curve is continuous at 50 while keeping the steeper slope. `li(1)` is still 48, and it has to stay there. Because XP only converts to levels inside `Ea`, **anything that grants XP must be followed by `Ea`**, and `ei` calls it on load so curve changes apply retroactively.
 
 ### Multi-session days
 
@@ -176,6 +179,8 @@ Two patterns worth knowing:
 ### Feedback
 
 There were two `@keyframes` in the whole app and neither fired on a reward. Now the head `<style>` also defines `sdcPop` (floating `+N XP`), `sdcRise` (notices) and `.sdc-chip`, all suppressed under `prefers-reduced-motion` — the browser pane has that on, so animations will look dead there while the numbers still render.
+
+`sdcWakeUse()` is a hook that holds a screen wake lock for as long as its component is mounted, re-acquiring it on `visibilitychange` because the browser drops the lock whenever the tab is hidden. `T5` (rest timer) and `Ly` (fitness test) both call it — the two moments where the phone is on the floor and the screen used to sleep mid-set. It swallows its own errors, so it is safe to add to any other component.
 
 `sdcBeep(hz, ms)` wraps the existing `Ie()` oscillator and `sdcVib(pattern)` guards `navigator.vibrate`; both swallow their own errors, so call them anywhere. A set tap beeps, vibrates, floats the XP gained (`sdcFlota`) and starts the rest timer. `sdcDesc` scales that rest with the size of the set just completed (`base + reps × 1.5`, capped at 180 s) — `ag` alone gave Resistencia the most reps and the shortest rest.
 
