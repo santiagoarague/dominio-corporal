@@ -199,13 +199,16 @@ Exercises measured in time rather than reps declare it in their own `alt` ("1 re
 
 `au` is the rank ladder â the level at which each rank offers its Ascension: `{E:50, D:100, C:140, B:180, A:220, S:260}`. It used to be `{E:50, D:100, C:300, B:700, A:1500, S:3000}`, which with the XP curve meant rank B cost 255k XP (about 12 years of training four times a week) and rank Z 22.9M. The game had three reachable ranks out of seven. The current ladder puts D at ~5 months, C at 1.3 years, B at 2.6, A at 4.4, S at 6.7 and Z at 9.4. Z has no entry because there is nothing above it, and the header correctly hides the Ascension line there.
 
-`$e` maps systems to a required level and rank; `ye(state, id)` and `yt(state, id)` test it. The rank requirements are all `"E"` on purpose: rank D needs level 50 and rank C level 100, so the original level-8/12/15 gates paired with rank D/C were unreachable. Keep new entries at rank `"E"` and gate by level alone. Levels in use: 3, 5, 8, 10, 12, 15, 20, 25, 30.
+`$e` maps systems to a required level and rank; `ye(state, id)` and `yt(state, id)` test it. The rank requirements are all `"E"` on purpose: rank D needs level 50 and rank C level 100, so the original level-8/12/15 gates paired with rank D/C were unreachable. Keep new entries at rank `"E"` and gate by level alone. Levels in use: 1, 3, 8, 10, 12, 15, 20, 25, 30. **Logros is deliberately level 1**: `da()` is called from thirteen places and none of them is gated, so a player already earned achievements and Dominion Points from their first routine while the tab that explains them stayed locked until level 5 — the reward arrived before the room it lives in. The tab bar is a three-column grid and level 1 shows only Entreno and Perfil, so this fills the empty cell. Categories whose system is still locked start collapsed, via `sdcCatAbierta` and the `sdcCatSis` map.
 
 ### UI composition
 
 `Q` is a plain card; `ge` is a collapsible card taking `{id, title, accent, collapsed, onToggle, right, style}`. Collapse state lives in `ui.collapsed[id]`, read with `me(id)` and toggled with `fe(id)`. Active tab is `[Da, $t]`.
 
+`fe(id, shown)` toggles a card. It takes the **currently displayed** state from `ge`, not just the id, and that second argument is load-bearing: `fe` used to do `collapsed[id] = !collapsed[id]`, which from `undefined` produced `true` — still collapsed. Every card using the collapsed-by-default pattern below therefore needed **two taps to open the first time**, because the first tap only wrote down what the screen already showed. Eleven cards had it. If you add a caller that skips the second argument it silently goes back to the old behaviour.
+
 Two patterns worth knowing:
+
 - **Collapsed by default, migration-safe:** `collapsed: H&&H.collapsed&&H.collapsed.X!==void 0 ? me("X") : !0`. Inverting the flag instead breaks saves that already stored it.
 - **Hidden until requested:** the help panel and the shop render only when their flag is truthy, so nothing shows when closed â not even a title bar. The `?` button and the PD badge toggle those flags.
 
