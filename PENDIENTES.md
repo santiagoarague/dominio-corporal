@@ -57,11 +57,9 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
 
 ## B · Lo que falta de la pasada de identidad
 
-- **Explorar sigue siendo un botón de honor**: los km se tipean a mano y el Códice está detrás
-  de 400 km declarados. Engancharlo a hitos de entrenamiento. El texto ya está reescrito; lo
-  que falta es la mecánica.
-- **Las Travesías siguen siendo un botón que confirma que lo hiciste.** Mismo problema que
-  Explorar, misma decisión pendiente.
+- ~~Explorar y las Travesías eran botones de honor~~ — resuelto. Las dos ahora son sesiones
+  que la app acompaña con el tiempo corriendo. No era un problema de tramposos (la app es de
+  un solo jugador): era que te pedían llenar un formulario en vez de estar con vos.
 
 ## C · Decisiones de diseño que quedaron abiertas
 

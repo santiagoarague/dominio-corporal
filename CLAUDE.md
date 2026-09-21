@@ -400,3 +400,18 @@ Two traps found the hard way:
 - **`core.autocrlf` is `true` at system level on this machine.** Without `.gitattributes` (`* -text`), a checkout converts LF→CRLF: 193 extra bytes and every offset shifted, which turns `git checkout -- index.html` — the recovery path — into a new source of corruption. Verified fixed.
 
 The quote count is **odd** in this file by design (double quotes inside single-quoted strings and regexes). Compare it against the previous run rather than expecting it to be even; `{}`, `[]` and `()` deltas are the real structural check (`0`, `0`, `+1`).
+
+## Timers: the fix for "botones de honor"
+
+Two systems used to hand you a form: the *travesía* ("Completar travesía") and Explorar (type your km). The instinct is to call this a cheating problem and add verification. It is not — there is no account, no server and no leaderboard, so the only person a false number fools is the one who typed it.
+
+The real defect is visible next to the routine: there you tap each set *while doing it* and the app answers (beep, vibration, floating XP, rest timer). The travesía asked you to file a report afterwards, and **a form cannot teach you anything about your body**, which is the whole thesis.
+
+So both became accompanied sessions:
+
+- `sdcTravCrono` runs the challenge's real duration with the screen awake, and only then enables completion. Five travesías carry their own intervals in `sdcPortales` (`on`/`off` seconds) and show **FUERTE / SUAVE** with a beep at each change; La Guardia uses real 3′/1′ boxing rounds. The continuous ones beep every 5 minutes.
+- `sdcCamCrono` times a walk and estimates km from a pace picked once (`profile.ritmoKmH`). It **does not add the km itself**: it drops the number into the existing manual field so you confirm it with `+ Tramo`. An estimate must never disguise itself as a measurement, and the whole downstream flow stays untouched.
+
+**Elapsed time is computed from a stored timestamp, never by decrementing.** `T5` (rest) counts down with `setTimeout` each second, which is correct for 90 seconds and wrong for 30 minutes: it drifts and freezes when the phone locks or you switch apps. `sdcTravCrono` and `sdcCamCrono` store `startedAt` / `walkStart` in state and compute `Date.now() - start`, so a full page reload resumes exactly where it was. Verified.
+
+**Both keep an escape hatch** — "Ya la hice, sin el teléfono", and the manual km field. Going for a run without your phone is not cheating, it is Tuesday. Let it exist; just do not make it the first thing.
