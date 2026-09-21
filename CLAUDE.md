@@ -275,6 +275,22 @@ A card in Entreno asks for a backup once the player has 10 days of `history`, an
 
 `sdcRespaldoOk()` is called from both export paths (`bkDescargar` and `ug`). Neither of those dates triggers a re-render on its own, so the "MÃ¡s tarde" button also pushes a notice â that state change is what makes the card disappear.
 
+### Achievements
+
+144 entries in `Jo`, checked by `da()`, which pays Dominion Points by tier (E/D 1, C/B 2, A 3, S 4, Z 5). `da()` is **not** called from `ei`, so nothing unlocks on load — everything is evaluated when the player finishes something.
+
+The 56 added most recently are deliberately shaped:
+
+- **Repeticiones** (30) is one ladder — 100, 250, 500, 1000, 2500, 5000, 10000, 25000 — applied to all four groups off `lifetimeReps`. Same round numbers for every group, because "1000 flexiones" is a number a person can brag about and a tuned 1140 is not. The groups accumulate at very different rates (at rank E the daily targets were roughly 51 squat / 27 push / 11 pull / 32 core), so **`back` carries one tier higher at every rung** instead of getting easier numbers. Two rungs are missing on purpose: `c_squat250` and `b_back500` already existed, so the ladder reuses them rather than duplicating the threshold under a new id.
+- **Marcas personales** (8) reads `records` — best reps of a group in a single session — and only covers the low end, because the `z_pr_*` entries already own 30–60. It rewards intensity where the ladder rewards accumulation.
+- **Gimnasio** (16) is the seven old `gym_*` entries moved into their own category plus nine new ones, filling what were absurd gaps: `lifetimeVolumeKg` jumped 0 → 10.000 → 100.000 → 1.000.000 with nothing between.
+- **Modalidades** (9) needed the one new state field, `lifetimeModalities`, because `week.modalities` resets weekly and `dayLog` stores `{acts, reps, xp}` with no modality. It is incremented in `i5` beside `week.modalities`, defaulted in the initial state and backfilled in `ei`. Existing saves start at zero; there is no way to reconstruct history.
+
+**When more than five unlock at once, `da()` collapses them into one notice.** Adding a batch of achievements makes every established player unlock a pile on their next routine — 33 notices and +50 Dominion Points for a three-month save, measured. The points and the unlocks are all still awarded; only the wall of notices is replaced. Note that `sdcTier` had to learn the plural "logros desbloqueados" to keep styling it as good news.
+
+`sdcCatAbierta` decides which category cards start collapsed: `sdcCatSis` maps a category to a system and asks `ye()`, and `sdcCatMod` maps one to a modality, so a bodyweight-only player finds **Gimnasio** folded away.
+
 ### Missions
+
 
 Unlocked at level 10. `misRevisar` generates one weekly and one monthly objective from `lastTrained` (most-neglected muscle group) or from an unused modality, tracks them against `week`/`month` counters, and pays out. Targets are deliberately ~50% above what the prescribed routine yields, so they cannot be satisfied by training normally. There are intentionally **no daily missions** â the routine, dungeon, combat and Primal already fill that role.
