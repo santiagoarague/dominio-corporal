@@ -303,6 +303,25 @@ Two axes, kept separate on purpose:
 
 `vy` also carries `rank` and `focus` fields. `focus` is display text; `rank` is dead by design (see Exercise selection).
 
+### Stretching
+
+It was the last screen in the app you **watched** instead of doing: one 300-second countdown, `_2(elapsed)` deriving which of nine stretches you were "on", no beep, no acknowledgment, nothing to tap. Four separate defects made that worse:
+
+- **No wake lock.** `sdcWakeSi` listed combat and Primal but not `ja`. Five minutes on the floor with the screen going dark.
+- **`setTimeout(()=>Tl(d=>d-1),1e3)`.** The decrementing pattern CLAUDE.md warns about, at 5 minutes — it drifts and stalls when the phone locks, which the missing wake lock guaranteed.
+- **Four of the nine stretches were per side** ("20 s por pierna", "15 s por lado") and *nothing signalled the switch*. You were doing half of each, or both in one slot.
+- **All or nothing.** "Cancelar (sin XP)" at minute four of five paid zero.
+
+Now `Pt` entries carry `seconds` (per side, not split), optional `lados:1` and optional `corta:1`. `sdcEstLista(corta)` flattens that into **steps**, expanding a bilateral stretch into two with `lado:"lado derecho"/"lado izquierdo"`, so the switch is a step like any other and gets its own beep. Two routines: **Corta 3:00 / 6 pasos** (what helps right after training) and **Completa 6:05 / 13 pasos**. Elapsed comes from `sdcEstIni` via `setInterval` recomputing `Date.now()-start`, so leaving the tab no longer freezes it — **verified**: away 16 s, came back 16 s further along, not where it was.
+
+`c5(e, hechos, total)` grades: under 34% pays nothing and leaves `today.stretchDone` false so you can come back; at or over it pays `round(25 × fraction)` and marks the day; only a full run increments `week.stretchCount` toward the weekly 2. The notice keeps starting with `+` so `sdcTier` still renders it as good.
+
+**The flexibility check is what makes the section mean anything.** Stretching was the only system that measured nothing and argued for itself purely with XP. Once a week (`sdcFlexToca`, 7 days) it asks how far you reach sitting with your legs straight — five concrete descriptions in `sdcFlexNiv`, knees → palms on the floor. `sdcFlexSet` is a **reducer returning `{state, notices}`** and beating your own best writes a real **Primera vez** (`origen:"medida"`), which `sdcTier` renders epic. This is the one place the dropped "measured" source is safe: the ladder has five rungs, so it can fire at most four times in a lifetime, unlike rep records.
+
+State lives in `state.flex` and uses the **no-migration pattern** — `sdcFlex(e)` returns `{}` — so `ei` is untouched.
+
+> The bug that cost a test run: `sdcFlexSet` first returned the bare state instead of `{state, notices}`. `Ne` destructures `{state:m}`, got `undefined`, and `K(undefined)` wrote the literal string `"undefined"` into `dominio-corporal:player/state`, wiping the save. **Anything passed to `Ne` must return `{state, notices}`**, and a save that comes back as the string `"undefined"` is this mistake.
+
 ### Backup reminder
 
 A card in Entreno asks for a backup once the player has 10 days of `history`, and hides for a week on "MÃ¡s tarde" or for a month after an actual export. Its two dates live in **`localStorage` directly** â `dominio-corporal:ultimoRespaldo` and `:respaldoPospuesto` â and deliberately **not** in the game state. They describe this device, not this player: restoring a backup on a new phone should not carry over "you already backed up". Keeping them out of the state object also means no new default in `ei` and no migration risk.

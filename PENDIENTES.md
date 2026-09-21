@@ -88,6 +88,17 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
   registro: día uno son 1 cuadro y 1 referencia (326 px → 220). **Los huecos del medio se
   mantienen**: son días que sí faltaste, y taparlos dibujaría una racha que no existió.
 
+- ~~El estiramiento parecía forzado~~ — resuelto. Era la única pantalla que **mirabas** en vez
+  de hacer: un reloj de 5 minutos sin sonido, sin wake lock (la pantalla se apagaba), con el
+  contador descontándose solo (se congelaba al bloquear el teléfono) y con **cuatro de los
+  nueve estiramientos por lado sin que nada te avisara de cambiar de pierna**. Ahora cada lado
+  es un paso propio con su beep, hay dos rutinas (**Corta 3:00** y **Completa 6:05**), el
+  tiempo se calcula desde una marca de reloj así que irte a otra pestaña no lo congela, y si
+  cortás a mitad de camino cobrás lo que hiciste.
+- **Y ahora mide algo.** Una vez por semana te pregunta hasta dónde llegás sentado con las
+  piernas estiradas (cinco opciones, de las rodillas a las palmas en el piso). Cuando mejorás,
+  entra en **Primeras veces**. Era la única sección que no te enseñaba nada de tu cuerpo.
+
 ## C · Decisiones de diseño que quedaron abiertas
 
 - **Tamaño de texto ajustable** y **poder apagar sistemas**: quedaron explícitamente fuera de
