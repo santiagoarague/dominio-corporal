@@ -1,8 +1,8 @@
 {
   "id": "/dominio-corporal/",
-  "name": "Sistema de Dominio Corporal",
+  "name": "Dominio Corporal",
   "short_name": "Dominio",
-  "description": "Entrenamiento de peso corporal, gimnasio y flow, gamificado: rangos, ascensiones y progreso medido.",
+  "description": "Entrenamiento de peso corporal, gimnasio y flow, gamificado: rangos, umbrales y progreso medido.",
   "lang": "es-AR",
   "dir": "ltr",
   "categories": ["health", "fitness", "lifestyle"],

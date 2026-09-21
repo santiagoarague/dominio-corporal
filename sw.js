@@ -1,4 +1,4 @@
-const CACHE = 'dominio-corporal-v3';
+const CACHE = 'dominio-corporal-v4';
 const ASSETS = [
   './',
   './index.html',
