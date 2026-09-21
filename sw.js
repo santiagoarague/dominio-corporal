@@ -1,4 +1,4 @@
-const CACHE = 'dominio-corporal-v2';
+const CACHE = 'dominio-corporal-v3';
 const ASSETS = [
   './',
   './index.html',
@@ -31,20 +31,46 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+// El HTML y el manifiesto son lo unico que cambia en cada despliegue.
+function esDocumento(req, url) {
+  if (req.mode === 'navigate') return true;
+  const p = url.pathname;
+  return p.endsWith('/') || p.endsWith('.html') || p.endsWith('.webmanifest');
+}
+
 // Red primero: con internet siempre se ve la version recien publicada,
 // sin internet se sirve la ultima copia guardada.
+//
+// El HTML se pide con cache:'reload', que salta el cache HTTP del navegador.
+// Sin eso, "red primero" no servia de nada: fetch() devolvia la copia que el
+// navegador ya tenia guardada — GitHub Pages manda max-age=600 — y se veia una
+// version vieja durante minutos. Peor: el service worker guardaba esa copia
+// vieja como si fuera la buena.
+//
 // Solo se guarda una respuesta si es 200 y del mismo origen: si no, un 404
 // o un error del servidor quedaba guardado y se servia como "la copia offline".
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
-  const sameOrigin = new URL(req.url).origin === self.location.origin;
+
+  const url = new URL(req.url);
+  const propio = url.origin === self.location.origin;
+  const recargar = propio && esDocumento(req, url);
+
+  const red = recargar
+    ? fetch(url.href, { cache: 'reload', credentials: 'same-origin' })
+        .then((r) => (r.redirected
+          // No se puede responder a una navegacion con una respuesta redirigida.
+          ? new Response(r.body, { status: r.status, statusText: r.statusText, headers: r.headers })
+          : r))
+    : fetch(req);
+
   event.respondWith(
-    fetch(req)
+    red
       .then((response) => {
-        if (sameOrigin && response.ok && response.type === 'basic') {
-          const copy = response.clone();
-          caches.open(CACHE).then((cache) => cache.put(req, copy)).catch(() => {});
+        if (propio && response.ok) {
+          const copia = response.clone();
+          caches.open(CACHE).then((cache) => cache.put(req, copia)).catch(() => {});
         }
         return response;
       })
