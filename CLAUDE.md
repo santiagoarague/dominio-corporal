@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this project is
 
-"Sistema de Dominio Corporal" is a gamified bodyweight-training web app in Spanish (RPG framing: ranks, XP, dungeons, a pet companion). It is a **single-page app with no build step**: `index.html` (~440 KB) contains an already-minified React 19 bundle inline.
+"Dominio Corporal" is a gamified bodyweight-training web app in Rioplatense Spanish (ranks, XP, long cardio sessions called *travesias*, a pet companion). It used to be called "Sistema de Dominio Corporal" and its whole lexicon was borrowed from Solo Leveling; that was removed deliberately (see **The world and its lexicon**). It is a **single-page app with no build step**: `index.html` (~440 KB) contains an already-minified React 19 bundle inline.
 
 **There is no source code for the bundle.** It began life as a Claude Artifact and was ported to a standalone site. You cannot rebuild it â every change is a surgical text edit to minified JavaScript. Treat `index.html` as the source of truth and edit it in place.
 
@@ -24,7 +24,7 @@ This is the part that will bite you. Follow it exactly.
 
 **Name everything you add with an `sdc` prefix.** The minifier's own identifiers are one or two characters (`Is`, `jd`, `Aa`, `b5`), so a plain name risks colliding with one you have not read yet, and a collision inside a 450 KB single line is close to undebuggable. `sdcBase`, `sdcSplit`, `sdcSerie`, `sdcTier` and friends are all hand-written; `grep -o 'sdcFoo' index.html | wc -l` before adding one tells you instantly whether the name is free. Note that `grep -c` is useless here â the file is one line, so it always answers 1.
 
-**Check what a grep actually matched before "fixing" it.** An audit once flagged `coger` three times as peninsular Spanish; all three were `encoger` ("sin encoger los hombros"). The same audit reported `el mÃ³vil`, `pulsa` and `aquÃ­`, none of which were real. The app's text is neutral tuteo, not Spanish from Spain â moving it to voseo would be a decision about tone, not a correction.
+**Check what a grep actually matched before "fixing" it, in both directions.** An audit once flagged `coger` three times as peninsular Spanish; all three were `encoger`. But the same audit declared `el movil` a false positive, and it was real: the neuromotor section said `deja el movil apoyado`. A term being absent from one spelling does not mean it is absent. The app now speaks **voseo rioplatense** in the game's voice; only the medical text and the exercise-execution register stay in neutral Spanish.
 
 
 **Validate after every edit:**
@@ -158,7 +158,7 @@ One plain object holds everything, deep-cloned with `M(e)` before mutation and s
 
 `i5(state, mode, reps)` records a completed routine: accumulates reps into lifetime/week/month, updates records and `lastTrained`, awards Dominion Points, applies the streak and history bookkeeping, computes XP, then runs `misRevisar` â `Ea` â `da` (achievements) â `ni` (training-load warning).
 
-`Ea(state, notices)` is the level-up loop: while `currentXP >= li(level)` it levels up; when `level >= au[rank]` it flags an Ascension instead. `li(e)` is the XP cost curve: `e<50 ? 45+3e : 5e-55`. The two branches used to be `45+3e` and `125+5e`, which met badly â `li(49)` was 192 and `li(50)` was **375**, a 95% jump inside one level. The second branch was rebased so the curve is continuous at 50 while keeping the steeper slope. `li(1)` is still 48, and it has to stay there. Because XP only converts to levels inside `Ea`, **anything that grants XP must be followed by `Ea`**, and `ei` calls it on load so curve changes apply retroactively.
+`Ea(state, notices)` is the level-up loop: while `currentXP >= li(level)` it levels up; when `level >= au[rank]` it flags an Umbral instead. `li(e)` is the XP cost curve: `e<50 ? 45+3e : 5e-55`. The two branches used to be `45+3e` and `125+5e`, which met badly â `li(49)` was 192 and `li(50)` was **375**, a 95% jump inside one level. The second branch was rebased so the curve is continuous at 50 while keeping the steeper slope. `li(1)` is still 48, and it has to stay there. Because XP only converts to levels inside `Ea`, **anything that grants XP must be followed by `Ea`**, and `ei` calls it on load so curve changes apply retroactively.
 
 ### Multi-session days
 
@@ -197,7 +197,7 @@ Exercises measured in time rather than reps declare it in their own `alt` ("1 re
 
 ### Unlocks
 
-`au` is the rank ladder â the level at which each rank offers its Ascension: `{E:50, D:100, C:140, B:180, A:220, S:260}`. It used to be `{E:50, D:100, C:300, B:700, A:1500, S:3000}`, which with the XP curve meant rank B cost 255k XP (about 12 years of training four times a week) and rank Z 22.9M. The game had three reachable ranks out of seven. The current ladder puts D at ~5 months, C at 1.3 years, B at 2.6, A at 4.4, S at 6.7 and Z at 9.4. Z has no entry because there is nothing above it, and the header correctly hides the Ascension line there.
+`au` is the rank ladder â the level at which each rank offers its Umbral: `{E:50, D:100, C:140, B:180, A:220, S:260}`. It used to be `{E:50, D:100, C:300, B:700, A:1500, S:3000}`, which with the XP curve meant rank B cost 255k XP (about 12 years of training four times a week) and rank Z 22.9M. The game had three reachable ranks out of seven. The current ladder puts D at ~5 months, C at 1.3 years, B at 2.6, A at 4.4, S at 6.7 and Z at 9.4. Z has no entry because there is nothing above it, and the header correctly hides the Umbral line there.
 
 `$e` maps systems to a required level and rank; `ye(state, id)` and `yt(state, id)` test it. The rank requirements are all `"E"` on purpose: rank D needs level 50 and rank C level 100, so the original level-8/12/15 gates paired with rank D/C were unreachable. Keep new entries at rank `"E"` and gate by level alone. Levels in use: 1, 3, 8, 10, 12, 15, 20, 25, 30. **Logros is deliberately level 1**: `da()` is called from thirteen places and none of them is gated, so a player already earned achievements and Dominion Points from their first routine while the tab that explains them stayed locked until level 5 — the reward arrived before the room it lives in. The tab bar is a three-column grid and level 1 shows only Entreno and Perfil, so this fills the empty cell. Categories whose system is still locked start collapsed, via `sdcCatAbierta` and the `sdcCatSis` map.
 
@@ -230,7 +230,7 @@ There were two `@keyframes` in the whole app and neither fired on a reward. Now 
 
 `Oy()` never received the date, so the routine was byte-identical every day for the ~50 levels rank E lasts. `sdcMods` now holds **six modifiers per modality** â they are not interchangeable, so gym gets drop sets and sets to failure while flow gets longer holds and unbroken transitions â and `sdcModDia(modality, date)` picks one by hashing both together. The bonus only applies when the player claims it (`sdcModOk`, passed to `i5` as a fourth argument); nothing can verify it, but it demands a deliberate act rather than handing out XP.
 
-Dungeons draw from `sdcPortales`, ten name/challenge pairs. They used to be two independent lists, so "Guarida del Lobo SombrÃ­o" could ask for thirty minutes on a bike.
+The *travesias* (long cardio sessions, formerly "dungeons") draw from `sdcPortales`, ten name/challenge pairs. The identifier kept its old name; only the data changed. Each name states the quality of the body the session reveals (La Guardia, El Rebote, La Cuesta), never a monster. They used to be two independent lists, so "Guarida del Lobo SombrÃ­o" could ask for thirty minutes on a bike.
 
 `sdcMascota(state, pct, isPR)` gives the pet a line about the session just recorded â a personal best, a streak of seven or more, a full routine or a partial one. It used to speak only when you failed. Keep new phrases species-neutral: the pet can be a dog or a cat.
 
@@ -294,3 +294,100 @@ The 56 added most recently are deliberately shaped:
 
 
 Unlocked at level 10. `misRevisar` generates one weekly and one monthly objective from `lastTrained` (most-neglected muscle group) or from an unused modality, tracks them against `week`/`month` counters, and pays out. Targets are deliberately ~50% above what the prescribed routine yields, so they cannot be satisfied by training normally. There are intentionally **no daily missions** â the routine, dungeon, combat and Primal already fill that role.
+
+---
+
+## The thesis
+
+> **Cualquiera ama entrenar cuando descubre de qué es capaz su cuerpo.**
+
+This is not a tagline, it is the rule for saying no. For any decision, ask: *does this make someone discover something about their body, or only comply?* It is why combat stopped framing the body as an adversary, why the body map is pinned to the top of Entreno, and why **Primeras veces** exists.
+
+## The world and its lexicon
+
+The app used to carry the complete Solo Leveling set — `"El Sistema ha despertado"`, ranks E→S, Monarca, Modo Sombra, Cazador, Portales, Mazmorras, Ascensión, Anomalías — and, worse, **three fictions that did not share a world**: a catalogue fantasy bestiary in the dungeons, a clinical-abstract register in combat, and sci-fi isekai in exploration. Three separate generations from one prompt. That incoherence gave it away more than the borrowing did.
+
+One world now: **your body is the territory you are surveying.** `Dominio` in Spanish means both mastery and territory, so the title was already carrying the right meaning.
+
+| Was | Is |
+|---|---|
+| El Sistema (narrator, 22 sites) | no narrator; the app speaks in second person |
+| Ascensión / Ascenso / evolucionar | **Umbral** |
+| Anomalías · neutralizar | **terrenos** · **recuperar** |
+| Mazmorras · Portales | **Travesías** |
+| Modo Sombra (Rango Z) | *el último rango* |
+| Cazador (default name) · Sombra (default pet) | Atleta · (empty → "Tu compañero") |
+
+**Do not reintroduce a narrating entity.** When a sentence needed an actor, the real actor already existed and it was the metronome, not a system.
+
+Rank names no longer appear as letters anywhere in prose. Anything that said "Rango S" now says an ordinal ("el sexto rango") because the visible name depends on the modality.
+
+## Rank titles: three sets, one per modality
+
+The rank already *was* modality-specific (`_d(group, rank, modality)` resolves `by`, `F2` or `P2`), but `J2` had one set of descriptors written in bodyweight terms, so a gym player was being lied to.
+
+```
+bodyweight  Suelo · Eje · Recorrido · Palanca · Lado · Sostén · Oficio
+gym         Barra · Disco · Forma · Carga · Tope · Máxima · Hierro
+flow        Gateo · Apoyo · Giro · Enlace · Inversión · Quietud · Vuelo
+```
+
+`sdcTitulos` and `sdcDescs` hold them; `sdcRango(rank, profile)` and `sdcDescRango(rank, profile)` read them. **`zl` and `J2` are untouched and survive as the fallback.** Internal keys `E..Z` are unchanged everywhere (`ve`, `au`, `Cl`, `W2`, the exercise tables) — only the display changed. A player with one modality never sees a choice; with two or three, a selector appears in Perfil → Métodos de entrenamiento.
+
+## The no-migration pattern — prefer it over `ei`
+
+`ei` is where old saves crash. Three fields were added without touching it at all, because **the getter self-defaults**:
+
+```js
+profile.tituloSet   → sdcJuego(p)    falls back to the first modality, then "bodyweight"
+state.primeras      → sdcPrimeras(e) returns []
+state.podia         → sdcPodia(e)    returns {}
+```
+
+Nothing is backfilled, so nothing can break on load. Verified by deleting all three from a real save: it boots with level, PD and history intact. **Reach for this before adding a default to `ei`.**
+
+## Primeras veces
+
+The app counted reps for a lifetime and never recorded the day you first did something you could not do — which is the thesis itself.
+
+**The rule: the app never declares a first it did not witness.** Tying it to rank changes would be guessing; a player who already did pull-ups would be congratulated for something years old, and one lie destroys the feature. So it asks, once, non-blocking, one movement at a time (the first unanswered of today's four): *¿Alguna vez hiciste X?* → `Nunca pude` / `Ya podía`. Answering "nunca" sets the starting line; completing reps of that pattern later confirms it. Plus a manual button for what the app cannot see.
+
+The third source in the original plan — *measured*, a personal record beaten — was **deliberately dropped**: almost every early session beats a record, so the list would fill with noise in week one.
+
+**The hook is in `pg()`, not in `i5`.** `i5` is the only function that settles XP and is the highest-risk code in the file:
+
+```js
+Ne(f => sdcPrimerasHook(i5(f, De, h, sdcModOk), h))
+```
+
+`sdcPrimerasHook` receives the finished `{state, notices}` and only appends. `i5` is byte-for-byte unchanged.
+
+## `sdcTier` — the paired edits
+
+`sdcTier` classifies notices by matching their **text**, so a notice and its matcher must change together or a reward renders as a grey bookkeeping line. Current epic matchers: `"Primera vez:"`, `"Cruzaste a"`, `"Subiste a nivel"`, `"Volviste al último rango"`.
+
+Two rewards were already mis-tiered before anyone noticed: **winning a combat** and **clearing a dungeon** both fell through to `info`. Combat is fixed via `"Recuperaste"`; the travesía notice now says `"¡Travesía completada!"` so it matches the existing `"completada"`.
+
+Pairs that must move together: the Umbral notice, the level-up, the return to the last rank, the weekly-streak loss, the short session, achievements, system unlocks, and **`"Rutina completa"`, which has five sites** — including the *Deshacer registro de hoy* filter.
+
+## Voice: what is voseo and what is not
+
+The game speaks **voseo rioplatense**. Two registers stay in neutral Spanish on purpose:
+
+- **Medical**: `H2` (red flags), `X2` (the pain rule), `Dy` (the eight joint protocols) and their render. The right voice there is clinical, not the author's.
+- **Execution instructions**: skill steps in `El`, `alt`/`cue`/`how`/`dose` in `by`/`F2`/`P2`, `Js`, and the Primal movement descriptions in `Oa` (which are descriptive, not second person).
+
+`sdcMods` **cannot** be voseado regardless: `sdcTempoMod` reads `/baja(?: el peso)? en (\d+) segundos?/i` and `bajá` breaks it.
+
+**Never run a word-level replacement blind.** A dry run over the whole file caught nine false positives that a global `sed` would have broken silently: `"skills completas"` and `"Repeticiones base bajas"` (adjectives), `"Las marcas sirven"` and `"Marca del Caminante"` (nouns), `"Marca el tempo"` and `"Sube al alcanzar"` (third person), `"varias activas"` (adjective) — and **`misRevisar(e, notas)`, where `notas` is a minified parameter, not the verb.** That one would have broken missions entirely. Same family as the documented `ti(e)` trap.
+
+## Editing technique that worked
+
+Build the edit list in a file, then apply it **all-or-nothing**: count every match first and abort the whole batch if any count differs from what you expect. A partial batch is much worse than none. For word-level passes, compute protected byte ranges from *anchors* (never fixed offsets — they shift after the first edit) and print every match with context before writing anything.
+
+Two traps found the hard way:
+
+- **`Encode::decode` with `FB_CROAK` consumes the source scalar.** Validate UTF-8 on a copy or your byte counts silently become zero.
+- **`core.autocrlf` is `true` at system level on this machine.** Without `.gitattributes` (`* -text`), a checkout converts LF→CRLF: 193 extra bytes and every offset shifted, which turns `git checkout -- index.html` — the recovery path — into a new source of corruption. Verified fixed.
+
+The quote count is **odd** in this file by design (double quotes inside single-quoted strings and regexes). Compare it against the previous run rather than expecting it to be even; `{}`, `[]` and `()` deltas are the real structural check (`0`, `0`, `+1`).
