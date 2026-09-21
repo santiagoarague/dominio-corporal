@@ -80,6 +80,12 @@ Start from the index of `i.default.createElement(ge,{id:"<cardId>"`. Children ar
 
 **Prefer not moving blocks at all.** To reorder cards, wrap the container in a flex column and set `order` on the one card that must move — that is how "Rutina de hoy" is pinned to the top of the Entreno tab. Moving text risks far more than a style property does.
 
+### The body diagram
+
+`g5({view, colors, glow, ratios, selected, onSelect})` draws the figure in "Tu cuerpo". It used to be six rounded rectangles; it is now an angular anatomical figure built from paths, but **the contract is unchanged** and must stay that way: `viewBox "0 0 200 300"`, the same four groups (`squat`, `pushup`, `back`, `abs`), and every interactive part spreading `r(group)` so it gets its fill from `Rs(ratio)` — a ramp from `rgb(42,49,72)` to `#ff6b4a` — plus the white stroke when selected and `sdcPulse` at 100%.
+
+Three local helpers keep it readable: `sdcPar(d, group)` draws a path and its mirror (`translate(200,0) scale(-1,1)`, so x becomes 200-x), `sdcSim(d, group)` draws a part that is already symmetric and must not be doubled, and `sdcIne(d, dup)` draws inert anatomy. Parts that the game does not measure separately are folded in rather than given their own colour: forearms and hands go with `pushup`, calves with `squat`, and neck, hips, knees and feet stay inert. **Do not colour a part as its own group unless the game actually tracks it** — the figure would be claiming to measure something it does not.
+
 ### Touch targets
 
 Measured, not guessed: the tab bar was 34 px tall and the meta steppers 32 px, both well under the 44–48 px that Android and iOS ask for. They are now `minHeight:48` and `44×44`. `button` also carries `touch-action:manipulation`, which drops the 300 ms double-tap-zoom delay. Still small and not yet raised, because raising them changes the visual density of every card: the collapsible headers (21 px, but full width), `💡 alternativa` (21 px) and the `?` in the header (22 px).
