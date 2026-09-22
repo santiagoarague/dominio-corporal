@@ -135,6 +135,22 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
   dejaste. El XP sigue liquidándose una sola vez al registrar, así que *Deshacer registro de
   hoy* no cambió.
 
+- ~~4 a 12 segundos de pantalla negra al abrir~~ — resuelto a medias, y es lo honesto: el
+  procesamiento de 498 KB de JavaScript no se puede acelerar sin rehacer la app. Pero a los
+  **170 ms** ya se ve el nombre, tu nivel y una barra moviéndose, en vez de negro. Los mismos
+  segundos; la diferencia es que parece viva y no rota.
+- ~~La rutina arrancaba en el pixel 1.222~~ — resuelto. Ahora arranca en el **478**, dentro de
+  la primera pantalla. El mapa del cuerpo baja mientras no entrenaste y **vuelve arriba cuando
+  terminás**: ahí sí es un premio y no un peaje.
+- ~~No se podía anotar un día que ya pasó~~ — resuelto. Tocás un cuadrito vacío o fallado en
+  Constancia y aparece *"Entrené este día y me olvidé de anotarlo"*, con confirmación. **No da
+  XP** (no hay forma de saber cuánto hiciste) pero el día cuenta y la racha se recalcula. Solo
+  puede subirla, nunca bajarla.
+- ~~Los logros de gimnasio tenían números absurdos~~ — resuelto. Eran 16 y **nueve** medían
+  "kg movidos", justo el número que sacamos de la pantalla por engañoso. El último pedía
+  **1.000.000 de kg**: entre cuatro y ocho años. Quedaron 12, el tope es 150.000 (≈ un año) y
+  dicen *"sumando todas tus series"*, que es lo que el número realmente es.
+
 ## C · Decisiones de diseño que quedaron abiertas
 
 - **Tamaño de texto ajustable** y **poder apagar sistemas**: quedaron explícitamente fuera de

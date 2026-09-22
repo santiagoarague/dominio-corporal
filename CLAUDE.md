@@ -121,6 +121,18 @@ Testing notes that save time:
 - `get_page_text` returns DOM order, not visual order â it will not reflect flexbox `order`. Use a screenshot.
 - The Perfil tab still has the **Panel de pruebas** for jumping ranks and forcing ascension without training, but it no longer announces itself: the entry point is a dim `v1.0` at the bottom of Perfil that opens it after **five taps** (`sdcDevN`). Sixteen destructive actions, one of them `Desbloquear todos los logros`, should not be one tap away from a curious player.
 
+### The first paint, the first card, and the day you forgot
+
+Three things that a distracted person feels and a developer never does, all measured before being touched.
+
+**`index.html` now paints something at ~170 ms.** The HTML arrives in 42 ms and `domInteractive` is ~170 ms, but the app's first button took **4.4 s on a fast desktop** — realistically 8–12 s on a mid-range phone — because 498 KB of inline React has to parse. Nothing can be done about the parse without a build step, so `<body>` now opens with `#sdcSplash`: a fixed overlay with the product name, `Hola de nuevo, <name> · Nv. N` read straight from `localStorage`, and a sliding bar, removed by a `MutationObserver` on `#root` the moment React mounts (plus a 25 s failsafe). The same seconds, but the app looks alive instead of broken.
+
+> Two traps here. The script has to sit **after** `<div id="root">` or `getElementById('root')` returns null and the splash never leaves — which is exactly what happened first. And `raw.charAt(0)==='{'` put a lone `{` inside a string and broke the `{}` delta check for every future session; the try/catch around `JSON.parse` already covered that case, so the test was dropped.
+
+**"Rutina de hoy" starts at y=478 instead of y=1222.** The body map was pinned above it (`order:-2` against the routine's `-1`), which is right the day you discover the app and a scroll-and-a-half tax every day after. The routine is now `order:-4` and the map is `c.completed ? -4 : -2`, so the map returns to the top once you have trained — there it is a reward, not an obstacle.
+
+**A day you forgot can be logged.** Tapping an `empty`, `skipped` or `missed` square in Constancia offers *"Entrené este día y me olvidé de anotarlo"*, behind a confirm step. `sdcDiaPasado` writes `history[f]="partial"`, marks `dayLog[f].acts` as `"Anotado después"`, adds the date to `week.sessionDates` when it falls inside the current week, and **gives no XP** — there is no way to know how many reps you did, and the notice says so. `sdcRachaCalc` then walks back from today through `history` counting `full`/`partial` (with `rest`/`shield` preserving but not adding) and the result is applied **only if it raises** `streak.current`. A retro-log can never shorten a streak, which is what makes it safe to get wrong.
+
 ## Deploying
 
 `git push` to `main` is the deploy. GitHub Pages serves the repo root from `main` at **https://santiagoarague.github.io/dominio-corporal/**, usually live about 30 seconds after the push. There is no build command; `.nojekyll` keeps Pages from running Jekyll, which would otherwise drop anything starting with a dot â including the `.well-known/assetlinks.json` a TWA needs.
@@ -387,7 +399,9 @@ A card in Entreno asks for a backup once the player has 10 days of `history`, an
 
 ### Achievements
 
-144 entries in `Jo`, checked by `da()`, which pays Dominion Points by tier (E/D 1, C/B 2, A 3, S 4, Z 5). `da()` is **not** called from `ei`, so nothing unlocks on load — everything is evaluated when the player finishes something.
+140 entries in `Jo`, checked by `da()`, which pays Dominion Points by tier (E/D 1, C/B 2, A 3, S 4, Z 5). `da()` is **not** called from `ei`, so nothing unlocks on load — everything is evaluated when the player finishes something. Unlocked ids live in `state.achievements`, so **removing an entry orphans its id harmlessly** — but it also changes the `X/140` denominator, and the guide topic that quotes the number has to move with it.
+
+**Gimnasio was rebalanced from 16 entries to 12.** Nine of the sixteen graded `lifetimeVolumeKg` — the same tonnage figure that was pulled out of the exercise row for being misleading — and the ladder ran 0 → 500 → 2.500 → 10.000 → 25.000 → 100.000 → 250.000 → 500.000 → **1.000.000**. At a realistic 1.500–4.000 kg per logged session, that last rung is four to eight years, in a category of twelve. Dropped `gym_first` (tier D for "record any volume at all", a duplicate of `gymv_500`), `gymv_25000` (redundant between 10k and 50k), `gymv_500000` and `gym_1m`. The survivors were only ever lowered — 100k → 50k, 250k → 150k — so nothing already unlocked can un-unlock. The wording moved from "N kg movidos de por vida" to **"N kg sumando todas tus series"**, which is what the number actually is.
 
 The 56 added most recently are deliberately shaped:
 
