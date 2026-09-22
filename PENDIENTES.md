@@ -192,6 +192,18 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
   resto, 1 abajo de 20 kg: una elevación lateral y una prensa no pueden compartir escalón.
   La línea es un botón: al tocarlo llena las tres series. **Nunca se llena solo**, porque el
   campo de kilos guarda lo que hiciste y no lo que la app supone.
+- ~~Haciendo superserie entre dos modalidades se desmarcaban las series~~ — resuelto, y lo
+  reproduje tal cual: marco la serie 1 en peso corporal → paso a flow → marco la serie 1 ahí →
+  vuelvo a peso corporal y **la serie 1 aparece sin marcar**. El memo de las marcas era un solo
+  casillero con su propio `{mod, mode}` adentro, así que cada toque en flow pisaba el de peso
+  corporal; al volver, el `mod` no coincidía y las fichas se reseteaban a cero. Funcionaba bien
+  para *cambiar* de modalidad, no para *alternar*, que es lo que hace una superserie. Ahora hay
+  un casillero por modalidad **y** por modo (`"flow|normal"`, `"bodyweight|recovery"`), así que
+  los cuatro conviven y cada uno aguanta la recarga de la página. La forma vieja se sigue
+  leyendo, para no tirar a la basura una sesión que estuviera abierta al momento del deploy.
+  De paso: si una modalidad ya quedó registrada hoy, volver a ella no devuelve sus marcas
+  viejas — `mmNueva` apaga `completed` para abrir la segunda sesión, y sin ese freno te
+  ofrecería registrar dos veces lo mismo.
 - ~~El calibre hablaba un solo idioma~~ — resuelto. La prueba mide a todos con los mismos cuatro
   ejercicios de peso corporal, **y eso es a propósito**: la idea es un fondo que te sirva para
   las tres modalidades sin necesitar material (el remo invertido ya trae "superman en el suelo"

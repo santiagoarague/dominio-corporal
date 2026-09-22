@@ -240,10 +240,16 @@ The **pending** set also carries a `â N +`, so a player who fell short on t
 **The marks, however, are persisted, and that is a different thing.** `sdcSer` and `sdcAjuste` used to be component state only, so closing the app mid-session lost every set you had tapped — verified: two of three marked, reload, all gone. For a phone that locks, or an app the system evicts while you answer a message, that is the moment a person quits, and it makes them feel stupid rather than interrupted. Every tap now also writes a memo:
 
 ```js
-today.marca = { mod, mode, ser, aj, mok }
+today.marcas = { "<modality>|<mode>": { ser, aj, mok } }
 ```
 
-`sdcMarcaOk(ser, aj, mok)` writes it from `sdcSerie`, `sdcAjustar`, `sdcMarcarTodo` and the modifier-claim button; the `[De,u.rank,B]` effect rehydrates from it **only when `mod` and `mode` match and the day is not registered**, which is what keeps a second modality session and the Recuperación toggle from inheriting someone else's marks. `ei` builds a fresh `today` on rollover, so a new day clears it with no cleanup code. Verified: marks survive a reload, `today.reps` stays at zero until `pg()` runs, registration still yields the same reps and XP, and a new day starts clean.
+**One slot per modality *and* per mode, because a single slot made supersets lose work.** The memo was originally one object carrying its own `{mod, mode}`, and the effect rehydrated it only when both matched. That is correct for *switching* — but somebody alternating a bodyweight set with a flow set is writing to the same slot on every tap: the flow tap overwrote the bodyweight memo, and going back to bodyweight found `mk.mod !== B` and reset the chips to zero. **Reproduced exactly as reported**: mark set 1 in bodyweight → switch to flow → mark set 1 there → switch back → set 1 unmarked. Keying by `modality|mode` lets all four slots (two modalities × Normal/Recuperación) coexist, and verified they survive a full reload.
+
+`sdcMarcaOk(ser, aj, mok)` writes it from `sdcSerie`, `sdcAjustar`, `sdcMarcarTodo` and the modifier-claim button; `sdcMarca(state, key)` reads it and still accepts the **old single-object shape** when its `mod|mode` matches the key, so a session already in progress at deploy time is not thrown away. `ei` builds a fresh `today` on rollover, so a new day clears the whole map with no cleanup code.
+
+The `[De,u.rank,B]` effect rehydrates the slot unless the day is registered **or the modality is already in `today.doneModalities`**. That second condition is new and it matters: `mmNueva` clears `today.completed` to open the second session, so without it, switching back to a modality you already registered would re-offer its old marks under a fresh routine card and invite registering it twice. Undo (`s5`) restores the whole `today` from the snapshot, marks included, which is why it keeps working.
+
+Verified: marks survive a reload, each modality keeps its own set of chips while alternating, Recuperación gets its own slot, `today.reps` stays at zero until `pg()` runs, registration still yields the same reps and XP, and a new day starts clean.
 
 
 When the day is registered the card is replaced by a summary: reps per group, the personal best in each, and the week's totals. The â only appears when `lifetimeReps[g]` exceeds today's reps, because otherwise every group is a record in the first session and the mark means nothing.
