@@ -221,7 +221,7 @@ Hollow body hold     → "En hollow hold, cuenta 1 rep por cada 3 segundos."
 
 The second defines the term with the term. And the only door to any of it was a button labelled **💡 alternativa** — nobody who does not know the movement taps a button called "alternative".
 
-**Three fields, one question each.** Every `by` entry now carries `pos`, `mov` and `err` beside its `alt`:
+**Three fields, one question each.** Every `by` and `F2` entry carries `pos`, `mov` and `err` beside its `alt` — 168 of the 252, with `P2` still pending:
 
 | field | the question it answers |
 |---|---|
@@ -229,7 +229,9 @@ The second defines the term with the term. And the only door to any of it was a 
 | `mov` | what moves, and where it stops |
 | `err` | the one thing that ruins it or hurts you |
 
-`sdcGuia(rank, group, modality)` returns the entry when any of the three is present, `null` otherwise, so **gym and flow keep the old behaviour untouched** until their passes are written — the button still reads `💡 alternativa` there and the panel still shows only the `alt`. That fallback is the whole reason the three tables could be done one at a time.
+`sdcGuia(rank, group, modality)` returns the entry when any of the three is present, `null` otherwise, so **a table without the fields keeps the old behaviour untouched** — the button still reads `💡 alternativa` there and the panel still shows only the `alt`. That fallback is the whole reason the three tables could be done one at a time, and flow still runs on it.
+
+**In the gym the `err` line is the safety line.** A wrong cue on a leg extension is a wasted set; a wrong cue on a barbell squat is a disc. So the gym errors name the failure that hurts and what to do about it — *si la espalda baja se redondea al final, para justo antes: eso es lo que lesiona*, *nunca hagas esto sin seguros: la pausa es justo donde una serie se cae* — rather than a form nicety. The measured cost is the same as bodyweight: the gym routine card goes 1387 → 2185 px with the four panels open, and the `vistos` gate closes them after the first session exactly as it does elsewhere.
 
 **The register is neutral Spanish**, like every other execution instruction (see **Voice**): `Baja el pecho`, never `Bajá el pecho`. And the panel is **14 px at 1.5 line-height in `#c8d0e4`**, not the shared `text-xs`, for the same reason the guide moved off it: 12 px at 1.0 was never meant for paragraphs.
 

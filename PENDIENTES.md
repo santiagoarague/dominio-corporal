@@ -192,8 +192,8 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
   resto, 1 abajo de 20 kg: una elevación lateral y una prensa no pueden compartir escalón.
   La línea es un botón: al tocarlo llena las tres series. **Nunca se llena solo**, porque el
   campo de kilos guarda lo que hiciste y no lo que la app supone.
-- ~~Había que ir a buscar un video para saber cómo se hace el ejercicio~~ — resuelto para los 84
-  de peso corporal. **Faltan gimnasio y flow.**
+- ~~Había que ir a buscar un video para saber cómo se hace el ejercicio~~ — hechos **peso corporal
+  y gimnasio: 168 de 252**. Falta flow.
 
   Cada ejercicio tenía una sola línea de instrucción, escondida detrás de un botón que decía
   **💡 alternativa** — nadie que no conozca el movimiento toca un botón que se llama
@@ -221,8 +221,14 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
   instrucciones abiertas y a partir de la segunda vez queda cerrado. Si cambiás de rango y
   aparecen ejercicios nuevos, se vuelven a abrir solos.
 
-  Gimnasio y flow siguen funcionando igual que antes hasta que les toque su pasada: botón
-  "💡 alternativa" y una sola línea.
+  En gimnasio la línea de **Error común** es la línea de seguridad: una señal equivocada en una
+  extensión de cuádriceps es una serie perdida, pero en una sentadilla con barra es un disco. Por
+  eso ahí los errores nombran la falla que lastima y qué hacer — *si la espalda baja se redondea
+  al final, para justo antes*, *nunca hagas esto sin seguros: la pausa es justo donde una serie
+  se cae* — y no un detalle de forma.
+
+  Flow sigue funcionando igual que antes hasta que le toque su pasada: botón "💡 alternativa" y
+  una sola línea.
 - ~~Los logros decían "RANGO Z" y no estaban ordenados por dificultad~~ — resuelto, las dos cosas.
 
   **El rango en el logro no iba.** Las cabeceras de cada grupo decían `RANGO Z`, que se salvó de
