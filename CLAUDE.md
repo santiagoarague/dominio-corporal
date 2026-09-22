@@ -178,7 +178,16 @@ A day can hold one routine per modality. `today.doneModalities` lists the ones f
 
 ### Exercise selection
 
-Rank (`ve` = EâZ) picks the exercise **variant**; the fitness test picks the **volume**. Tables: `by` (bodyweight), `F2` (gym), `P2` (flow â only `squat` and `abs`; push and pull fall back to `by`), resolved by `_d(group, rank, modality)`. Every entry has an `alt` string, surfaced by the "ð¡ alternativa" button, which must name a real equipment-free substitute rather than a technique tip. Targets come from `Oy(state)`; the four groups are always `squat`, `pushup`, `back`, `abs`.
+Rank (`ve` = EâZ) picks the exercise **variant**; the fitness test picks the **volume**. Tables: `by` (bodyweight), `F2` (gym), `P2` (flow â only `squat` and `abs`; push and pull fall back to `by`), resolved by `_d(group, rank, modality)`. Every entry has an `alt` string, surfaced by the "ð¡ alternativa" button, which must name a real equipment-free substitute rather than a technique tip. Targets come from `Oy(state)`; the four groups are always `squat`, `pushup`, `back`, `abs`
+
+**A rung can hold one exercise or several.** `_d(group, rank, modality, date)` returns a plain entry unchanged, and picks from an array with `Dd(date|group|rank|modality, n)` — the same hash `sdcModDia` uses. Mixed shapes coexist on purpose, so a table can be widened one modality at a time without touching the other two.
+
+That matters because the routine had **zero** day-to-day variation in the exercise itself: `_d` never saw the date, so your rank fixed the four movements and the only thing that changed was one of six modifiers. Rank E runs to level 50, which is **5.880 XP** — about 36 sessions for a player with a strong fitness test and **~85 for a beginner** at ~70 XP a session. Two to seven months of the identical four exercises.
+
+`by` (bodyweight) now carries **three per rung, 84 entries**. `F2` and `P2` are still one per rung and read through the same resolver untouched. Counts today: bodyweight 4×7×3 = 84, gym 4×7 = 28, flow 2×7 = 14 plus the bodyweight fallback for push and pull.
+
+**When adding a variant, `repFactor` is the safety valve.** It scales the prescribed reps, so a harder option at the same rung must carry a lower one — the arrow push-up at `.5` against the strict at `1`. And the `alt` still has to name a real equipment-free substitute, because the rotation means a player can land on the barbell-free day and still need somewhere to go.
+.
 
 Everyone starts at **rank E, level 1** regardless of the test. The test sets volume and calibre only, so stronger players do more work and climb faster without being handed dangerous movements. This is deliberate â do not wire the test's `rank` field (it is computed in `vy` and intentionally discarded).
 

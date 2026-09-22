@@ -151,6 +151,16 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
   **1.000.000 de kg**: entre cuatro y ocho años. Quedaron 12, el tope es 150.000 (≈ un año) y
   dicen *"sumando todas tus series"*, que es lo que el número realmente es.
 
+- ~~La rutina repetía los mismos cuatro ejercicios durante meses~~ — resuelto a medias. No era
+  falta de contenido: hay 70 ejercicios escritos, pero `_d` **nunca recibía la fecha**, así que
+  tu rango fijaba los cuatro movimientos y lo único que cambiaba era uno de seis modificadores.
+  Del nivel 1 al 50 hacen falta 5.880 XP: **entre 36 y 85 sesiones** con los mismos cuatro.
+  Ahora cada escalón de **peso corporal tiene 3 ejercicios** (84 en total) y la app rota por día.
+- **Falta gimnasio y flow.** Siguen con uno por escalón (28 y 14). El motor ya acepta las dos
+  formas mezcladas, así que se pueden ensanchar de a una modalidad sin tocar las otras.
+- **Flow no tiene empuje ni tracción propios**: usa los de peso corporal, que no son movimientos
+  de flow. Son 14 ejercicios para escribir y deja la modalidad coherente.
+
 ## C · Decisiones de diseño que quedaron abiertas
 
 - **Tamaño de texto ajustable** y **poder apagar sistemas**: quedaron explícitamente fuera de
