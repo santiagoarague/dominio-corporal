@@ -208,6 +208,35 @@ The flow vocabulary is drawn from the two references the author named — **LeoM
 
 `F2` has no `label` field (only `by` does) and its `alt` strings are loading and technique cues rather than equipment-free substitutes, which is right in a gym — but the new ones name a real fallback whenever the machine can be taken or missing ("Sin máquina: fondos entre dos bancos"), because the rotation can land you on a day whose implement is not free.
 
+### The exercise has to teach itself, because there is nowhere to send the player
+
+The app makes zero network requests after it loads and `privacidad.html` says so, so **a link to a video is not available as an answer** — it would hand the player's IP to Google and make section 4 false. Whatever a video would have taught has to be in the text.
+
+It was not. Each of the 252 exercises carried exactly one instruction string, `alt`, and that string was doing three jobs at once: how to execute, what to do without the implement, and how reps convert to seconds. Measured, 56 of the 252 were under 50 characters, and the short ones were not short because the movement is obvious:
+
+```
+Plancha lateral      → "Cuenta 1 rep por cada 3 segundos por lado."
+Hollow body hold     → "En hollow hold, cuenta 1 rep por cada 3 segundos."
+```
+
+The second defines the term with the term. And the only door to any of it was a button labelled **💡 alternativa** — nobody who does not know the movement taps a button called "alternative".
+
+**Three fields, one question each.** Every `by` entry now carries `pos`, `mov` and `err` beside its `alt`:
+
+| field | the question it answers |
+|---|---|
+| `pos` | where your body is before rep 1 |
+| `mov` | what moves, and where it stops |
+| `err` | the one thing that ruins it or hurts you |
+
+`sdcGuia(rank, group, modality)` returns the entry when any of the three is present, `null` otherwise, so **gym and flow keep the old behaviour untouched** until their passes are written — the button still reads `💡 alternativa` there and the panel still shows only the `alt`. That fallback is the whole reason the three tables could be done one at a time.
+
+**The register is neutral Spanish**, like every other execution instruction (see **Voice**): `Baja el pecho`, never `Bajá el pecho`. And the panel is **14 px at 1.5 line-height in `#c8d0e4`**, not the shared `text-xs`, for the same reason the guide moved off it: 12 px at 1.0 was never meant for paragraphs.
+
+**Density is paid for by opening it only when it helps.** Four panels cost 860 px — the routine card goes 1117 → 1977 px with all of them open, measured — which is unacceptable every day and exactly right on day one. So `state.vistos[exerciseName]` records that you registered a session containing that exercise, written by **`sdcPrimerasHook`** in the same loop that already resolves the four names (so `i5` stays untouched, and `sdcVistos` self-defaults to `{}` — the no-migration pattern). `Is` takes `abrir:!sdcVistos(e)[name]` and starts open for a movement you have never done.
+
+The open flag is therefore **tri-state**: `useState(null)` means "follow `abrir`", and a tap writes an explicit `true`/`false`. An effect resets it to `null` on `[label]` so the next exercise gets its own default rather than inheriting your last tap. Verified: open on a new player, closed after registering, open again when a rank change brings a new movement, and the button toggles both ways in either state.
+
 ### Holds: `repFactor` has to pay for the seconds
 
 An exercise whose `alt` says "1 rep = 3 segundos" costs three times what a dynamic rep costs, and nothing in `jd` knows that — the model multiplies `base × W2 × repFactor` and hands the result to a UI that prints it as seconds. An audit of all 252 variants found the damage concentrated exactly there:

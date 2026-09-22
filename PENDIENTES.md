@@ -192,6 +192,37 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
   resto, 1 abajo de 20 kg: una elevación lateral y una prensa no pueden compartir escalón.
   La línea es un botón: al tocarlo llena las tres series. **Nunca se llena solo**, porque el
   campo de kilos guarda lo que hiciste y no lo que la app supone.
+- ~~Había que ir a buscar un video para saber cómo se hace el ejercicio~~ — resuelto para los 84
+  de peso corporal. **Faltan gimnasio y flow.**
+
+  Cada ejercicio tenía una sola línea de instrucción, escondida detrás de un botón que decía
+  **💡 alternativa** — nadie que no conozca el movimiento toca un botón que se llama
+  "alternativa". Y 56 de los 252 tenían menos de 50 caracteres, del tipo *"Plancha lateral →
+  Cuenta 1 rep por cada 3 segundos por lado"* o *"Hollow body hold → En hollow hold, cuenta 1
+  rep por cada 3 segundos"*, que define el término con el término.
+
+  Mandar a YouTube no era opción: la app no hace ninguna conexión a terceros y la política de
+  privacidad lo dice. El texto tiene que alcanzar.
+
+  Ahora cada ejercicio de peso corporal trae tres líneas, una por pregunta:
+
+  ```
+  Posición      dónde está tu cuerpo antes de la primera repetición
+  Movimiento    qué se mueve y hasta dónde
+  Error común   lo único que arruina el ejercicio o te lastima
+  ```
+
+  El botón pasó a decir **¿Cómo se hace?**, que es la pregunta real, y el panel se lee a 14 px
+  en vez de los 12 px apretados que usaba antes.
+
+  **Se abre solo la primera vez.** Cuatro paneles abiertos suman 860 px: la tarjeta de rutina
+  pasa de 1.117 a 1.977 px. Eso está bien el día uno y es insoportable todos los días. La app
+  ahora anota qué ejercicios ya hiciste alguna vez, así que un movimiento nuevo llega con las
+  instrucciones abiertas y a partir de la segunda vez queda cerrado. Si cambiás de rango y
+  aparecen ejercicios nuevos, se vuelven a abrir solos.
+
+  Gimnasio y flow siguen funcionando igual que antes hasta que les toque su pasada: botón
+  "💡 alternativa" y una sola línea.
 - ~~Los logros decían "RANGO Z" y no estaban ordenados por dificultad~~ — resuelto, las dos cosas.
 
   **El rango en el logro no iba.** Las cabeceras de cada grupo decían `RANGO Z`, que se salvó de
