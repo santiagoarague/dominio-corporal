@@ -156,14 +156,13 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
   tu rango fijaba los cuatro movimientos y lo único que cambiaba era uno de seis modificadores.
   Del nivel 1 al 50 hacen falta 5.880 XP: **entre 36 y 85 sesiones** con los mismos cuatro.
   Ahora cada escalón de **peso corporal tiene 3 ejercicios** (84 en total) y la app rota por día.
-- **Las tres modalidades tienen 3 por escalón.** 231 ejercicios en total, de los 70 que había.
+- **Las tres modalidades tienen 3 por escalón: 252 ejercicios**, de los 70 que había.
 - **Flow está completo: los cuatro patrones, 84 ejercicios.** Empuje con queda de rins, aú, baby
   freeze, bananeira y molino. Y tracción propia, armada solo con movimientos que **traccionan de
   verdad**: colgarse (pasivo, activo, skin the cat, front lever), arrastres por el suelo que
   tiran con el dorsal, y el macaco, donde te tirás por encima del brazo apoyado. Nada de puentes
   ni escorpiones disfrazados de tracción.
-- **Flow no tiene empuje ni tracción propios**: usa los de peso corporal, que no son movimientos
-  de flow. Son 14 ejercicios para escribir y deja la modalidad coherente.
+
 
 - ~~Metas de repeticiones imposibles en los sostenes~~ — resuelto. Audité las 252 variantes: el
   daño estaba todo en los ejercicios de sostén, porque `repFactor` no sabía que "1 rep = 3
