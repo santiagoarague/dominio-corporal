@@ -511,6 +511,28 @@ A card in Entreno asks for a backup once the player has 10 days of `history`, an
 
 140 entries in `Jo`, checked by `da()`, which pays Dominion Points by tier (E/D 1, C/B 2, A 3, S 4, Z 5). `da()` is **not** called from `ei`, so nothing unlocks on load — everything is evaluated when the player finishes something. Unlocked ids live in `state.achievements`, so **removing an entry orphans its id harmlessly** — but it also changes the `X/140` denominator, and the guide topic that quotes the number has to move with it.
 
+**`tier` is a difficulty, not a rank, and the UI used to print it as one.** The group headers said `RANGO Z`, which survived the identity pass untouched: rank letters appear nowhere else in prose, and the visible rank name is modality-specific anyway, so a player at "Quietud" was reading about "Rango Z". The keys stay `E..Z` — `Z2` orders them and `pd` pays by them — and `sdcDific` maps them to what the player reads:
+
+```
+E FÁCIL · D ACCESIBLE · C EXIGENTE · B DIFÍCIL · A MUY DIFÍCIL · S PARA POCOS · Z EXCEPCIONAL
+```
+
+**The tiers themselves were not sorted by difficulty, and the top one was the worst offender.** `z_hybrid` ("Atleta Híbrido") checked `qn(e.profile).length>=3` — **it paid the game's highest tier for ticking three modalities in onboarding**, without training anything, while its own text promised "entrená con los tres métodos". The four `z_pr_*` entries asked for 60 leg reps, 40 push, 30 pull and 60 core *in one session*, which a rank E player on a `resistencia` profile clears on an ordinary day. Twenty-one entries were re-tiered:
+
+| | was | is | why |
+|---|---|---|---|
+| Atleta Híbrido | Z | B | check rewritten to `today.doneModalities.length>=3` |
+| PR de Piernas / Empuje / Core | Z | C | an ordinary `resistencia` day |
+| PR de Tracción | Z | B | pull carries the lowest target, so 30 costs more |
+| Doble Cuerpo · Uno y Medio · Tu Propio Peso | Z·S·A | S·A·B | `Math.max` over all four patterns, and a 2× bodyweight leg press is common |
+| 26 / 12 / 4 semanas de racha | Z·S·A | S·A·B | |
+| 1º / 2º / 3º Umbral · quinto rango | D·C·B·A | C·B·A·S | the first Umbral is ~5 months and shared a tier with a 3-day streak |
+| 50 / 200 sesiones de una modalidad | D·C | C·A | 200 sessions is two to four years |
+
+The top tier now holds six entries and every one of them is years of work: the last rank, a full year of weekly goals, 250 terrenos, an attribute at level 30, every skill, and 25.000 pull reps. **When you add an entry, place it against that list, not against how impressive the name sounds** — and check what the `check` actually reads, because `z_hybrid` looked right in the table and paid out for a checkbox.
+
+Re-tiering is safe for existing saves: `achievements` holds ids, never tiers, so nothing un-unlocks and nothing is re-paid. A player who already has one at the old tier keeps it.
+
 **Gimnasio was rebalanced from 16 entries to 12.** Nine of the sixteen graded `lifetimeVolumeKg` — the same tonnage figure that was pulled out of the exercise row for being misleading — and the ladder ran 0 → 500 → 2.500 → 10.000 → 25.000 → 100.000 → 250.000 → 500.000 → **1.000.000**. At a realistic 1.500–4.000 kg per logged session, that last rung is four to eight years, in a category of twelve. Dropped `gym_first` (tier D for "record any volume at all", a duplicate of `gymv_500`), `gymv_25000` (redundant between 10k and 50k), `gymv_500000` and `gym_1m`. The survivors were only ever lowered — 100k → 50k, 250k → 150k — so nothing already unlocked can un-unlock. The wording moved from "N kg movidos de por vida" to **"N kg sumando todas tus series"**, which is what the number actually is.
 
 The 56 added most recently are deliberately shaped:

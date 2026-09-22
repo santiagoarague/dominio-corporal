@@ -192,6 +192,36 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
   resto, 1 abajo de 20 kg: una elevación lateral y una prensa no pueden compartir escalón.
   La línea es un botón: al tocarlo llena las tres series. **Nunca se llena solo**, porque el
   campo de kilos guarda lo que hiciste y no lo que la app supone.
+- ~~Los logros decían "RANGO Z" y no estaban ordenados por dificultad~~ — resuelto, las dos cosas.
+
+  **El rango en el logro no iba.** Las cabeceras de cada grupo decían `RANGO Z`, que se salvó de
+  la pasada de identidad: las letras de rango no aparecen en ningún otro texto, y el nombre
+  visible del rango depende de la modalidad, así que alguien en *Quietud* leía "Rango Z". La
+  clave interna sigue siendo `E..Z` (ordena los grupos y paga los Puntos de Dominio), pero lo
+  que se lee ahora es la dificultad:
+
+  ```
+  FÁCIL · ACCESIBLE · EXIGENTE · DIFÍCIL · MUY DIFÍCIL · PARA POCOS · EXCEPCIONAL
+  ```
+
+  **Y tenías razón con el que te tocó.** *Atleta Híbrido* estaba en el tier más alto del juego y
+  su comprobación era `tenés tres modalidades elegidas en el perfil`: **se pagaba por tildar
+  tres casillas en el onboarding**, sin entrenar nada, mientras el texto prometía "entrená con
+  los tres métodos". Ahora exige los tres el mismo día. Los cuatro *PR de...* pedían 60 reps de
+  piernas, 40 de empuje, 30 de tracción o 60 de core en una sesión — un día normal con perfil
+  resistencia.
+
+  21 logros recolocados en total: los PR bajaron a EXIGENTE y DIFÍCIL, los de levantar tu peso
+  corporal bajaron un escalón (`Math.max` mira los cuatro patrones y una prensa a 2× peso
+  corporal es común), las rachas de 26/12/4 semanas bajaron una, y subieron los que estaban
+  demasiado abajo: el primer Umbral (unos 5 meses) compartía tier con una racha de 3 días, y
+  200 sesiones de una modalidad — dos a cuatro años — estaban en EXIGENTE.
+
+  El tier más alto quedó con seis, y los seis son años: el último rango, un año entero de metas
+  semanales, 250 terrenos, un atributo a nivel 30, todas las skills y 25.000 reps de tracción.
+
+  Nada se pierde: las partidas guardan los **ids** desbloqueados, nunca el tier, así que lo que
+  ya tenías sigue estando.
 - ~~El estiramiento no daba tiempo a acomodarse entre posiciones~~ — resuelto. El pitido te
   avisaba que cambiaras y el reloj del sostén ya estaba corriendo, así que los primeros segundos
   de un estiramiento de 25 se te iban en bajar al piso. El peor caso era el cambio de lado:
