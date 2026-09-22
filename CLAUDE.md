@@ -184,7 +184,11 @@ Rank (`ve` = EâZ) picks the exercise **variant**; the fitness test picks th
 
 That matters because the routine had **zero** day-to-day variation in the exercise itself: `_d` never saw the date, so your rank fixed the four movements and the only thing that changed was one of six modifiers. Rank E runs to level 50, which is **5.880 XP** — about 36 sessions for a player with a strong fitness test and **~85 for a beginner** at ~70 XP a session. Two to seven months of the identical four exercises.
 
-`by` and `F2` now carry **three per rung, 84 entries each**. `P2` is still one per rung and reads through the same resolver untouched. Counts today: bodyweight 4×7×3 = 84, gym 4×7×3 = 84, flow 2×7 = 14 plus the bodyweight fallback for push and pull — **182 exercises**, from 70.
+All three tables now carry **three per rung**. Counts today: bodyweight 4×7×3 = 84, gym 4×7×3 = 84, flow 3×7×3 = 63 plus the bodyweight fallback for pull — **231 exercises**, from 70.
+
+**`P2` gained its own `pushup` and still has no `back`, on purpose.** Flow now covers piernas, empuje and core with its own vocabulary; pull keeps falling through to `by`. Breakdance and capoeira have no pulling pattern — there is nothing to hang from — and inventing one would make the body map credit `back` ("dorsal ancho, trapecio, bíceps", per `Fo`) for bridges and scorpions, which do not pull. A missing table that falls back honestly beats a full table that lies.
+
+The flow vocabulary is drawn from the two references the author named — **LeoMoves** (Leandro Fornito: breakdance and acrobatics, animal locomotion, handstands) and **HIIT the Beat** (Peter "Petair" Sowinski, three-time German breakdance champion: HIIT with breaking elements at graded levels) — plus capoeira and breaking fundamentals. The ladders follow the real teaching order: breaking runs toprock → footwork (2-step, 6-step, CC) → freezes (baby → elbow → shoulder) → powermoves (windmill); capoeira runs ginga → negativa → rolê → aú → queda de rins → macaco → bananeira. **Keep that order if you add rungs** — a freeze before footwork is not a difficulty choice, it is a wrong curriculum.
 
 `F2` has no `label` field (only `by` does) and its `alt` strings are loading and technique cues rather than equipment-free substitutes, which is right in a gym — but the new ones name a real fallback whenever the machine can be taken or missing ("Sin máquina: fondos entre dos bancos"), because the rotation can land you on a day whose implement is not free.
 

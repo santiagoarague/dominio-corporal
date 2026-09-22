@@ -156,8 +156,12 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
   tu rango fijaba los cuatro movimientos y lo único que cambiaba era uno de seis modificadores.
   Del nivel 1 al 50 hacen falta 5.880 XP: **entre 36 y 85 sesiones** con los mismos cuatro.
   Ahora cada escalón de **peso corporal tiene 3 ejercicios** (84 en total) y la app rota por día.
-- **Gimnasio también tiene 3 por escalón** (84). Falta **flow**, que sigue con uno por escalón
-  (14). El motor acepta las dos formas mezcladas, así que se puede ensanchar sin tocar el resto.
+- **Las tres modalidades tienen 3 por escalón.** 231 ejercicios en total, de los 70 que había.
+- **Flow ya tiene su propio empuje** (antes usaba el de peso corporal): queda de rins, aú, baby
+  freeze, bananeira, molino. Vocabulario de capoeira y breakdance, de las dos referencias que
+  pasó Santiago. **Tracción sigue cayendo a peso corporal a propósito**: ni el breakdance ni la
+  capoeira tienen patrón de tracción, no hay de dónde colgarse, y llamarle tracción a un puente
+  sería mentirle al mapa del cuerpo.
 - **Flow no tiene empuje ni tracción propios**: usa los de peso corporal, que no son movimientos
   de flow. Son 14 ejercicios para escribir y deja la modalidad coherente.
 
