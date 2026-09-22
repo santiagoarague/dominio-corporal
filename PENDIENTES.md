@@ -192,6 +192,27 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
   resto, 1 abajo de 20 kg: una elevación lateral y una prensa no pueden compartir escalón.
   La línea es un botón: al tocarlo llena las tres series. **Nunca se llena solo**, porque el
   campo de kilos guarda lo que hiciste y no lo que la app supone.
+- ~~Había ejercicios que daban por hecho que tenés el elemento~~ — resuelto en los 252. La regla
+  ya estaba escrita ("el `alt` tiene que nombrar un reemplazo sin material") pero solo se había
+  aplicado donde el objeto estaba en el **nombre**. Donde estaba escondido en la instrucción, no:
+  *Remo invertido con pausa arriba* decía "el pecho pegado a la mesa" y nada más, *Remo a un
+  brazo con mochila* daba por hecho que tenés mochila, y media escalera de tracción de flow
+  asumía una barra porque solo el primer escalón decía "Sin barra". **51 salidas agregadas.**
+
+  Dos cosas distintas se arreglaron:
+
+  - **El objeto que no tenés.** Toalla, dos trapos, mochila, barra, mesa, cinturón de lastre,
+    rueda abdominal, polea, máquina. Cada uno nombra ahora un reemplazo al alcance: un bidón de
+    agua o una funda de almohada con libros en vez de la mochila, remo invertido bajo una mesa
+    en vez de la barra, mancuernas en vez de la polea, una barra con discos que giren en vez de
+    la rueda.
+  - **El objeto que tenés pero no funciona donde estás.** *Arrastre con trapos* y las dos ruedas
+    abdominales con trapos necesitan un **piso que deslice**; sobre alfombra no hacen nada y
+    nadie lo decía. Ahora arrancan con "sobre alfombra no deslizan" y dan el movimiento que las
+    reemplaza.
+
+  El reemplazo siempre es el mismo patrón: si falta la barra, se cae a un remo, nunca a un
+  puente. El mapa del cuerpo paga por dorsal y bíceps y tiene que seguir siendo cierto.
 - ~~En gimnasio la superserie perdía los kilos de la primera serie~~ — resuelto. Revisé lo mismo
   que pasaba con las marcas y en gimnasio había **otra cosa además**: las series se quedaban
   marcadas, pero el campo de kilos de la **serie 1** volvía vacío. Medido: cargo 60 · 62,5 · 65,

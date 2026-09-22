@@ -211,6 +211,17 @@ Two changes. `sdcModBase.flow` dropped from `{60,55,55,60}` to `{40,36,36,40}` �
 
 One thing was left alone deliberately: **gym reps still climb with rank** (117/day at E to 190 at C) although the section above says "in the gym the variable is the load, not the reps". A rank C gym player is asked for 20 reps of barbell squat in the first set — hard but real. Flattening `W2` for gym would fix the inconsistency and change XP per session for every gym player, so it is a design call, not a bug fix.
 
+**Every `alt` that needs an object has to say what to do without it, and 51 of them did not.** The rule was already written for `by` — "the `alt` must name a real equipment-free substitute" — but it had only ever been applied to the rungs where the object was in the *name*. An audit of all 252 found the gap in the ones where the object hides in the instruction: `Remo invertido con pausa arriba` says "el pecho pegado a la mesa", `Remo a un brazo con mochila` assumes you own a backpack, and half of `P2.back` quietly assumes a pull-up bar because only the first rung said `Sin barra`.
+
+Two kinds of missing exit were fixed:
+
+- **The object you may not own.** A towel, two rags, a backpack, a bar, a table, a loading belt, an ab wheel, a cable station, a machine. Each now names a substitute you can reach: a water jug or a pillowcase of books for the backpack, an inverted row under a table for the bar, dumbbells for the cable, a barbell with plates that roll for the ab wheel.
+- **The object you own that does not work where you are.** `Arrastre con trapos` and both ab-wheel rollouts need a **floor the rags slide on**; on carpet they do nothing, and nothing said so. Those now open with "sobre alfombra no deslizan" and give the movement that replaces them.
+
+Coverage after the pass: `by` 39/84 alts carry an explicit way out, `F2` 53/84, `P2` 37/84 — the rest need no object at all.
+
+**The register for these is neutral Spanish, not voseo** (see **Voice**), so the new clauses say `lleva`, `deja caer`, `sujétate`, never `llevá`. And the substitute still has to be the same movement pattern: `Fo.back` promises "dorsal ancho, trapecio, bíceps" and the body map pays out on that promise, so a missing bar falls back to a row, never to a bridge.
+
 **When adding a variant, `repFactor` is the safety valve.** It scales the prescribed reps, so a harder option at the same rung must carry a lower one — the arrow push-up at `.5` against the strict at `1`. And the `alt` still has to name a real equipment-free substitute, because the rotation means a player can land on the barbell-free day and still need somewhere to go.
 .
 
