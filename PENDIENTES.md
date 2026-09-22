@@ -184,6 +184,14 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
   pagaba marca nueva por cambiarte a una máquina más fácil. Ahora la memoria va por **nombre de
   ejercicio**: si nunca lo hiciste, el campo viene vacío y no hay línea de historial. Un peso
   sugerido equivocado es peor que ninguno.
+- ~~El gimnasio no sugería cuánto cargar~~ — resuelto. Anotar lo que levantaste es un cuaderno;
+  decirte qué levantar mañana es el trabajo. Ahora, debajo de los kilos: **"Hoy probá 65 kg →"**
+  si completaste las reps la última vez, o **"Repetí 70 kg y cerralo →"** si te quedaste corto.
+  **Solo sube si cerraste todas las reps** — mandarle más carga a alguien que ya está fallando
+  series es como se lesiona la gente. El incremento es 5 kg en piernas desde 40, 2,5 en el
+  resto, 1 abajo de 20 kg: una elevación lateral y una prensa no pueden compartir escalón.
+  La línea es un botón: al tocarlo llena las tres series. **Nunca se llena solo**, porque el
+  campo de kilos guarda lo que hiciste y no lo que la app supone.
 - **Falta decidir**: las reps de gimnasio suben con el rango (117/día en E, 190 en C) aunque el
   diseño dice que en el gimnasio la variable es la carga, no las reps. Un jugador de rango C
   hace 20 sentadillas con barra en la primera serie: duro pero real. Aplanarlo cambiaría el XP

@@ -395,6 +395,16 @@ XP base is literally the reps performed, plus a flat **30** for a 100% routine. 
 
 It fires **only when there was a previous mark**. Without that guard the first gym session of a player's life would hand out +100 for merely writing down four numbers. Verified both ways.
 
+**The gym suggests the next load, and the suggestion is earned.** Recording what you lifted is a notebook; telling you what to lift next is the job. `sdcSugKg(state, group, name)` reads `gymUlt[name]` and applies double progression: **you only go up if you finished the prescribed reps last time**. That is why `i5` stores `pct: C/u[b]` alongside the weights — without it the app would push more load onto someone who is already failing sets, which is how people get hurt.
+
+```
+completaste  →  "Hoy probá 65 kg →"
+te faltó     →  "Repetí 70 kg y cerralo →"
+sin historia →  nada
+```
+
+The increment is `sdcIncKg`: 5 kg for `squat` at 40 kg or more, otherwise 2.5, dropping to 1 under 20 kg — a lateral raise and a leg press cannot share a step size. The line is a **button**: tapping it fills every set, so the player still performs the deliberate act. It is never auto-filled, because the kilos field records what you *did*, and a suggestion written into it before you lift is the app putting words in your mouth.
+
 **The gym's memory is keyed by exercise name, not by pattern** — `state.gymUlt["Sentadilla con barra"] = {kgs, fecha, best}` — and that distinction became load-bearing the moment each rung grew to three variants. Before the rotation, one exercise per rung meant pattern-keying and exercise-keying were the same thing. After it, `squat` at gym rank E covers *Prensa de piernas*, *Extensión de cuádriceps* and *Curl femoral*, where 120 kg is routine on the first and absurd on the others. Keyed by pattern, the app would have shown "La última vez: 120 kg" under a quad extension, pre-filled the field with it, and paid a PR for switching to an easier machine. **A weight suggestion that is wrong is worse than none**, so an exercise you have not done yet shows an empty field and no history line. `bestLiftKg[pattern]` is still written alongside because sixteen achievements read it through `Object.values`.
 
 The multipliers stack in `i5`, each with its own `Math.round`: `t5` (focus, plus the `salud`-only +15% at streak â¥3), `sdcRacha` (+2% per consecutive day, capped at +30%, every profile), `flexBuff`, `Ka` (day buffs from the shop), `sdcPerk` (permanent perks) and the multi-modality bonus. A 12-day streak with both perks turns a 62 XP routine into 97.
