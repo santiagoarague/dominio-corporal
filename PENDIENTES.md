@@ -192,6 +192,16 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
   resto, 1 abajo de 20 kg: una elevación lateral y una prensa no pueden compartir escalón.
   La línea es un botón: al tocarlo llena las tres series. **Nunca se llena solo**, porque el
   campo de kilos guarda lo que hiciste y no lo que la app supone.
+- ~~En gimnasio la superserie perdía los kilos de la primera serie~~ — resuelto. Revisé lo mismo
+  que pasaba con las marcas y en gimnasio había **otra cosa además**: las series se quedaban
+  marcadas, pero el campo de kilos de la **serie 1** volvía vacío. Medido: cargo 60 · 62,5 · 65,
+  paso a peso corporal, vuelvo, y me encuentro `— · 62,5 · 65`. Las series 2 y 3 sobrevivían
+  porque se guardan en `gymSerieKg`; la 1 se guarda en `gymWeights` y la función que dibuja el
+  campo no lo lee nunca — cae directo al historial del ejercicio. Sin historial, campo vacío.
+  **Y eso no era cosmético**: al registrar, esa serie contaba como 0 kg. Una sesión de 2.052 kg
+  se anotaba como 1.272, un 38% menos, sin avisar. Ahora el texto que escribís hoy se guarda en
+  el mismo casillero del día que las marcas, así que aguanta el cambio de modalidad y la recarga
+  de la página. Verificado: 60 · 62,5 · 65 con 13 · 11 · 9 reps registra 2.053 kg.
 - ~~Haciendo superserie entre dos modalidades se desmarcaban las series~~ — resuelto, y lo
   reproduje tal cual: marco la serie 1 en peso corporal → paso a flow → marco la serie 1 ahí →
   vuelvo a peso corporal y **la serie 1 aparece sin marcar**. El memo de las marcas era un solo
