@@ -170,6 +170,14 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
   segundos" cuesta el triple. El peor pedía **60 segundos de pino libre en la primera serie**
   (y hay tres). La plancha con disco del gimnasio pedía **120 segundos**. Ahora el peor sostén
   es de 30 s y la serie más grande bajó de 24 a 20 reps.
+- ~~Resistencia cobraba de más y el peso no contaba para nada~~ — resuelto. `resistencia` hacía
+  **140% de las reps cobrando 1×**, o sea que le pagaban entero un volumen que los otros dos
+  cambian por intensidad. Medido en gimnasio rango C, misma sesión: fuerza 210, salud 200,
+  resistencia **268**. Ahora resistencia cobra 0,8× y queda en 214, apenas 2% arriba de fuerza
+  — a propósito, porque 238 repeticiones llevan más tiempo que 110.
+- **Y la carga ahora da XP**: superar tu mejor marca en un patrón paga **+25 XP** con aviso
+  ("Piernas y glúteos 60 → 65 kg"). Solo cuenta si ya tenías marca previa: la primera sesión de
+  gimnasio de tu vida no regala 100 XP por anotar cuatro números.
 - **Falta decidir**: las reps de gimnasio suben con el rango (117/día en E, 190 en C) aunque el
   diseño dice que en el gimnasio la variable es la carga, no las reps. Un jugador de rango C
   hace 20 sentadillas con barra en la primera serie: duro pero real. Aplanarlo cambiaría el XP

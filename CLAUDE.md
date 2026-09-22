@@ -385,6 +385,16 @@ Dominion Points: 3 for a 100% routine, 1 for â¥50%, first session of the day
 
 XP base is literally the reps performed, plus a flat **30** for a 100% routine. That bonus was 20, which made the first routine worth 44 XP against the 48 `li(1)` costs â a new player could not level up in their first session. **Any change to `li`, to the bonus, or to the volume model must keep that first level-up intact;** it is the cheapest, most load-bearing reward in the game.
 
+**The three focus profiles have to pay the same for equivalent work, and one of them did not.** `repMult` sets how many reps a profile does and `xpMult` is supposed to buy that back: `fuerza` does 65% of the reps at 1.5× XP, which nets 0.975. But `resistencia` did **140% of the reps at 1× XP** — it was paid in full for volume the other two trade away. Measured at gym rank C, same session, no streak: fuerza 210, salud 200, **resistencia 268**. `resistencia.xpMult` is now `.8`, which lands it at 214 — still ~2% ahead of fuerza, deliberately, because 238 reps takes longer than 110.
+
+**The load is in the XP now, but only where it is earned.** Ten reps at 20 kg used to pay exactly what ten reps at 100 kg paid: `v` starts as the raw rep count and `gymWeights` was never consulted. Progressive overload — the entire point of a gym — was invisible. The gym block in `i5` now collects a `sdcPRb` list when `gb.max` beats `bestLiftKg[b]`, and **+25 XP per pattern** is added after all the multipliers (flat on purpose, so it reads the same every time) with a notice that starts with `+`, so `sdcTier` styles it as good:
+
+```
++25 XP: nueva marca de carga. Piernas y glúteos 60 → 65 kg
+```
+
+It fires **only when there was a previous mark**: `(o.bestLiftKg[b]||0)>0`. Without that guard the first gym session of a player's life would hand out +100 for merely writing down four numbers. Verified both ways.
+
 The multipliers stack in `i5`, each with its own `Math.round`: `t5` (focus, plus the `salud`-only +15% at streak â¥3), `sdcRacha` (+2% per consecutive day, capped at +30%, every profile), `flexBuff`, `Ka` (day buffs from the shop), `sdcPerk` (permanent perks) and the multi-modality bonus. A 12-day streak with both perks turns a 62 XP routine into 97.
 
 `Ey` now ends with two **permanent** purchases, `memoria` (40 PD, +5% XP) and `nucleo` (90 PD, raises it to +10% and requires `memoria`). They live in `dominion.perks`, which `ei` backfills and `Ay()` creates â the first array that needed a migration default in a while, so treat it as the worked example. Everything else in the shop is a consumable.
