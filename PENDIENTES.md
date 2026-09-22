@@ -128,6 +128,13 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
   *¿Qué cuenta como sesión?* y *el calendario* entraron en **"Tu semana"**. El índice bajó de
   1.653 px a 1.209 y no se perdió un solo dato.
 
+- ~~Si te interrumpían a mitad de la sesión, la app se olvidaba de todo~~ — resuelto, y era lo
+  peor que había. Las series marcadas vivían solo en memoria: marcabas 2 de 3, se bloqueaba el
+  teléfono o el sistema descartaba la app mientras contestabas un mensaje, volvías y **no
+  habías hecho nada**. Ahora cada toque deja anotado qué marcaste; volvés y está todo donde lo
+  dejaste. El XP sigue liquidándose una sola vez al registrar, así que *Deshacer registro de
+  hoy* no cambió.
+
 ## C · Decisiones de diseño que quedaron abiertas
 
 - **Tamaño de texto ajustable** y **poder apagar sistemas**: quedaron explícitamente fuera de

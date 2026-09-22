@@ -189,7 +189,16 @@ The daily target is split into tappable sets. `sdcNSets(total)` gives 3 sets at 
 
 The **pending** set also carries a `â N +`, so a player who fell short on the last set records that without disturbing the others (`sdcAjuste[group][index]`, read through `sdcRepsSerie`). Adjusting a set changes what you *did*, never the day's goal: `sdcTotalMeta()` deliberately sums the raw `Aa` targets, because `i5` grades against `Oy()` and a button reading `30/30` would claim a completion the game scores as 94%.
 
-**`i5` is still the only function that settles XP.** `sdcSer` (completed set counts) and `sdcAjuste` are component state, never persisted, and the XP shown in the header during a session is a live projection: `u.currentXP + sdcTotalHechas()`. `pg` passes `sdcRepsHechas()` to `i5`, not the raw targets. Keep it that way â moving the ledger into the tap would break `Deshacer registro de hoy` and risk double counting.
+**`i5` is still the only function that settles XP,** and the XP shown in the header during a session is a live projection: `u.currentXP + sdcTotalHechas()`. `pg` passes `sdcRepsHechas()` to `i5`, not the raw targets. Keep it that way — moving the **ledger** into the tap would break `Deshacer registro de hoy` and risk double counting.
+
+**The marks, however, are persisted, and that is a different thing.** `sdcSer` and `sdcAjuste` used to be component state only, so closing the app mid-session lost every set you had tapped — verified: two of three marked, reload, all gone. For a phone that locks, or an app the system evicts while you answer a message, that is the moment a person quits, and it makes them feel stupid rather than interrupted. Every tap now also writes a memo:
+
+```js
+today.marca = { mod, mode, ser, aj, mok }
+```
+
+`sdcMarcaOk(ser, aj, mok)` writes it from `sdcSerie`, `sdcAjustar`, `sdcMarcarTodo` and the modifier-claim button; the `[De,u.rank,B]` effect rehydrates from it **only when `mod` and `mode` match and the day is not registered**, which is what keeps a second modality session and the Recuperación toggle from inheriting someone else's marks. `ei` builds a fresh `today` on rollover, so a new day clears it with no cleanup code. Verified: marks survive a reload, `today.reps` stays at zero until `pg()` runs, registration still yields the same reps and XP, and a new day starts clean.
+
 
 When the day is registered the card is replaced by a summary: reps per group, the personal best in each, and the week's totals. The â only appears when `lifetimeReps[g]` exceeds today's reps, because otherwise every group is a record in the first session and the mark means nothing.
 
