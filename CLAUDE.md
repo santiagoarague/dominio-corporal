@@ -393,7 +393,9 @@ XP base is literally the reps performed, plus a flat **30** for a 100% routine. 
 +25 XP: nueva marca de carga. Piernas y glúteos 60 → 65 kg
 ```
 
-It fires **only when there was a previous mark**: `(o.bestLiftKg[b]||0)>0`. Without that guard the first gym session of a player's life would hand out +100 for merely writing down four numbers. Verified both ways.
+It fires **only when there was a previous mark**. Without that guard the first gym session of a player's life would hand out +100 for merely writing down four numbers. Verified both ways.
+
+**The gym's memory is keyed by exercise name, not by pattern** — `state.gymUlt["Sentadilla con barra"] = {kgs, fecha, best}` — and that distinction became load-bearing the moment each rung grew to three variants. Before the rotation, one exercise per rung meant pattern-keying and exercise-keying were the same thing. After it, `squat` at gym rank E covers *Prensa de piernas*, *Extensión de cuádriceps* and *Curl femoral*, where 120 kg is routine on the first and absurd on the others. Keyed by pattern, the app would have shown "La última vez: 120 kg" under a quad extension, pre-filled the field with it, and paid a PR for switching to an easier machine. **A weight suggestion that is wrong is worse than none**, so an exercise you have not done yet shows an empty field and no history line. `bestLiftKg[pattern]` is still written alongside because sixteen achievements read it through `Object.values`.
 
 The multipliers stack in `i5`, each with its own `Math.round`: `t5` (focus, plus the `salud`-only +15% at streak â¥3), `sdcRacha` (+2% per consecutive day, capped at +30%, every profile), `flexBuff`, `Ka` (day buffs from the shop), `sdcPerk` (permanent perks) and the multi-modality bonus. A 12-day streak with both perks turns a 62 XP routine into 97.
 

@@ -177,6 +177,13 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
 - **Y la carga ahora da XP**: superar tu mejor marca en un patrón paga **+25 XP** con aviso
   ("Piernas y glúteos 60 → 65 kg"). Solo cuenta si ya tenías marca previa: la primera sesión de
   gimnasio de tu vida no regala 100 XP por anotar cuatro números.
+- ~~El peso se guardaba por patrón, no por ejercicio~~ — resuelto, y lo había roto yo al meter
+  la rotación. Con un solo ejercicio por escalón daba igual; con tres, *Prensa de piernas*,
+  *Extensión de cuádriceps* y *Curl femoral* compartían casillero. La app te decía "La última
+  vez: 120 kg" debajo de una extensión de cuádriceps, te llenaba el campo con ese número y te
+  pagaba marca nueva por cambiarte a una máquina más fácil. Ahora la memoria va por **nombre de
+  ejercicio**: si nunca lo hiciste, el campo viene vacío y no hay línea de historial. Un peso
+  sugerido equivocado es peor que ninguno.
 - **Falta decidir**: las reps de gimnasio suben con el rango (117/día en E, 190 en C) aunque el
   diseño dice que en el gimnasio la variable es la carga, no las reps. Un jugador de rango C
   hace 20 sentadillas con barra en la primera serie: duro pero real. Aplanarlo cambiaría el XP
