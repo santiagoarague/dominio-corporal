@@ -221,7 +221,7 @@ Hollow body hold     → "En hollow hold, cuenta 1 rep por cada 3 segundos."
 
 The second defines the term with the term. And the only door to any of it was a button labelled **💡 alternativa** — nobody who does not know the movement taps a button called "alternative".
 
-**Three fields, one question each.** Every `by` and `F2` entry carries `pos`, `mov` and `err` beside its `alt` — 168 of the 252, with `P2` still pending:
+**Three fields, one question each.** All **252** entries — `by`, `F2` and `P2` — carry `pos`, `mov` and `err` beside their `alt`:
 
 | field | the question it answers |
 |---|---|
@@ -229,9 +229,13 @@ The second defines the term with the term. And the only door to any of it was a 
 | `mov` | what moves, and where it stops |
 | `err` | the one thing that ruins it or hurts you |
 
-`sdcGuia(rank, group, modality)` returns the entry when any of the three is present, `null` otherwise, so **a table without the fields keeps the old behaviour untouched** — the button still reads `💡 alternativa` there and the panel still shows only the `alt`. That fallback is the whole reason the three tables could be done one at a time, and flow still runs on it.
+`sdcGuia(rank, group, modality)` returns the entry when any of the three is present, `null` otherwise. Nothing falls back any more, but keep that branch: it is what let the three tables be filled one at a time across three deploys, and it is what a new rung gets before anybody writes its guide.
 
-**In the gym the `err` line is the safety line.** A wrong cue on a leg extension is a wasted set; a wrong cue on a barbell squat is a disc. So the gym errors name the failure that hurts and what to do about it — *si la espalda baja se redondea al final, para justo antes: eso es lo que lesiona*, *nunca hagas esto sin seguros: la pausa es justo donde una serie se cae* — rather than a form nicety. The measured cost is the same as bodyweight: the gym routine card goes 1387 → 2185 px with the four panels open, and the `vistos` gate closes them after the first session exactly as it does elsewhere.
+**In the gym the `err` line is the safety line.** A wrong cue on a leg extension is a wasted set; a wrong cue on a barbell squat is a disc. So the gym errors name the failure that hurts and what to do about it — *si la espalda baja se redondea al final, para justo antes: eso es lo que lesiona*, *nunca hagas esto sin seguros: la pausa es justo donde una serie se cae* — rather than a form nicety.
+
+**In flow the `pos` line carries the whole load, because the names teach nothing.** *Macaco*, *queda de rins*, *rolê*, *aú*, *6-step*, *baby freeze* — a player reads those and knows exactly as much as before. So the flow guides never use a term the table has not already placed on the floor: `pos` describes bones and angles (*en cuclillas con una mano en el suelo detrás de la cadera, dedos hacia ti*), and when a position has a name that recurs — bestia, cangrejo, la negativa — it is spelled out the first time it appears at each rung rather than assumed. Same for the breaking vocabulary: the 6-step is *seis pasos en círculo alrededor de las manos*, not "el círculo básico".
+
+The measured cost is the same in all three: the routine card runs about 1120 px closed and about 2000 px with the four panels open, and the `vistos` gate closes them after the first session.
 
 **The register is neutral Spanish**, like every other execution instruction (see **Voice**): `Baja el pecho`, never `Bajá el pecho`. And the panel is **14 px at 1.5 line-height in `#c8d0e4`**, not the shared `text-xs`, for the same reason the guide moved off it: 12 px at 1.0 was never meant for paragraphs.
 
