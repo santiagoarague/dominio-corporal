@@ -192,6 +192,19 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
   resto, 1 abajo de 20 kg: una elevación lateral y una prensa no pueden compartir escalón.
   La línea es un botón: al tocarlo llena las tres series. **Nunca se llena solo**, porque el
   campo de kilos guarda lo que hiciste y no lo que la app supone.
+- ~~El estiramiento no daba tiempo a acomodarse entre posiciones~~ — resuelto. El pitido te
+  avisaba que cambiaras y el reloj del sostén ya estaba corriendo, así que los primeros segundos
+  de un estiramiento de 25 se te iban en bajar al piso. El peor caso era el cambio de lado:
+  levantarte, girar y volver a empezar contra un cronómetro que no paraba.
+
+  Ahora **cada posición arranca con 5 segundos de preparación**, con el nombre, el lado y la
+  descripción de la que viene ya en pantalla y la cuenta atrás en ámbar. La primera dice
+  *PONETE EN POSICIÓN*; las demás, *PREPARATE*. Dos pitidos en vez de uno: grave para que te
+  prepares, agudo para empezar.
+
+  Las rutinas quedaron en **3:30 (corta)** y **7:10 (completa)**. Ese tiempo ya lo estabas
+  gastando, solo que salía del estiramiento. La puntuación no cambió: un paso que solo estás
+  preparando no cuenta como hecho si tocás *Terminar acá*.
 - ~~"Tu cuerpo → Hoy" solo contaba la última sesión del día~~ — resuelto, y reproducido igual:
   una sesión de peso corporal y una de flow, y el mapa mostraba **24 · 19 · 22 · 24**, solo flow,
   mientras la línea de XP de la misma tarjeta decía 264, o sea las dos. `today.reps` se
