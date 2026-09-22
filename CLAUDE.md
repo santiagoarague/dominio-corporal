@@ -192,6 +192,25 @@ The flow vocabulary is drawn from the two references the author named — **LeoM
 
 `F2` has no `label` field (only `by` does) and its `alt` strings are loading and technique cues rather than equipment-free substitutes, which is right in a gym — but the new ones name a real fallback whenever the machine can be taken or missing ("Sin máquina: fondos entre dos bancos"), because the rotation can land you on a day whose implement is not free.
 
+### Holds: `repFactor` has to pay for the seconds
+
+An exercise whose `alt` says "1 rep = 3 segundos" costs three times what a dynamic rep costs, and nothing in `jd` knows that — the model multiplies `base × W2 × repFactor` and hands the result to a UI that prints it as seconds. An audit of all 252 variants found the damage concentrated exactly there:
+
+| | was | is |
+|---|---|---|
+| Longest hold, first set | **60 s of freestanding handstand** | 30 s |
+| Gym `Plancha con disco`, total | **120 s** | 54 |
+| Gym `Pallof press pesado`, total | **135 s** | 42 |
+| Flow `Pino libre`, total | **96 s** | 36 |
+| Biggest single set | 24 reps | 20 |
+| Flow reps/day (salud) | 141–223 | 94–141 |
+
+Two changes. `sdcModBase.flow` dropped from `{60,55,55,60}` to `{40,36,36,40}` — flow's base was *above* gym's while its reps are slower and half of them are holds. And every hold whose total passed 75 s had its `repFactor` recomputed against a target curve of 60 s at rank E sliding to 30 s at Z, using the **same regex `sdcSegs` uses** so the audit and the UI agree.
+
+**So: when you add a hold, set its `repFactor` from the seconds you want, not from how hard the movement feels.** `rf = target_seconds / (seconds_per_rep × base × W2[rank])`.
+
+One thing was left alone deliberately: **gym reps still climb with rank** (117/day at E to 190 at C) although the section above says "in the gym the variable is the load, not the reps". A rank C gym player is asked for 20 reps of barbell squat in the first set — hard but real. Flattening `W2` for gym would fix the inconsistency and change XP per session for every gym player, so it is a design call, not a bug fix.
+
 **When adding a variant, `repFactor` is the safety valve.** It scales the prescribed reps, so a harder option at the same rung must carry a lower one — the arrow push-up at `.5` against the strict at `1`. And the `alt` still has to name a real equipment-free substitute, because the rotation means a player can land on the barbell-free day and still need somewhere to go.
 .
 

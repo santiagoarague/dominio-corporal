@@ -165,6 +165,16 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
 - **Flow no tiene empuje ni tracción propios**: usa los de peso corporal, que no son movimientos
   de flow. Son 14 ejercicios para escribir y deja la modalidad coherente.
 
+- ~~Metas de repeticiones imposibles en los sostenes~~ — resuelto. Audité las 252 variantes: el
+  daño estaba todo en los ejercicios de sostén, porque `repFactor` no sabía que "1 rep = 3
+  segundos" cuesta el triple. El peor pedía **60 segundos de pino libre en la primera serie**
+  (y hay tres). La plancha con disco del gimnasio pedía **120 segundos**. Ahora el peor sostén
+  es de 30 s y la serie más grande bajó de 24 a 20 reps.
+- **Falta decidir**: las reps de gimnasio suben con el rango (117/día en E, 190 en C) aunque el
+  diseño dice que en el gimnasio la variable es la carga, no las reps. Un jugador de rango C
+  hace 20 sentadillas con barra en la primera serie: duro pero real. Aplanarlo cambiaría el XP
+  por sesión de todos los que entrenan en gimnasio, así que es una decisión tuya, no un bug.
+
 ## C · Decisiones de diseño que quedaron abiertas
 
 - **Tamaño de texto ajustable** y **poder apagar sistemas**: quedaron explícitamente fuera de
