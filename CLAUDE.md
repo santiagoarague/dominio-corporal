@@ -184,7 +184,9 @@ Rank (`ve` = EâZ) picks the exercise **variant**; the fitness test picks th
 
 That matters because the routine had **zero** day-to-day variation in the exercise itself: `_d` never saw the date, so your rank fixed the four movements and the only thing that changed was one of six modifiers. Rank E runs to level 50, which is **5.880 XP** — about 36 sessions for a player with a strong fitness test and **~85 for a beginner** at ~70 XP a session. Two to seven months of the identical four exercises.
 
-`by` (bodyweight) now carries **three per rung, 84 entries**. `F2` and `P2` are still one per rung and read through the same resolver untouched. Counts today: bodyweight 4×7×3 = 84, gym 4×7 = 28, flow 2×7 = 14 plus the bodyweight fallback for push and pull.
+`by` and `F2` now carry **three per rung, 84 entries each**. `P2` is still one per rung and reads through the same resolver untouched. Counts today: bodyweight 4×7×3 = 84, gym 4×7×3 = 84, flow 2×7 = 14 plus the bodyweight fallback for push and pull — **182 exercises**, from 70.
+
+`F2` has no `label` field (only `by` does) and its `alt` strings are loading and technique cues rather than equipment-free substitutes, which is right in a gym — but the new ones name a real fallback whenever the machine can be taken or missing ("Sin máquina: fondos entre dos bancos"), because the rotation can land you on a day whose implement is not free.
 
 **When adding a variant, `repFactor` is the safety valve.** It scales the prescribed reps, so a harder option at the same rung must carry a lower one — the arrow push-up at `.5` against the strict at `1`. And the `alt` still has to name a real equipment-free substitute, because the rotation means a player can land on the barbell-free day and still need somewhere to go.
 .
