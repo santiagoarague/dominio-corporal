@@ -192,6 +192,30 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
   resto, 1 abajo de 20 kg: una elevación lateral y una prensa no pueden compartir escalón.
   La línea es un botón: al tocarlo llena las tres series. **Nunca se llena solo**, porque el
   campo de kilos guarda lo que hiciste y no lo que la app supone.
+- ~~El calibre hablaba un solo idioma~~ — resuelto. La prueba mide a todos con los mismos cuatro
+  ejercicios de peso corporal, **y eso es a propósito**: la idea es un fondo que te sirva para
+  las tres modalidades sin necesitar material (el remo invertido ya trae "superman en el suelo"
+  como alternativa). Lo que estaba mal era el nombre del resultado: la escala iba de
+  *Principiante Base* a *Élite / Dominio Total* y el enfoque del penúltimo escalón decía
+  literalmente "Calistenia / Flow de alto impacto" **a alguien que solo levanta pesas**. Ahora
+  los seis escalones tienen tres juegos de nombres, elegidos con el mismo `sdcJuego` que ya
+  eligen los rangos, así que la cabecera dice `Nv. 1 · Gateo` sobre `Tránsito largo` en flow y
+  `Barra` sobre `Sesión larga` en gimnasio, en vez de mezclar vocabularios.
+
+  ```
+  peso corporal  Primeros apoyos · Base firme · Aguante propio · Trabajo largo · Fuerza relativa · Fuera de la tabla
+  gimnasio       Primeros pesos · Base para cargar · Aguante entre series · Sesión larga · Carga alta · Fuera de la tabla
+  flow           Primeras posiciones · Piso firme · Aguante continuo · Tránsito largo · Control fino · Fuera de la tabla
+  ```
+
+  La regla con la que se escribieron los 36 textos: **un calibre describe cuánto trabajo
+  aguantás, nunca una habilidad**. La prueba no sabe si hacés el pino ni si sentadilleás 100 kg,
+  así que la escala de gimnasio habla de series y volumen y jamás de kilos, y el escalón más
+  alto es *Fuera de la tabla* — te pasaste de la escala, que es lo que de verdad ocurrió — en
+  vez de *Élite*. La tarjeta de Perfil suma además la línea **Enfoque**, que es lo único que
+  puede nombrar un movimiento, porque un enfoque es lo que viene, no lo que ya tenés.
+  Los números no cambiaron: `classification` sale del mismo `vy` de siempre y el volumen de la
+  rutina es idéntico.
 - **Falta decidir**: las reps de gimnasio suben con el rango (117/día en E, 190 en C) aunque el
   diseño dice que en el gimnasio la variable es la carga, no las reps. Un jugador de rango C
   hace 20 sentadillas con barra en la primera serie: duro pero real. Aplanarlo cambiaría el XP

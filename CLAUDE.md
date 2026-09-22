@@ -428,6 +428,22 @@ Two axes, kept separate on purpose:
 
 `vy` also carries `rank` and `focus` fields. `focus` is display text; `rank` is dead by design (see Exercise selection).
 
+**The four test exercises are bodyweight on purpose, and that is a decision, not an oversight.** A gym player is measured with squats, push-ups, sit-ups and inverted rows because the test's job is to find a base that carries into *all three* modalities with no equipment at all — the inverted row already ships `superman en el suelo` as its fallback. Do not "fix" this by adding a barbell variant: the moment the test needs a gym, it stops measuring the thing it is for.
+
+**What does change per modality is what the number is called.** `vy`'s own labels were a player-level ladder (`Principiante Base` → `Élite / Dominio Total`) and its `focus` strings were written in one voice — `"Calistenia / Flow de alto impacto"` was shown to someone who only lifts. `sdcCalTit` and `sdcCalFoco` are 3×6 arrays, read through `sdcCalT(i, profile)` and `sdcCalF(i, profile)`, which resolve the set with the **same `sdcJuego(profile)`** the rank titles use — so the header reads `Nv. 1 · Gateo` over `Tránsito largo` for a flow player and `Barra` over `Sesión larga` for a gym one, instead of mixing vocabularies.
+
+```
+bodyweight  Primeros apoyos · Base firme · Aguante propio · Trabajo largo · Fuerza relativa · Fuera de la tabla
+gym         Primeros pesos · Base para cargar · Aguante entre series · Sesión larga · Carga alta · Fuera de la tabla
+flow        Primeras posiciones · Piso firme · Aguante continuo · Tránsito largo · Control fino · Fuera de la tabla
+```
+
+**The rule that shaped those 36 strings: a calibre label describes capacity, never skill.** The test measures how much work your body absorbs; it does not know whether you can do a handstand or a 100 kg squat. So the gym ladder talks about series and volume and never about kilos, the flow ladder talks about sustaining and linking and never names a freeze, and the top band is `Fuera de la tabla` — you exceeded the *scale*, which is what actually happened — rather than `Élite`. The `focus` line is the one place that may name a movement family, because a focus is what to work on next, not a claim about what you already have.
+
+`vy.label` and `vy.focus` survive as the fallback (`||(vy[i]&&vy[i].label)`), same as `zl`/`J2` do for ranks. Four display sites read the new helpers: the header badge (through `sdcCalibre`, which now returns `sdcCalT(vy.indexOf(b), p)`), the six-rung ladder and the "Te faltan N pts para…" line in Perfil → Prueba de aptitud, and the onboarding *Calibración completa* screen. Nothing touched `classification`, so the volume model is byte-identical.
+
+**The Perfil card also prints the current band's `focus`,** gated on `sdcCalibre(s)` rather than on the band index: a save that predates the test scores 0, which `findIndex` happily maps to band 0, and a focus line for a measurement that never happened would be an invention.
+
 ### Stretching
 
 It was the last screen in the app you **watched** instead of doing: one 300-second countdown, `_2(elapsed)` deriving which of nine stretches you were "on", no beep, no acknowledgment, nothing to tap. Four separate defects made that worse:
