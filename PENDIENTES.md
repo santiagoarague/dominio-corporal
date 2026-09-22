@@ -110,6 +110,17 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
 - Y se lee: títulos de 16 px, texto de 15 px con interlineado 1,65 y más contraste. Antes era
   el mismo 12 px apretado que usan las etiquetas.
 
+- ~~En gimnasio había un solo peso por ejercicio y un número que no significaba nada~~ —
+  resuelto. Ahora **cada serie tiene su propio campo de kilos**, alineado debajo de las fichas
+  de repeticiones, y podés subir el peso serie a serie como se hace de verdad. Escribir 30 en
+  la primera llena las siguientes; cambiás la segunda a 32,5 y arrastra a la tercera. Y
+  aparece **"La última vez: 30 · 32,5 · 35 kg"**, que es el dato que un gimnasio necesita.
+- Se fue el **"= 450 kg movidos"** de al lado del ejercicio. Es un total de carga, no algo que
+  levantaste: 20 kg × 30 reps le gana a 60 kg × 8 y eso no tiene sentido. El acumulado de por
+  vida sigue existiendo (16 logros dependen de él) y ahora se ve en Perfil → Tus números.
+- De paso: **no se podían escribir decimales** en el peso. "32," se parseaba a 32, el campo se
+  redibujaba y la siguiente tecla daba 325.
+
 ## C · Decisiones de diseño que quedaron abiertas
 
 - **Tamaño de texto ajustable** y **poder apagar sistemas**: quedaron explícitamente fuera de

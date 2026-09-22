@@ -195,6 +195,28 @@ When the day is registered the card is replaced by a summary: reps per group, th
 
 Exercises measured in time rather than reps declare it in their own `alt` ("1 rep = 3 segundosâ¦"). `sdcSegs(alt)` parses that and the UI shows the seconds without the player opening anything. It **ignores conversions in parentheses**, which describe the substitute: the pull-group `alt` mentions "superman en el suelo (1 rep = 3 s)" and that does not make towel rows a hold.
 
+### Gym: one weight per set, and tonnage is not a scoreboard
+
+`gymWeights[group]` was a **single** number per pattern, so the app could only describe a gym session as "30 kg × 30 reps". Ramping the load set to set — the most ordinary thing in a gym, and something the app's own `sdcMods` asks for with drop sets — could not be recorded at all. Worse, the input was controlled by the parsed number (`value: c||""`, `onChange` → `parseFloat`), so **you could not type a decimal**: "32," parsed to 32, the field redrew as "32", and the next keystroke produced 325.
+
+Now each set has its own field, rendered in a `flex gap-2` row directly under the chips so reps and kilos line up column by column:
+
+```
+[ 12 ] [ 10 ] [ 8 ]     ← reps
+[ 30 ] [32,5] [ 35 ]    ← kg
+La última vez: 30 · 32,5 · 35 kg
+```
+
+- **Editing text lives in component state** (`sdcKgS`, raw strings, so decimals type normally); the parsed numbers persist as `gymWeights[g]` for set 0 and `state.gymSerieKg[g][k]` for the rest.
+- `sdcKgVer(g,k)` **cascades downward**: an explicit value for a later set, else the nearest earlier one, else `gymWeights[g]`. Typing 30 into set 1 fills 2 and 3; bumping 2 to 32,5 carries into 3. Old saves have no `gymSerieKg`, so every set resolves to `gymWeights[g]` — exactly the old behaviour.
+- `state.gymUlt[g] = {kgs, fecha}` is written by `sdcGymHook` in `pg()` and feeds the "La última vez" line. Both new fields use the **no-migration pattern** (`sdcGymSer`, `sdcGymUlt` return `{}`), so `ei` is untouched.
+
+**`i5` takes a fifth argument, `gvol`.** `pg()` computes `{group:{vol,max,kgs}}` from the per-set kilos and the per-set reps — the only place both are known — and the gym block uses it, falling back to `gymWeights[b] × totalReps` when it is absent. So volume is now `Σ kg_k × reps_k` (30×12 + 32,5×10 + 35×8 = **965**, where the old formula said 900) and `bestLiftKg[b]` records the heaviest set, not the only one.
+
+**The "= 450 kg movidos" line next to the exercise is gone.** Tonnage is a workload total; printed beside one exercise mid-set it reads as a claim about a single lift, and it is trivially misleading — 20 kg × 30 reps outscores 60 kg × 8. It was also the *only* place `lifetimeVolumeKg` was ever shown, despite 16 achievements depending on it. It now lives in Perfil → **Tus números**, which is where a lifetime figure belongs.
+
+> A reorder is invisible to the bracket check. Moving the kilos row above the "Llevás N de M reps" line by splitting a region and concatenating the halves the other way round left the `Fragment` unclosed, and `{}`/`[]`/`()` deltas were all still perfect because a permutation preserves them. **After reordering siblings, load the app** — and assert that each half ends with a comma before swapping.
+
 ### Unlocks
 
 `au` is the rank ladder â the level at which each rank offers its Umbral: `{E:50, D:100, C:140, B:180, A:220, S:260}`. It used to be `{E:50, D:100, C:300, B:700, A:1500, S:3000}`, which with the XP curve meant rank B cost 255k XP (about 12 years of training four times a week) and rank Z 22.9M. The game had three reachable ranks out of seven. The current ladder puts D at ~5 months, C at 1.3 years, B at 2.6, A at 4.4, S at 6.7 and Z at 9.4. Z has no entry because there is nothing above it, and the header correctly hides the Umbral line there.
