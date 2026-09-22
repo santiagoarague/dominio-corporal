@@ -192,6 +192,27 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
   resto, 1 abajo de 20 kg: una elevación lateral y una prensa no pueden compartir escalón.
   La línea es un botón: al tocarlo llena las tres series. **Nunca se llena solo**, porque el
   campo de kilos guarda lo que hiciste y no lo que la app supone.
+- ~~"Tu cuerpo → Hoy" solo contaba la última sesión del día~~ — resuelto, y reproducido igual:
+  una sesión de peso corporal y una de flow, y el mapa mostraba **24 · 19 · 22 · 24**, solo flow,
+  mientras la línea de XP de la misma tarjeta decía 264, o sea las dos. `today.reps` se
+  **reemplaza** en cada sesión (y `mmNueva` lo pone en cero para abrir la siguiente); el total
+  del día vive en `dayLog`, que sí suma. El mapa leía el primero.
+
+  Revisándolo apareció algo peor que ni había notado: **antes de entrenar, Hoy marcaba 33/33** y
+  pintaba el cuerpo entero al 100%, porque cuando el día no estaba registrado mostraba la meta
+  como si ya estuviera hecha. Un día nuevo arrancaba diciéndote que ya habías terminado.
+
+  ```
+  antes de entrenar          0/33    (era 33/33)
+  una serie marcada         13/33    (ahora va en vivo, antes no se movía)
+  sesión 1 registrada       33/33
+  empieza la 2ª modalidad   33/57    (la meta crece, lo hecho se conserva)
+  ambas registradas         57/57    (era 24/24)
+  ```
+
+  La meta del día se guarda ahora igual que las reps, con un hook alrededor de `i5` para no
+  tocar la función que liquida el XP. El panel de la zona muestra los mismos dos números, y
+  deshacer el registro lo devuelve todo — verificado.
 - ~~Había ejercicios que daban por hecho que tenés el elemento~~ — resuelto en los 252. La regla
   ya estaba escrita ("el `alt` tiene que nombrar un reemplazo sin material") pero solo se había
   aplicado donde el objeto estaba en el **nombre**. Donde estaba escondido en la instrucción, no:

@@ -176,6 +176,22 @@ One plain object holds everything, deep-cloned with `M(e)` before mutation and s
 
 A day can hold one routine per modality. `today.doneModalities` lists the ones finished; the second and third sessions get +25% and +50% XP. Day-level bookkeeping â streak, `week.trained`, `week.fullDays`, `history`, the low-effort penalty and Dominion Points â must fire **only on the first session**, gated on that array being empty. `Dl()` is already idempotent per day for the streak, but the rest is not.
 
+**`today.reps` is the *session*, `dayLog[date].reps` is the *day*, and anything showing "hoy" has to read the second one.** `i5` **assigns** `o.today.reps = l` and `mmNueva` zeroes it to open the next session, while `dayLog[date].reps` accumulates. The body map's Hoy view read `today.reps`, so after a bodyweight session followed by a flow one it showed 24 · 19 · 22 · 24 — only flow — while the very same card's XP line read 264, the sum of both. `sdcHoyReps(state)` returns the day total (`dayLog` first, `today.reps` as the fallback for a day whose log entry does not exist yet).
+
+The denominator had the same shape of problem, so `dayLog[date].meta` now accumulates each session's target the same way its reps do. It is written by **`sdcMetaHook`, wrapped around `sdcPrimerasHook` in `pg()`** — `i5` stays byte-for-byte unchanged, same as the Primeras veces hook — and read through `sdcHoyMeta(state, fallback)`, which falls back to the current routine's target for saves that predate the field.
+
+While a session is unregistered, both numbers add the live part: `sdcRepsHechas()` for the reps and `J` for the target, gated on `c.completed || doneModalities.includes(B)` so a registered session is never counted twice. The result is that Hoy finally means what its caption says:
+
+```
+antes de entrenar          0/33    (era 33/33 — pintaba el cuerpo entero al 100%)
+una serie marcada         13/33
+sesión 1 registrada       33/33
+empieza la 2ª modalidad   33/57    (el denominador crece, el numerador se conserva)
+ambas registradas         57/57    (era 24/24)
+```
+
+`v5`, the zone panel, takes the same two numbers, so "Hoy: 57 / 57 reps" agrees with the row above it. Undo restores `dayLog` from the snapshot, `meta` included, so it rolls back with everything else — verified.
+
 ### Exercise selection
 
 Rank (`ve` = EâZ) picks the exercise **variant**; the fitness test picks the **volume**. Tables: `by` (bodyweight), `F2` (gym), `P2` (flow â only `squat` and `abs`; push and pull fall back to `by`), resolved by `_d(group, rank, modality)`. Every entry has an `alt` string, surfaced by the "ð¡ alternativa" button, which must name a real equipment-free substitute rather than a technique tip. Targets come from `Oy(state)`; the four groups are always `squat`, `pushup`, `back`, `abs`
