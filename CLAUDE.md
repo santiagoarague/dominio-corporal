@@ -265,7 +265,19 @@ Almost all of it was one thing: **the guide rendered open by default, on all six
 
 ### The guide has to work for someone who has never played anything
 
-`j2` went from 17 topics to **26**, each carrying a `g` (group) so the render emits a section header whenever the group changes: **PARA EMPEZAR · CÓMO PROGRESÁS · LOS SISTEMAS · CUANDO NO PODÉS · LO DEMÁS**.
+`j2` holds **18** topics, each carrying a `g` (group) so the render emits a section header whenever the group changes: **PARA EMPEZAR (4) · CÓMO PROGRESÁS (3) · LOS SISTEMAS (7) · LO DEMÁS (4)**.
+
+It was 17, then 26 when the missing subjects were added, then 18 after an audit: **a topic has to be a question a player would actually ask, not a fact the code happens to contain.** Seven rows were one answer split in pieces, and merging them cost nothing:
+
+| merged into | what came in |
+|---|---|
+| **Tu semana** | ¿Qué cuenta como sesión? · El calendario de Constancia |
+| **Si hoy no podés** | Modo Recuperación · Día de descanso · Escudo de Racha — three one-sentence topics answering one question |
+| **Los rangos y el Umbral** | El Umbral (it only exists as the gate between ranks) · El último rango |
+| **Niveles y XP** | Se abren solos — what levelling unlocks belongs with levelling |
+| **Puntos de Dominio** | Logros — achievements are a source of the currency |
+
+The index dropped from 1653 px to 1209, and the four opening titles now read as the four questions a beginner has: *Tu rutina de hoy · Cómo se anota lo que hacés · Tu semana · Si hoy no podés*. **The three pre-expanded titles in `sdcTema` must keep matching real `j2` titles** — merging renamed "Los rangos" and "Meta semanal", and a stale key there silently opens nothing.
 
 Two things were wrong and neither was the writing style:
 

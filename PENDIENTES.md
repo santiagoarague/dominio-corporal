@@ -121,6 +121,13 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
 - De paso: **no se podían escribir decimales** en el peso. "32," se parseaba a 32, el campo se
   redibujaba y la siguiente tecla daba 325.
 
+- ~~La guía tenía 26 temas y varios eran la misma pregunta partida~~ — resuelto. Quedaron **18
+  en cuatro grupos**. *Modo Recuperación*, *Día de descanso* y *Escudo de Racha* eran tres
+  temas de una oración cada uno contestando una sola pregunta: ahora son **"Si hoy no podés"**.
+  *El Umbral* solo existe como la puerta entre rangos, así que vive dentro de *Los rangos*.
+  *¿Qué cuenta como sesión?* y *el calendario* entraron en **"Tu semana"**. El índice bajó de
+  1.653 px a 1.209 y no se perdió un solo dato.
+
 ## C · Decisiones de diseño que quedaron abiertas
 
 - **Tamaño de texto ajustable** y **poder apagar sistemas**: quedaron explícitamente fuera de
