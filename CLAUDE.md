@@ -536,6 +536,29 @@ State lives in `state.flex` and uses the **no-migration pattern** — `sdcFlex(e
 
 > The bug that cost a test run: `sdcFlexSet` first returned the bare state instead of `{state, notices}`. `Ne` destructures `{state:m}`, got `undefined`, and `K(undefined)` wrote the literal string `"undefined"` into `dominio-corporal:player/state`, wiping the save. **Anything passed to `Ne` must return `{state, notices}`**, and a save that comes back as the string `"undefined"` is this mistake.
 
+### Warm-up (Calentamiento)
+
+The card above "Rutina de hoy" (`id:"calentamiento"`, `order:-5`, open by default, in `af`). It is a RAMP protocol in four phases, and **its identifiers use the `sdcCalor` prefix because `sdcCal` is already taken** by the calibre helpers (`sdcCalibre`, `sdcCalT`, `sdcCalF`).
+
+| phase | what | how it advances |
+|---|---|---|
+| 1 · PULSO | trote en el lugar, saltos de tijera | timer |
+| 2 · MOVILIDAD | brazos, cadera, balanceo de pierna por lado, muñecas | timer |
+| 3 · ACTIVACIÓN | one drill per pattern, chosen by modality | timer |
+| 4 · ENSAYO | today's four exercises, exact names from `_d`, light dose | a tap per exercise |
+
+**The four patterns are always the four patterns.** The routine never picks patterns per day; what varies is the modality, the rank and the date rotation of the exercise. So activation keys on **modality** (`sdcCalorAct`, with `sdcCalorActF` overriding three groups for flow: cuclillas, bestia, hollow) and each drill carries an `ev` regex: if today's exercise already *is* that drill (bodyweight E has `Puente de glúteos` and `deadbug asistido`, flow E has `Sentadilla profunda con balanceo`), the next option in the list is used instead, so the same movement never appears three times in a row.
+
+**Ensayo is tapped, not timed,** because the dose is reps and a gym player may be loading a machine. The dose comes from the first set of today's target (`Aa`, so Recuperación halves it too): ~40% of it clamped to 1–6 reps, a third of the seconds (5–15) for holds via `sdcSegs`, and in the gym 4–8 reps at **half of `sdcSugKg`**, rounded with `sdcIncKg`. The gym step also offers *"Lo hago antes de su primera serie"*, because ramp sets belong at each machine and nobody should cross the gym twice.
+
+**Lead-in is per step, and it must give time to get there.** `sdcEstPaso` and `sdcEstTotal` read `step.prep || sdcEstPrep`: 10 s before the first step (put the phone down), 8 s whenever the body changes position (wall, floor, supine, plank), 5 s when it does not (a side switch). Stretching lists carry no `prep`, so they keep 5 s everywhere — verified still 3:30 / 7:10. "Ya estoy →" skips the rest of a lead-in by moving `ini` back; nothing skips a hold.
+
+State is `today.calentamiento = {mod, ini, pot, xp, hecho}` (no-migration: `sdcCalor(e)` returns `{}`; `ei` rebuilds `today` on rollover). Elapsed time is `Date.now() - ini`, so a reload resumes mid-step — verified. A run older than the timed part plus 20 minutes counts as abandoned. `sdcCalorCard` is a real component with its own ticker and `sdcWakeSi`, so it only runs while the card is open and Entreno is showing; the clock itself never stops.
+
+**Reward: 10 XP, once a day, graded like `c5`** — under 34% pays nothing, partial pays `round(10 × fraction)`, with `flexBuff` and `Ka`. It is the smallest reward in the game on purpose (skill step and neuromotor 15, joint care and Primal 20, stretching 25, travesía 40+). It does **not** call `Dl`: warming up is not a session and does not touch the week or the streak. **It can be repeated without XP** ("Calentar de nuevo"), because a second modality in the evening needs its own warm-up; the stretching-style hard lock would have been wrong here. The card hides once the day is registered and returns with `mmNueva`.
+
+Its cost, measured at 375×812 on a fresh save: open, 204 px, which puts the "Rutina de hoy" header at y=635, still on the first screen; collapsed, 54 px. The start view is kept to one button and one line on purpose — the explanation lives in the guide ("Tu rutina de hoy"), not in the card.
+
 ### Backup reminder
 
 A card in Entreno asks for a backup once the player has 10 days of `history`, and hides for a week on "MÃ¡s tarde" or for a month after an actual export. Its two dates live in **`localStorage` directly** â `dominio-corporal:ultimoRespaldo` and `:respaldoPospuesto` â and deliberately **not** in the game state. They describe this device, not this player: restoring a backup on a new phone should not carry over "you already backed up". Keeping them out of the state object also means no new default in `ei` and no migration risk.
