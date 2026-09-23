@@ -702,6 +702,8 @@ The game speaks **voseo rioplatense**. Two registers stay in neutral Spanish on 
 
 `sdcMods` **cannot** be voseado regardless: `sdcTempoMod` reads `/baja(?: el peso)? en (\d+) segundos?/i` and `bajá` breaks it.
 
+**The app states rules; it never defends them.** Say what something does and what it gives ("Da 10 XP una vez por día", "Cuenta como día entrenado, sin XP"), never why we designed it that way. Eighteen strings were cut for this: *poca a propósito, porque es preparación*, *para no abrumarte al empezar*, *para no estorbarte*, *eso es a propósito: la prueba ajusta…*, *es la única forma de que veas…*, *porque no hay forma de saber cuánto hiciste*, *el último rango exige constancia*. The reasoning belongs in this file, not on the player's screen. Instructions about the body are a different thing and stay — *es un ensayo, no una serie* tells you how hard to go, it does not excuse a number. One of the cut strings was also false: the fitness test warned that inflating your reps would "fail your daily missions, lose your streak and earn no XP", and none of the three is true.
+
 **Never run a word-level replacement blind.** A dry run over the whole file caught nine false positives that a global `sed` would have broken silently: `"skills completas"` and `"Repeticiones base bajas"` (adjectives), `"Las marcas sirven"` and `"Marca del Caminante"` (nouns), `"Marca el tempo"` and `"Sube al alcanzar"` (third person), `"varias activas"` (adjective) — and **`misRevisar(e, notas)`, where `notas` is a minified parameter, not the verb.** That one would have broken missions entirely. Same family as the documented `ti(e)` trap.
 
 ## Editing technique that worked
