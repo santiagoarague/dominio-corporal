@@ -114,9 +114,12 @@ explícitamente cuál rompe y por qué.
    14–15 px con interlineado amplio, contraste AA.
 10. **En todo lo guiado hay tiempo para acomodarse.** Antes de cada paso cronometrado hay una cuenta
     de preparación: 10 s antes del primero (dejar el teléfono), 8 s si cambia la posición del
-    cuerpo (pared, piso, boca arriba, plancha) y 5 s si no cambia (cambio de lado). La pantalla no
-    se apaga y el reloj se calcula desde una marca de tiempo, así que bloquear el teléfono no lo
-    congela.
+    cuerpo (pared, piso, boca arriba, plancha) y 5 s si no cambia (cambio de lado). **La primera vez
+    que te toca un movimiento, el reloj espera a que toques "Listo"**: alguien que no lo conoce
+    necesita leerlo, y el tiempo no puede correr mientras lee. Siempre hay **Pausa**. Nada
+    cronometrado arranca solo al tocar algo: primero se ve qué viene y después se toca Empezar. La
+    pantalla no se apaga y el reloj se calcula desde una marca de tiempo, así que bloquear el
+    teléfono no lo congela.
 11. **Números honestos.** Se sacó "450 kg movidos" de al lado de cada ejercicio: 20 kg × 30 reps le
     gana a 60 kg × 8 y eso no significa nada. Un número en pantalla tiene que decir lo que parece.
 12. **Privacidad total.** Cero peticiones de red, sin cuenta, sin analíticas. La guía avisa que el
@@ -148,7 +151,9 @@ flow           Gateo · Apoyo · Giro · Enlace · Inversión · Quietud · Vuel
   (**252 ejercicios**) y la app rota según la fecha.
 - Las reps del día se parten en 2–3 series **descendentes** (40/33/27%), porque la última serie es
   la más cara. Cada serie es un botón: se toca al terminarla. Suena, vibra, suma XP y arranca el
-  descanso.
+  descanso, que queda fijo abajo de la pantalla con su cuenta y un botón para saltarlo.
+- Cuando se completan todas las series de un ejercicio, **la fila se pliega** a una línea
+  ("✓ nombre · 12 reps") para que un toque sin querer no la desmarque; se abre tocándola.
 - **Modificador del día**: uno de seis por modalidad (Tempo, Densidad, Drop set, Sostén largo…).
   Da +20–30% de XP solo si el jugador lo reclama.
 - **Metrónomo** opcional que marca bajada, pausa y subida.
@@ -164,7 +169,7 @@ avanzan tocando "Hecho"). En gimnasio el ensayo propone la mitad de la carga sug
 vez por día y se puede repetir sin XP antes de una segunda sesión.
 
 ### Después de entrenar
-- **Estiramiento**: rutina corta (3:30) o completa (7:10), guiada. Dos veces por semana dan +10% de
+- **Estiramiento**: rutina corta (3:44) o completa (7:33), guiada, con la misma preparación y la misma espera que el calentamiento. Dos veces por semana dan +10% de
   XP la semana siguiente. Una vez por semana pregunta hasta dónde llegás sentado con las piernas
   estiradas y lo compara con cuando empezaste.
 - **Mapa del cuerpo**: figura que se pinta más fuerte en las zonas más entrenadas (hoy, semana,
@@ -177,6 +182,29 @@ vez por día y se puede repetir sin XP antes de una segunda sesión.
   día y me olvidé": cuenta para la racha, sin XP.
 - Salidas para un mal día: Recuperación, **un día de descanso por semana** y **Escudo de Racha**
   (se compra).
+
+### Cómo llegás (el chequeo de ánimo)
+Para los días sin ganas, que es cuando más fácil se deja para mañana. Lo que importa no es la
+pregunta, es la comparación: la app te muestra con tus números que entrenar te cambia el día.
+- **Antes**, arriba de todo en Entreno y solo antes de empezar: *¿Cómo llegás hoy?* con cinco
+  caritas (Sin ganas · Pocas ganas · Normal · Con ganas · A full). Siempre está "Hoy no" y nunca
+  bloquea la rutina.
+- Si llegás sin ganas o con pocas ganas, pregunta *¿Y el cuerpo?* (Cansancio · Músculos cargados ·
+  Me duele algo · Bien). Si no es dolor, pone la rutina en Recuperación y te propone **empezar por
+  el calentamiento**: la promesa del día es empezar, no terminar. Si hay historia, suma tu propia
+  evidencia: *"Las últimas 4 veces que llegaste así, en 3 terminaste mejor"*.
+- **Si te duele algo**, no te sugiere entrenar igual: muestra la regla del dolor, ofrece el día de
+  descanso y la opción de entrenar suave sin esa zona.
+- **Al terminar el calentamiento**, *¿Y ahora?*: si te vino el envión, pasás a la rutina normal
+  antes de la primera serie.
+- **Al registrar la rutina**, *¿Cómo te vas?* con las mismas caritas, y *¿Cómo te quedó la
+  rutina?* (Corta · Justa · Mucha). Si tres veces seguidas te queda corta o mucha, te propone
+  repetir la prueba de aptitud.
+- **No da XP**: contestar no es entrenar. Se festeja con 7 logros en la categoría **Días que no
+  querías** (entrenar esos días, el envión, terminar mejor de lo que llegaste) y se ve en Perfil →
+  Tus números y en el detalle de cada día de Constancia.
+- No es un test de salud mental: pregunta por ganas y cuerpo para entrenar, nada más. Se apaga en
+  Perfil → Sistemas del juego.
 
 ### Primeras veces
 Registro del día en que hiciste algo que antes no podías. La app pregunta una sola vez por cada
@@ -191,8 +219,11 @@ hay un botón para anotar a mano. Es la tesis hecha pantalla.
   rondas de los cuatro patrones y solo se puede dar un día con la rutina al 100%. Tiempos
   aproximados entrenando 4 veces por semana: 2º rango ~5 meses, 3º ~1,3 años, 4º ~2,6, 5º ~4,4,
   6º ~6,7 y 7º ~9,4 años. En el último rango la meta diaria es superar tu propio récord un 1%.
-- **Calibre**: sale de la prueba de aptitud (4 ejercicios de peso corporal a cadencia fija, o
-  eligiendo entre seis descripciones sin ir al fallo). Ajusta solo el volumen. Un calibre
+- **Calibre**: sale de la prueba de aptitud (4 ejercicios de peso corporal **al mismo ritmo que el
+  metrónomo de la rutina: 2 s baja, 1 s pausa, 2 s sube**, o eligiendo entre seis descripciones sin
+  ir al fallo). Antes medía a 3 s por repetición y daba metas más altas de las que se podían cumplir
+  entrenando. Las bandas del calibre se escalan para las pruebas hechas al ritmo nuevo, así que
+  nadie baja de escalón solo por el cambio. Ajusta solo el volumen. Un calibre
   describe **cuánto trabajo aguantás, nunca una habilidad**:
 
 ```
@@ -207,7 +238,8 @@ flow           Primeras posiciones · Piso firme · Aguante continuo · Tránsit
 ### Sistemas que se abren con el nivel
 | Nivel | Sistema | Qué es |
 |---|---|---|
-| 1 | Logros | 140 logros, con dificultad: fácil · accesible · exigente · difícil · muy difícil · para pocos · excepcional |
+| 1 | Cómo llegás | chequeo de ánimo antes y después de entrenar (apagable) |
+| 1 | Logros | 147 logros, con dificultad: fácil · accesible · exigente · difícil · muy difícil · para pocos · excepcional |
 | 3 | Explorar | kilómetros caminados o corridos; revelan lugares y reliquias |
 | 8 | Articulaciones | protocolos de cuidado por zona (registro médico, neutro) |
 | 10 | Misiones | un objetivo semanal y uno mensual según lo que descuidás. **No hay misiones diarias**, a propósito |
@@ -263,11 +295,13 @@ No hace falta saber programar, pero sí qué es posible:
 - En gimnasio las reps suben con el rango (117 por día en el primero, 190 en el tercero), aunque la
   idea es que en el gimnasio la variable sea la carga. Aplanarlo cambia la XP de todos los que
   entrenan en gimnasio.
-- La prueba de aptitud usa una cadencia (2 s bajada, 1 s subida) distinta a la del metrónomo de la
-  rutina (2/1/2), y las dos se llaman igual.
+- El calibre de las pruebas nuevas se escala con un factor de 0,6 que es una **estimación**. Hay
+  que confirmarlo con datos reales: alguien que tenga una prueba vieja y una nueva del mismo
+  ejercicio.
 - Un solo metrónomo sirve a los cuatro ejercicios aunque uno sea un sostén.
-- El estiramiento todavía da 5 s de preparación en todos los pasos; podría usar la regla 10/8/5 del
-  calentamiento.
+- La meta del día se puede bajar con el − de cada ejercicio, pero vuelve al valor original al día
+  siguiente. Si alguien no llega nunca a una meta, la app le propone repetir la prueba cuando tres
+  veces seguidas marca que la rutina le quedó "mucha"; no ajusta sola el volumen.
 - Quedan textos en tuteo que deberían estar en voseo ("Conservas tu XP", "Pega aquí tu respaldo"…).
 - Tamaño de texto ajustable: fuera de alcance por ahora, no descartado.
 - El botón manual de Primeras veces usa una ventanita del navegador; merece una pantalla propia.
