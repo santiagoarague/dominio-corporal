@@ -8,6 +8,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **There is no source code for the bundle.** It began life as a Claude Artifact and was ported to a standalone site. You cannot rebuild it â every change is a surgical text edit to minified JavaScript. Treat `index.html` as the source of truth and edit it in place.
 
+`diseno/DISENO.md` is the design brief the author loads into a claude.ai Project to design from the phone, with `diseno/instrucciones-proyecto.md` as that Project's instructions. It is written in Spanish, for a reader without the code. **When a system, a number or a design rule changes, update it in the same commit**, or the phone Claude designs against a game that no longer exists.
+
 Deployed files: `index.html`, `storage.js`, `sw.js`, `manifest.webmanifest`, `privacidad.html`, `fuentes/` (five woff2 files), and three icons â `icon-192`, `icon-512` and `icon-maskable-512`, the last one padded to 78% so a round Android mask does not crop the logo. `PENDIENTES.md` tracks what is left before publishing and is worth reading before starting work.
 
 `storage.js` must load **before** the bundle: it defines `window.claude.use("db")` against `localStorage`, replacing the Claude Artifacts database the app was written for. All progress lives in one key, `dominio-corporal:player/state`. There is no server and no account.
