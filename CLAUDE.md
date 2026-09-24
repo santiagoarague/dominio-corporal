@@ -4,114 +4,45 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this project is
 
-"Dominio Corporal" is a gamified bodyweight-training web app in Rioplatense Spanish (ranks, XP, long cardio sessions called *travesias*, a pet companion). It used to be called "Sistema de Dominio Corporal" and its whole lexicon was borrowed from Solo Leveling; that was removed deliberately (see **The world and its lexicon**). It is a **single-page app with no build step**: `index.html` (~440 KB) contains an already-minified React 19 bundle inline.
+"Dominio Corporal" is a gamified bodyweight-training web app in Rioplatense Spanish (ranks, XP, long cardio sessions called *travesias*, a pet companion). It used to be called "Sistema de Dominio Corporal" and its whole lexicon was borrowed from Solo Leveling; that was removed deliberately (see **The world and its lexicon**). It is a React 19 single-page app built with **Vite**, with no server and no account.
 
-**There is no source code for the bundle.** It began life as a Claude Artifact and was ported to a standalone site. You cannot rebuild it â every change is a surgical text edit to minified JavaScript. Treat `index.html` as the source of truth and edit it in place.
+`diseno/DISENO.md` is the design brief the author loads into a claude.ai Project to design from the phone, with `diseno/instrucciones-proyecto.md` as that Project's instructions. It is written in Spanish, for a reader without the code. **When a system, a number or a design rule changes, update it in the same commit**, or the phone Claude designs against a game that no longer exists. `PENDIENTES.md` tracks what is left before publishing and is worth reading before starting work.
 
-`diseno/DISENO.md` is the design brief the author loads into a claude.ai Project to design from the phone, with `diseno/instrucciones-proyecto.md` as that Project's instructions. It is written in Spanish, for a reader without the code. **When a system, a number or a design rule changes, update it in the same commit**, or the phone Claude designs against a game that no longer exists.
+`storage.js` must load **before** the game: it defines `window.claude.use("db")` against `localStorage`, replacing the Claude Artifacts database the app was written for. All progress lives in one key, `dominio-corporal:player/state`. **Never change that key or the site's URL**: a player's whole history lives there and nowhere else.
 
-Deployed files: `index.html`, `storage.js`, `sw.js`, `manifest.webmanifest`, `privacidad.html`, `fuentes/` (five woff2 files), and three icons â `icon-192`, `icon-512` and `icon-maskable-512`, the last one padded to 78% so a round Android mask does not crop the logo. `PENDIENTES.md` tracks what is left before publishing and is worth reading before starting work.
-
-`storage.js` must load **before** the bundle: it defines `window.claude.use("db")` against `localStorage`, replacing the Claude Artifacts database the app was written for. All progress lives in one key, `dominio-corporal:player/state`. There is no server and no account.
-
-## Branch `modernizacion`: the game has source code again
-
-This branch is turning the minified single file into a normal Vite project, step by step, while `main` keeps being the published game. The tag **`v1-html`** marks the last commit of the old shape; `git checkout v1-html` gets it back, and a zip of it sits next to the repo folder. The branch lives in its own worktree (`../dominio-corporal-moderno`) so the main folder never leaves `main`.
-
-**Layout.**
+## Working on the code
 
 | path | what it is |
 |---|---|
-| `index.html` | the Vite entry (8 KB): the head `<style>`, the splash, `storage.js`, the service-worker registration, and `<script type="module" src="./src/juego.js">` |
-| `src/juego.js` | the whole game, formatted (≈18.700 lines). Identifiers are still the minifier's (`i5`, `Ea`, `B5`), so the rest of this file is still the map |
-| `src/sw.js` | the service worker as a **template**: the build writes `dist/sw.js` with a new `CACHE` name per build and the hashed bundle files added to `ASSETS` (plugin in `vite.config.js`, which fails the build if the two markers disappear) |
-| `public/` | copied verbatim to `dist/`: `storage.js`, `manifest.webmanifest`, `privacidad.html`, `fuentes/`, the icons, `.nojekyll` |
+| `src/juego.js` | the whole game (≈19.000 lines). Identifiers are still the minifier's (`i5`, `Ea`, `B5`), so the rest of this file is the map. Every top-level name is exported at the end, for the tests |
+| `src/main.js` | mounts the root component `w5`; kept apart so tests can import the game without rendering it |
+| `index.html` | the Vite entry: the head `<style>` (fonts and the utility classes), the splash, `storage.js`, the service-worker registration |
+| `src/sw.js` | the service worker as a **template**: the build writes `dist/sw.js` with a new `CACHE` name per build and the hashed bundle files added to `ASSETS` (plugin in `vite.config.js`, which fails the build if its two markers disappear) |
+| `public/` | copied verbatim to `dist/`: `storage.js`, `manifest.webmanifest`, `privacidad.html`, `fuentes/`, the three icons (`icon-maskable-512` is padded to 78% so a round Android mask does not crop the logo) |
+| `tests/` | Vitest, against the real functions |
+| `e2e/` | Playwright, against the built app |
 
-**Commands** (Node 24 and npm are installed now): `npm install`, `npm run dev` (port 5173, hot reload), `npm run build` → `dist/`, `npm run preview` (port 4173, serves `dist/`). `.claude/launch.json` has `moderno-dev` and `moderno-build` for `preview_start`. The Vite warnings about `./fuentes/*.woff2` and `storage.js` are expected: those stay as runtime paths into `public/`.
+**Commands:** `npm install` · `npm run dev` (5173, hot reload) · `npm test` · `npm run build` → `dist/` · `npm run preview` (4173) · `npm run test:e2e` · `npm run format`. The Vite warnings about `./fuentes/*.woff2` and `storage.js` are expected: they stay runtime paths into `public/`.
 
-**React comes from npm, pinned to 19.2.5**, the exact version the bundle carried. The game reaches React through two names esbuild left behind, and `src/juego.js` recreates them in its header: `i` (`{...React, default: React}`, because the code uses both `i.default.createElement` and `i.useState`) and `Sy` (`react-dom/client`). The game uses only `createElement`, `Fragment`, `useState`, `useEffect` and `createRoot`.
+**Run `npm test` before every commit that touches `src/`.** About 80 cases in 2 s, with the clock pinned to a Thursday in Buenos Aires time: the XP curve, the first level-up for every classification × focus × modality × test result, the Umbral gate, no-penalty sessions, multi-session bookkeeping, undo, the retro-logged day, save loading and migration, dates, sets, the metronome modifiers, notice tiering *using the notices `i5` really emits*, and the exact duration of every XP buff. The deploy runs them too and publishes nothing if one fails. `npm run test:e2e` builds, serves `dist/` on 4180 and, in the installed Edge (`channel: "msedge"`, no browser download), plays the new-player path with undo, the mood correction and an offline reload. **When you change a rule, change its test in the same commit** — a test that no longer describes the game is worse than none.
 
-**How the extraction was proven equal.** The code became an ES module, which runs in strict mode; a scope analysis found no undeclared assignments and no `this`, so nothing changes meaning. The formatted file (Prettier, plus `\xE1`-style escapes rewritten as real UTF-8 in string literals only) parses to **the same AST** as the original bundle, once quoted and bare object keys are treated as equal. Then the same flow — skip onboarding, mark all sets, register — was run on the old build and the new one: the saved state was identical except the day's travesía, which `ai()` picks with `Math.random()`.
+**React is pinned to 19.2.5**, the exact version the original bundle carried. The game reaches React through two names esbuild left behind, recreated in the header of `src/juego.js`: `i` (`{...React, default: React}`, because the code uses both `i.default.createElement` and `i.useState`) and `Sy` (`react-dom/client`). The game uses only `createElement`, `Fragment`, `useState`, `useEffect` and `createRoot`, and there is no JSX: elements are `i.default.createElement` calls.
 
-**A latent bug surfaced and was deliberately left in place** so the extraction stayed exact: `L2`, `kg` and `fe` backfill `care` with `{today:{date:t, …}}`, and `t` is not declared anywhere in scope. It only runs for a save with no `care`, which `ei` backfills on load, but if it ever runs it throws `ReferenceError`.
+**Name what you add with an `sdc` prefix** while the minified names are still around. `B5`, the main component, is ~4.000 lines of nested closures full of one- and two-letter names; a new `a` or `h` inside it silently shadows one you have not read. `sdcBase`, `sdcSplit`, `sdcSerie`, `sdcTier` and friends are the hand-written ones.
 
-**While this branch is open, `main` can still change, and `src/juego.js` is generated from it.** Do not edit `src/juego.js` by hand yet: change `main` (the perl procedure below), then `git merge main` here and run `npm run extraer`. `scripts/extraer-de-main.cjs` reads `git show main:index.html` (or a path you pass), checks that the React part of the bundle still hashes to the pinned value, refuses any undeclared assignment (a module is strict), cuts the two mounting statements off the end, exports every top-level name, rewrites escapes, formats, and **refuses to write unless the AST equals the original's** minus the mounting. The mounting itself lives in `src/main.js`, which is why tests can import the game without rendering it. On the merge, `index.html` always conflicts: keep this branch's side.
+**Check what a search actually matched before "fixing" it, in both directions.** An audit once flagged `coger` three times as peninsular Spanish; all three were `encoger`. But the same audit declared `el movil` a false positive, and it was real: the neuromotor section said `deja el movil apoyado`. The app speaks **voseo rioplatense** in the game's voice; only the medical text and the exercise-execution register stay in neutral Spanish (see **Voice**).
 
-**Tests.** `npm test` runs Vitest over `tests/` (≈80 cases, 2 s) against the real functions exported from `src/juego.js`, with the clock pinned to a Thursday in Buenos Aires time. They cover the XP curve and the first level-up for every classification × focus × modality × test result, the Umbral gate, no-penalty sessions, multi-session bookkeeping, undo, the retro-logged day, save loading and migration, dates, sets, the metronome modifiers, notice tiering *using the notices `i5` really emits*, and the exact duration of every XP buff. `it.fails` marks a known issue on purpose: the five `PENDIENTE` cases are the focus-profile imbalance (the +30 bonus is multiplied by fuerza's 1.5, so fuerza earns ~20% more than salud in bodyweight), and they will start failing — correctly — the day it is fixed. `npm run test:e2e` builds, serves `dist/` on port 4180 and plays the new-player path, the mood correction and an offline reload in the installed Edge (`channel: "msedge"`, no browser download).
+**Prefer not moving blocks.** To reorder cards, set `order` on the one that must move inside the flex column — that is how "Rutina de hoy" and the warm-up are pinned in Entreno. Moving a `createElement` subtree means moving it *and* its trailing comma.
 
-The suite has already paid for itself: it found that undo inflated the month and modality counters (fixed on `main`, see **Undo has to undo everything the session wrote**) and the offline bug below.
+## How the source came back
 
-**The service worker matches with `ignoreVary` and only falls back to `index.html` for documents.** With the game in its own hashed file, an offline reload came up stuck on the splash: `vite preview` sends `Vary: Origin`, the module script and the fonts are CORS requests, and the copies `cache.addAll` stored without an `Origin` header did not match — so the worker served `index.html` in place of the JavaScript, and the browser refused it with a MIME error. GitHub Pages sends `Vary: Accept-Encoding` and would probably have been fine, but offline must not depend on a server header. `main`'s single-file build never had the problem because the game was inside the HTML. Playwright's `context.setOffline` does not reach the worker in Edge, so the e2e test simulates the outage with `context.route("**/*", abort)`.
+Until the tag **`v1-html`** there was no source code: the app had begun as a Claude Artifact, and `index.html` was a 643 KB single line with React compiled inside, edited in place with count-verified perl substitutions. `git checkout v1-html` still gets that shape back, and `dominio-corporal-v1-html.zip` next to the repo folder is a copy of it.
 
-## Editing the minified bundle
+The extraction was proven, not assumed. The game code became an ES module, which runs in strict mode, and a scope analysis found no undeclared assignment and no `this`, so nothing could change meaning. The formatted file (Prettier, plus `\xE1`-style escapes rewritten as UTF-8 in string literals only) parsed to **the same AST** as the bundle, once quoted and bare object keys were treated as equal; the same flow on the old and new builds left the same save, except the day's travesía, which `ai()` draws with `Math.random()`. For the weeks when both versions coexisted, `src/juego.js` was regenerated from `main` by a script that refused to write unless that AST equality held.
 
-This applies to `main`, the published version, until this branch replaces it.
+What the move turned up, all fixed: `L2`, `kg` and `fe` backfilled `care` with a `t` declared nowhere (a `ReferenceError` for any save without `care`); undo inflated the month and modality counters (see **Undo has to undo everything the session wrote**); and the service worker could not serve the separate bundle offline (see **The service worker**).
 
-This is the part that will bite you. Follow it exactly.
-
-**Always verify the match count before replacing.** Never run a blind `s///`. Count occurrences, abort unless the count is what you expect, then replace. A pattern that silently matches zero times leaves you debugging a change that never landed; one that matches twice corrupts unrelated code.
-
-**Beware perl variable interpolation in patterns.** `"$Qtienda$Q,"` parses as the variable `$Qtienda`, not `$Q . "tienda" . $Q`. This exact bug once deleted the first `",` in the whole file â inside React's own code â producing a `SyntaxError` far from anything being edited. Use `${Q}tienda${Q}` or build strings with explicit concatenation.
-
-**Two incompatible encodings coexist.** The original bundle writes non-ASCII as escapes (`m\xE1s`, `â`, `\xBF`), while text added later is real UTF-8. When matching original strings you must reproduce the literal backslash sequences â build them with `chr(92)."xE1"` rather than typing them, because an em dash typed as `â` can arrive as a real `â` byte and silently fail to match. For **new** strings prefer real UTF-8 (the file is UTF-8 and `<meta charset>` is set); write them via the Write tool to a scratch file and splice that in, which sidesteps escaping entirely.
-
-**Name everything you add with an `sdc` prefix.** The minifier's own identifiers are one or two characters (`Is`, `jd`, `Aa`, `b5`), so a plain name risks colliding with one you have not read yet, and a collision inside a 450 KB single line is close to undebuggable. `sdcBase`, `sdcSplit`, `sdcSerie`, `sdcTier` and friends are all hand-written; `grep -o 'sdcFoo' index.html | wc -l` before adding one tells you instantly whether the name is free. Note that `grep -c` is useless here â the file is one line, so it always answers 1.
-
-**Check what a grep actually matched before "fixing" it, in both directions.** An audit once flagged `coger` three times as peninsular Spanish; all three were `encoger`. But the same audit declared `el movil` a false positive, and it was real: the neuromotor section said `deja el movil apoyado`. A term being absent from one spelling does not mean it is absent. The app now speaks **voseo rioplatense** in the game's voice; only the medical text and the exercise-execution register stay in neutral Spanish.
-
-
-**Validate after every edit:**
-
-```bash
-perl -MEncode -0777 -ne 'my $ok=eval{Encode::decode("UTF-8",$_,Encode::FB_CROAK);1}; print $ok?"UTF-8 valido\n":"BYTES INVALIDOS\n";' index.html
-```
-
-**If the app breaks with a syntax error**, find the corruption by diffing against the last good commit â the first divergence should be inside your edit, and if it is not, that is the damage:
-
-```bash
-git show HEAD:index.html > /tmp/head.html && perl -0777 -e '
-sub rd { my $p=shift; open(my $f,"<:raw",$p); local $/; my $c=<$f>; close $f; $c }
-my $a=rd("/tmp/head.html"); my $b=rd("index.html");
-my $m=length($a)<length($b)?length($a):length($b); my $i=0;
-$i++ while $i<$m && substr($a,$i,1) eq substr($b,$i,1);
-print "divergencia en $i\n", substr($a,$i-90,180), "\n---\n", substr($b,$i-90,180), "\n";'
-```
-
-### Extracting or moving a whole element
-
-To remove or relocate a React element you need its exact end, and naive paren counting breaks on parens inside strings and template literals. Recreate this helper at `/tmp/jsx.pm` and call `jsx::span($html, $startIndex)`:
-
-```perl
-package jsx;
-my $BT = chr(96); my $BS = chr(92);
-sub span {
-  my ($h, $from) = @_;
-  my $open = index($h, '(', $from);
-  return (-1,-1) if $open < 0;
-  my $depth = 0; my $i = $open; my $n = length($h);
-  my $q = ''; my @tpl;
-  while ($i < $n) {
-    my $c = substr($h,$i,1);
-    if ($q ne '') {
-      if ($c eq $BS) { $i += 2; next; }
-      if ($q eq $BT && $c eq '$' && substr($h,$i+1,1) eq '{') { push @tpl,1; $q=''; $i+=2; next; }
-      if ($c eq $q) { $q = ''; }
-      $i++; next;
-    }
-    if ($c eq '"' || $c eq "'" || $c eq $BT) { $q = $c; $i++; next; }
-    if ($c eq '(') { $depth++; }
-    elsif ($c eq ')') { $depth--; return ($from,$i+1) if $depth==0; }
-    elsif ($c eq '}' && @tpl) { pop @tpl; $q=$BT; }
-    $i++;
-  }
-  return (-1,-1);
-}
-1;
-```
-
-Start from the index of `i.default.createElement(ge,{id:"<cardId>"`. Children are comma-separated, so removing a block means removing it *and* its trailing comma.
-
-**Prefer not moving blocks at all.** To reorder cards, wrap the container in a flex column and set `order` on the one card that must move â that is how "Rutina de hoy" is pinned to the top of the Entreno tab. Moving text risks far more than a style property does.
+## UI details that bite
 
 ### The metronome
 
@@ -143,10 +74,10 @@ The CSS at the top of `index.html` is a small hand-written subset that *looks* l
 
 ## Running locally
 
-On this branch, use `npm run dev` / `npm run preview` (see above); what follows describes how `main` is served. Node 24 is installed now; Python is not (`python` is the Microsoft Store stub). `.claude/serve.ps1` serves the folder with a PowerShell `System.Net.HttpListener`, and `.claude/launch.json` points the Browser pane's `preview_start` at it (config name `dominio-corporal`, port 8787). It binds to `http://localhost:<port>/`, which needs no elevation, sends `Cache-Control: no-store`, and rejects paths that escape the root. `localhost` is not reachable from a phone on the LAN â to test on a real device, deploy.
+`npm run dev` for work, `npm run build && npm run preview` to see exactly what gets published (the service worker only exists in the build). `.claude/launch.json` has both for `preview_start`: `dominio-corporal` (5173) and `dominio-corporal-build` (4173). Node 24 is installed; Python is not (`python` is the Microsoft Store stub). `localhost` is not reachable from a phone on the LAN — to test on a real device, deploy.
 
 Testing notes that save time:
-- **15â20 s pass before the first button appears, but only ~5 s of that is the typewriter** (140 characters at 28â40 ms). The rest is the 450 KB bundle. Wait for it; do not assume a blank page is a crash.
+- **15â20 s pass before the first button appears, but only ~5 s of that is the typewriter** (140 characters at 28â40 ms). The rest is parsing the ~620 KB bundle. Wait for it; do not assume a blank page is a crash.
 - Driving the app by clicking a `ref` is unreliable here: refs resolve to stale coordinates when the page scrolls between the `find` and the click, and a miss can silently hit "Usar mi dÃ­a de descanso" and burn the day. Prefer `javascript_tool` to click by text when scripting a test run.
 - Reuse a **fresh browser tab** to read console errors. The console buffer persists across navigations, so a fixed error keeps reappearing.
 - Clear `localStorage`, unregister the service worker and delete caches between runs, otherwise you test a stale bundle.
@@ -158,7 +89,7 @@ Testing notes that save time:
 
 Three things that a distracted person feels and a developer never does, all measured before being touched.
 
-**`index.html` now paints something at ~170 ms.** The HTML arrives in 42 ms and `domInteractive` is ~170 ms, but the app's first button took **4.4 s on a fast desktop** — realistically 8–12 s on a mid-range phone — because 498 KB of inline React has to parse. Nothing can be done about the parse without a build step, so `<body>` now opens with `#sdcSplash`: a fixed overlay with the product name, `Hola de nuevo, <name> · Nv. N` read straight from `localStorage`, and a sliding bar, removed by a `MutationObserver` on `#root` the moment React mounts (plus a 25 s failsafe). The same seconds, but the app looks alive instead of broken.
+**`index.html` now paints something at ~170 ms.** The HTML arrives in 42 ms and `domInteractive` is ~170 ms, but the app's first button took **4.4 s on a fast desktop** — realistically 8–12 s on a mid-range phone — because ~500 KB of React and game code has to parse. The build step now makes that a separate, cacheable file and would allow splitting it per tab (not done yet); meanwhile `<body>` now opens with `#sdcSplash`: a fixed overlay with the product name, `Hola de nuevo, <name> · Nv. N` read straight from `localStorage`, and a sliding bar, removed by a `MutationObserver` on `#root` the moment React mounts (plus a 25 s failsafe). The same seconds, but the app looks alive instead of broken.
 
 > Two traps here. The script has to sit **after** `<div id="root">` or `getElementById('root')` returns null and the splash never leaves — which is exactly what happened first. And `raw.charAt(0)==='{'` put a lone `{` inside a string and broke the `{}` delta check for every future session; the try/catch around `JSON.parse` already covered that case, so the test was dropped.
 
@@ -168,7 +99,9 @@ Three things that a distracted person feels and a developer never does, all meas
 
 ## Deploying
 
-`git push` to `main` is the deploy. GitHub Pages serves the repo root from `main` at **https://santiagoarague.github.io/dominio-corporal/**, usually live about 30 seconds after the push. There is no build command; `.nojekyll` keeps Pages from running Jekyll, which would otherwise drop anything starting with a dot â including the `.well-known/assetlinks.json` a TWA needs.
+`git push` to `main` is the deploy. `.github/workflows/publicar.yml` runs `npm ci`, `npm test` and `npm run build`, and publishes `dist/` to GitHub Pages at **https://santiagoarague.github.io/dominio-corporal/** — about two minutes after the push. **If a test fails, nothing is published** and the previous version stays online. Pages is set to *GitHub Actions* as its source (`build_type: workflow`); until the switch it served the repo root of `main` as is, which today would publish the raw Vite source and break the site, so do not switch it back without restoring a built `index.html` to the root. `gh run watch` follows a deploy; `gh workflow run publicar.yml` re-runs one.
+
+Only `dist/` is published now, so `CLAUDE.md`, `PENDIENTES.md` and `diseno/` are no longer served to the world as they were under the old setup. The flip side: a future `.well-known/assetlinks.json` has to go in `public/`, and check that it actually reaches the site, because the Pages artifact may leave dotfiles out.
 
 Netlify was dropped: it silently stopped deploying and sat five commits behind while every push reported success. `netlify.toml` has been deleted. The repo had to be made **public**, because Pages on a private repo requires a paid plan. The old Netlify site is still online serving stale code and should be deleted by hand.
 
@@ -182,13 +115,17 @@ Note for packaging: the app lives in a **subdirectory**, so `assetlinks.json` ca
 
 ## The service worker
 
-`sw.js` is network-first, so with a connection the player always sees the latest deploy and without one they get the last copy. Two things about it are load-bearing and were both wrong until recently:
+`src/sw.js` is network-first, so with a connection the player always sees the latest deploy and without one they get the last copy. It is a template: the build names the cache after a hash of the bundle's file names (`activate` deletes every other cache, so there is nothing to bump by hand) and adds the hashed files to the precache list. Four things about it are load-bearing:
 
-**The HTML is fetched with `cache: 'reload'`.** Without it, network-first was a lie: the service worker's own `fetch()` goes through the browser's HTTP cache, GitHub Pages sends `max-age=600`, and the worker cheerfully served â and then re-cached â a copy up to ten minutes old. Measured in production: the plain fetch returned 470,323 bytes (the previous deploy) while `cache: 'reload'` returned 470,860 (the one just pushed). This is exactly the "why can't I see my changes on my phone" symptom. Only documents get this treatment; fonts and icons are fetched normally.
+**The HTML is fetched with `cache: 'reload'`.** Without it, network-first was a lie: the service worker's own `fetch()` goes through the browser's HTTP cache, GitHub Pages sends `max-age=600`, and the worker cheerfully served — and then re-cached — a copy up to ten minutes old. Measured in production: the plain fetch returned 470,323 bytes (the previous deploy) while `cache: 'reload'` returned 470,860 (the one just pushed). This is exactly the "why can't I see my changes on my phone" symptom. Only documents get this treatment; the bundle has a hash in its name and fonts and icons do not change.
 
 **Only same-origin 200s are cached.** It used to cache any response, so a 404 or a 500 became the stored offline copy.
 
-Bump `CACHE` when the asset list changes; `activate` deletes every other cache name. If the app seems frozen on an old version during testing, unregister the worker and delete caches rather than assuming the deploy failed â but check production with `curl` first, because that distinction is the whole reason Netlify went unnoticed for five commits.
+**Offline lookups use `ignoreVary`.** With the game in its own file, an offline reload came up stuck on the splash: `vite preview` sends `Vary: Origin`, the module script and the fonts are CORS requests, and the copies `cache.addAll` stored without an `Origin` header did not match. GitHub Pages sends `Vary: Accept-Encoding` and would probably have been fine, but offline must not depend on a server header.
+
+**`index.html` is the fallback for documents only.** It used to be the answer to *any* miss, so the missing script above was answered with HTML and the browser refused it with a MIME error. Anything else that is not cached now fails as a network error.
+
+If the app seems frozen on an old version, unregister the worker and delete caches rather than assuming the deploy failed — but check production with `curl` first, because that distinction is the whole reason Netlify went unnoticed for five commits. Playwright's `context.setOffline` does not reach the worker in Edge, so the e2e test simulates an outage with `context.route("**/*", abort)`.
 
 ## Architecture
 
@@ -784,16 +721,11 @@ The game speaks **voseo rioplatense**. Two registers stay in neutral Spanish on 
 
 **Never run a word-level replacement blind.** A dry run over the whole file caught nine false positives that a global `sed` would have broken silently: `"skills completas"` and `"Repeticiones base bajas"` (adjectives), `"Las marcas sirven"` and `"Marca del Caminante"` (nouns), `"Marca el tempo"` and `"Sube al alcanzar"` (third person), `"varias activas"` (adjective) — and **`misRevisar(e, notas)`, where `notas` is a minified parameter, not the verb.** That one would have broken missions entirely. Same family as the documented `ti(e)` trap.
 
-## Editing technique that worked
+## Text passes over the whole game
 
-Build the edit list in a file, then apply it **all-or-nothing**: count every match first and abort the whole batch if any count differs from what you expect. A partial batch is much worse than none. For word-level passes, compute protected byte ranges from *anchors* (never fixed offsets — they shift after the first edit) and print every match with context before writing anything.
+For a word-level pass (voseo, a renamed system, a lexicon change), build the list first and apply it **all-or-nothing**: count every match, print each one with context, and abort the whole batch if any count differs from what you expect. A partial batch is much worse than none. Protect ranges by *anchors*, never by fixed offsets.
 
-Two traps found the hard way:
-
-- **`Encode::decode` with `FB_CROAK` consumes the source scalar.** Validate UTF-8 on a copy or your byte counts silently become zero.
-- **`core.autocrlf` is `true` at system level on this machine.** Without `.gitattributes` (`* -text`), a checkout converts LF→CRLF: 193 extra bytes and every offset shifted, which turns `git checkout -- index.html` — the recovery path — into a new source of corruption. Verified fixed.
-
-The quote count is **odd** in this file by design (double quotes inside single-quoted strings and regexes). Compare it against the previous run rather than expecting it to be even; `{}`, `[]` and `()` deltas are the real structural check (`0`, `0`, `+1`).
+`core.autocrlf` is `true` at system level on this machine; `.gitattributes` (`* -text`) keeps git from converting the repo to CRLF. It mattered most for the byte-offset editing of the old single file, and it still keeps diffs clean.
 
 ## Timers: the fix for "botones de honor"
 

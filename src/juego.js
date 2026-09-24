@@ -1,12 +1,10 @@
 // Dominio Corporal: el codigo del juego.
 //
-// ARCHIVO GENERADO por scripts/extraer-de-main.cjs a partir del index.html de
-// main, que sigue siendo la version publicada. No lo edites a mano: se pisa en
-// la proxima extraccion. Los cambios al juego se hacen en main y despues se
-// corre `npm run extraer`.
-//
-// Es el bundle original sin React adentro (viene de npm, 19.2.5) y formateado.
-// Los nombres de una o dos letras son los del minificador; CLAUDE.md es el mapa.
+// Nacio como el bundle minificado que vivia dentro de index.html (etiqueta
+// v1-html), sin React adentro y formateado. Los nombres de una o dos letras son
+// los del minificador; CLAUDE.md es el mapa. Todo lo del primer nivel se exporta
+// al final para que las pruebas de tests/ puedan usarlo; la app se monta en
+// main.js.
 import React from "react";
 import * as ReactDOMClient from "react-dom/client";
 

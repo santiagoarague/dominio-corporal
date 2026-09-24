@@ -1,8 +1,5 @@
-# Este repositorio se edita byte a byte: index.html es un bundle de React
-# minificado en una sola linea y todo el procedimiento de edicion depende de
-# offsets exactos y de conteos de coincidencias.
-#
 # En esta maquina core.autocrlf esta en `true` a nivel de SISTEMA, asi que sin
-# esta regla git convertiria LF -> CRLF en cada checkout: 193 bytes de mas y
-# todos los offsets corridos. Que git no toque los finales de linea, nunca.
+# esta regla git convertiria LF -> CRLF en cada checkout. Cuando index.html era
+# un bundle minificado de una sola linea eso corria todos los offsets de las
+# ediciones; hoy solo ensucia los diffs. Que git no toque los finales de linea.
 * -text
