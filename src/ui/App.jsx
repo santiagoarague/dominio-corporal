@@ -188,7 +188,14 @@ import { Reaccion, Ritmo, Secuencia, kd, TareaDual } from "./neuromotor.jsx";
 
 var sdcDevN = 0;
 function App({ player: e, setPlayer: a, initialNotices: l }) {
-  let [n, o] = useState(l || []),
+  // Los avisos se agregan en una microtarea. Muchas actualizaciones de la
+  // partida, a(d => ...), los agregan desde adentro, y React ejecuta esa
+  // funcion mientras dibuja Raiz: actualizar App en ese momento es justo lo
+  // que React no permite ("Cannot update a component while rendering").
+  function o(x) {
+    queueMicrotask(() => sdcSetAvisos(x));
+  }
+  let [n, sdcSetAvisos] = useState(l || []),
     {
       profile: s,
       progress: u,

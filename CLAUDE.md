@@ -417,9 +417,9 @@ The collapsed cards themselves were never the problem — they are 54–55 px ea
 
 **The header is permanent UI, not a card.** It carries the name, the calibre, the PD badge, the XP bar (`BarraXp`), `Ascenso: level/threshold` and the next system to unlock. All of that used to live inside the `rango` collapsible, which started closed â so a new player never saw their XP bar move and never learned anything was coming. That card is gone; do not reintroduce one that duplicates the header.
 
-### A dev-only warning that is not new
+### Notices are added in a microtask
 
-`npm run dev` logs *Cannot update a component (B5) while rendering a different component (w5)* when a routine is registered. It is old: `Ne` and several handlers call `o(...)` (B5's notice setter) from inside `a(updater)` (w5's player setter), and an updater runs while w5 renders. The original bundle shipped production React, which does not print the warning, so it was never seen. It works, but it is a side effect inside an updater — the kind of thing that duplicates notices under StrictMode — and it belongs to the refactor, not to a patch.
+`App`'s `o(x)` is not the state setter: it is `queueMicrotask(() => sdcSetAvisos(x))`. `Ne` and a dozen handlers call `o(...)` from inside `a(updater)` (Raiz's player setter), and React runs an updater while it renders `Raiz`, so updating `App` there logged *Cannot update a component (App) while rendering a different component (Raiz)* in `npm run dev`. The original bundle shipped production React, which does not print it, so it went unseen until the build step. Deferring the one setter fixed every call site at once; the other `o` in `App.jsx` are unrelated locals that shadow it. Updaters still write `localStorage` (`guardarPartida`) as a side effect — harmless without StrictMode, and the thing to move out when `App` is split.
 
 ### Feedback
 
