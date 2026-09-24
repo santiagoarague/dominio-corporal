@@ -39,5 +39,10 @@ function serviceWorker() {
 export default defineConfig({
   // Rutas relativas: la app vive en /dominio-corporal/ en GitHub Pages.
   base: './',
-  plugins: [serviceWorker()]
+  plugins: [serviceWorker()],
+  test: {
+    include: ['tests/**/*.test.js'],
+    // La zona del jugador: el dia cambia a medianoche de Argentina, no de UTC.
+    env: { TZ: 'America/Argentina/Buenos_Aires' }
+  }
 });

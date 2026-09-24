@@ -1,14 +1,18 @@
 // Dominio Corporal: el codigo del juego.
 //
-// Hasta la etiqueta v1-html este codigo vivia minificado dentro de index.html,
-// con React compilado adentro. Es el mismo codigo, sin React (ahora viene de
-// npm) y formateado para poder leerlo.
+// ARCHIVO GENERADO por scripts/extraer-de-main.cjs a partir del index.html de
+// main, que sigue siendo la version publicada. No lo edites a mano: se pisa en
+// la proxima extraccion. Los cambios al juego se hacen en main y despues se
+// corre `npm run extraer`.
+//
+// Es el bundle original sin React adentro (viene de npm, 19.2.5) y formateado.
+// Los nombres de una o dos letras son los del minificador; CLAUDE.md es el mapa.
 import React from "react";
 import * as ReactDOMClient from "react-dom/client";
 
-// El bundle original importaba React con el ayudante __toESM de esbuild, que
-// deja el modulo en .default y copia sus exportaciones al primer nivel. El
-// juego usa las dos formas: i.default.createElement e i.useState.
+// El bundle importaba React con el ayudante __toESM de esbuild, que deja el
+// modulo en .default y copia sus exportaciones al primer nivel. El juego usa
+// las dos formas: i.default.createElement e i.useState.
 const i = { ...React, default: React };
 const Sy = ReactDOMClient;
 function Ae({ size: e = 16, style: a, children: l }) {
@@ -1435,7 +1439,7 @@ var j2 = [
     {
       g: "PARA EMPEZAR",
       title: "Si hoy no podés",
-      text: "Hay tres salidas y ninguna te castiga. Modo Recuperación: hacés la mitad de las repeticiones, cuenta como entrenar y te mantiene la racha; está para los días en que llegás fundido. Día de descanso: uno por semana, el día que vos quieras, no da XP pero te conserva la racha y no cuenta como falta. Escudo de Racha: se compra con Puntos de Dominio y se gasta solo cuando hace falta, absorbiendo un día fallado sin que se corte nada. Y antes de entrenar la app te pregunta cómo llegás: si llegás sin ganas, te propone empezar por el calentamiento y hacer la rutina en Recuperación, y al terminar te pregunta cómo te vas. Con el tiempo vas a ver cuántas veces terminaste mejor de lo que llegaste. Se apaga en Perfil, en Sistemas del juego.",
+      text: "Hay tres salidas y ninguna te castiga. Modo Recuperación: hacés la mitad de las repeticiones, cuenta como entrenar y te mantiene la racha; está para los días en que llegás fundido. Día de descanso: uno por semana, el día que vos quieras, no da XP pero te conserva la racha y no cuenta como falta. Escudo de Racha: se compra con Puntos de Dominio y se gasta solo cuando hace falta, absorbiendo un día fallado sin que se corte nada. Y antes de entrenar la app te pregunta cómo llegás: si llegás sin ganas, te propone empezar por el calentamiento y hacer la rutina en Recuperación, y al terminar te pregunta cómo te vas. Con el tiempo vas a ver cuántas veces terminaste mejor de lo que llegaste. Si tocaste la cara que no era, «Cambiar respuesta» la corrige: la de llegada hasta que marcás la primera serie, la de salida en el resumen de la rutina. Se apaga en Perfil, en Sistemas del juego.",
     },
     {
       g: "CÓMO PROGRESÁS",
@@ -1900,7 +1904,7 @@ function L2(e, a, l) {
     s = El.find((v) => v.id === a);
   if (!s) return { state: n, notices: o };
   (n.skills || (n.skills = {}),
-    n.care || (n.care = { today: { date: t, done: [] }, lifetime: 0 }),
+    n.care || (n.care = { today: { date: ue(), done: [] }, lifetime: 0 }),
     n.neuro || (n.neuro = Al()),
     n.unlockAll === void 0 && (n.unlockAll = !1),
     n.disabled || (n.disabled = []),
@@ -2232,11 +2236,7 @@ function Y2(e, a) {
   return { state: c.state, notices: [...n, ...c.notices] };
 }
 var fy = [
-    {
-      label: "IZQUIERDA",
-      action: "Desplázate un paso lateral a tu izquierda",
-      color: "#4f9dff",
-    },
+    { label: "IZQUIERDA", action: "Desplázate un paso lateral a tu izquierda", color: "#4f9dff" },
     { label: "DERECHA", action: "Desplázate un paso lateral a tu derecha", color: "#3ecf8e" },
     { label: "ABAJO", action: "Bajá a posición de bestia y volvé", color: "#ffb84f" },
     { label: "SALTA", action: "Salto vertical con recepción suave", color: "#ff5c7a" },
@@ -4470,11 +4470,7 @@ var W2 = { E: 0.6, D: 0.8, C: 1, B: 1.25, A: 1.5, S: 2, Z: 2 },
     },
   },
   ra = [
-    {
-      id: "bodyweight",
-      name: "Dominio Corporal",
-      desc: "Calistenia, peso corporal, isométricos y control motor.",
-    },
+    { id: "bodyweight", name: "Calistenia", desc: "Peso corporal, isométricos y control motor." },
     {
       id: "gym",
       name: "Fuerza de Acero",
@@ -7289,6 +7285,31 @@ function sdcSumaReps(a, b) {
   for (k = 0; k < g.length; k++) o[g[k]] = ((a && a[g[k]]) || 0) + ((b && b[g[k]]) || 0);
   return o;
 }
+function sdcDeshacerHook(ant, r) {
+  if (!r || !r.state || !r.state.undoSnapshot || !ant) return r;
+  r.state.undoSnapshot.ach = (ant.achievements || []).slice();
+  return r;
+}
+function sdcDeshacer(e) {
+  var u = e && e.undoSnapshot,
+    r = s5(e);
+  if (!u || !u.snap || !e.today || u.date !== e.today.date) return r;
+  var a = r.state,
+    rp = u.reps || {},
+    md = Md(a.profile, a.today.date, a.today.modality);
+  a.month &&
+    a.month.reps &&
+    ["squat", "pushup", "back", "abs"].forEach(function (g) {
+      a.month.reps[g] = Math.max(0, (a.month.reps[g] || 0) - (rp[g] || 0));
+    });
+  [a.lifetimeModalities, a.week && a.week.modalities, a.month && a.month.modalities].forEach(
+    function (m) {
+      m && m[md] > 0 && (m[md] -= 1);
+    },
+  );
+  u.ach && (a.achievements = u.ach.slice());
+  return r;
+}
 function sdcMetaHook(r, mt) {
   if (!r || !r.state || !mt) return r;
   var e = r.state,
@@ -9787,6 +9808,26 @@ function sdcAnimoHoy(e) {
 function sdcAnimoOn(e) {
   return ye(e, "animo");
 }
+function sdcAnimoOtra(f) {
+  return i.default.createElement(
+    "button",
+    {
+      onClick: f,
+      className: "text-xs",
+      style: {
+        color: "#7a83a0",
+        minHeight: 40,
+        padding: "0 4px",
+        marginLeft: "auto",
+        flexShrink: 0,
+        background: "transparent",
+        border: "none",
+        textDecoration: "underline",
+      },
+    },
+    "Cambiar respuesta",
+  );
+}
 function sdcAnimoFrase(n) {
   var x = sdcAnimoEsc[(n || 3) - 1];
   return x ? x.f : "";
@@ -9944,7 +9985,7 @@ function sdcAnimoAntes({ st: e, Ne: Ne, mod: B, onModo: om, descLibre: dl, onDes
       {
         onClick: () => {
           (scf(!1),
-            om("normal"),
+            h.modo && om("normal"),
             Ne((d) => sdcAnimoSet(d, { antes: 0, cuerpo: 0, modo: 0, ack: 0 })));
         },
         className: "text-xs",
@@ -9988,7 +10029,14 @@ function sdcAnimoAntes({ st: e, Ne: Ne, mod: B, onModo: om, descLibre: dl, onDes
         onPick: (n) => Ne((d) => sdcAnimoSet(d, { antes: n })),
       }),
     );
-  if (h.antes >= 3) return null;
+  if (h.antes >= 3 || h.ack)
+    return i.default.createElement(
+      "div",
+      { className: "flex items-center gap-2", style: sdcAnimoTx },
+      i.default.createElement(sdcCara, { n: h.antes, size: 22, color: "#c8d0e4" }),
+      "Llegás " + sdcAnimoFrase(h.antes) + ".",
+      i.default.createElement("span", { style: { marginLeft: "auto" } }, cambiar),
+    );
   if (!h.cuerpo)
     return i.default.createElement(
       "div",
@@ -10237,7 +10285,12 @@ function sdcAnimoDespues({ st: e, Ne: Ne, onPrueba: op }) {
     return i.default.createElement(
       "div",
       { style: bx },
-      i.default.createElement("div", { className: "mb-2", style: sdcAnimoTx }, delta),
+      i.default.createElement(
+        "div",
+        { className: "mb-2 flex items-center gap-2", style: sdcAnimoTx },
+        delta,
+        sdcAnimoOtra(() => Ne((d) => sdcAnimoSet(d, { despues: 0, carga: 0 }))),
+      ),
       i.default.createElement(
         "div",
         { className: "mb-2", style: sdcAnimoTit },
@@ -10280,6 +10333,7 @@ function sdcAnimoDespues({ st: e, Ne: Ne, onPrueba: op }) {
         color: h.antes && h.despues > h.antes ? "#3ecf8e" : "#c8d0e4",
       }),
       delta,
+      sdcAnimoOtra(() => Ne((d) => sdcAnimoSet(d, { despues: 0, carga: 0 }))),
     ),
     h.antes && h.antes <= 2 && ct.noResp >= 2
       ? i.default.createElement(
@@ -12119,11 +12173,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
         label: "Sentadillas",
         hint: "De pie, bajá hasta que los muslos queden paralelos al suelo.",
       },
-      {
-        key: "pu",
-        label: "Flexiones",
-        hint: "Cuerpo en línea recta. Podés apoyar las rodillas.",
-      },
+      { key: "pu", label: "Flexiones", hint: "Cuerpo en línea recta. Podés apoyar las rodillas." },
       { key: "ab", label: "Abdominales", hint: "Subí con el abdomen, sin tirar del cuello." },
       {
         key: "bk",
@@ -12641,7 +12691,10 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
   function pg() {
     let h = sdcRepsHechas(),
       gv = B === "gym" ? sdcGymVol() : null;
-    (sdcCelebra(), Ne((f) => sdcMetaHook(sdcPrimerasHook(i5(f, De, h, sdcModOk, gv), h), J)));
+    (sdcCelebra(),
+      Ne((f) =>
+        sdcDeshacerHook(f, sdcMetaHook(sdcPrimerasHook(i5(f, De, h, sdcModOk, gv), h), J)),
+      ));
   }
   function bg() {
     a((f) => {
@@ -12784,7 +12837,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
     ef(m);
   }
   function hg() {
-    (cu(!1), Ne((f) => s5(f)), Va({ ...J }));
+    (cu(!1), Ne((f) => sdcDeshacer(f)), Va({ ...J }));
   }
   function mi(f, d) {
     let m = Math.max(0, parseFloat((d || "0").replace(",", ".")) || 0);
@@ -12857,7 +12910,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
     a((f) => {
       let d = M(f);
       (d.skills || (d.skills = {}),
-        d.care || (d.care = { today: { date: t, done: [] }, lifetime: 0 }),
+        d.care || (d.care = { today: { date: ue(), done: [] }, lifetime: 0 }),
         d.neuro || (d.neuro = Al()),
         d.unlockAll === void 0 && (d.unlockAll = !1),
         d.disabled || (d.disabled = []),
@@ -12878,7 +12931,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
       let m = M(d);
       return (
         m.skills || (m.skills = {}),
-        m.care || (m.care = { today: { date: t, done: [] }, lifetime: 0 }),
+        m.care || (m.care = { today: { date: ue(), done: [] }, lifetime: 0 }),
         m.neuro || (m.neuro = Al()),
         m.unlockAll === void 0 && (m.unlockAll = !1),
         m.disabled || (m.disabled = []),
@@ -14506,7 +14559,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
             !sdcCalor(e).ini &&
             !sdcCalor(e).hecho &&
             (function (h) {
-              return !h.no && (!h.antes || (h.antes <= 2 && !h.ack));
+              return !h.no;
             })(sdcAnimoHoy(e)) &&
             i.default.createElement(
               Q,
@@ -18723,5 +18776,379 @@ function w5() {
         : i.default.createElement(j5, { onFinish: u, onLoadBackup: c }),
   );
 }
-var U5 = (0, Sy.createRoot)(document.getElementById("root"));
-U5.render(i.default.createElement(w5, null));
+export {
+  Ae,
+  Ph,
+  Vs,
+  $h,
+  Nl,
+  Pb,
+  Ih,
+  Rh,
+  Mn,
+  zd,
+  $b,
+  e2,
+  Za,
+  a2,
+  Ko,
+  Ib,
+  Vo,
+  Rb,
+  t2,
+  Qs,
+  ey,
+  ve,
+  au,
+  Cl,
+  zl,
+  sdcTitulos,
+  sdcDescs,
+  vd,
+  ay,
+  l2,
+  n2,
+  Ny,
+  o2,
+  Po,
+  i2,
+  s2,
+  pt,
+  u2,
+  Ed,
+  sdcPortales,
+  ai,
+  ty,
+  ly,
+  ny,
+  oy,
+  iy,
+  Cy,
+  c2,
+  r2,
+  d2,
+  za,
+  $o,
+  ti,
+  f2,
+  hd,
+  sy,
+  m2,
+  uy,
+  p2,
+  Ad,
+  b2,
+  y2,
+  g2,
+  v2,
+  h2,
+  x2,
+  S2,
+  N2,
+  dd,
+  C2,
+  Ws,
+  cy,
+  k2,
+  xd,
+  z2,
+  Oa,
+  ky,
+  E2,
+  ou,
+  Js,
+  Dd,
+  A2,
+  D2,
+  T2,
+  zy,
+  Ey,
+  Ay,
+  sdcMods,
+  sdcModDia,
+  sdcPetPR,
+  sdcPetRacha,
+  sdcPetFull,
+  sdcPetParcial,
+  sdcMascota,
+  sdcRacha,
+  sdcPerk,
+  Ka,
+  Sd,
+  M2,
+  Pt,
+  sdcEstLista,
+  sdcEstPrep,
+  sdcEstTotal,
+  sdcEstPaso,
+  sdcEstMMSS,
+  sdcFlexNiv,
+  sdcFlexTxt,
+  sdcFlex,
+  sdcFlexToca,
+  sdcFlexSet,
+  Io,
+  tu,
+  Ro,
+  q2,
+  O2,
+  ry,
+  j2,
+  El,
+  B2,
+  w2,
+  dy,
+  Td,
+  U2,
+  L2,
+  Wo,
+  H2,
+  X2,
+  Dy,
+  Ty,
+  Y2,
+  fy,
+  my,
+  md,
+  pd,
+  bd,
+  G2,
+  Fs,
+  Al,
+  Ps,
+  $e,
+  My,
+  ye,
+  yt,
+  _y,
+  py,
+  Z2,
+  sdcDific,
+  Jo,
+  sdcAnimo,
+  sdcAnimoCuenta,
+  da,
+  K2,
+  V2,
+  ni,
+  Q2,
+  W2,
+  J2,
+  by,
+  ra,
+  F2,
+  P2,
+  qn,
+  Md,
+  $2,
+  yy,
+  _d,
+  gy,
+  I2,
+  Nd,
+  R2,
+  qd,
+  Dl,
+  _n,
+  qy,
+  Od,
+  e5,
+  a5,
+  Oy,
+  sdcPuntaje,
+  sdcCalibre,
+  sdcModBase,
+  sdcBase,
+  jd,
+  t5,
+  li,
+  jy,
+  __fechaLocal,
+  ue,
+  By,
+  vy,
+  sdcNiveles,
+  iu,
+  wy,
+  sdcRitmoK,
+  sdcRitmoF,
+  sdcBandaMin,
+  sdcBandaIx,
+  Uy,
+  l5,
+  kl,
+  $s,
+  sdcGuia,
+  M,
+  n5,
+  Ea,
+  ei,
+  o5,
+  misGrupos,
+  misMes,
+  misVacio,
+  misPeorGrupo,
+  misGenerar,
+  misProgreso,
+  misTexto,
+  misRevisar,
+  i5,
+  s5,
+  u5,
+  c5,
+  r5,
+  d5,
+  yd,
+  f5,
+  hy,
+  m5,
+  xy,
+  p5,
+  K,
+  Q,
+  qa,
+  sdcPodia,
+  sdcVistos,
+  sdcPrimeras,
+  sdcPrimeraAdd,
+  sdcPrimerasHook,
+  sdcJuego,
+  sdcRango,
+  sdcDescRango,
+  sdcCalTit,
+  sdcCalFoco,
+  sdcCalT,
+  sdcCalF,
+  sdcRachaCalc,
+  sdcDiaPasado,
+  sdcMarcaK,
+  sdcMarca,
+  sdcHoyReps,
+  sdcHoyMeta,
+  sdcSumaReps,
+  sdcDeshacerHook,
+  sdcDeshacer,
+  sdcMetaHook,
+  sdcIncKg,
+  sdcSugKg,
+  sdcGymSer,
+  sdcGymUlt,
+  sdcKgTxt,
+  sdcTier,
+  sdcEstilo,
+  sdcOrden,
+  b5,
+  sdcSegs,
+  sdcCatMod,
+  sdcCatSis,
+  sdcCatAbierta,
+  sdcDevN,
+  sdcNSets,
+  sdcSplit,
+  sdcSuma,
+  sdcBeep,
+  sdcVib,
+  sdcGuiaLin,
+  Is,
+  Rs,
+  Fo,
+  Bd,
+  y5,
+  wd,
+  g5,
+  v5,
+  h5,
+  bt,
+  x5,
+  S5,
+  N5,
+  C5,
+  ge,
+  Qo,
+  k5,
+  Cd,
+  gd,
+  z5,
+  E5,
+  A5,
+  Ie,
+  Ly,
+  sdcTempoMod,
+  D5,
+  sdcRespDias,
+  sdcRespaldoOk,
+  sdcRespaldoPosponer,
+  sdcAvisaRespaldo,
+  sdcWL,
+  sdcWakeOn,
+  sdcWakeOff,
+  sdcWakeUse,
+  sdcWakeSi,
+  sdcRitmos,
+  sdcCamCrono,
+  sdcCalorFases,
+  sdcCalorPasos,
+  sdcCalorPuente,
+  sdcCalorEscap,
+  sdcCalorDead,
+  sdcCalorHollow,
+  sdcCalorAct,
+  sdcCalorActF,
+  sdcCalor,
+  sdcCalorLista,
+  sdcCalorEnsayo,
+  sdcEstDesde,
+  sdcPasosV,
+  sdcPasoEspera,
+  sdcPasosMarcar,
+  sdcPasosHook,
+  sdcPasoVista,
+  sdcCalorCorre,
+  sdcCalorT,
+  sdcCalorIni,
+  sdcCalorPrep,
+  sdcCalorPausa,
+  sdcCalorSeguir,
+  sdcCalorEspera,
+  sdcCalorListo,
+  sdcCalorPot,
+  sdcCalorFin,
+  sdcCalorDer,
+  sdcCalorCard,
+  sdcAnimoEsc,
+  sdcAnimoCuerpo,
+  sdcAnimoTx,
+  sdcAnimoB2,
+  sdcAnimoB1,
+  sdcAnimoTit,
+  sdcAnimoEvBox,
+  sdcAnimoHoy,
+  sdcAnimoOn,
+  sdcAnimoOtra,
+  sdcAnimoFrase,
+  sdcAnimoPut,
+  sdcAnimoSet,
+  sdcAnimoSetDa,
+  sdcAnimoCalor,
+  sdcAbrirCard,
+  sdcAnimoEvid,
+  sdcCargaRacha,
+  sdcCara,
+  sdcCaras,
+  sdcAnimoAntes,
+  sdcAnimoAhora,
+  sdcAnimoDespues,
+  sdcTravMin,
+  sdcTravRitmo,
+  sdcTravCrono,
+  T5,
+  kd,
+  eu,
+  M5,
+  _5,
+  q5,
+  O5,
+  j5,
+  B5,
+  w5,
+};

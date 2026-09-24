@@ -53,6 +53,12 @@ function esDocumento(req, url) {
 //
 // Solo se guarda una respuesta si es 200 y del mismo origen: si no, un 404
 // o un error del servidor quedaba guardado y se servia como "la copia offline".
+//
+// Sin red se busca con ignoreVary: el bundle y las fuentes se piden con CORS,
+// y si el servidor manda "Vary: Origin" (el de Vite lo hace) la copia guardada
+// por el install, que no llevaba Origin, no coincidia. El respaldo de
+// index.html es solo para paginas: servirlo en lugar de un script daba un
+// error de tipo MIME y la app se quedaba en la pantalla de carga.
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
@@ -78,6 +84,12 @@ self.addEventListener('fetch', (event) => {
         }
         return response;
       })
-      .catch(() => caches.match(req).then((hit) => hit || caches.match('./index.html')))
+      .catch(() =>
+        caches.match(req, { ignoreVary: true }).then((hit) => {
+          if (hit) return hit;
+          if (recargar) return caches.match('./index.html', { ignoreVary: true });
+          return Response.error();
+        })
+      )
   );
 });
