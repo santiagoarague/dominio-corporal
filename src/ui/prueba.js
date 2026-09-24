@@ -1,6 +1,6 @@
 // Prueba de aptitud y el pitido (Ie).
 import { i } from "../react.js";
-import { Q } from "./base.js";
+import { Tarjeta } from "./base.js";
 import { sdcWakeUse } from "./pantalla.js";
 
 var E5 = 2e3,
@@ -24,7 +24,7 @@ function pitido(e, a) {
       o.stop(n.currentTime + a / 1e3));
   } catch (l) {}
 }
-function Ly({ exercise: e, onFinish: a }) {
+function PruebaAptitud({ exercise: e, onFinish: a }) {
   let [l, n] = (0, i.useState)("idle"),
     [o, s] = (0, i.useState)(10),
     [u, c] = (0, i.useState)("down"),
@@ -61,7 +61,7 @@ function Ly({ exercise: e, onFinish: a }) {
   let v =
     l === "countdown" ? "#ffb84f" : u === "down" ? "#4f9dff" : u === "hold" ? "#ffb84f" : "#3ecf8e";
   return i.default.createElement(
-    Q,
+    Tarjeta,
     { accent: v },
     i.default.createElement(
       "div",
@@ -165,4 +165,4 @@ function Ly({ exercise: e, onFinish: a }) {
   );
 }
 
-export { E5, A5, pitido, Ly };
+export { E5, A5, pitido, PruebaAptitud };

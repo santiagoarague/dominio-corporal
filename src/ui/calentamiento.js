@@ -1,17 +1,17 @@
 // Calentamiento y los pasos guiados que comparte con el estiramiento.
 import { i } from "../react.js";
-import { Mn, Ph } from "./iconos.js";
+import { IconoCheck, IconoLlama } from "./iconos.js";
 import { regresiones } from "../logica/primal.js";
 import { multImpulso } from "../logica/tienda.js";
 import { sdcEstMMSS, sdcEstPaso, sdcEstPrep, sdcEstTotal } from "../logica/estiramiento.js";
 import { revisarLogros } from "../datos/logros.js";
 import { alternativaEjercicio, ejercicioDe } from "../logica/rutina.js";
 import { subirNiveles, clonar } from "../logica/partida.js";
-import { qa } from "./base.js";
+import { BarraXp } from "./base.js";
 import { sdcIncKg, sdcKgTxt, sdcSugKg } from "../logica/extras.js";
 import { sdcBeep, sdcNSets, sdcSegs, sdcSplit, sdcVib } from "../logica/series.js";
 import { sdcWakeSi } from "./pantalla.js";
-import { sdcAnimoAhora } from "./animo.js";
+import { AnimoAhora } from "./animo.js";
 
 var sdcCalorFases = ["PULSO", "MOVILIDAD", "ACTIVACIÓN", "ENSAYO"];
 var sdcCalorPasos = [
@@ -235,7 +235,7 @@ function sdcPasosHook(r, l, n) {
   r && r.state && sdcPasosMarcar(r.state, l, n);
   return r;
 }
-function sdcPasoVista({
+function PasoGuiado({
   ls: ls,
   p: p,
   cab: cab,
@@ -344,7 +344,7 @@ function sdcPasoVista({
     ),
     esp
       ? null
-      : i.default.createElement(qa, {
+      : i.default.createElement(BarraXp, {
           value: pr ? (s.prep || sdcEstPrep) - p.prep : s.seconds - p.left,
           max: pr ? s.prep || sdcEstPrep : s.seconds,
           color: pz ? "#5a6178" : cc,
@@ -513,7 +513,7 @@ function sdcCalorDer(e, mod, mt) {
     "≈ " + Math.max(1, Math.round((tt + sdcCalorEnsayo(e, mod, mt).length * 20) / 60)) + " min"
   );
 }
-function sdcCalorCard({ st: e, mod: B, metas: mt, Ne: Ne, onModo: om, sinSeries: ss }) {
+function Calentamiento({ st: e, mod: B, metas: mt, Ne: Ne, onModo: om, sinSeries: ss }) {
   let [, tk] = (0, i.useState)(0),
     [ul, sul] = (0, i.useState)(-1),
     c = sdcCalor(e),
@@ -600,10 +600,10 @@ function sdcCalorCard({ st: e, mod: B, metas: mt, Ne: Ne, onModo: om, sinSeries:
         i.default.createElement(
           "div",
           { className: "flex items-center gap-2 text-sm", style: { color: "#3ecf8e" } },
-          i.default.createElement(Mn, { size: 16 }),
+          i.default.createElement(IconoCheck, { size: 16 }),
           " Calentaste hoy",
         ),
-        i.default.createElement(sdcAnimoAhora, {
+        i.default.createElement(AnimoAhora, {
           st: e,
           Ne: Ne,
           onModo: om || function () {},
@@ -650,7 +650,7 @@ function sdcCalorCard({ st: e, mod: B, metas: mt, Ne: Ne, onModo: om, sinSeries:
           i.default.createElement(
             "span",
             { style: { display: "inline-flex", alignItems: "center", gap: 8 } },
-            i.default.createElement(Ph, { size: 16 }),
+            i.default.createElement(IconoLlama, { size: 16 }),
             "Empezar",
           ),
           i.default.createElement(
@@ -677,7 +677,7 @@ function sdcCalorCard({ st: e, mod: B, metas: mt, Ne: Ne, onModo: om, sinSeries:
     );
   }
   if (!enE)
-    return i.default.createElement(sdcPasoVista, {
+    return i.default.createElement(PasoGuiado, {
       ls: ls,
       p: p,
       cab: cab(ls[p.index].f, p.index + 1),
@@ -814,7 +814,7 @@ export {
   sdcPasoEspera,
   sdcPasosMarcar,
   sdcPasosHook,
-  sdcPasoVista,
+  PasoGuiado,
   sdcCalorCorre,
   sdcCalorT,
   sdcCalorIni,
@@ -826,5 +826,5 @@ export {
   sdcCalorPot,
   sdcCalorFin,
   sdcCalorDer,
-  sdcCalorCard,
+  Calentamiento,
 };

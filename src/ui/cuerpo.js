@@ -1,9 +1,9 @@
 // El cuerpo: figura y panel de zonas.
 import { i } from "../react.js";
-import { zd } from "./iconos.js";
+import { IconoCerrar } from "./iconos.js";
 import { ry } from "../logica/atributos.js";
 import { nombreEjercicio } from "../logica/rutina.js";
-import { qa } from "./base.js";
+import { BarraXp } from "./base.js";
 
 function colorProgreso(e) {
   let a = [42, 49, 72],
@@ -32,7 +32,7 @@ function y5(e) {
 function wd(e, a) {
   return e ? Math.round((new Date(a + "T00:00:00") - new Date(e + "T00:00:00")) / 864e5) : null;
 }
-function g5({ view: e, colors: a, glow: l, ratios: n, selected: o, onSelect: s }) {
+function FiguraCuerpo({ view: e, colors: a, glow: l, ratios: n, selected: o, onSelect: s }) {
   let u = "#161b2e",
     c = "#2a3148",
     r = (p) => ({
@@ -117,7 +117,7 @@ function g5({ view: e, colors: a, glow: l, ratios: n, selected: o, onSelect: s }
     sdcIne("M89,266 L98,266 L99,276 L79,276 L79,270 Z", 1),
   );
 }
-function v5({
+function PanelZonas({
   zoneKey: e,
   rank: a,
   classification: l,
@@ -150,7 +150,7 @@ function v5({
       i.default.createElement(
         "button",
         { onClick: p, className: "text-xs", style: { color: "#9aa4bd" }, "aria-label": "Cerrar" },
-        i.default.createElement(zd, { size: 14, color: "#9aa4bd" }),
+        i.default.createElement(IconoCerrar, { size: 14, color: "#9aa4bd" }),
       ),
     ),
     i.default.createElement(
@@ -186,7 +186,7 @@ function v5({
       i.default.createElement("span", null, "Desarrollo · Nivel ", x),
       i.default.createElement("span", null, y.cur, " / ", y.need),
     ),
-    i.default.createElement(qa, { value: y.cur, max: y.need, color: "#3ecf8e" }),
+    i.default.createElement(BarraXp, { value: y.cur, max: y.need, color: "#3ecf8e" }),
     i.default.createElement(
       "div",
       { className: "text-xs mt-2", style: { color: "#9aa4bd" } },
@@ -212,4 +212,4 @@ function v5({
   );
 }
 
-export { colorProgreso, gruposCuerpo, Bd, y5, wd, g5, v5 };
+export { colorProgreso, gruposCuerpo, Bd, y5, wd, FiguraCuerpo, PanelZonas };

@@ -1,6 +1,6 @@
 // Primera vez: presentacion y prueba inicial.
 import { i } from "../react.js";
-import { Za } from "./iconos.js";
+import { IconoFlecha } from "./iconos.js";
 import { colorRango } from "../datos/rangos.js";
 import { modalidades } from "../datos/ejercicios.js";
 import {
@@ -12,13 +12,13 @@ import {
   bandasCalibre,
   bandaCalibre,
 } from "../logica/rutina.js";
-import { Q } from "./base.js";
+import { Tarjeta } from "./base.js";
 import { sdcCalF, sdcCalT, sdcRango } from "../logica/extras.js";
-import { Cd } from "./tarjetas.js";
-import { z5 } from "./intro.js";
-import { Ly } from "./prueba.js";
+import { DibujoMascota } from "./tarjetas.js";
+import { Bienvenida } from "./intro.js";
+import { PruebaAptitud } from "./prueba.js";
 
-function j5({ onFinish: e, onLoadBackup: a }) {
+function Inicio({ onFinish: e, onLoadBackup: a }) {
   let [l, n] = (0, i.useState)(!1),
     [o, s] = (0, i.useState)(0),
     [u, c] = (0, i.useState)(""),
@@ -97,7 +97,7 @@ function j5({ onFinish: e, onLoadBackup: a }) {
           ),
           o === 0 &&
             i.default.createElement(
-              Q,
+              Tarjeta,
               { accent: "#4f9dff" },
               i.default.createElement(
                 "div",
@@ -130,7 +130,7 @@ function j5({ onFinish: e, onLoadBackup: a }) {
                   style: { background: "#4f9dff", color: "#0a0e1a", fontWeight: 700 },
                 },
                 "Continuar ",
-                i.default.createElement(Za, { size: 16 }),
+                i.default.createElement(IconoFlecha, { size: 16 }),
               ),
               i.default.createElement(
                 "div",
@@ -245,7 +245,7 @@ function j5({ onFinish: e, onLoadBackup: a }) {
             ),
           o === 5 &&
             i.default.createElement(
-              Q,
+              Tarjeta,
               { accent: "#4f9dff" },
               i.default.createElement(
                 "div",
@@ -338,13 +338,13 @@ function j5({ onFinish: e, onLoadBackup: a }) {
                     style: { background: "#4f9dff", color: "#0a0e1a", fontWeight: 700 },
                   },
                   "Continuar ",
-                  i.default.createElement(Za, { size: 16 }),
+                  i.default.createElement(IconoFlecha, { size: 16 }),
                 ),
               ),
             ),
           o === 4 &&
             i.default.createElement(
-              Q,
+              Tarjeta,
               { accent: "#3ecf8e" },
               i.default.createElement(
                 "div",
@@ -431,13 +431,13 @@ function j5({ onFinish: e, onLoadBackup: a }) {
                     style: { background: "#3ecf8e", color: "#0a0e1a", fontWeight: 700 },
                   },
                   "Continuar ",
-                  i.default.createElement(Za, { size: 16 }),
+                  i.default.createElement(IconoFlecha, { size: 16 }),
                 ),
               ),
             ),
           o === 6 &&
             i.default.createElement(
-              Q,
+              Tarjeta,
               { accent: "#3ecf8e" },
               i.default.createElement(
                 "div",
@@ -504,7 +504,7 @@ function j5({ onFinish: e, onLoadBackup: a }) {
                     style: { background: "#3ecf8e", color: "#0a0e1a", fontWeight: 700 },
                   },
                   "Continuar ",
-                  i.default.createElement(Za, { size: 16 }),
+                  i.default.createElement(IconoFlecha, { size: 16 }),
                 ),
               ),
             ),
@@ -514,7 +514,7 @@ function j5({ onFinish: e, onLoadBackup: a }) {
                   i.default.Fragment,
                   null,
                   i.default.createElement(
-                    Q,
+                    Tarjeta,
                     { accent: "#ffb84f", style: { marginBottom: 12 } },
                     i.default.createElement(
                       "div",
@@ -531,7 +531,7 @@ function j5({ onFinish: e, onLoadBackup: a }) {
                       "Máximas repeticiones seguidas, siguiendo la cadencia del metrónomo.",
                     ),
                   ),
-                  i.default.createElement(Ly, {
+                  i.default.createElement(PruebaAptitud, {
                     key: J[C].key,
                     exercise: J[C],
                     onFinish: (j) => {
@@ -546,7 +546,7 @@ function j5({ onFinish: e, onLoadBackup: a }) {
                   }),
                   C === 0 &&
                     i.default.createElement(
-                      Q,
+                      Tarjeta,
                       { accent: "#4f9dff", style: { marginTop: 12 } },
                       i.default.createElement(
                         "div",
@@ -604,7 +604,7 @@ function j5({ onFinish: e, onLoadBackup: a }) {
                     ),
                   C === 0 &&
                     i.default.createElement(
-                      Q,
+                      Tarjeta,
                       { accent: "#3ecf8e", style: { marginTop: 12 } },
                       i.default.createElement(
                         "div",
@@ -666,7 +666,7 @@ function j5({ onFinish: e, onLoadBackup: a }) {
                   ),
                 )
               : i.default.createElement(
-                  Q,
+                  Tarjeta,
                   { accent: "#ffb84f" },
                   i.default.createElement(
                     "div",
@@ -736,13 +736,13 @@ function j5({ onFinish: e, onLoadBackup: a }) {
                         style: { background: "#ffb84f", color: "#0a0e1a", fontWeight: 700 },
                       },
                       "Continuar ",
-                      i.default.createElement(Za, { size: 16 }),
+                      i.default.createElement(IconoFlecha, { size: 16 }),
                     ),
                   ),
                 )),
           o === 2 &&
             i.default.createElement(
-              Q,
+              Tarjeta,
               { accent: "#ffb84f" },
               i.default.createElement(
                 "div",
@@ -757,7 +757,7 @@ function j5({ onFinish: e, onLoadBackup: a }) {
               i.default.createElement(
                 "div",
                 { className: "flex justify-center mb-4" },
-                i.default.createElement(Cd, { type: De, size: 90, color: "#ffb84f" }),
+                i.default.createElement(DibujoMascota, { type: De, size: 90, color: "#ffb84f" }),
               ),
               i.default.createElement(
                 "div",
@@ -834,7 +834,7 @@ function j5({ onFinish: e, onLoadBackup: a }) {
                     style: { background: "#ffb84f", color: "#0a0e1a", fontWeight: 700 },
                   },
                   "Continuar ",
-                  i.default.createElement(Za, { size: 16 }),
+                  i.default.createElement(IconoFlecha, { size: 16 }),
                 ),
               ),
             ),
@@ -843,7 +843,7 @@ function j5({ onFinish: e, onLoadBackup: a }) {
               let j = bandaCalibre(ja, Ba, fa, sdcBkN, sdcRitOnb ? sdcRitmoK : 1),
                 Se = colorRango["E"];
               return i.default.createElement(
-                Q,
+                Tarjeta,
                 { accent: Se },
                 i.default.createElement(
                   "div",
@@ -906,7 +906,7 @@ function j5({ onFinish: e, onLoadBackup: a }) {
                       border: "1px solid rgba(255,184,79,0.3)",
                     },
                   },
-                  i.default.createElement(Cd, { type: De, size: 40, color: "#ffb84f" }),
+                  i.default.createElement(DibujoMascota, { type: De, size: 40, color: "#ffb84f" }),
                   i.default.createElement(
                     "div",
                     { className: "text-xs", style: { color: "#e8ecf7" } },
@@ -939,7 +939,7 @@ function j5({ onFinish: e, onLoadBackup: a }) {
             })(),
         ),
       )
-    : i.default.createElement(z5, { onDone: () => n(!0) });
+    : i.default.createElement(Bienvenida, { onDone: () => n(!0) });
 }
 
-export { j5 };
+export { Inicio };

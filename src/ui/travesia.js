@@ -1,8 +1,8 @@
 // Cronometro de travesia.
 import { i } from "../react.js";
-import { Mn } from "./iconos.js";
+import { IconoCheck } from "./iconos.js";
 import { sdcPortales } from "../logica/explorar.js";
-import { qa } from "./base.js";
+import { BarraXp } from "./base.js";
 import { pitido } from "./prueba.js";
 import { sdcWakeUse } from "./pantalla.js";
 
@@ -14,7 +14,7 @@ function sdcTravRitmo(n) {
   for (var q = 0; q < sdcPortales.length; q++) if (sdcPortales[q].n === n) return sdcPortales[q];
   return {};
 }
-function sdcTravCrono({ inicio: e, mins: a, on: l, off: n, onCancel: o, onListo: s }) {
+function CronoTravesia({ inicio: e, mins: a, on: l, off: n, onCancel: o, onListo: s }) {
   let [u1, c] = (0, i.useState)(Math.floor((Date.now() - e) / 1e3)),
     u = Math.max(0, u1);
   sdcWakeUse();
@@ -85,7 +85,11 @@ function sdcTravCrono({ inicio: e, mins: a, on: l, off: n, onCancel: o, onListo:
             )
           : null,
       ),
-      i.default.createElement(qa, { value: u, max: tot, color: listo ? "#3ecf8e" : "#ff5c7a" }),
+      i.default.createElement(BarraXp, {
+        value: u,
+        max: tot,
+        color: listo ? "#3ecf8e" : "#ff5c7a",
+      }),
       listo
         ? i.default.createElement(
             "button",
@@ -94,7 +98,7 @@ function sdcTravCrono({ inicio: e, mins: a, on: l, off: n, onCancel: o, onListo:
               className: "w-full flex items-center justify-center gap-2 py-3 text-sm mt-3",
               style: { minHeight: 48, background: "#3ecf8e", color: "#0a0e1a", fontWeight: 700 },
             },
-            i.default.createElement(Mn, { size: 16 }),
+            i.default.createElement(IconoCheck, { size: 16 }),
             " Completar travesía",
           )
         : i.default.createElement(
@@ -110,4 +114,4 @@ function sdcTravCrono({ inicio: e, mins: a, on: l, off: n, onCancel: o, onListo:
   );
 }
 
-export { sdcTravMin, sdcTravRitmo, sdcTravCrono };
+export { sdcTravMin, sdcTravRitmo, CronoTravesia };

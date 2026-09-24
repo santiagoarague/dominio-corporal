@@ -1,7 +1,7 @@
 // Tarjeta simple y barra de XP.
 import { i } from "../react.js";
 
-function Q({ children: e, accent: a = "#4f9dff", style: l = {} }) {
+function Tarjeta({ children: e, accent: a = "#4f9dff", style: l = {} }) {
   return i.default.createElement(
     "div",
     {
@@ -31,7 +31,7 @@ function Q({ children: e, accent: a = "#4f9dff", style: l = {} }) {
     i.default.createElement("div", { className: "p-4" }, e),
   );
 }
-function qa({ value: e, max: a, color: l }) {
+function BarraXp({ value: e, max: a, color: l }) {
   let n = a > 0 ? Math.min(100, (e / a) * 100) : 100;
   return i.default.createElement(
     "div",
@@ -46,4 +46,4 @@ function qa({ value: e, max: a, color: l }) {
   );
 }
 
-export { Q, qa };
+export { Tarjeta, BarraXp };

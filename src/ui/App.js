@@ -1,6 +1,22 @@
 // La app: todas las pestanas.
 import { i } from "../react.js";
-import { $b, Ib, Ko, Mn, Nl, Pb, Ph, Qs, Rb, Vo, Vs, Za, a2, e2, ey } from "./iconos.js";
+import {
+  IconoRayo,
+  IconoPasos,
+  IconoCandado,
+  IconoCheck,
+  IconoDestello,
+  IconoPesa,
+  IconoLlama,
+  IconoPata,
+  IconoCorazon,
+  IconoEspadas,
+  IconoTrofeo,
+  IconoFlecha,
+  IconoUbicacion,
+  IconoReloj,
+  IconoPersona,
+} from "./iconos.js";
 import { colorRango, nivelUmbral, sdcTitulos, vd, rangos } from "../datos/rangos.js";
 import {
   Ed,
@@ -111,7 +127,7 @@ import {
   xy,
   sumarTramo,
 } from "../logica/partida.js";
-import { Q, qa } from "./base.js";
+import { Tarjeta, BarraXp } from "./base.js";
 import {
   sdcCalF,
   sdcCalT,
@@ -138,34 +154,40 @@ import {
   sdcTier,
   sdcVistos,
 } from "../logica/extras.js";
-import { b5 } from "./avisos.js";
+import { Avisos } from "./avisos.js";
 import { sdcBeep, sdcCatAbierta, sdcNSets, sdcSplit, sdcVib } from "../logica/series.js";
-import { Is } from "./ejercicio.js";
-import { gruposCuerpo, colorProgreso, g5, v5, wd } from "./cuerpo.js";
-import { C5, S5, bt, h5, diasConstancia } from "./constancia.js";
-import { Cd, ge, k5 } from "./tarjetas.js";
-import { Ly } from "./prueba.js";
-import { D5, sdcTempoMod } from "./metronomo.js";
+import { FilaEjercicio } from "./ejercicio.js";
+import { gruposCuerpo, colorProgreso, FiguraCuerpo, PanelZonas, wd } from "./cuerpo.js";
+import {
+  DetalleDia,
+  GrillaConstancia,
+  bt,
+  LeyendaConstancia,
+  diasConstancia,
+} from "./constancia.js";
+import { DibujoMascota, Plegable, k5 } from "./tarjetas.js";
+import { PruebaAptitud } from "./prueba.js";
+import { Metronomo, sdcTempoMod } from "./metronomo.js";
 import { sdcAvisaRespaldo, sdcRespaldoOk, sdcRespaldoPosponer } from "../logica/respaldo.js";
 import { sdcWakeSi } from "./pantalla.js";
-import { sdcCamCrono, sdcRitmos } from "./caminata.js";
+import { CronoCaminata, sdcRitmos } from "./caminata.js";
 import {
   sdcCalor,
-  sdcCalorCard,
+  Calentamiento,
   sdcCalorDer,
   sdcEstDesde,
   sdcPasoEspera,
-  sdcPasoVista,
+  PasoGuiado,
   sdcPasosHook,
   sdcPasosV,
 } from "./calentamiento.js";
-import { sdcAbrirCard, sdcAnimoAntes, sdcAnimoDespues, sdcAnimoHoy, sdcAnimoOn } from "./animo.js";
-import { sdcTravCrono, sdcTravMin, sdcTravRitmo } from "./travesia.js";
-import { T5 } from "./descanso.js";
-import { M5, O5, _5, kd, q5 } from "./neuromotor.js";
+import { sdcAbrirCard, AnimoAntes, AnimoDespues, sdcAnimoHoy, sdcAnimoOn } from "./animo.js";
+import { CronoTravesia, sdcTravMin, sdcTravRitmo } from "./travesia.js";
+import { BarraDescanso } from "./descanso.js";
+import { Reaccion, Ritmo, Secuencia, kd, TareaDual } from "./neuromotor.js";
 
 var sdcDevN = 0;
-function B5({ player: e, setPlayer: a, initialNotices: l }) {
+function App({ player: e, setPlayer: a, initialNotices: l }) {
   let [n, o] = (0, i.useState)(l || []),
     {
       profile: s,
@@ -1423,7 +1445,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
             " XP",
           ),
         ),
-        i.default.createElement(qa, {
+        i.default.createElement(BarraXp, {
           value: c.completed ? u.currentXP : u.currentXP + sdcTotalHechas(),
           max: U,
           color: z,
@@ -1485,7 +1507,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
       ),
       It.length > 0 &&
         i.default.createElement(
-          Q,
+          Tarjeta,
           { accent: "#ffb84f", style: { marginBottom: 16 } },
           i.default.createElement(
             "div",
@@ -1521,7 +1543,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
             i.default.createElement(
               "div",
               { className: "flex items-center gap-2 mb-1" },
-              i.default.createElement(Nl, { size: 14, color: "#ffb84f" }),
+              i.default.createElement(IconoDestello, { size: 14, color: "#ffb84f" }),
               i.default.createElement(
                 "div",
                 { className: "text-sm", style: { color: "#ffb84f", fontWeight: 700 } },
@@ -1544,9 +1566,9 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
             It.length > 1 ? `Siguiente hallazgo (${It.length - 1} más)` : "Archivar en el Códice",
           ),
         ),
-      i.default.createElement(b5, { notices: n, onDismiss: Dg, onDismissAll: () => o([]) }),
+      i.default.createElement(Avisos, { notices: n, onDismiss: Dg, onDismissAll: () => o([]) }),
       i.default.createElement(
-        Q,
+        Tarjeta,
         { accent: "#ffb84f", style: { marginBottom: 16 } },
         i.default.createElement(
           "div",
@@ -1573,7 +1595,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
         i.default.createElement(
           "div",
           { className: "flex items-center gap-3" },
-          i.default.createElement(Cd, {
+          i.default.createElement(DibujoMascota, {
             type: s.pet ? s.pet.type : "dog",
             size: 48,
             color: k5(u.rank),
@@ -1619,7 +1641,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
         H.collapsed &&
         H.collapsed.ayuda &&
         i.default.createElement(
-          ge,
+          Plegable,
           {
             id: "ayuda",
             title: "¿Cómo funciona?",
@@ -1698,7 +1720,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                           transition: "transform .2s",
                         },
                       },
-                      i.default.createElement(Za, { size: 16, color: "#7a83a0" }),
+                      i.default.createElement(IconoFlecha, { size: 16, color: "#7a83a0" }),
                     ),
                   ),
                   sdcAb
@@ -1725,7 +1747,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
         H.collapsed &&
         H.collapsed.tienda &&
         i.default.createElement(
-          ge,
+          Plegable,
           {
             id: "tienda",
             title: "Puntos de Dominio",
@@ -1821,36 +1843,36 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
       ),
       (() => {
         let f = [
-          { id: "training", label: "Entreno", icon: Pb, color: z, on: !0 },
+          { id: "training", label: "Entreno", icon: IconoPesa, color: z, on: !0 },
           {
             id: "combat",
             label: "Combate",
-            icon: Vo,
+            icon: IconoEspadas,
             color: "#ff5c7a",
             on: sistemaActivo(e, "combat"),
           },
           {
             id: "primal",
             label: "Primal",
-            icon: Qs,
+            icon: IconoPata,
             color: "#3ecf8e",
             on: sistemaActivo(e, "primal"),
           },
           {
             id: "exploration",
             label: "Explorar",
-            icon: Ib,
+            icon: IconoPasos,
             color: "#7c5cff",
             on: sistemaActivo(e, "exploration"),
           },
           {
             id: "achievements",
             label: "Logros",
-            icon: Vs,
+            icon: IconoTrofeo,
             color: "#ffb84f",
             on: sistemaActivo(e, "achievements"),
           },
-          { id: "profile", label: "Perfil", icon: ey, color: "#4f9dff", on: !0 },
+          { id: "profile", label: "Perfil", icon: IconoPersona, color: "#4f9dff", on: !0 },
         ].filter((d) => d.on);
         return i.default.createElement(
           "div",
@@ -1885,7 +1907,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
           { style: { display: "flex", flexDirection: "column" } },
           sdcAvisaRespaldo(e) &&
             i.default.createElement(
-              Q,
+              Tarjeta,
               { accent: "#ffb84f", style: { marginBottom: 16, order: -3 } },
               i.default.createElement(
                 "div",
@@ -1936,7 +1958,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
           D &&
             !D.seen &&
             i.default.createElement(
-              Q,
+              Tarjeta,
               { accent: "#ffb84f", style: { marginBottom: 16 } },
               i.default.createElement(
                 "div",
@@ -2009,7 +2031,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
               ),
             ),
           i.default.createElement(
-            ge,
+            Plegable,
             {
               id: "racha",
               title: "Constancia",
@@ -2025,7 +2047,10 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
               i.default.createElement(
                 "div",
                 { className: "flex items-center gap-2" },
-                i.default.createElement(Ph, { size: 18, color: al >= Re ? "#ff5c7a" : "#5a6178" }),
+                i.default.createElement(IconoLlama, {
+                  size: 18,
+                  color: al >= Re ? "#ff5c7a" : "#5a6178",
+                }),
                 i.default.createElement(
                   "div",
                   null,
@@ -2057,7 +2082,11 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                 "Cambiar meta",
               ),
             ),
-            i.default.createElement(qa, { value: Math.min(al, Re), max: Re, color: "#3ecf8e" }),
+            i.default.createElement(BarraXp, {
+              value: Math.min(al, Re),
+              max: Re,
+              color: "#3ecf8e",
+            }),
             i.default.createElement(
               "div",
               { className: "text-xs mt-2", style: { color: "#9aa4bd" } },
@@ -2115,13 +2144,13 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                 " · récord ",
                 p.best,
               ),
-              i.default.createElement(S5, {
+              i.default.createElement(GrillaConstancia, {
                 days: Id,
                 onPick: (f) => Kd((d) => (d === f ? null : f)),
                 selected: Bn,
               }),
               Bn &&
-                i.default.createElement(C5, {
+                i.default.createElement(DetalleDia, {
                   date: Bn,
                   status: (Id.find((f) => f.date === Bn) || {}).status,
                   log: (e.dayLog || {})[Bn],
@@ -2158,7 +2187,9 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                     borde: "1px solid rgba(255,255,255,0.12)",
                   },
                 ].filter((sdcZ) => Id.some((sdcD) => sdcD.status === sdcZ.k));
-                return sdcLeg.length ? i.default.createElement(h5, { items: sdcLeg }) : null;
+                return sdcLeg.length
+                  ? i.default.createElement(LeyendaConstancia, { items: sdcLeg })
+                  : null;
               })(),
             ),
             sistemaActivo(e, "missions") &&
@@ -2228,12 +2259,12 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
             y.available &&
             !y.completed &&
             i.default.createElement(
-              Q,
+              Tarjeta,
               { accent: "#ff5c7a", style: { marginBottom: 16 } },
               i.default.createElement(
                 "div",
                 { className: "flex items-center gap-2 mb-2" },
-                i.default.createElement(Vo, { color: "#ff5c7a", size: 18 }),
+                i.default.createElement(IconoEspadas, { color: "#ff5c7a", size: 18 }),
                 i.default.createElement(
                   "div",
                   {
@@ -2290,7 +2321,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                           fontWeight: 700,
                         },
                       },
-                      i.default.createElement(Vo, { size: 16 }),
+                      i.default.createElement(IconoEspadas, { size: 16 }),
                       " Empezar la travesía",
                     ),
                     i.default.createElement(
@@ -2303,7 +2334,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                       "Ya la hice, sin el teléfono",
                     ),
                   );
-                return i.default.createElement(sdcTravCrono, {
+                return i.default.createElement(CronoTravesia, {
                   inicio: ini,
                   mins: sdcTravMin(y.challengeText),
                   on: rit.on,
@@ -2317,12 +2348,12 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
             y.available &&
             y.completed &&
             i.default.createElement(
-              Q,
+              Tarjeta,
               { accent: "#ff5c7a", style: { marginBottom: 16 } },
               i.default.createElement(
                 "div",
                 { className: "flex items-center gap-2 text-sm", style: { color: "#ff5c7a" } },
-                i.default.createElement(Mn, { size: 16 }),
+                i.default.createElement(IconoCheck, { size: 16 }),
                 " Travesía completada: ",
                 y.name,
                 " (+",
@@ -2339,12 +2370,12 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
             ),
           v.pending &&
             i.default.createElement(
-              Q,
+              Tarjeta,
               { accent: "#ffb84f", style: { marginBottom: 16 } },
               i.default.createElement(
                 "div",
                 { className: "flex items-center gap-2 mb-2" },
-                i.default.createElement(Nl, { color: "#ffb84f", size: 18 }),
+                i.default.createElement(IconoDestello, { color: "#ffb84f", size: 18 }),
                 i.default.createElement(
                   "div",
                   {
@@ -2412,7 +2443,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                     "w-full flex items-center justify-center gap-2 py-3 text-sm disabled:opacity-40",
                   style: { background: "#ffb84f", color: "#0a0e1a", fontWeight: 700 },
                 },
-                i.default.createElement(Mn, { size: 16 }),
+                i.default.createElement(IconoCheck, { size: 16 }),
                 " Crucé el Umbral",
               ),
               sdcUmbralFalta(e) > 0
@@ -2441,7 +2472,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
             }
             if (!pend) return null;
             return i.default.createElement(
-              Q,
+              Tarjeta,
               { accent: "#b084f5", style: { marginBottom: 16, order: -1 } },
               i.default.createElement(
                 "div",
@@ -2501,7 +2532,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
             );
           })(),
           i.default.createElement(
-            ge,
+            Plegable,
             {
               id: "mapa",
               title: "Tu cuerpo",
@@ -2584,7 +2615,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                 ),
               ),
             ),
-            i.default.createElement(g5, {
+            i.default.createElement(FiguraCuerpo, {
               view: jn,
               colors: $d,
               glow: c.stretchDone,
@@ -2671,7 +2702,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                   );
             })(),
             vt &&
-              i.default.createElement(v5, {
+              i.default.createElement(PanelZonas, {
                 zoneKey: vt,
                 rank: Y,
                 classification: s.classification,
@@ -2687,7 +2718,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
               i.default.createElement(
                 "div",
                 { className: "flex items-center gap-1 mt-2 text-xs", style: { color: "#3ecf8e" } },
-                i.default.createElement(Nl, { size: 12 }),
+                i.default.createElement(IconoDestello, { size: 12 }),
                 " Brillo de recuperación activo por tu estiramiento de hoy",
               ),
           ),
@@ -2701,9 +2732,9 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
               return !h.no;
             })(sdcAnimoHoy(e)) &&
             i.default.createElement(
-              Q,
+              Tarjeta,
               { accent: "#4f9dff", style: { marginBottom: 16, order: -6 } },
-              i.default.createElement(sdcAnimoAntes, {
+              i.default.createElement(AnimoAntes, {
                 st: e,
                 Ne: Ne,
                 mod: B,
@@ -2714,7 +2745,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
             ),
           !c.completed &&
             i.default.createElement(
-              ge,
+              Plegable,
               {
                 id: "calentamiento",
                 title: "Calentamiento",
@@ -2727,7 +2758,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                 onToggle: fe,
                 right: sdcCalorDer(e, B, Aa),
               },
-              i.default.createElement(sdcCalorCard, {
+              i.default.createElement(Calentamiento, {
                 st: e,
                 mod: B,
                 metas: Aa,
@@ -2738,11 +2769,11 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
             ),
           c.completed
             ? i.default.createElement(
-                Q,
+                Tarjeta,
                 { accent: z, style: { marginBottom: 16, order: -1 } },
                 sdcAnimoOn(e) &&
                   c.mode !== "rest" &&
-                  i.default.createElement(sdcAnimoDespues, {
+                  i.default.createElement(AnimoDespues, {
                     st: e,
                     Ne: Ne,
                     onPrueba: () => {
@@ -2752,7 +2783,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                 i.default.createElement(
                   "div",
                   { className: "flex items-center gap-2 mb-1" },
-                  i.default.createElement(Mn, { size: 16, color: z }),
+                  i.default.createElement(IconoCheck, { size: 16, color: z }),
                   i.default.createElement(
                     "div",
                     { className: "text-sm", style: { color: "#e8ecf7", fontWeight: 600 } },
@@ -2781,7 +2812,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                       className: "flex items-center gap-1 mt-2 text-xs",
                       style: { color: "#ffb84f" },
                     },
-                    i.default.createElement(Nl, { size: 12 }),
+                    i.default.createElement(IconoDestello, { size: 12 }),
                     " Día perfecto — hoy podés cruzar tu Umbral si está disponible",
                   ),
                 (() => {
@@ -2926,7 +2957,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                       )),
               )
             : i.default.createElement(
-                ge,
+                Plegable,
                 {
                   id: "rutina",
                   title: "Rutina de hoy",
@@ -3113,17 +3144,17 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                   { className: "text-xs mb-2", style: { color: "#7a83a0" } },
                   "El metrónomo marca el tempo de cada repetición con un pitido, para que no aceleres. No cuenta reps: eso lo marcás vos al tocar cada serie.",
                 ),
-                i.default.createElement(D5, {
+                i.default.createElement(Metronomo, {
                   active: Ln,
                   tempo: sdcTempoMod(sdcModDia(B, c.date)),
                 }),
                 Jd &&
-                  i.default.createElement(T5, {
+                  i.default.createElement(BarraDescanso, {
                     seconds: sdcDesc || ag[s.focusProfile] || 60,
                     ini: sdcDescIni,
                     onSkip: () => Fd(!1),
                   }),
-                i.default.createElement(Is, {
+                i.default.createElement(FilaEjercicio, {
                   label: nombreEjercicio(u.rank, s.classification, "squat", B),
                   value: Aa.squat,
                   base: J.squat,
@@ -3150,7 +3181,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                   aj: sdcAjuste.squat,
                   onAj: (k, v) => sdcAjustar("squat", k, v),
                 }),
-                i.default.createElement(Is, {
+                i.default.createElement(FilaEjercicio, {
                   label: nombreEjercicio(u.rank, s.classification, "pushup", B),
                   value: Aa.pushup,
                   base: J.pushup,
@@ -3177,7 +3208,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                   aj: sdcAjuste.pushup,
                   onAj: (k, v) => sdcAjustar("pushup", k, v),
                 }),
-                i.default.createElement(Is, {
+                i.default.createElement(FilaEjercicio, {
                   label: nombreEjercicio(u.rank, s.classification, "back", B),
                   value: Aa.back,
                   base: J.back,
@@ -3204,7 +3235,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                   aj: sdcAjuste.back,
                   onAj: (k, v) => sdcAjustar("back", k, v),
                 }),
-                i.default.createElement(Is, {
+                i.default.createElement(FilaEjercicio, {
                   label: nombreEjercicio(u.rank, s.classification, "abs", B),
                   value: Aa.abs,
                   base: J.abs,
@@ -3301,7 +3332,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                     ),
               ),
           i.default.createElement(
-            ge,
+            Plegable,
             {
               id: "stretch",
               title: "Estiramiento",
@@ -3401,7 +3432,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
               ? i.default.createElement(
                   "div",
                   { className: "flex items-center gap-2 text-sm", style: { color: "#3ecf8e" } },
-                  i.default.createElement(Mn, { size: 16 }),
+                  i.default.createElement(IconoCheck, { size: 16 }),
                   " Estiramiento de hoy completado",
                 )
               : ja
@@ -3413,7 +3444,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                         p.prep > 0 &&
                         sdcEstOk < p.index &&
                         sdcPasoEspera(ps, p.index, sdcPasosV(e));
-                    return i.default.createElement(sdcPasoVista, {
+                    return i.default.createElement(PasoGuiado, {
                       ls: ps,
                       p: p,
                       cab: i.default.createElement(
@@ -3492,7 +3523,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                           i.default.createElement(
                             "span",
                             { style: { display: "inline-flex", alignItems: "center", gap: 8 } },
-                            i.default.createElement(e2, { size: 16 }),
+                            i.default.createElement(IconoReloj, { size: 16 }),
                             op.lb,
                           ),
                           i.default.createElement(
@@ -3530,7 +3561,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
             i.default.Fragment,
             null,
             i.default.createElement(
-              Q,
+              Tarjeta,
               { accent: f.isBoss ? "#ffb84f" : "#ff5c7a", style: { marginBottom: 16 } },
               i.default.createElement(
                 "div",
@@ -3559,7 +3590,10 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                     f.name,
                   ),
                 ),
-                i.default.createElement(a2, { size: 28, color: f.isBoss ? "#ffb84f" : "#ff5c7a" }),
+                i.default.createElement(IconoUbicacion, {
+                  size: 28,
+                  color: f.isBoss ? "#ffb84f" : "#ff5c7a",
+                }),
               ),
               A.villainCurrentHP !== null &&
                 i.default.createElement(
@@ -3570,7 +3604,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                     { className: "text-xs mb-1", style: { color: "#9aa4bd" } },
                     "Terreno que falta",
                   ),
-                  i.default.createElement(qa, {
+                  i.default.createElement(BarraXp, {
                     value: A.villainCurrentHP,
                     max: d,
                     color: f.isBoss ? "#ffb84f" : "#ff5c7a",
@@ -3580,7 +3614,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                 "div",
                 { className: "flex items-center gap-1 mt-3" },
                 [1, 2, 3].map((m) =>
-                  i.default.createElement(Rb, {
+                  i.default.createElement(IconoCorazon, {
                     key: m,
                     size: 16,
                     color: m <= A.lives ? "#ff5c7a" : "#2a3148",
@@ -3597,7 +3631,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
             ),
             A.phase === "choosing" &&
               i.default.createElement(
-                Q,
+                Tarjeta,
                 { accent: "#ff5c7a", style: { marginBottom: 16 } },
                 i.default.createElement(
                   "div",
@@ -3637,7 +3671,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
               ),
             A.phase === "decision" &&
               i.default.createElement(
-                Q,
+                Tarjeta,
                 { accent: "#ffb84f", style: { marginBottom: 16 } },
                 i.default.createElement(
                   "div",
@@ -3744,7 +3778,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                       ),
                   sdcCs = f.isBoss ? p2() : m2(sdcCr);
                 return i.default.createElement(
-                  Q,
+                  Tarjeta,
                   { accent: "#ff5c7a", style: { marginBottom: 16 } },
                   i.default.createElement(
                     "div",
@@ -3824,7 +3858,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
             A.phase === "resting" &&
               du &&
               i.default.createElement(
-                Q,
+                Tarjeta,
                 { accent: "#ff5c7a", style: { marginBottom: 16 } },
                 i.default.createElement(
                   "div",
@@ -3858,7 +3892,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
               ),
             fu &&
               i.default.createElement(
-                Q,
+                Tarjeta,
                 { accent: "#ff5c7a", style: { marginBottom: 16 } },
                 i.default.createElement(
                   "div",
@@ -3935,7 +3969,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                   xt,
                   "s",
                 ),
-                i.default.createElement(qa, { value: xt, max: Fy, color: "#ff5c7a" }),
+                i.default.createElement(BarraXp, { value: xt, max: Fy, color: "#ff5c7a" }),
                 (() => {
                   let fs = f.isBoss
                       ? (A.bossCats || $o(A.lastExercise)).map((m) =>
@@ -4010,12 +4044,12 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
               ),
             A.phase === "victory" &&
               i.default.createElement(
-                Q,
+                Tarjeta,
                 { accent: "#3ecf8e", style: { marginBottom: 16 } },
                 i.default.createElement(
                   "div",
                   { className: "text-center" },
-                  i.default.createElement(Vs, {
+                  i.default.createElement(IconoTrofeo, {
                     size: 32,
                     color: "#3ecf8e",
                     style: { margin: "0 auto" },
@@ -4052,7 +4086,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
               ),
             A.phase === "defeat" &&
               i.default.createElement(
-                Q,
+                Tarjeta,
                 { accent: "#ff5c7a", style: { marginBottom: 16 } },
                 i.default.createElement(
                   "div",
@@ -4216,7 +4250,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                   i.default.Fragment,
                   null,
                   i.default.createElement(
-                    Q,
+                    Tarjeta,
                     { accent: "#ff6b4a", style: { marginBottom: 16 } },
                     i.default.createElement(
                       "div",
@@ -4246,7 +4280,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                           " sesiones",
                         ),
                       ),
-                      i.default.createElement($b, { size: 24, color: "#ff6b4a" }),
+                      i.default.createElement(IconoRayo, { size: 24, color: "#ff6b4a" }),
                     ),
                     i.default.createElement(
                       "div",
@@ -4269,7 +4303,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                   m.map((N) => {
                     let _ = Ky === N.id;
                     return i.default.createElement(
-                      Q,
+                      Tarjeta,
                       { key: N.id, accent: N.accent, style: { marginBottom: 12 } },
                       i.default.createElement(
                         "button",
@@ -4293,7 +4327,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                                   transition: "transform .2s",
                                 },
                               },
-                              i.default.createElement(Za, { size: 14, color: "#9aa4bd" }),
+                              i.default.createElement(IconoFlecha, { size: 14, color: "#9aa4bd" }),
                             ),
                             i.default.createElement(
                               "div",
@@ -4328,19 +4362,19 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                           "div",
                           { className: "mt-3" },
                           N.id === "reaction" &&
-                            i.default.createElement(M5, {
+                            i.default.createElement(Reaccion, {
                               onDone: (X) => Ne((de) => Ps(de, "reaction", X, !1)),
                             }),
                           N.id === "sequence" &&
-                            i.default.createElement(_5, {
+                            i.default.createElement(Secuencia, {
                               onDone: (X) => Ne((de) => Ps(de, "sequence", X, !1)),
                             }),
                           N.id === "dual" &&
-                            i.default.createElement(q5, {
+                            i.default.createElement(TareaDual, {
                               onDone: (X) => Ne((de) => Ps(de, "dual", X, X >= 45)),
                             }),
                           N.id === "coord" &&
-                            i.default.createElement(O5, {
+                            i.default.createElement(Ritmo, {
                               onDone: (X) => Ne((de) => Ps(de, "coord", X, !1)),
                             }),
                         ),
@@ -4356,7 +4390,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                   i.default.Fragment,
                   null,
                   i.default.createElement(
-                    Q,
+                    Tarjeta,
                     { accent: "#4f9dff", style: { marginBottom: 16 } },
                     i.default.createElement(
                       "div",
@@ -4386,7 +4420,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                           " protocolos hechos",
                         ),
                       ),
-                      i.default.createElement(Rb, { size: 24, color: "#4f9dff" }),
+                      i.default.createElement(IconoCorazon, { size: 24, color: "#4f9dff" }),
                     ),
                     i.default.createElement(
                       "div",
@@ -4419,7 +4453,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                     ),
                   ),
                   i.default.createElement(
-                    ge,
+                    Plegable,
                     {
                       id: "banderas",
                       title: "Cuándo parar y consultar",
@@ -4452,7 +4486,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                     let N = Gy === m.id,
                       _ = d.includes(m.id);
                     return i.default.createElement(
-                      Q,
+                      Tarjeta,
                       { key: m.id, accent: _ ? "#3ecf8e" : "#5a6178", style: { marginBottom: 12 } },
                       i.default.createElement(
                         "button",
@@ -4476,7 +4510,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                                   transition: "transform .2s",
                                 },
                               },
-                              i.default.createElement(Za, { size: 14, color: "#9aa4bd" }),
+                              i.default.createElement(IconoFlecha, { size: 14, color: "#9aa4bd" }),
                             ),
                             i.default.createElement(
                               "div",
@@ -4496,7 +4530,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                               ),
                             ),
                           ),
-                          _ && i.default.createElement(Mn, { size: 16, color: "#3ecf8e" }),
+                          _ && i.default.createElement(IconoCheck, { size: 16, color: "#3ecf8e" }),
                         ),
                       ),
                       N &&
@@ -4576,7 +4610,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                 i.default.Fragment,
                 null,
                 i.default.createElement(
-                  Q,
+                  Tarjeta,
                   { accent: "#b084f5", style: { marginBottom: 16 } },
                   i.default.createElement(
                     "div",
@@ -4608,7 +4642,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                         " aprendidas",
                       ),
                     ),
-                    i.default.createElement(Nl, { size: 24, color: "#b084f5" }),
+                    i.default.createElement(IconoDestello, { size: 24, color: "#b084f5" }),
                   ),
                   i.default.createElement(
                     "div",
@@ -4622,7 +4656,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                     _ = N >= d.steps.length,
                     X = Xy === d.id;
                   return i.default.createElement(
-                    Q,
+                    Tarjeta,
                     { key: d.id, accent: _ ? "#3ecf8e" : "#5a6178", style: { marginBottom: 12 } },
                     i.default.createElement(
                       "button",
@@ -4646,7 +4680,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                                 transition: "transform .2s",
                               },
                             },
-                            i.default.createElement(Za, { size: 14, color: "#9aa4bd" }),
+                            i.default.createElement(IconoFlecha, { size: 14, color: "#9aa4bd" }),
                           ),
                           i.default.createElement(
                             "div",
@@ -4678,7 +4712,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                     i.default.createElement(
                       "div",
                       { className: "mt-2" },
-                      i.default.createElement(qa, {
+                      i.default.createElement(BarraXp, {
                         value: N,
                         max: d.steps.length,
                         color: _ ? "#3ecf8e" : "#b084f5",
@@ -4730,7 +4764,11 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                                     justifyContent: "center",
                                   },
                                 },
-                                Bl && i.default.createElement(Mn, { size: 12, color: "#0a0e1a" }),
+                                Bl &&
+                                  i.default.createElement(IconoCheck, {
+                                    size: 12,
+                                    color: "#0a0e1a",
+                                  }),
                               ),
                               i.default.createElement(
                                 "span",
@@ -4807,7 +4845,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                 i.default.Fragment,
                 null,
                 i.default.createElement(
-                  Q,
+                  Tarjeta,
                   { accent: "#3ecf8e", style: { marginBottom: 16 } },
                   i.default.createElement(
                     "div",
@@ -4839,7 +4877,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                         " movimientos",
                       ),
                     ),
-                    i.default.createElement(Qs, { size: 26, color: "#3ecf8e" }),
+                    i.default.createElement(IconoPata, { size: 26, color: "#3ecf8e" }),
                   ),
                   i.default.createElement(
                     "div",
@@ -4853,7 +4891,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                 ),
                 Qa !== "idle"
                   ? i.default.createElement(
-                      Q,
+                      Tarjeta,
                       { accent: "#3ecf8e", style: { marginBottom: 16 } },
                       i.default.createElement(
                         "div",
@@ -4944,7 +4982,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                               jl,
                               "s",
                             ),
-                            i.default.createElement(qa, {
+                            i.default.createElement(BarraXp, {
                               value: jl,
                               max: Qa === "active" ? Ws(u.rank) : Qd === 0 ? 10 : cy,
                               color: Qa === "active" ? "#3ecf8e" : "#ffb84f",
@@ -4966,7 +5004,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                       ),
                     )
                   : i.default.createElement(
-                      ge,
+                      Plegable,
                       {
                         id: "primalLista",
                         title: "Elegí un movimiento",
@@ -5014,8 +5052,11 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                             "div",
                             { className: "flex items-center gap-2" },
                             N
-                              ? i.default.createElement(Qs, { size: 16, color: "#3ecf8e" })
-                              : i.default.createElement(Ko, { size: 16, color: "#7a83a0" }),
+                              ? i.default.createElement(IconoPata, { size: 16, color: "#3ecf8e" })
+                              : i.default.createElement(IconoCandado, {
+                                  size: 16,
+                                  color: "#7a83a0",
+                                }),
                             i.default.createElement(
                               "div",
                               {
@@ -5061,7 +5102,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
             i.default.Fragment,
             null,
             i.default.createElement(
-              Q,
+              Tarjeta,
               { accent: "#7c5cff", style: { marginBottom: 16 } },
               i.default.createElement(
                 "div",
@@ -5091,7 +5132,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                     d.name,
                   ),
                 ),
-                i.default.createElement(Ib, { size: 26, color: "#7c5cff" }),
+                i.default.createElement(IconoPasos, { size: 26, color: "#7c5cff" }),
               ),
               i.default.createElement(
                 "div",
@@ -5099,7 +5140,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                 i.default.createElement("span", null, "Progreso del sector"),
                 i.default.createElement("span", null, X, "% · ", N.toFixed(1), " / ", _, " km"),
               ),
-              i.default.createElement(qa, { value: N, max: _, color: "#7c5cff" }),
+              i.default.createElement(BarraXp, { value: N, max: _, color: "#7c5cff" }),
               i.default.createElement(
                 "div",
                 { className: "text-xs mt-3", style: { color: "#9aa4bd" } },
@@ -5121,7 +5162,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                 ),
             ),
             i.default.createElement(
-              Q,
+              Tarjeta,
               { accent: "#7c5cff", style: { marginBottom: 16 } },
               i.default.createElement(
                 "div",
@@ -5144,7 +5185,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                 var ws = (e.exploration && e.exploration.walkStart) || 0,
                   kmh = (e.profile && e.profile.ritmoKmH) || 5;
                 if (ws)
-                  return i.default.createElement(sdcCamCrono, {
+                  return i.default.createElement(CronoCaminata, {
                     inicio: ws,
                     kmh: kmh,
                     onCancel: sdcCamCancelar,
@@ -5346,7 +5387,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
               ),
             ),
             i.default.createElement(
-              ge,
+              Plegable,
               {
                 id: "mapaSector",
                 title: "Mapa del sector",
@@ -5388,8 +5429,8 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                     style: { borderBottom: "1px solid rgba(255,255,255,0.06)" },
                   },
                   wl
-                    ? i.default.createElement(a2, { size: 16, color: "#7c5cff" })
-                    : i.default.createElement(Ko, { size: 16, color: "#7a83a0" }),
+                    ? i.default.createElement(IconoUbicacion, { size: 16, color: "#7c5cff" })
+                    : i.default.createElement(IconoCandado, { size: 16, color: "#7a83a0" }),
                   i.default.createElement(
                     "div",
                     null,
@@ -5427,7 +5468,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
               }),
             ),
             i.default.createElement(
-              ge,
+              Plegable,
               {
                 id: "codice",
                 title: "Códice",
@@ -5456,7 +5497,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                         i.default.createElement(
                           "div",
                           { className: "flex items-center gap-2" },
-                          i.default.createElement(Nl, { size: 14, color: "#ffb84f" }),
+                          i.default.createElement(IconoDestello, { size: 14, color: "#ffb84f" }),
                           i.default.createElement(
                             "div",
                             { className: "text-sm", style: { color: "#e8ecf7", fontWeight: 600 } },
@@ -5487,7 +5528,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
           i.default.Fragment,
           null,
           i.default.createElement(
-            Q,
+            Tarjeta,
             { accent: "#ffb84f", style: { marginBottom: 16 } },
             i.default.createElement(
               "div",
@@ -5515,7 +5556,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                   logros.length,
                 ),
               ),
-              i.default.createElement(Vs, { size: 26, color: "#ffb84f" }),
+              i.default.createElement(IconoTrofeo, { size: 26, color: "#ffb84f" }),
             ),
           ),
           categoriasLogros.map((f) => {
@@ -5523,7 +5564,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
             if (!d.length) return null;
             let m = d.filter((N) => S.includes(N.id)).length;
             return i.default.createElement(
-              ge,
+              Plegable,
               {
                 key: f,
                 id: "ach-" + f,
@@ -5561,8 +5602,8 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                             style: { borderBottom: "1px solid rgba(255,255,255,0.06)" },
                           },
                           de
-                            ? i.default.createElement(Vs, { size: 16, color: "#ffb84f" })
-                            : i.default.createElement(Ko, { size: 16, color: "#7a83a0" }),
+                            ? i.default.createElement(IconoTrofeo, { size: 16, color: "#ffb84f" })
+                            : i.default.createElement(IconoCandado, { size: 16, color: "#7a83a0" }),
                           i.default.createElement(
                             "div",
                             null,
@@ -5608,12 +5649,12 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
             i.default.Fragment,
             null,
             i.default.createElement(
-              Q,
+              Tarjeta,
               { accent: "#4f9dff", style: { marginBottom: 16 } },
               i.default.createElement(
                 "div",
                 { className: "flex items-center gap-2 mb-1" },
-                i.default.createElement(ey, { size: 20, color: "#4f9dff" }),
+                i.default.createElement(IconoPersona, { size: 20, color: "#4f9dff" }),
                 i.default.createElement(
                   "div",
                   {
@@ -5649,7 +5690,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
               ),
             ),
             i.default.createElement(
-              ge,
+              Plegable,
               {
                 id: "sistemas",
                 title: "Sistemas del juego",
@@ -5749,12 +5790,12 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                         },
                         _ ? "Apagado" : "Activo",
                       )
-                    : i.default.createElement(Ko, { size: 16, color: "#7a83a0" }),
+                    : i.default.createElement(IconoCandado, { size: 16, color: "#7a83a0" }),
                 );
               }),
             ),
             i.default.createElement(
-              ge,
+              Plegable,
               {
                 id: "metodos",
                 title: "Métodos de entrenamiento",
@@ -5877,7 +5918,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                 ),
             ),
             i.default.createElement(
-              ge,
+              Plegable,
               {
                 id: "numeros",
                 title: "Tus números",
@@ -5948,7 +5989,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                     ),
                     i.default.createElement("span", { style: { color: "#e8ecf7" } }, "Nv. ", Ro(N)),
                   ),
-                  i.default.createElement(qa, { value: _.cur, max: _.need, color: m.color }),
+                  i.default.createElement(BarraXp, { value: _.cur, max: _.need, color: m.color }),
                 );
               }),
               i.default.createElement(
@@ -6121,7 +6162,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
               ),
             ),
             i.default.createElement(
-              ge,
+              Plegable,
               {
                 id: "aptitud",
                 title: "Prueba de aptitud",
@@ -6233,7 +6274,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                         ci.length,
                         ") · sigue la cadencia del metrónomo.",
                       ),
-                      i.default.createElement(Ly, {
+                      i.default.createElement(PruebaAptitud, {
                         key: "re-" + ci[Un].key,
                         exercise: ci[Un],
                         onFinish: (m) => {
@@ -6367,7 +6408,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                   ),
             ),
             i.default.createElement(
-              ge,
+              Plegable,
               {
                 id: "primeras",
                 title: "Primeras veces",
@@ -6430,7 +6471,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                   }),
             ),
             i.default.createElement(
-              ge,
+              Plegable,
               {
                 id: "respaldo",
                 title: "Respaldo de tu progreso",
@@ -6584,7 +6625,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
       Se &&
         Da === "profile" &&
         i.default.createElement(
-          Q,
+          Tarjeta,
           { accent: "#5a6178", style: { marginTop: 12, borderStyle: "dashed" } },
           i.default.createElement(
             "div",
@@ -6882,4 +6923,4 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
   );
 }
 
-export { sdcDevN, B5 };
+export { sdcDevN, App };

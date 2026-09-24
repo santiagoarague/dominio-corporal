@@ -1,9 +1,9 @@
 // Lista de avisos.
 import { i } from "../react.js";
-import { zd } from "./iconos.js";
+import { IconoCerrar } from "./iconos.js";
 import { sdcEstilo, sdcOrden, sdcTier } from "../logica/extras.js";
 
-function b5({ notices: e, onDismiss: a, onDismissAll: d }) {
+function Avisos({ notices: e, onDismiss: a, onDismissAll: d }) {
   if (!e || e.length === 0) return null;
   var li = e.map(function (t, k) {
     return { t: t, k: k, g: sdcTier(t) };
@@ -51,7 +51,7 @@ function b5({ notices: e, onDismiss: a, onDismissAll: d }) {
               className: "opacity-60",
               "aria-label": "Cerrar",
             },
-            i.default.createElement(zd, { size: 14 }),
+            i.default.createElement(IconoCerrar, { size: 14 }),
           ),
         );
       }),
@@ -76,4 +76,4 @@ function b5({ notices: e, onDismiss: a, onDismissAll: d }) {
   );
 }
 
-export { b5 };
+export { Avisos };

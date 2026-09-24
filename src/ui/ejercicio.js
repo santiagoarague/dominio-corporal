@@ -1,6 +1,6 @@
 // Fila de un ejercicio de la rutina.
 import { i } from "../react.js";
-import { Ih, Mn, Rh, Za } from "./iconos.js";
+import { IconoMas, IconoCheck, IconoMenos, IconoFlecha } from "./iconos.js";
 import { sdcKgTxt } from "../logica/extras.js";
 import { sdcNSets, sdcSegs, sdcSplit } from "../logica/series.js";
 
@@ -14,7 +14,7 @@ function sdcGuiaLin(t, v) {
       )
     : null;
 }
-function Is({
+function FilaEjercicio({
   label: e,
   value: a,
   base: l,
@@ -90,7 +90,7 @@ function Is({
       i.default.createElement(
         "span",
         { className: "flex items-center gap-2 text-sm", style: { color: "#9aa4bd" } },
-        i.default.createElement(Mn, { size: 16, color: "#3ecf8e" }),
+        i.default.createElement(IconoCheck, { size: 16, color: "#3ecf8e" }),
         e,
       ),
       i.default.createElement(
@@ -100,7 +100,7 @@ function Is({
           style: { color: "#3ecf8e", whiteSpace: "nowrap" },
         },
         sg > 0 ? sh * sg + " s" : sh + " reps",
-        i.default.createElement(Za, { size: 12, color: "#5a6178" }),
+        i.default.createElement(IconoFlecha, { size: 12, color: "#5a6178" }),
       ),
     );
   return i.default.createElement(
@@ -116,7 +116,7 @@ function Is({
             className: "w-full flex items-center gap-2 text-xs mb-1 text-left",
             style: { minHeight: 36, background: "transparent", border: "none", color: "#3ecf8e" },
           },
-          i.default.createElement(Mn, { size: 12, color: "#3ecf8e" }),
+          i.default.createElement(IconoCheck, { size: 12, color: "#3ecf8e" }),
           "Hecho · ocultar",
         )
       : null,
@@ -176,7 +176,7 @@ function Is({
             },
             "aria-label": "Bajar meta",
           },
-          i.default.createElement(Rh, { size: 14, color: "#e8ecf7" }),
+          i.default.createElement(IconoMenos, { size: 14, color: "#e8ecf7" }),
         ),
         i.default.createElement(
           "div",
@@ -204,7 +204,7 @@ function Is({
             },
             "aria-label": "Subir meta",
           },
-          i.default.createElement(Ih, { size: 14, color: "#e8ecf7" }),
+          i.default.createElement(IconoMas, { size: 14, color: "#e8ecf7" }),
         ),
       ),
     ),
@@ -412,4 +412,4 @@ function Is({
   );
 }
 
-export { sdcGuiaLin, Is };
+export { sdcGuiaLin, FilaEjercicio };

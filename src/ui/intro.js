@@ -1,7 +1,7 @@
 // Texto maquina de escribir y pantallas de intro.
 import { i } from "../react.js";
 
-function gd({ text: e, speed: a = 45, onDone: l, style: n, showCursor: o }) {
+function MaquinaEscribir({ text: e, speed: a = 45, onDone: l, style: n, showCursor: o }) {
   let [s, u] = (0, i.useState)("");
   return (
     (0, i.useEffect)(() => {
@@ -25,7 +25,7 @@ function gd({ text: e, speed: a = 45, onDone: l, style: n, showCursor: o }) {
     )
   );
 }
-function z5({ onDone: e }) {
+function Bienvenida({ onDone: e }) {
   let [a, l] = (0, i.useState)(0);
   return i.default.createElement(
     "div",
@@ -36,7 +36,7 @@ function z5({ onDone: e }) {
     i.default.createElement(
       "div",
       { className: "w-full", style: { maxWidth: 380, fontFamily: "'Chakra Petch', monospace" } },
-      i.default.createElement(gd, {
+      i.default.createElement(MaquinaEscribir, {
         text: "Nadie te contó de qué es capaz tu cuerpo.",
         speed: 38,
         showCursor: a === 0,
@@ -44,7 +44,7 @@ function z5({ onDone: e }) {
         style: { color: "#e8ecf7", fontSize: 19, marginBottom: 14, letterSpacing: 0.5 },
       }),
       a >= 1 &&
-        i.default.createElement(gd, {
+        i.default.createElement(MaquinaEscribir, {
           text: "Ni vos lo sabés todavía.",
           speed: 38,
           showCursor: a === 1,
@@ -52,7 +52,7 @@ function z5({ onDone: e }) {
           style: { color: "#9aa4bd", fontSize: 16, marginBottom: 14 },
         }),
       a >= 2 &&
-        i.default.createElement(gd, {
+        i.default.createElement(MaquinaEscribir, {
           text: "Vamos a averiguarlo.",
           speed: 45,
           showCursor: a === 2,
@@ -79,4 +79,4 @@ function z5({ onDone: e }) {
   );
 }
 
-export { gd, z5 };
+export { MaquinaEscribir, Bienvenida };

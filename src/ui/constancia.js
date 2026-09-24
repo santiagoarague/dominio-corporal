@@ -1,10 +1,10 @@
 // Calendario de Constancia.
 import { i } from "../react.js";
-import { zd } from "./iconos.js";
+import { IconoCerrar } from "./iconos.js";
 import { fechaLocal } from "../logica/rutina.js";
 import { sdcAnimoFrase } from "./animo.js";
 
-function h5({ items: e }) {
+function LeyendaConstancia({ items: e }) {
   return i.default.createElement(
     "div",
     { className: "grid grid-cols-2 gap-x-3 gap-y-1 mt-3" },
@@ -51,7 +51,7 @@ function diasConstancia(e, a, l, n) {
   while (sdcI < o.length - 1 && o[sdcI].status === "empty") sdcI++;
   return o.slice(sdcI);
 }
-function S5({ days: e, onPick: a, selected: l }) {
+function GrillaConstancia({ days: e, onPick: a, selected: l }) {
   return i.default.createElement(
     "div",
     { style: { display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 4 } },
@@ -85,7 +85,7 @@ var N5 = {
   pending: "Hoy, aún pendiente",
   empty: "Sin registro",
 };
-function C5({ date: e, status: a, log: l, onClose: n, onLog: sol, animo: an }) {
+function DetalleDia({ date: e, status: a, log: l, onClose: n, onLog: sol, animo: an }) {
   let [cf, scf] = (0, i.useState)(!1);
   return i.default.createElement(
     "div",
@@ -104,7 +104,7 @@ function C5({ date: e, status: a, log: l, onClose: n, onLog: sol, animo: an }) {
       i.default.createElement(
         "button",
         { onClick: n, "aria-label": "Cerrar" },
-        i.default.createElement(zd, { size: 14, color: "#9aa4bd" }),
+        i.default.createElement(IconoCerrar, { size: 14, color: "#9aa4bd" }),
       ),
     ),
     i.default.createElement(
@@ -218,4 +218,4 @@ function C5({ date: e, status: a, log: l, onClose: n, onLog: sol, animo: an }) {
   );
 }
 
-export { h5, bt, diasConstancia, S5, N5, C5 };
+export { LeyendaConstancia, bt, diasConstancia, GrillaConstancia, N5, DetalleDia };

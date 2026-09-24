@@ -8,7 +8,7 @@ var sdcRitmos = [
   { t: "Trote suave", v: 8 },
   { t: "Corriendo", v: 10 },
 ];
-function sdcCamCrono({ inicio: e, kmh: a, onCancel: l, onListo: n }) {
+function CronoCaminata({ inicio: e, kmh: a, onCancel: l, onListo: n }) {
   let [o, s] = (0, i.useState)(Math.max(0, Math.floor((Date.now() - e) / 1e3)));
   sdcWakeUse();
   (0, i.useEffect)(() => {
@@ -79,4 +79,4 @@ function sdcCamCrono({ inicio: e, kmh: a, onCancel: l, onListo: n }) {
   );
 }
 
-export { sdcRitmos, sdcCamCrono };
+export { sdcRitmos, CronoCaminata };

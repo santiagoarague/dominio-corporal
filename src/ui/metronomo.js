@@ -12,7 +12,7 @@ function sdcTempoMod(mo) {
   /mitad de velocidad/i.test(d) && ((b *= 2), (s *= 2));
   return { b: b, p: p, s: s };
 }
-function D5({ active: e, tempo: tm }) {
+function Metronomo({ active: e, tempo: tm }) {
   let t = tm && tm.b ? tm : { b: 2, p: 1, s: 2 },
     [a, l] = (0, i.useState)("down");
   if (
@@ -49,4 +49,4 @@ function D5({ active: e, tempo: tm }) {
   );
 }
 
-export { sdcTempoMod, D5 };
+export { sdcTempoMod, Metronomo };

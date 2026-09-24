@@ -1,12 +1,12 @@
 // Barra de descanso.
 import { i } from "../react.js";
 import { sdcEstMMSS } from "../logica/estiramiento.js";
-import { qa } from "./base.js";
+import { BarraXp } from "./base.js";
 import { sdcVib } from "../logica/series.js";
 import { pitido } from "./prueba.js";
 import { sdcWakeUse } from "./pantalla.js";
 
-function T5({ seconds: e, onSkip: a, ini: t0 }) {
+function BarraDescanso({ seconds: e, onSkip: a, ini: t0 }) {
   let [n, tk] = (0, i.useState)(0),
     l = Math.max(0, e - Math.floor((Date.now() - (t0 || Date.now())) / 1e3));
   sdcWakeUse();
@@ -78,10 +78,10 @@ function T5({ seconds: e, onSkip: a, ini: t0 }) {
       i.default.createElement(
         "div",
         { className: "mt-2" },
-        i.default.createElement(qa, { value: e - l, max: e, color: "#ffb84f" }),
+        i.default.createElement(BarraXp, { value: e - l, max: e, color: "#ffb84f" }),
       ),
     ),
   );
 }
 
-export { T5 };
+export { BarraDescanso };

@@ -1,10 +1,10 @@
 // Tarjeta plegable y botones de sistemas.
 import { i } from "../react.js";
-import { Za } from "./iconos.js";
+import { IconoFlecha } from "./iconos.js";
 import { colorRango } from "../datos/rangos.js";
-import { Q } from "./base.js";
+import { Tarjeta } from "./base.js";
 
-function ge({
+function Plegable({
   id: e,
   title: a,
   accent: l,
@@ -16,7 +16,7 @@ function ge({
 }) {
   let r = !n;
   return i.default.createElement(
-    Q,
+    Tarjeta,
     { accent: l, style: c },
     i.default.createElement(
       "button",
@@ -37,7 +37,7 @@ function ge({
               transition: "transform .2s",
             },
           },
-          i.default.createElement(Za, { size: 14, color: "#9aa4bd" }),
+          i.default.createElement(IconoFlecha, { size: 14, color: "#9aa4bd" }),
         ),
         i.default.createElement(
           "span",
@@ -50,7 +50,7 @@ function ge({
     r && i.default.createElement("div", { className: "mt-3" }, u),
   );
 }
-function Qo({ icon: e, label: a, status: l, done: n, onClick: o }) {
+function BotonSistema({ icon: e, label: a, status: l, done: n, onClick: o }) {
   return i.default.createElement(
     "button",
     {
@@ -74,7 +74,7 @@ function Qo({ icon: e, label: a, status: l, done: n, onClick: o }) {
 function k5(e) {
   return colorRango[e] || "#ffb84f";
 }
-function Cd({ type: e, size: a = 56, color: l = "#ffb84f", rank: n }) {
+function DibujoMascota({ type: e, size: a = 56, color: l = "#ffb84f", rank: n }) {
   let o = n && ["A", "S", "Z"].includes(n),
     s = n && ["S", "Z"].includes(n),
     u = { width: a, height: a, display: "block", filter: s ? `drop-shadow(0 0 6px ${l})` : "none" },
@@ -199,4 +199,4 @@ function Cd({ type: e, size: a = 56, color: l = "#ffb84f", rank: n }) {
       );
 }
 
-export { ge, Qo, k5, Cd };
+export { Plegable, BotonSistema, k5, DibujoMascota };

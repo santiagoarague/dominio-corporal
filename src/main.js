@@ -2,9 +2,9 @@
 // pruebas puedan importar las funciones del juego sin dibujar la app.
 import React from "react";
 import { createRoot } from "react-dom/client";
-import { w5 } from "./ui/Raiz.js";
+import { Raiz } from "./ui/Raiz.js";
 
-createRoot(document.getElementById("root")).render(React.createElement(w5, null));
+createRoot(document.getElementById("root")).render(React.createElement(Raiz, null));
 
 // sw.js es una plantilla que solo existe en dist/: con `npm run dev` no hay
 // service worker, y asi tampoco hay una cache vieja escondiendo los cambios.

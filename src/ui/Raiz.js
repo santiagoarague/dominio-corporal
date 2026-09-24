@@ -1,10 +1,10 @@
 // Raiz: carga la partida y elige entre inicio y app.
 import { i } from "../react.js";
 import { guardarPartida, cargarPartida, crearPartida, leerPartida } from "../logica/partida.js";
-import { j5 } from "./Inicio.js";
-import { B5 } from "./App.js";
+import { Inicio } from "./Inicio.js";
+import { App } from "./App.js";
 
-function w5() {
+function Raiz() {
   let [e, a] = (0, i.useState)(!0),
     [l, n] = (0, i.useState)(null),
     [o, s] = (0, i.useState)([]);
@@ -56,9 +56,9 @@ function w5() {
           "Cargando...",
         )
       : l
-        ? i.default.createElement(B5, { player: l, setPlayer: n, initialNotices: o })
-        : i.default.createElement(j5, { onFinish: u, onLoadBackup: c }),
+        ? i.default.createElement(App, { player: l, setPlayer: n, initialNotices: o })
+        : i.default.createElement(Inicio, { onFinish: u, onLoadBackup: c }),
   );
 }
 
-export { w5 };
+export { Raiz };

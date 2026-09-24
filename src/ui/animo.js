@@ -149,7 +149,7 @@ function sdcCargaRacha(e) {
   for (j = 1; j < 3; j++) if (v[ks[j]].carga !== c) return null;
   return c === "justa" ? null : c;
 }
-function sdcCara({ n: n, size: s, color: c }) {
+function Cara({ n: n, size: s, color: c }) {
   var bo = [
     "M8 16.6 Q12 12.6 16 16.6",
     "M8.5 16 Q12 14.3 15.5 16",
@@ -173,7 +173,7 @@ function sdcCara({ n: n, size: s, color: c }) {
     }),
   );
 }
-function sdcCaras({ sel: sl, onPick: op }) {
+function Caras({ sel: sl, onPick: op }) {
   return i.default.createElement(
     "div",
     { style: { display: "grid", gridTemplateColumns: "repeat(5,minmax(0,1fr))", gap: 4 } },
@@ -202,7 +202,7 @@ function sdcCaras({ sel: sl, onPick: op }) {
             paddingTop: 8,
           },
         },
-        i.default.createElement(sdcCara, { n: x.n, size: 26, color: cc }),
+        i.default.createElement(Cara, { n: x.n, size: 26, color: cc }),
         i.default.createElement(
           "span",
           {
@@ -221,7 +221,7 @@ function sdcCaras({ sel: sl, onPick: op }) {
     }),
   );
 }
-function sdcAnimoAntes({ st: e, Ne: Ne, mod: B, onModo: om, descLibre: dl, onDescanso: odc }) {
+function AnimoAntes({ st: e, Ne: Ne, mod: B, onModo: om, descLibre: dl, onDescanso: odc }) {
   let [cf, scf] = (0, i.useState)(!1),
     h = sdcAnimoHoy(e),
     cambiar = i.default.createElement(
@@ -268,7 +268,7 @@ function sdcAnimoAntes({ st: e, Ne: Ne, mod: B, onModo: om, descLibre: dl, onDes
           "Hoy no",
         ),
       ),
-      i.default.createElement(sdcCaras, {
+      i.default.createElement(Caras, {
         sel: 0,
         onPick: (n) => Ne((d) => sdcAnimoSet(d, { antes: n })),
       }),
@@ -277,7 +277,7 @@ function sdcAnimoAntes({ st: e, Ne: Ne, mod: B, onModo: om, descLibre: dl, onDes
     return i.default.createElement(
       "div",
       { className: "flex items-center gap-2", style: sdcAnimoTx },
-      i.default.createElement(sdcCara, { n: h.antes, size: 22, color: "#c8d0e4" }),
+      i.default.createElement(Cara, { n: h.antes, size: 22, color: "#c8d0e4" }),
       "Llegás " + sdcAnimoFrase(h.antes) + ".",
       i.default.createElement("span", { style: { marginLeft: "auto" } }, cambiar),
     );
@@ -440,7 +440,7 @@ function sdcAnimoAntes({ st: e, Ne: Ne, mod: B, onModo: om, descLibre: dl, onDes
     i.default.createElement("div", { className: "text-right" }, cambiar),
   );
 }
-function sdcAnimoAhora({ st: e, Ne: Ne, onModo: om, sinSeries: ss }) {
+function AnimoAhora({ st: e, Ne: Ne, onModo: om, sinSeries: ss }) {
   let h = sdcAnimoHoy(e),
     bx = { border: "1px solid rgba(79,157,255,0.35)", background: "rgba(79,157,255,0.06)" };
   if (
@@ -458,7 +458,7 @@ function sdcAnimoAhora({ st: e, Ne: Ne, onModo: om, sinSeries: ss }) {
       "div",
       { className: "mt-3 p-2", style: bx },
       i.default.createElement("div", { className: "mb-2", style: sdcAnimoTit }, "¿Y ahora?"),
-      i.default.createElement(sdcCaras, {
+      i.default.createElement(Caras, {
         sel: 0,
         onPick: (n) =>
           Ne((d) => {
@@ -502,7 +502,7 @@ function sdcAnimoAhora({ st: e, Ne: Ne, onModo: om, sinSeries: ss }) {
     ),
   );
 }
-function sdcAnimoDespues({ st: e, Ne: Ne, onPrueba: op }) {
+function AnimoDespues({ st: e, Ne: Ne, onPrueba: op }) {
   let h = sdcAnimoHoy(e),
     bx = { marginBottom: 12, paddingBottom: 12, borderBottom: "1px solid rgba(255,255,255,0.08)" };
   if (h.no) return null;
@@ -520,7 +520,7 @@ function sdcAnimoDespues({ st: e, Ne: Ne, onPrueba: op }) {
       "div",
       { style: bx },
       i.default.createElement("div", { className: "mb-2", style: sdcAnimoTit }, "¿Cómo te vas?"),
-      i.default.createElement(sdcCaras, {
+      i.default.createElement(Caras, {
         sel: 0,
         onPick: (n) => Ne((d) => sdcAnimoSetDa(d, { despues: n })),
       }),
@@ -571,7 +571,7 @@ function sdcAnimoDespues({ st: e, Ne: Ne, onPrueba: op }) {
     i.default.createElement(
       "div",
       { className: "flex items-center gap-2", style: sdcAnimoTx },
-      i.default.createElement(sdcCara, {
+      i.default.createElement(Cara, {
         n: h.despues,
         size: 22,
         color: h.antes && h.despues > h.antes ? "#3ecf8e" : "#c8d0e4",
@@ -630,9 +630,9 @@ export {
   sdcAbrirCard,
   sdcAnimoEvid,
   sdcCargaRacha,
-  sdcCara,
-  sdcCaras,
-  sdcAnimoAntes,
-  sdcAnimoAhora,
-  sdcAnimoDespues,
+  Cara,
+  Caras,
+  AnimoAntes,
+  AnimoAhora,
+  AnimoDespues,
 };

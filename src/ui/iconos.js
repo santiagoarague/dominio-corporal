@@ -1,12 +1,12 @@
 // Iconos SVG.
 import { i } from "../react.js";
 
-function Ae({ size: e = 16, style: a, children: l }) {
+function Icono({ size: e = 16, style: a, children: l }) {
   return i.default.createElement("svg", { width: e, height: e, viewBox: "0 0 24 24", style: a }, l);
 }
-function Ph({ size: e = 16, color: a = "currentColor" }) {
+function IconoLlama({ size: e = 16, color: a = "currentColor" }) {
   return i.default.createElement(
-    Ae,
+    Icono,
     { size: e },
     i.default.createElement("path", {
       d: "M12 2 C8 8 6 11 6 15 a6 6 0 0 0 12 0 c0 -2 -1 -4 -2 -5 c0 2 -1 3 -2 3 c1 -3 -1 -7 -2 -11 Z",
@@ -14,9 +14,9 @@ function Ph({ size: e = 16, color: a = "currentColor" }) {
     }),
   );
 }
-function Vs({ size: e = 16, color: a = "currentColor" }) {
+function IconoTrofeo({ size: e = 16, color: a = "currentColor" }) {
   return i.default.createElement(
-    Ae,
+    Icono,
     { size: e },
     i.default.createElement("path", { d: "M7 4 h10 v4 a5 5 0 0 1 -10 0 Z", fill: a }),
     i.default.createElement("path", { d: "M9 13 h6 v3 h-6 Z", fill: a }),
@@ -35,16 +35,16 @@ function Vs({ size: e = 16, color: a = "currentColor" }) {
     }),
   );
 }
-function $h({ size: e = 16, color: a = "currentColor" }) {
+function IconoLuna({ size: e = 16, color: a = "currentColor" }) {
   return i.default.createElement(
-    Ae,
+    Icono,
     { size: e },
     i.default.createElement("path", { d: "M20 14 A8 8 0 1 1 10 4 A6 6 0 0 0 20 14 Z", fill: a }),
   );
 }
-function Nl({ size: e = 16, color: a = "currentColor" }) {
+function IconoDestello({ size: e = 16, color: a = "currentColor" }) {
   return i.default.createElement(
-    Ae,
+    Icono,
     { size: e },
     i.default.createElement("path", {
       d: "M12 3 L13.5 9 L19 10.5 L13.5 12 L12 18 L10.5 12 L5 10.5 L10.5 9 Z",
@@ -52,9 +52,9 @@ function Nl({ size: e = 16, color: a = "currentColor" }) {
     }),
   );
 }
-function Pb({ size: e = 16, color: a = "currentColor" }) {
+function IconoPesa({ size: e = 16, color: a = "currentColor" }) {
   return i.default.createElement(
-    Ae,
+    Icono,
     { size: e },
     i.default.createElement("rect", { x: "1", y: "9", width: "3", height: "6", fill: a }),
     i.default.createElement("rect", { x: "20", y: "9", width: "3", height: "6", fill: a }),
@@ -63,24 +63,24 @@ function Pb({ size: e = 16, color: a = "currentColor" }) {
     i.default.createElement("rect", { x: "7.5", y: "11", width: "9", height: "2", fill: a }),
   );
 }
-function Ih({ size: e = 16, color: a = "currentColor" }) {
+function IconoMas({ size: e = 16, color: a = "currentColor" }) {
   return i.default.createElement(
-    Ae,
+    Icono,
     { size: e },
     i.default.createElement("rect", { x: "10.5", y: "3", width: "3", height: "18", fill: a }),
     i.default.createElement("rect", { x: "3", y: "10.5", width: "18", height: "3", fill: a }),
   );
 }
-function Rh({ size: e = 16, color: a = "currentColor" }) {
+function IconoMenos({ size: e = 16, color: a = "currentColor" }) {
   return i.default.createElement(
-    Ae,
+    Icono,
     { size: e },
     i.default.createElement("rect", { x: "3", y: "10.5", width: "18", height: "3", fill: a }),
   );
 }
-function Mn({ size: e = 16, color: a = "currentColor" }) {
+function IconoCheck({ size: e = 16, color: a = "currentColor" }) {
   return i.default.createElement(
-    Ae,
+    Icono,
     { size: e },
     i.default.createElement("path", {
       d: "M4 12 L9 17 L20 5",
@@ -92,9 +92,9 @@ function Mn({ size: e = 16, color: a = "currentColor" }) {
     }),
   );
 }
-function zd({ size: e = 16, color: a = "currentColor" }) {
+function IconoCerrar({ size: e = 16, color: a = "currentColor" }) {
   return i.default.createElement(
-    Ae,
+    Icono,
     { size: e },
     i.default.createElement("path", {
       d: "M5 5 L19 19 M19 5 L5 19",
@@ -104,16 +104,16 @@ function zd({ size: e = 16, color: a = "currentColor" }) {
     }),
   );
 }
-function $b({ size: e = 16, color: a = "currentColor" }) {
+function IconoRayo({ size: e = 16, color: a = "currentColor" }) {
   return i.default.createElement(
-    Ae,
+    Icono,
     { size: e },
     i.default.createElement("path", { d: "M13 2 L4 14 h6 l-1 8 l9 -12 h-6 Z", fill: a }),
   );
 }
-function e2({ size: e = 16, color: a = "currentColor" }) {
+function IconoReloj({ size: e = 16, color: a = "currentColor" }) {
   return i.default.createElement(
-    Ae,
+    Icono,
     { size: e },
     i.default.createElement("circle", {
       cx: "12",
@@ -132,9 +132,9 @@ function e2({ size: e = 16, color: a = "currentColor" }) {
     }),
   );
 }
-function Za({ size: e = 16, color: a = "currentColor" }) {
+function IconoFlecha({ size: e = 16, color: a = "currentColor" }) {
   return i.default.createElement(
-    Ae,
+    Icono,
     { size: e },
     i.default.createElement("path", {
       d: "M9 4 L16 12 L9 20",
@@ -146,9 +146,9 @@ function Za({ size: e = 16, color: a = "currentColor" }) {
     }),
   );
 }
-function a2({ size: e = 16, color: a = "currentColor" }) {
+function IconoUbicacion({ size: e = 16, color: a = "currentColor" }) {
   return i.default.createElement(
-    Ae,
+    Icono,
     { size: e },
     i.default.createElement("path", {
       d: "M12 22 C12 22 5 14 5 9 a7 7 0 0 1 14 0 C19 14 12 22 12 22 Z",
@@ -157,9 +157,9 @@ function a2({ size: e = 16, color: a = "currentColor" }) {
     i.default.createElement("circle", { cx: "12", cy: "9", r: "2.5", fill: "#0a0e1a" }),
   );
 }
-function Ko({ size: e = 16, color: a = "currentColor" }) {
+function IconoCandado({ size: e = 16, color: a = "currentColor" }) {
   return i.default.createElement(
-    Ae,
+    Icono,
     { size: e },
     i.default.createElement("rect", {
       x: "5",
@@ -177,17 +177,17 @@ function Ko({ size: e = 16, color: a = "currentColor" }) {
     }),
   );
 }
-function Ib({ size: e = 16, color: a = "currentColor" }) {
+function IconoPasos({ size: e = 16, color: a = "currentColor" }) {
   return i.default.createElement(
-    Ae,
+    Icono,
     { size: e },
     i.default.createElement("ellipse", { cx: "8", cy: "7", rx: "3", ry: "4", fill: a }),
     i.default.createElement("ellipse", { cx: "16", cy: "16", rx: "3", ry: "4", fill: a }),
   );
 }
-function Vo({ size: e = 16, color: a = "currentColor" }) {
+function IconoEspadas({ size: e = 16, color: a = "currentColor" }) {
   return i.default.createElement(
-    Ae,
+    Icono,
     { size: e },
     i.default.createElement("path", {
       d: "M3 21 L14 10 M11 7 L17 13 M17 3 L21 7 L14 14",
@@ -205,9 +205,9 @@ function Vo({ size: e = 16, color: a = "currentColor" }) {
     }),
   );
 }
-function Rb({ size: e = 16, color: a = "currentColor", fill: l = "none" }) {
+function IconoCorazon({ size: e = 16, color: a = "currentColor", fill: l = "none" }) {
   return i.default.createElement(
-    Ae,
+    Icono,
     { size: e },
     i.default.createElement("path", {
       d: "M12 21 C12 21 3 14.5 3 8.5 A4.5 4.5 0 0 1 12 6 A4.5 4.5 0 0 1 21 8.5 C21 14.5 12 21 12 21 Z",
@@ -217,9 +217,9 @@ function Rb({ size: e = 16, color: a = "currentColor", fill: l = "none" }) {
     }),
   );
 }
-function t2({ size: e = 16, color: a = "currentColor" }) {
+function IconoCalavera({ size: e = 16, color: a = "currentColor" }) {
   return i.default.createElement(
-    Ae,
+    Icono,
     { size: e },
     i.default.createElement("circle", { cx: "12", cy: "10", r: "8", fill: a }),
     i.default.createElement("circle", { cx: "9", cy: "10", r: "1.5", fill: "#0a0e1a" }),
@@ -229,9 +229,9 @@ function t2({ size: e = 16, color: a = "currentColor" }) {
     i.default.createElement("rect", { x: "13.3", y: "19", width: "1.2", height: "2", fill: a }),
   );
 }
-function Qs({ size: e = 16, color: a = "currentColor" }) {
+function IconoPata({ size: e = 16, color: a = "currentColor" }) {
   return i.default.createElement(
-    Ae,
+    Icono,
     { size: e },
     i.default.createElement("circle", { cx: "12", cy: "15", r: "4", fill: a }),
     i.default.createElement("circle", { cx: "6", cy: "10", r: "2", fill: a }),
@@ -240,13 +240,35 @@ function Qs({ size: e = 16, color: a = "currentColor" }) {
     i.default.createElement("circle", { cx: "15", cy: "5", r: "1.8", fill: a }),
   );
 }
-function ey({ size: e = 16, color: a = "currentColor" }) {
+function IconoPersona({ size: e = 16, color: a = "currentColor" }) {
   return i.default.createElement(
-    Ae,
+    Icono,
     { size: e },
     i.default.createElement("circle", { cx: "12", cy: "8", r: "4", fill: a }),
     i.default.createElement("path", { d: "M4 21 a8 8 0 0 1 16 0 Z", fill: a }),
   );
 }
 
-export { Ae, Ph, Vs, $h, Nl, Pb, Ih, Rh, Mn, zd, $b, e2, Za, a2, Ko, Ib, Vo, Rb, t2, Qs, ey };
+export {
+  Icono,
+  IconoLlama,
+  IconoTrofeo,
+  IconoLuna,
+  IconoDestello,
+  IconoPesa,
+  IconoMas,
+  IconoMenos,
+  IconoCheck,
+  IconoCerrar,
+  IconoRayo,
+  IconoReloj,
+  IconoFlecha,
+  IconoUbicacion,
+  IconoCandado,
+  IconoPasos,
+  IconoEspadas,
+  IconoCorazon,
+  IconoCalavera,
+  IconoPata,
+  IconoPersona,
+};

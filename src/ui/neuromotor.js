@@ -9,7 +9,7 @@ var kd = [
     { id: "rapido", name: "Rápido", min: 1200, max: 2800, level: 3 },
   ],
   eu = 15;
-function M5({ onDone: e }) {
+function Reaccion({ onDone: e }) {
   let [a, l] = (0, i.useState)("idle"),
     [n, o] = (0, i.useState)(kd[1]),
     [s, u] = (0, i.useState)(null),
@@ -195,7 +195,7 @@ function M5({ onDone: e }) {
             )
   );
 }
-function _5({ onDone: e }) {
+function Secuencia({ onDone: e }) {
   let [a, l] = (0, i.useState)("idle"),
     [n, o] = (0, i.useState)([]),
     [s, u] = (0, i.useState)(0),
@@ -386,7 +386,7 @@ function _5({ onDone: e }) {
               ),
             );
 }
-function q5({ onDone: e }) {
+function TareaDual({ onDone: e }) {
   let [a, l] = (0, i.useState)("idle"),
     [n, o] = (0, i.useState)(0),
     [s, u] = (0, i.useState)(md[0]),
@@ -474,7 +474,7 @@ function q5({ onDone: e }) {
         : null
   );
 }
-function O5({ onDone: e }) {
+function Ritmo({ onDone: e }) {
   let [a, l] = (0, i.useState)("idle"),
     [n, o] = (0, i.useState)(0),
     [s, u] = (0, i.useState)(30),
@@ -626,4 +626,4 @@ function O5({ onDone: e }) {
   );
 }
 
-export { kd, eu, M5, _5, q5, O5 };
+export { kd, eu, Reaccion, Secuencia, TareaDual, Ritmo };
