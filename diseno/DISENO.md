@@ -129,7 +129,9 @@ explícitamente cuál rompe y por qué.
 
 ### Modalidades
 Tres formas de entrenar, se pueden tener varias y elegir cada día:
-- **Peso corporal**, **Gimnasio** y **Flow** (breaking, capoeira, locomoción animal, pino).
+- **Peso corporal**, **Gimnasio** y **Flow** (breaking, capoeira, locomoción animal, pino). En la
+  rutina y al elegirlas se llaman **Calistenia**, **Fuerza de Acero** y **Movilidad & Primal Flow**.
+  Peso corporal se llamaba *Dominio Corporal*, igual que el juego, y se cambió por eso.
 - Cada una tiene su propio juego de nombres de rango:
 
 ```
@@ -200,6 +202,9 @@ pregunta, es la comparación: la app te muestra con tus números que entrenar te
 - **Al registrar la rutina**, *¿Cómo te vas?* con las mismas caritas, y *¿Cómo te quedó la
   rutina?* (Corta · Justa · Mucha). Si tres veces seguidas te queda corta o mucha, te propone
   repetir la prueba de aptitud.
+- **Toda respuesta se puede corregir** con *Cambiar respuesta*, porque una cara se toca sin querer.
+  La de llegada queda como una línea (*Llegás normal.*) hasta la primera serie o el calentamiento;
+  la de salida, en el resumen de la rutina.
 - **No da XP**: contestar no es entrenar. Se festeja con 7 logros en la categoría **Días que no
   querías** (entrenar esos días, el envión, terminar mejor de lo que llegaste) y se ve en Perfil →
   Tus números y en el detalle de cada día de Constancia.
