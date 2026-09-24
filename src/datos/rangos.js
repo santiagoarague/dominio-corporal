@@ -1,8 +1,8 @@
 // Rangos: letras, umbrales, colores y nombres por modalidad.
 
-var ve = ["E", "D", "C", "B", "A", "S", "Z"],
-  au = { E: 50, D: 100, C: 140, B: 180, A: 220, S: 260 },
-  Cl = {
+var rangos = ["E", "D", "C", "B", "A", "S", "Z"],
+  nivelUmbral = { E: 50, D: 100, C: 140, B: 180, A: 220, S: 260 },
+  colorRango = {
     E: "#7b8290",
     D: "#8b93a8",
     C: "#3ecf8e",
@@ -11,7 +11,7 @@ var ve = ["E", "D", "C", "B", "A", "S", "Z"],
     S: "#ffb84f",
     Z: "#ff5c7a",
   },
-  zl = {
+  nombresRango = {
     E: "Rango E",
     D: "Rango D",
     C: "Rango C",
@@ -71,7 +71,7 @@ var ve = ["E", "D", "C", "B", "A", "S", "Z"],
     },
   },
   vd = 0.75,
-  ay = [
+  escalaCaminante = [
     { name: "Primeros Pasos", minKm: 0 },
     { name: "Caminante", minKm: 5 },
     { name: "Piernas Hechas", minKm: 20 },
@@ -81,4 +81,4 @@ var ve = ["E", "D", "C", "B", "A", "S", "Z"],
     { name: "Sin Distancia", minKm: 350 },
   ];
 
-export { ve, au, Cl, zl, sdcTitulos, sdcDescs, vd, ay };
+export { rangos, nivelUmbral, colorRango, nombresRango, sdcTitulos, sdcDescs, vd, escalaCaminante };

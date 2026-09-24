@@ -1,24 +1,41 @@
 // La partida: crear, cargar, registrar, deshacer, niveles, misiones, Umbral.
-import { au, vd, ve } from "../datos/rangos.js";
-import { ai, n2, o2, pt } from "./explorar.js";
+import { nivelUmbral, vd, rangos } from "../datos/rangos.js";
+import { travesiaDelDia, n2, o2, nodosExplorar } from "./explorar.js";
 import { $o, Ad, za } from "./combate.js";
 import { D2, T2, ky, zy } from "./primal.js";
-import { Ay, Ka, sdcMascota, sdcModDia, sdcPerk, sdcRacha } from "./tienda.js";
+import { dominioInicial, multImpulso, sdcMascota, sdcModDia, sdcPerk, sdcRacha } from "./tienda.js";
 import { Al } from "../datos/salud.js";
-import { $e, _y, ye, yt } from "./sistemas.js";
-import { Q2, da, ni } from "../datos/logros.js";
-import { ra } from "../datos/ejercicios.js";
-import { By, Dl, Md, Oy, _d, _n, a5, gy, jd, jy, li, qd, qn, qy, t5, ue } from "./rutina.js";
+import { sistemas, avisarSistemasNuevos, sistemaActivo, sistemaAbierto } from "./sistemas.js";
+import { ultimos60Dias, revisarLogros, avisoCarga } from "../datos/logros.js";
+import { modalidades } from "../datos/ejercicios.js";
+import {
+  inicioSemana,
+  anotarDia,
+  modalidadDelDia,
+  metaDelDia,
+  ejercicioDe,
+  metaSemanal,
+  diasParaBajarZ,
+  pruebaUmbral,
+  volumen,
+  xpTotal,
+  costoNivel,
+  metaSemanalDefecto,
+  modalidadesDe,
+  diasRestantesSemana,
+  multEnfoque,
+  fechaHoy,
+} from "./rutina.js";
 import { sdcRango } from "./extras.js";
 import { wd } from "../ui/cuerpo.js";
 
-function M(e) {
+function clonar(e) {
   return JSON.parse(JSON.stringify(e));
 }
-function n5(e) {
-  let a = ue();
+function crearPartida(e) {
+  let a = fechaHoy();
   return {
-    profile: { ...e, createdDate: a, weeklyGoal: e.weeklyGoal || qd },
+    profile: { ...e, createdDate: a, weeklyGoal: e.weeklyGoal || metaSemanalDefecto },
     progress: { rank: e.startRank || "E", level: 1, currentXP: 0 },
     today: {
       date: a,
@@ -33,7 +50,7 @@ function n5(e) {
       doneModalities: [],
     },
     week: {
-      weekStart: By(a),
+      weekStart: inicioSemana(a),
       restDayUsed: !1,
       stretchCount: 0,
       trained: 0,
@@ -56,7 +73,7 @@ function n5(e) {
       unlockedIndex: -1,
       relics: [],
     },
-    dungeon: { date: a, ...ai(e.startRank || "E") },
+    dungeon: { date: a, ...travesiaDelDia(e.startRank || "E") },
     history: {},
     month: misVacio(misMes(a)),
     missions: {
@@ -85,7 +102,7 @@ function n5(e) {
     seenUnlocks: [],
     weeklyStreak: 0,
     bestWeeklyStreak: 0,
-    dominion: Ay(),
+    dominion: dominioInicial(),
     records: { squat: 0, pushup: 0, back: 0, abs: 0 },
     gymWeights: { squat: 0, pushup: 0, back: 0, abs: 0 },
     lifetimeVolumeKg: 0,
@@ -96,28 +113,28 @@ function n5(e) {
     lifetimeStretch: 0,
   };
 }
-function Ea(e, a) {
+function subirNiveles(e, a) {
   for (;;) {
-    let l = au[e.progress.rank];
+    let l = nivelUmbral[e.progress.rank];
     if (l && e.progress.level >= l) {
       e.ascension.pending = !0;
       break;
     }
-    let n = li(e.progress.level);
+    let n = costoNivel(e.progress.level);
     if (e.progress.currentXP >= n) {
       ((e.progress.currentXP -= n),
         (e.progress.level += 1),
         a.push(`Subiste a nivel ${e.progress.level}.`));
-      let o = _y(e);
+      let o = avisarSistemasNuevos(e);
       ((e = o.state), o.notices.forEach((s) => a.push(s)));
     } else break;
   }
   return e;
 }
-function ei(e) {
-  let a = M(e),
+function cargarPartida(e) {
+  let a = clonar(e),
     l = [],
-    n = ue();
+    n = fechaHoy();
   (a.exploration ||
     (a.exploration = {
       lifetimeKm: 0,
@@ -135,7 +152,7 @@ function ei(e) {
       delete a.exploration.lifetimeSteps),
     a.exploration.relics || (a.exploration.relics = []),
     a.exploration.pendingKm === void 0 && (a.exploration.pendingKm = 0),
-    a.dungeon || (a.dungeon = { date: n, ...ai(a.progress.rank) }),
+    a.dungeon || (a.dungeon = { date: n, ...travesiaDelDia(a.progress.rank) }),
     a.today.rank || (a.today.rank = a.progress.rank),
     a.today.fullCompletion === void 0 && (a.today.fullCompletion = !1),
     a.streak.current === void 0 && (a.streak.current = 0),
@@ -160,12 +177,13 @@ function ei(e) {
     a.neuro || (a.neuro = Al()),
     a.unlockAll === void 0 && (a.unlockAll = !1),
     a.disabled || (a.disabled = []),
-    a.seenUnlocks || (a.seenUnlocks = $e.filter((s) => yt(a, s.id)).map((s) => s.id)),
+    a.seenUnlocks ||
+      (a.seenUnlocks = sistemas.filter((s) => sistemaAbierto(a, s.id)).map((s) => s.id)),
     a.ui || (a.ui = { collapsed: {} }),
     a.ui.collapsed || (a.ui.collapsed = {}),
     a.ui.collapsed.ayuda === void 0 && (a.ui.collapsed.ayuda = !1),
     a.ui.ayudaAuto === void 0 && ((a.ui.ayudaAuto = 1), (a.ui.collapsed.ayuda = !1)),
-    a.dominion || (a.dominion = Ay()),
+    a.dominion || (a.dominion = dominioInicial()),
     a.dominion.perks || (a.dominion.perks = []),
     a.lifetimeModalities || (a.lifetimeModalities = { bodyweight: 0, gym: 0, flow: 0 }),
     a.records || (a.records = { squat: 0, pushup: 0, back: 0, abs: 0 }),
@@ -192,30 +210,30 @@ function ei(e) {
     a.profile.focusProfile || (a.profile.focusProfile = "salud"),
     (!a.profile.modalities || !a.profile.modalities.length) &&
       (a.profile.modalities = ["bodyweight"]),
-    a.profile.weeklyGoal || (a.profile.weeklyGoal = qd),
+    a.profile.weeklyGoal || (a.profile.weeklyGoal = metaSemanalDefecto),
     a.weeklyStreak === void 0 && (a.weeklyStreak = 0),
     a.bestWeeklyStreak === void 0 && (a.bestWeeklyStreak = 0));
-  let o = By(n);
+  let o = inicioSemana(n);
   if (a.week.weekStart !== o) {
     a.week.stretchCount >= 2
       ? ((a.streak.flexBuff = !0),
         l.push("Buff de Flexibilidad activo esta semana: +10% XP por haber estirado 2+ veces."))
       : (a.streak.flexBuff = !1);
-    let s = (a.week.trained || 0) >= _n(a);
+    let s = (a.week.trained || 0) >= metaSemanal(a);
     (s
       ? ((a.weeklyStreak = (a.weeklyStreak || 0) + 1),
         (a.bestWeeklyStreak = Math.max(a.bestWeeklyStreak || 0, a.weeklyStreak)),
         l.push(
-          `Semana cumplida: ${a.week.trained} de ${_n(a)} sesiones. Racha semanal: ${a.weeklyStreak}.`,
+          `Semana cumplida: ${a.week.trained} de ${metaSemanal(a)} sesiones. Racha semanal: ${a.weeklyStreak}.`,
         ))
       : ((a.week.trained || 0) > 0 || a.weeklyStreak > 0) &&
         ((a.weeklyStreak = 0),
         l.push(
-          `Cerraste la semana con ${a.week.trained || 0} de ${_n(a)} sesiones. La racha semanal vuelve a empezar.`,
+          `Cerraste la semana con ${a.week.trained || 0} de ${metaSemanal(a)} sesiones. La racha semanal vuelve a empezar.`,
         )),
       (a.lastWeekSummary = {
         metGoal: s,
-        goal: _n(a),
+        goal: metaSemanal(a),
         weekStart: a.week.weekStart,
         trained: a.week.trained || 0,
         fullDays: a.week.fullDays || 0,
@@ -251,9 +269,9 @@ function ei(e) {
           `Un Escudo de Racha absorbió el día ${a.today.date}: tu racha sigue intacta. Te quedan ${a.dominion.shields}.`,
         ));
     else if (!a.today.completed && !(a.week.sessionDates || []).includes(a.today.date)) {
-      let s = _n(a),
+      let s = metaSemanal(a),
         u = a.week.trained || 0,
-        c = Math.max(0, qy(a.today.date) - 1),
+        c = Math.max(0, diasRestantesSemana(a.today.date) - 1),
         r = u + c >= s;
       if (((a.streak.current = 0), r))
         ((a.history[a.today.date] = "skipped"),
@@ -280,12 +298,12 @@ function ei(e) {
       xpEarned: 0,
       doneModalities: [],
     }),
-      (a.history = Q2(a.history, n)));
+      (a.history = ultimos60Dias(a.history, n)));
   }
   if (a.progress.rank === "Z" && a.lastFullDate) {
     let s = wd(a.lastFullDate, n);
     s !== null &&
-      s >= a5 &&
+      s >= diasParaBajarZ &&
       ((a.progress.rank = "S"),
       (a.zDemoted = !0),
       l.push(
@@ -294,17 +312,17 @@ function ei(e) {
   }
   return (
     a.dungeon.date !== n &&
-      ((a.dungeon = { date: n, ...ai(a.progress.rank) }),
+      ((a.dungeon = { date: n, ...travesiaDelDia(a.progress.rank) }),
       a.dungeon.available && l.push(`Travesía de hoy: ${a.dungeon.name}`)),
     (a = misRevisar(a, l)),
-    (a = Ea(a, l)),
+    (a = subirNiveles(a, l)),
     { state: a, notices: l }
   );
 }
-function o5(e) {
+function nivelDesdeXp(e) {
   let a = 1,
     l = Math.max(0, e);
-  for (; l >= li(a);) ((l -= li(a)), (a += 1));
+  for (; l >= costoNivel(a);) ((l -= costoNivel(a)), (a += 1));
   return { level: a, currentXP: l };
 }
 var misGrupos = {
@@ -325,7 +343,7 @@ function misVacio(k) {
   };
 }
 function misPeorGrupo(e) {
-  let hoy = ue(),
+  let hoy = fechaHoy(),
     peor = "back",
     dias = -1;
   for (let g of ["squat", "pushup", "back", "abs"]) {
@@ -340,10 +358,10 @@ function misPeorGrupo(e) {
 }
 function misGenerar(e, amb) {
   let g = misPeorGrupo(e),
-    u = Oy(e),
+    u = metaDelDia(e),
     base = Math.max(3, u[g] || 5),
-    meta = _n(e),
-    act = qn(e.profile);
+    meta = metaSemanal(e),
+    act = modalidadesDe(e.profile);
   if (amb === "week") {
     let sin = act.filter((m) => !(e.week.modalities && e.week.modalities[m]));
     if (act.length > 1 && sin.length)
@@ -367,11 +385,11 @@ function misTexto(m, amb) {
   let p = amb === "week" ? "esta semana" : "este mes";
   return m.kind === "reps"
     ? `Lo que menos tocaste: ${misGrupos[m.group]}. ${m.target} repeticiones ${p} y eso cambia.`
-    : `Todavía no sabés qué te hace ${(ra.find((r) => r.id === m.modality) || ra[0]).name}. Entrená con eso ${m.target} veces ${p}.`;
+    : `Todavía no sabés qué te hace ${(modalidades.find((r) => r.id === m.modality) || modalidades[0]).name}. Entrená con eso ${m.target} veces ${p}.`;
 }
 function misRevisar(e, notas) {
   e.week.modalities || (e.week.modalities = { bodyweight: 0, gym: 0, flow: 0 });
-  e.month || (e.month = misVacio(misMes(ue())));
+  e.month || (e.month = misVacio(misMes(fechaHoy())));
   e.missions ||
     (e.missions = {
       weekKey: "",
@@ -381,11 +399,11 @@ function misRevisar(e, notas) {
       weeklyDone: !1,
       monthlyDone: !1,
     });
-  let hoy = ue(),
-    sem = By(hoy),
+  let hoy = fechaHoy(),
+    sem = inicioSemana(hoy),
     mes = misMes(hoy);
   if (e.month.key !== mes) e.month = misVacio(mes);
-  if (!ye(e, "missions")) return e;
+  if (!sistemaActivo(e, "missions")) return e;
   if (e.missions.weekKey !== sem) {
     ((e.missions.weekKey = sem),
       (e.missions.weekly = misGenerar(e, "week")),
@@ -411,15 +429,15 @@ function misRevisar(e, notas) {
   }
   return e;
 }
-function i5(e, a, l, mok, gvol) {
+function registrarRutina(e, a, l, mok, gvol) {
   let n = {
-      records: M(e.records || {}),
-      lastTrained: M(e.lastTrained || {}),
-      bestLiftKg: M(e.bestLiftKg || {}),
+      records: clonar(e.records || {}),
+      lastTrained: clonar(e.lastTrained || {}),
+      bestLiftKg: clonar(e.bestLiftKg || {}),
       volume: e.lifetimeVolumeKg || 0,
-      today: M(e.today),
+      today: clonar(e.today),
       history: e.history[e.today.date] || null,
-      dayLog: e.dayLog && e.dayLog[e.today.date] ? M(e.dayLog[e.today.date]) : null,
+      dayLog: e.dayLog && e.dayLog[e.today.date] ? clonar(e.dayLog[e.today.date]) : null,
       streakBest: e.streak.best,
       streakMissed: e.streak.missed,
       lastFullDate: e.lastFullDate,
@@ -428,15 +446,15 @@ function i5(e, a, l, mok, gvol) {
       pdBefore: e.dominion.points,
       hadSession: (e.week.sessionDates || []).includes(e.today.date),
     },
-    o = M(e),
+    o = clonar(e),
     s = [],
-    u = Oy(o),
+    u = metaDelDia(o),
     c = u.squat + u.pushup + u.back + u.abs,
     r = l.squat + l.pushup + (l.back || 0) + l.abs,
     p = c > 0 ? r / c : 0,
     v = r;
   let sdcPRb = [];
-  if (Md(o.profile, o.today.date, o.today.modality) === "gym")
+  if (modalidadDelDia(o.profile, o.today.date, o.today.modality) === "gym")
     for (let b of ["squat", "pushup", "back", "abs"]) {
       let gb = gvol && gvol[b],
         h = gb && gb.max > 0 ? gb.max : (o.gymWeights && o.gymWeights[b]) || 0,
@@ -486,7 +504,7 @@ function i5(e, a, l, mok, gvol) {
   let sdcBono = p >= 1 ? 30 : 0;
   if (p >= 1)
     ((v += 30),
-      (o = Dl(o, "Rutina completa")),
+      (o = anotarDia(o, "Rutina completa")),
       yaFull ||
         ((o.history[o.today.date] = "full"),
         (o.lastFullDate = o.today.date),
@@ -499,7 +517,7 @@ function i5(e, a, l, mok, gvol) {
         "¡Rutina completa! +30 XP de bono por constancia. Hoy es un día perfecto: si tenés un Umbral pendiente, podés cruzarlo.",
       ));
   else if (p >= 0.5)
-    ((o = Dl(o, "Rutina parcial")),
+    ((o = anotarDia(o, "Rutina parcial")),
       yaFull || (o.history[o.today.date] = "partial"),
       s.push("Rutina parcial registrada. Sin bono de constancia, sin penalización."));
   else if (nSes > 0) s.push("Sesión extra demasiado corta. Sin bono, sin penalización.");
@@ -510,12 +528,12 @@ function i5(e, a, l, mok, gvol) {
     ),
       s.push(zy(T2, o.today.date, o.profile.pet && o.profile.pet.name)));
   }
-  ((v = Math.round((v - sdcBono) * t5(o)) + sdcBono),
+  ((v = Math.round((v - sdcBono) * multEnfoque(o)) + sdcBono),
     (v = Math.round(v * sdcRacha(o))),
     (v = Math.round(v * sdcPerk(o))),
     (() => {
       if (!mok) return;
-      let mm = sdcModDia(Md(o.profile, o.today.date, o.today.modality), o.today.date);
+      let mm = sdcModDia(modalidadDelDia(o.profile, o.today.date, o.today.modality), o.today.date);
       mm &&
         ((v = Math.round(v * (1 + mm.x))),
         s.push(`Modificador ${mm.n}: +${Math.round(mm.x * 100)}% XP.`));
@@ -528,7 +546,7 @@ function i5(e, a, l, mok, gvol) {
         );
     })(),
     o.streak.flexBuff && (v = Math.round(v * 1.1)),
-    (v = Math.round(v * Ka(o))),
+    (v = Math.round(v * multImpulso(o))),
     nSes > 0 &&
       ((v = Math.round(v * (1 + 0.25 * nSes))),
       s.push(`Bono por combinar estilos: +${25 * nSes}% XP.`)),
@@ -540,7 +558,7 @@ function i5(e, a, l, mok, gvol) {
       s.push(`+${bn} XP: nueva marca de carga. ${dt}`);
     })(),
     (o.progress.currentXP += v),
-    (o = Ea(o, s)),
+    (o = subirNiveles(o, s)),
     (o.today.completed = !0),
     (o.today.doneModalities = [...(o.today.doneModalities || [])]),
     ((md) => {
@@ -549,7 +567,7 @@ function i5(e, a, l, mok, gvol) {
         (o.lifetimeModalities[md] = (o.lifetimeModalities[md] || 0) + 1),
         o.week.modalities && (o.week.modalities[md] = (o.week.modalities[md] || 0) + 1),
         o.month && (o.month.modalities[md] = (o.month.modalities[md] || 0) + 1));
-    })(Md(o.profile, o.today.date, o.today.modality)),
+    })(modalidadDelDia(o.profile, o.today.date, o.today.modality)),
     (o.today.mode = a),
     (o.today.reps = l),
     (o.today.fullCompletion = p >= 1),
@@ -565,10 +583,10 @@ function i5(e, a, l, mok, gvol) {
         abs: (pr.abs || 0) + (l.abs || 0),
       }))(o.dayLog[o.today.date].reps || {})),
       (o.dayLog[o.today.date].xp = (o.dayLog[o.today.date].xp || 0) + v)));
-  ((o = misRevisar(o, s)), (o = Ea(o, s)));
-  let E = da(o),
+  ((o = misRevisar(o, s)), (o = subirNiveles(o, s)));
+  let E = revisarLogros(o),
     T = { state: E.state, notices: [...s, ...E.notices] },
-    A = ni(T.state),
+    A = avisoCarga(T.state),
     g = A.state;
   return (
     (g.undoSnapshot = {
@@ -582,15 +600,15 @@ function i5(e, a, l, mok, gvol) {
     { state: g, notices: [...T.notices, ...A.notices] }
   );
 }
-function s5(e) {
-  let a = M(e),
+function deshacerRegistroBase(e) {
+  let a = clonar(e),
     l = a.undoSnapshot;
   if (!l || l.date !== a.today.date || !l.snap)
     return { state: a, notices: ["No hay nada que deshacer hoy."] };
   let n = l.date,
     o = l.snap,
-    s = jy(a.progress.level, a.progress.currentXP) - (l.xp || 0),
-    u = o5(s);
+    s = xpTotal(a.progress.level, a.progress.currentXP) - (l.xp || 0),
+    u = nivelDesdeXp(s);
   ((a.progress.level = u.level),
     (a.progress.currentXP = u.currentXP),
     (a.week.xp = Math.max(0, (a.week.xp || 0) - (l.xp || 0))),
@@ -598,9 +616,9 @@ function s5(e) {
   for (let r of ["squat", "pushup", "back", "abs"])
     ((a.lifetimeReps[r] = Math.max(0, a.lifetimeReps[r] - (l.reps[r] || 0))),
       (a.week.reps[r] = Math.max(0, (a.week.reps[r] || 0) - (l.reps[r] || 0))));
-  ((a.records = M(o.records)),
-    (a.lastTrained = M(o.lastTrained)),
-    (a.bestLiftKg = M(o.bestLiftKg)),
+  ((a.records = clonar(o.records)),
+    (a.lastTrained = clonar(o.lastTrained)),
+    (a.bestLiftKg = clonar(o.bestLiftKg)),
     (a.lifetimeVolumeKg = o.volume),
     (a.lastFullDate = o.lastFullDate),
     (a.zDemoted = o.zDemoted),
@@ -624,13 +642,13 @@ function s5(e) {
           xp: Math.max(0, ((a.dayLog[n] && a.dayLog[n].xp) || 0) - (l.xp || 0)),
         }),
         (a.history[n] = "partial")),
-    (a.today = M(o.today)),
+    (a.today = clonar(o.today)),
     delete a.undoSnapshot,
     { state: a, notices: ["Rutina deshecha. Lo que hiciste aparte se conserva."] }
   );
 }
-function u5(e) {
-  let a = M(e),
+function usarDescanso(e) {
+  let a = clonar(e),
     l = a.streak.missed;
   ((a.today.mode = "rest"),
     (a.today.completed = !0),
@@ -640,11 +658,11 @@ function u5(e) {
     (a.streak.missed = 0),
     (a.history[a.today.date] = "rest"));
   let n = ["Día de descanso registrado. Sin XP, sin penalización."],
-    o = da(a);
+    o = revisarLogros(a);
   return { state: o.state, notices: [...n, ...o.notices] };
 }
-function c5(e, hh, tt) {
-  let a = M(e),
+function registrarEstiramiento(e, hh, tt) {
+  let a = clonar(e),
     l = [];
   if (a.today.stretchDone) return { state: a, notices: l };
   let fr = tt && tt > 0 ? Math.max(0, Math.min(1, (hh || 0) / tt)) : 1;
@@ -660,7 +678,7 @@ function c5(e, hh, tt) {
   ent && (a.week.stretchCount += 1);
   let n = Math.round(25 * fr);
   (a.streak.flexBuff && (n = Math.round(n * 1.1)),
-    (n = Math.round(n * Ka(a))),
+    (n = Math.round(n * multImpulso(a))),
     (a.progress.currentXP += n),
     (a.today.xpEarned = (a.today.xpEarned || 0) + n),
     l.push(
@@ -668,45 +686,45 @@ function c5(e, hh, tt) {
         ? `+${n} XP por estiramiento. Llevás ${a.week.stretchCount}/2 esta semana.`
         : `+${n} XP por lo que alcanzaste a estirar. Para que cuente en tu semana hay que llegar al final.`,
     ),
-    (a = Ea(a, l)));
-  let o = da(a);
+    (a = subirNiveles(a, l)));
+  let o = revisarLogros(a);
   return { state: o.state, notices: [...l, ...o.notices] };
 }
-function r5(e) {
-  let a = M(e),
+function completarTravesia(e) {
+  let a = clonar(e),
     l = [];
   if (!a.dungeon.available || a.dungeon.completed) return { state: a, notices: l };
   ((a.dungeon.completed = !0),
     (a.dungeonsCleared = (a.dungeonsCleared || 0) + 1),
     (a.week.dungeons = (a.week.dungeons || 0) + 1),
-    (a = Dl(a, "Travesía")));
+    (a = anotarDia(a, "Travesía")));
   let n = a.dungeon.rewardXP;
   (a.streak.flexBuff && (n = Math.round(n * 1.1)),
-    (n = Math.round(n * Ka(a))),
+    (n = Math.round(n * multImpulso(a))),
     (a.progress.currentXP += n),
     (a.today.xpEarned = (a.today.xpEarned || 0) + n),
     l.push(`¡Travesía completada! "${a.dungeon.name}" +${n} XP.`),
-    (a = Ea(a, l)));
-  let o = da(a),
+    (a = subirNiveles(a, l)));
+  let o = revisarLogros(a),
     s = { state: o.state, notices: [...l, ...o.notices] },
-    u = ni(s.state);
+    u = avisoCarga(s.state);
   return { state: u.state, notices: [...s.notices, ...u.notices] };
 }
-function d5(e) {
-  let a = M(e),
+function cruzarUmbralBase(e) {
+  let a = clonar(e),
     l = [];
   if (!a.ascension.pending) return { state: a, notices: l };
   if (!(a.today.completed && a.today.fullCompletion)) return { state: a, notices: l };
-  let n = ve.indexOf(a.progress.rank);
-  if (n < ve.length - 1) {
-    ((a.progress.rank = ve[n + 1]),
+  let n = rangos.indexOf(a.progress.rank);
+  if (n < rangos.length - 1) {
+    ((a.progress.rank = rangos[n + 1]),
       (a.ascension.pending = !1),
-      (a = Ea(a, l)),
+      (a = subirNiveles(a, l)),
       l.push(`¡Cruzaste a ${sdcRango(a.progress.rank, a.profile)}!`));
-    let s = _y(a);
+    let s = avisarSistemasNuevos(a);
     ((a = s.state), s.notices.forEach((u) => l.push(u)));
   }
-  let o = da(a);
+  let o = revisarLogros(a);
   return { state: o.state, notices: [...l, ...o.notices] };
 }
 // El Umbral pide, ademas del nivel, un minimo de rutinas completas en el
@@ -714,8 +732,8 @@ function d5(e) {
 // y el cuerpo necesita semanas con los ejercicios nuevos.
 var sdcUmbralMin = 24;
 function sdcRangoSig(r) {
-  var k = ve.indexOf(r);
-  return k >= 0 && k < ve.length - 1 ? ve[k + 1] : null;
+  var k = rangos.indexOf(r);
+  return k >= 0 && k < rangos.length - 1 ? rangos[k + 1] : null;
 }
 // Dias con rutina completa desde que empezo el rango actual. El dia en que se
 // cruza cuenta para el rango anterior. Una partida de antes de esta regla no
@@ -739,14 +757,14 @@ function sdcUmbralPrueba(e, mod) {
   var r = e.progress.rank,
     sig = sdcRangoSig(r) || r,
     p = e.profile,
-    o = gy[r] || gy.C,
-    v = jd(sig, p.classification, p.focusProfile, mod, p.testResults),
+    o = pruebaUmbral[r] || pruebaUmbral.C,
+    v = volumen(sig, p.classification, p.focusProfile, mod, p.testResults),
     reps = {},
     nombres = {},
     g;
   for (g in v) {
     reps[g] = Math.max(1, Math.round(v[g] * o.pct));
-    nombres[g] = _d(g, sig, mod, e.today && e.today.date).name;
+    nombres[g] = ejercicioDe(g, sig, mod, e.today && e.today.date).name;
   }
   return { rounds: o.rounds, note: o.note, reps: reps, nombres: nombres, rango: sig };
 }
@@ -758,44 +776,44 @@ function sdcFaltanTxt(n) {
 }
 function sdcCruzar(e) {
   var falta = e.ascension && e.ascension.pending ? sdcUmbralFalta(e) : 0;
-  if (falta > 0) return { state: M(e), notices: [sdcFaltanTxt(falta)] };
+  if (falta > 0) return { state: clonar(e), notices: [sdcFaltanTxt(falta)] };
   var antes = e.progress.rank,
-    r = d5(e);
+    r = cruzarUmbralBase(e);
   if (r.state.progress.rank !== antes) {
     r.state.rangoDesde = { rank: r.state.progress.rank, date: r.state.today.date };
     delete r.state.umbralForzado;
   }
   return r;
 }
-function yd(e, a) {
-  let l = M(e);
+function sumarTramo(e, a) {
+  let l = clonar(e);
   if (!a || a <= 0) return { state: l, notices: [] };
-  let n = ue();
+  let n = fechaHoy();
   return (
     l.exploration.today.date !== n && (l.exploration.today = { date: n, km: 0 }),
     (l.exploration.pendingKm = Math.round((l.exploration.pendingKm + a) * 100) / 100),
     { state: l, notices: [] }
   );
 }
-function f5(e) {
-  let a = M(e);
+function descartarTramos(e) {
+  let a = clonar(e);
   return (
     (a.exploration.pendingKm = 0),
     { state: a, notices: ["Tramos sin consolidar descartados."] }
   );
 }
-function hy(e) {
-  let a = M(e),
+function consolidarKm(e) {
+  let a = clonar(e),
     l = [],
     n = a.exploration.pendingKm || 0;
   if (n <= 0) return { state: a, notices: ["No registraste ningún tramo todavía."], found: [] };
-  let o = ue();
+  let o = fechaHoy();
   (a.exploration.today.date !== o && (a.exploration.today = { date: o, km: 0 }),
     (a.exploration.today.km = Math.round((a.exploration.today.km + n) * 100) / 100),
     (a.exploration.lifetimeKm = Math.round((a.exploration.lifetimeKm + n) * 100) / 100),
     (a.exploration.pendingKm = 0));
   let s = [];
-  pt.forEach((r, p) => {
+  nodosExplorar.forEach((r, p) => {
     a.exploration.lifetimeKm >= r.km &&
       p > a.exploration.unlockedIndex &&
       ((a.exploration.unlockedIndex = p),
@@ -804,16 +822,16 @@ function hy(e) {
   });
   let u = Math.round(n * n2 * o2(a));
   (a.streak.flexBuff && (u = Math.round(u * 1.1)),
-    (u = Math.round(u * Ka(a))),
+    (u = Math.round(u * multImpulso(a))),
     (a.progress.currentXP += u),
     (a.today.xpEarned = (a.today.xpEarned || 0) + u),
     s.length &&
       ((a.dominion.points += s.length),
       l.push(`+${s.length} Punto${s.length === 1 ? "" : "s"} de Dominio por hallazgo.`)),
     l.push(`Expedición concluida: ${n} km · +${u} XP.`),
-    (a = Dl(a, "Expedición")),
-    (a = Ea(a, l)));
-  let c = da(a);
+    (a = anotarDia(a, "Expedición")),
+    (a = subirNiveles(a, l)));
+  let c = revisarLogros(a);
   return { state: c.state, notices: [...l, ...c.notices], found: s };
 }
 async function m5(e) {
@@ -834,7 +852,7 @@ async function xy() {
     return null;
   }
 }
-async function p5() {
+async function leerPartida() {
   try {
     let e = await window.claude.use("db");
     if (!e) return null;
@@ -844,7 +862,7 @@ async function p5() {
     return (console.error("Error cargando progreso", e), null);
   }
 }
-async function K(e) {
+async function guardarPartida(e) {
   try {
     let a = await window.claude.use("db");
     if (!a) return;
@@ -855,11 +873,11 @@ async function K(e) {
 }
 
 export {
-  M,
-  n5,
-  Ea,
-  ei,
-  o5,
+  clonar,
+  crearPartida,
+  subirNiveles,
+  cargarPartida,
+  nivelDesdeXp,
   misGrupos,
   misMes,
   misVacio,
@@ -868,12 +886,12 @@ export {
   misProgreso,
   misTexto,
   misRevisar,
-  i5,
-  s5,
-  u5,
-  c5,
-  r5,
-  d5,
+  registrarRutina,
+  deshacerRegistroBase,
+  usarDescanso,
+  registrarEstiramiento,
+  completarTravesia,
+  cruzarUmbralBase,
   sdcUmbralMin,
   sdcRangoSig,
   sdcRangoCompletas,
@@ -881,11 +899,11 @@ export {
   sdcUmbralPrueba,
   sdcFaltanTxt,
   sdcCruzar,
-  yd,
-  f5,
-  hy,
+  sumarTramo,
+  descartarTramos,
+  consolidarKm,
   m5,
   xy,
-  p5,
-  K,
+  leerPartida,
+  guardarPartida,
 };

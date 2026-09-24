@@ -1,8 +1,18 @@
 // La app: todas las pestanas.
 import { i } from "../react.js";
 import { $b, Ib, Ko, Mn, Nl, Pb, Ph, Qs, Rb, Vo, Vs, Za, a2, e2, ey } from "./iconos.js";
-import { Cl, au, sdcTitulos, vd, ve } from "../datos/rangos.js";
-import { Ed, Ny, Po, ai, i2, l2, pt, s2, sdcPortales } from "../logica/explorar.js";
+import { colorRango, nivelUmbral, sdcTitulos, vd, rangos } from "../datos/rangos.js";
+import {
+  Ed,
+  Ny,
+  sectores,
+  travesiaDelDia,
+  i2,
+  l2,
+  nodosExplorar,
+  s2,
+  sdcPortales,
+} from "../logica/explorar.js";
 import {
   $o,
   Ad,
@@ -13,20 +23,20 @@ import {
   dd,
   g2,
   h2,
-  hd,
+  repsCombate,
   iy,
   m2,
   p2,
   sy,
-  ti,
-  uy,
+  golpesNecesarios,
+  repsCombateSuave,
   v2,
-  x2,
+  perderVida,
   y2,
   za,
 } from "../logica/combate.js";
-import { A2, E2, Js, Oa, cy, ou, xd } from "../logica/primal.js";
-import { Ey, M2, Sd, sdcModDia } from "../logica/tienda.js";
+import { A2, E2, regresiones, movimientosPrimal, cy, ou, xd } from "../logica/primal.js";
+import { tienda, comprar, sesionesPrimalHoy, sdcModDia } from "../logica/tienda.js";
 import {
   sdcEstLista,
   sdcEstMMSS,
@@ -40,57 +50,66 @@ import {
   sdcFlexTxt,
 } from "../logica/estiramiento.js";
 import { Io, O2, Ro, q2, tu } from "../logica/atributos.js";
-import { El, L2, Td, Wo, j2 } from "../datos/guia.js";
-import { Al, Dy, H2, Ps, Ty, X2, Y2 } from "../datos/salud.js";
-import { $e, ye, yt } from "../logica/sistemas.js";
-import { Jo, Z2, da, ni, py, sdcAnimo, sdcAnimoCuenta, sdcDific } from "../datos/logros.js";
-import { ra } from "../datos/ejercicios.js";
+import { habilidades, marcarPasoHabilidad, Td, Wo, guia } from "../datos/guia.js";
+import { Al, cuidadoArticular, alarmas, Ps, Ty, reglaDolor, Y2 } from "../datos/salud.js";
+import { sistemas, sistemaActivo, sistemaAbierto } from "../logica/sistemas.js";
 import {
-  $s,
-  Md,
-  Od,
-  Oy,
-  __fechaLocal,
-  _d,
-  _n,
-  iu,
-  jy,
-  kl,
-  l5,
-  li,
-  qn,
-  qy,
+  logros,
+  ordenDificultad,
+  revisarLogros,
+  avisoCarga,
+  categoriasLogros,
+  sdcAnimo,
+  sdcAnimoCuenta,
+  sdcDific,
+} from "../datos/logros.js";
+import { modalidades } from "../datos/ejercicios.js";
+import {
+  alternativaEjercicio,
+  modalidadDelDia,
+  enfoqueDe,
+  metaDelDia,
+  fechaLocal,
+  ejercicioDe,
+  metaSemanal,
+  puntajePrueba,
+  xpTotal,
+  nombreEjercicio,
+  guardarPrueba,
+  costoNivel,
+  modalidadesDe,
+  diasRestantesSemana,
   sdcBandaIx,
   sdcBandaMin,
   sdcCalibre,
   sdcGuia,
   sdcPuntaje,
   sdcRitmoF,
-  ue,
-  vy,
+  fechaHoy,
+  bandasCalibre,
 } from "../logica/rutina.js";
 import {
-  Ea,
-  K,
-  M,
-  c5,
-  ei,
-  f5,
-  hy,
-  i5,
+  subirNiveles,
+  guardarPartida,
+  clonar,
+  registrarEstiramiento,
+  cargarPartida,
+  descartarTramos,
+  consolidarKm,
+  registrarRutina,
   m5,
   misProgreso,
   misTexto,
-  r5,
+  completarTravesia,
   sdcCruzar,
   sdcFaltanTxt,
   sdcRangoCompletas,
   sdcUmbralFalta,
   sdcUmbralMin,
   sdcUmbralPrueba,
-  u5,
+  usarDescanso,
   xy,
-  yd,
+  sumarTramo,
 } from "../logica/partida.js";
 import { Q, qa } from "./base.js";
 import {
@@ -122,8 +141,8 @@ import {
 import { b5 } from "./avisos.js";
 import { sdcBeep, sdcCatAbierta, sdcNSets, sdcSplit, sdcVib } from "../logica/series.js";
 import { Is } from "./ejercicio.js";
-import { Fo, Rs, g5, v5, wd } from "./cuerpo.js";
-import { C5, S5, bt, h5, x5 } from "./constancia.js";
+import { gruposCuerpo, colorProgreso, g5, v5, wd } from "./cuerpo.js";
+import { C5, S5, bt, h5, diasConstancia } from "./constancia.js";
 import { Cd, ge, k5 } from "./tarjetas.js";
 import { Ly } from "./prueba.js";
 import { D5, sdcTempoMod } from "./metronomo.js";
@@ -168,12 +187,12 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
       lastWeekSummary: D,
       ui: H,
     } = e,
-    z = Cl[u.rank],
-    q = au[u.rank],
-    U = li(u.level),
+    z = colorRango[u.rank],
+    q = nivelUmbral[u.rank],
+    U = costoNivel(u.level),
     Y = (c.completed && c.rank) || u.rank,
-    B = Md(s, c.date, c.modality),
-    J = Oy(e, Y),
+    B = modalidadDelDia(s, c.date, c.modality),
+    J = metaDelDia(e, Y),
     [De, On] = (0, i.useState)(() => (sdcAnimoHoy(e).modo === "recovery" ? "recovery" : "normal")),
     [Aa, Va] = (0, i.useState)({ ...J }),
     [sdcSer, sdcSetSer] = (0, i.useState)({ squat: 0, pushup: 0, back: 0, abs: 0 }),
@@ -245,13 +264,13 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
     [xu, Su] = (0, i.useState)(""),
     [Nu, Cu] = (0, i.useState)(""),
     [sdcRbk, sdcSetRbk] = (0, i.useState)(""),
-    [$y, Iy] = (0, i.useState)(() => A2(ue())),
+    [$y, Iy] = (0, i.useState)(() => A2(fechaHoy())),
     [ku, Wd] = (0, i.useState)(""),
     [Ry, zu] = (0, i.useState)(!1),
     [Ln, eg] = (0, i.useState)(!1),
     [Jd, Fd] = (0, i.useState)(!1),
     ag = { fuerza: 90, resistencia: 45, salud: 60 },
-    Re = _n(e),
+    Re = metaSemanal(e),
     sdcYa = c.completed || (c.doneModalities || []).includes(B),
     Rt = sdcYa ? sdcHoyReps(e) : sdcSumaReps(sdcHoyReps(e), sdcRepsHechas()),
     sdcMt = sdcYa ? sdcHoyMeta(e, J) : sdcSumaReps(sdcHoyMeta(e, null), J),
@@ -272,19 +291,19 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
           ? ((r.reps && r.reps[f]) || 0) / Pd(f)
           : Wa.levels[f] / lg,
     $d = {
-      squat: Rs(ri("squat")),
-      pushup: Rs(ri("pushup")),
-      back: Rs(ri("back")),
-      abs: Rs(ri("abs")),
+      squat: colorProgreso(ri("squat")),
+      pushup: colorProgreso(ri("pushup")),
+      back: colorProgreso(ri("back")),
+      abs: colorProgreso(ri("abs")),
     },
     el = x.lifetimeKm || 0,
     ng = l2(el),
-    L5 = x.unlockedIndex >= 0 ? pt[x.unlockedIndex] : null,
-    di = pt[x.unlockedIndex + 1] || null,
-    Xn = g.today.date === ue() ? g.today.count : 0,
-    Yn = Sd(e),
+    L5 = x.unlockedIndex >= 0 ? nodosExplorar[x.unlockedIndex] : null,
+    di = nodosExplorar[x.unlockedIndex + 1] || null,
+    Xn = g.today.date === fechaHoy() ? g.today.count : 0,
+    Yn = sesionesPrimalHoy(e),
     al = r.trained || 0,
-    Id = x5(
+    Id = diasConstancia(
       E,
       c.date,
       c.completed
@@ -298,7 +317,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
           : "pending",
       28,
     ),
-    fi = A.todayDefeated && A.todayDefeated.date === ue() ? A.todayDefeated.count : 0;
+    fi = A.todayDefeated && A.todayDefeated.date === fechaHoy() ? A.todayDefeated.count : 0;
   ((0, i.useEffect)(() => {
     (Va(
       De === "recovery"
@@ -365,7 +384,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
           sdcVib([40, 60, 140]),
           Ne((d) =>
             sdcPasosHook(
-              c5(d, sdcEstPasos.length, sdcEstPasos.length),
+              registrarEstiramiento(d, sdcEstPasos.length, sdcEstPasos.length),
               sdcEstPasos,
               sdcEstPasos.length,
             ),
@@ -400,7 +419,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
         _l(!1);
         let d = za(A.villainIndex),
           m = d.isBoss
-            ? uy(
+            ? repsCombateSuave(
                 u.rank,
                 s.classification,
                 s.focusProfile,
@@ -411,8 +430,14 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
             : Math.max(
                 1,
                 Math.round(
-                  hd(u.rank, s.classification, A.exercise, s.focusProfile, B, s.testResults) *
-                    (A.loadFactor || 1),
+                  repsCombate(
+                    u.rank,
+                    s.classification,
+                    A.exercise,
+                    s.focusProfile,
+                    B,
+                    s.testResults,
+                  ) * (A.loadFactor || 1),
                 ),
               ),
           N = d.isBoss ? p2() : m2(m);
@@ -425,7 +450,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
     (0, i.useEffect)(() => {
       if (!fu) return;
       if (xt <= 0) {
-        (ht(!1), Ne((d) => x2(d)));
+        (ht(!1), Ne((d) => perderVida(d)));
         return;
       }
       let f = setTimeout(() => ql((d) => d - 1), 1e3);
@@ -469,7 +494,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
       d = Math.max(0, parseInt(xu || "0", 10)),
       m = Math.max(0, parseInt(Nu || "0", 10)),
       bq = Math.max(0, parseInt(sdcRbk || "0", 10));
-    (Ne((N) => l5(N, f, d, m, bq, 5)), yu(!1), hu(""), Su(""), Cu(""), sdcSetRbk(""));
+    (Ne((N) => guardarPrueba(N, f, d, m, bq, 5)), yu(!1), hu(""), Su(""), Cu(""), sdcSetRbk(""));
   }
   function bkDescargar() {
     try {
@@ -478,7 +503,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
         u2 = URL.createObjectURL(bl),
         el = document.createElement("a");
       ((el.href = u2),
-        (el.download = "dominio-corporal-" + ue() + ".json"),
+        (el.download = "dominio-corporal-" + fechaHoy() + ".json"),
         document.body.appendChild(el),
         el.click(),
         document.body.removeChild(el),
@@ -519,8 +544,8 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
     try {
       let f = JSON.parse(ku.trim());
       if (!f || !f.profile || !f.progress) throw new Error("formato inválido");
-      let { state: d } = ei(f);
-      (a(d), K(d), o(["¡Progreso restaurado desde el respaldo!"]));
+      let { state: d } = cargarPartida(f);
+      (a(d), guardarPartida(d), o(["¡Progreso restaurado desde el respaldo!"]));
     } catch (f) {
       o((d) => [...d, "Ese respaldo no es válido. Revisá que copiaste todo el texto completo."]);
     }
@@ -529,7 +554,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
   function Ne(f) {
     a((d) => {
       let { state: m, notices: N } = f(d);
-      return (N && N.length && o((_) => [..._, ...N]), K(m), m);
+      return (N && N.length && o((_) => [..._, ...N]), guardarPartida(m), m);
     });
   }
   function rg(f) {
@@ -585,14 +610,14 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
   }
   function sdcMarcaOk(ser, aj, mok) {
     a(function (N) {
-      var _ = M(N);
+      var _ = clonar(N);
       if (_.today) {
         var kk = sdcMarcaK(B, De);
         _.today.marcas || (_.today.marcas = {});
         var pv = _.today.marcas[kk] || {};
         _.today.marcas[kk] = { ser: ser, aj: aj, mok: !!mok, kg: pv.kg };
       }
-      return (K(_), _);
+      return (guardarPartida(_), _);
     });
   }
   function sdcSerie(g, k) {
@@ -688,7 +713,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
     });
     var num = Math.max(0, parseFloat(String(val || "").replace(",", ".")) || 0);
     a(function (N) {
-      var _ = M(N);
+      var _ = clonar(N);
       (_.gymWeights || (_.gymWeights = { squat: 0, pushup: 0, back: 0, abs: 0 }),
         k === 0
           ? (_.gymWeights[g] = num)
@@ -703,11 +728,11 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
           _.today.marcas[kk].kg[g] || (_.today.marcas[kk].kg[g] = {}),
           (_.today.marcas[kk].kg[g][k] = val));
       }
-      return (K(_), _);
+      return (guardarPartida(_), _);
     });
   }
   function sdcEjNom(g) {
-    var x = _d(g, u.rank, B);
+    var x = ejercicioDe(g, u.rank, B);
     return (x && x.name) || "";
   }
   function sdcKgUsar(g, kg) {
@@ -753,41 +778,44 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
       gv = B === "gym" ? sdcGymVol() : null;
     (sdcCelebra(),
       Ne((f) =>
-        sdcDeshacerHook(f, sdcMetaHook(sdcPrimerasHook(i5(f, De, h, sdcModOk, gv), h), J)),
+        sdcDeshacerHook(
+          f,
+          sdcMetaHook(sdcPrimerasHook(registrarRutina(f, De, h, sdcModOk, gv), h), J),
+        ),
       ));
   }
   function bg() {
     a((f) => {
-      let { state: d, notices: m } = u5(f);
-      return (m && m.length && o((N) => [...N, ...m]), K(d), d);
+      let { state: d, notices: m } = usarDescanso(f);
+      return (m && m.length && o((N) => [...N, ...m]), guardarPartida(d), d);
     });
   }
   function yg() {
     a((f) => {
       let { state: d, notices: m } = sdcCruzar(f);
-      return (m && m.length && o((N) => [...N, ...m]), K(d), d);
+      return (m && m.length && o((N) => [...N, ...m]), guardarPartida(d), d);
     });
   }
   function gg(f) {
     a((d) => {
-      let m = M(d);
-      return ((m.today.modality = f), K(m), m);
+      let m = clonar(d);
+      return ((m.today.modality = f), guardarPartida(m), m);
     });
   }
   function irTienda() {
     a((d) => {
-      let m = M(d);
+      let m = clonar(d);
       return (
         m.ui || (m.ui = { collapsed: {} }),
         (m.ui.collapsed.tienda = !m.ui.collapsed.tienda),
-        K(m),
+        guardarPartida(m),
         m
       );
     });
   }
   function mmNueva(f) {
     (a((d) => {
-      let m = M(d);
+      let m = clonar(d);
       return (
         (m.today.modality = f),
         (m.today.completed = !1),
@@ -795,48 +823,48 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
         (m.today.fullCompletion = !1),
         (m.today.reps = { squat: 0, pushup: 0, back: 0, abs: 0 }),
         delete m.undoSnapshot,
-        K(m),
+        guardarPartida(m),
         m
       );
     }),
       o((d) => [
         ...d,
-        `Nueva sesión: ${(ra.find((r) => r.id === f) || ra[0]).name}. Al completarla ganás un bono por combinar estilos.`,
+        `Nueva sesión: ${(modalidades.find((r) => r.id === f) || modalidades[0]).name}. Al completarla ganás un bono por combinar estilos.`,
       ]));
   }
   function sdcPonerJuego(f) {
     a((d) => {
-      let m = M(d);
-      return ((m.profile.tituloSet = f), K(m), m);
+      let m = clonar(d);
+      return ((m.profile.tituloSet = f), guardarPartida(m), m);
     });
   }
   function sdcCamRitmo(v) {
     a((d) => {
-      let m = M(d);
-      return ((m.profile.ritmoKmH = v), K(m), m);
+      let m = clonar(d);
+      return ((m.profile.ritmoKmH = v), guardarPartida(m), m);
     });
   }
   function sdcCamEmpezar() {
     a((d) => {
-      let m = M(d);
+      let m = clonar(d);
       return (
         (m.exploration = m.exploration || {}),
         (m.exploration.walkStart = Date.now()),
-        K(m),
+        guardarPartida(m),
         m
       );
     });
   }
   function sdcCamCancelar() {
     a((d) => {
-      let m = M(d);
-      return (m.exploration && (m.exploration.walkStart = 0), K(m), m);
+      let m = clonar(d);
+      return (m.exploration && (m.exploration.walkStart = 0), guardarPartida(m), m);
     });
   }
   function sdcCamListo(km) {
     (a((d) => {
-      let m = M(d);
-      return (m.exploration && (m.exploration.walkStart = 0), K(m), m);
+      let m = clonar(d);
+      return (m.exploration && (m.exploration.walkStart = 0), guardarPartida(m), m);
     }),
       Yd(String(km).replace(".", ",")),
       o((d) => [
@@ -848,14 +876,19 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
   }
   function sdcTravEmpezar() {
     a((d) => {
-      let m = M(d);
-      return ((m.dungeon = m.dungeon || {}), (m.dungeon.startedAt = Date.now() + 1e4), K(m), m);
+      let m = clonar(d);
+      return (
+        (m.dungeon = m.dungeon || {}),
+        (m.dungeon.startedAt = Date.now() + 1e4),
+        guardarPartida(m),
+        m
+      );
     });
   }
   function sdcTravCancelar() {
     a((d) => {
-      let m = M(d);
-      return (m.dungeon && (m.dungeon.startedAt = 0), K(m), m);
+      let m = clonar(d);
+      return (m.dungeon && (m.dungeon.startedAt = 0), guardarPartida(m), m);
     });
   }
   function sdcPrimeraManual() {
@@ -866,29 +899,29 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
     if (!t || !String(t).trim()) return;
     var tx = String(t).trim().slice(0, 120);
     (a((d) => {
-      let m = M(d);
-      return (sdcPrimeraAdd(m, tx, "escrita"), K(m), m);
+      let m = clonar(d);
+      return (sdcPrimeraAdd(m, tx, "escrita"), guardarPartida(m), m);
     }),
       o((d) => [...d, "Primera vez: " + tx + ". Queda anotado."]));
   }
   function sdcResponderPodia(nm, v) {
     a((d) => {
-      let m = M(d),
+      let m = clonar(d),
         o2 = {},
         k,
         src = sdcPodia(m);
       for (k in src) o2[k] = src[k];
-      return ((o2[nm] = v), (m.podia = o2), K(m), m);
+      return ((o2[nm] = v), (m.podia = o2), guardarPartida(m), m);
     });
   }
   function ef(f) {
     a((d) => {
-      let m = M(d);
-      return ((m.profile.modalities = f.length ? f : ["bodyweight"]), K(m), m);
+      let m = clonar(d);
+      return ((m.profile.modalities = f.length ? f : ["bodyweight"]), guardarPartida(m), m);
     });
   }
   function vg(f) {
-    let d = qn(s),
+    let d = modalidadesDe(s),
       m = d.includes(f) ? d.filter((N) => N !== f) : [...d, f];
     if (!m.length) {
       o((N) => [...N, "Debes mantener al menos un método activo."]);
@@ -902,11 +935,11 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
   function mi(f, d) {
     let m = Math.max(0, parseFloat((d || "0").replace(",", ".")) || 0);
     a((N) => {
-      let _ = M(N);
+      let _ = clonar(N);
       return (
         _.gymWeights || (_.gymWeights = { squat: 0, pushup: 0, back: 0, abs: 0 }),
         (_.gymWeights[f] = m),
-        K(_),
+        guardarPartida(_),
         _
       );
     });
@@ -914,38 +947,38 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
   function xg(f) {
     let d = Math.max(0, parseFloat((f || "0").replace(",", ".")) || 0);
     a((m) => {
-      let N = M(m);
-      return ((N.profile.bodyWeight = d), K(N), N);
+      let N = clonar(m);
+      return ((N.profile.bodyWeight = d), guardarPartida(N), N);
     });
   }
   function Sg() {
     a((f) => {
-      let d = M(f);
+      let d = clonar(f);
       return (
         (d.unlockAll = !d.unlockAll),
-        d.unlockAll && (d.seenUnlocks = $e.map((m) => m.id)),
-        K(d),
+        d.unlockAll && (d.seenUnlocks = sistemas.map((m) => m.id)),
+        guardarPartida(d),
         d
       );
     });
   }
   function Ng(f) {
     a((d) => {
-      let m = M(d);
+      let m = clonar(d);
       return (
         m.disabled || (m.disabled = []),
         (m.disabled = m.disabled.includes(f)
           ? m.disabled.filter((N) => N !== f)
           : [...m.disabled, f]),
-        K(m),
+        guardarPartida(m),
         m
       );
     });
   }
   function Cg(f) {
     (a((d) => {
-      let m = M(d);
-      return ((m.profile.weeklyGoal = f), K(m), m);
+      let m = clonar(d);
+      return ((m.profile.weeklyGoal = f), guardarPartida(m), m);
     }),
       Zd(!1));
   }
@@ -963,42 +996,44 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
       "aptitud",
       "respaldo",
       "primalLista",
-      ...py.map((f) => "ach-" + f),
+      ...categoriasLogros.map((f) => "ach-" + f),
     ],
     tf = af.every((f) => H && H.collapsed && H.collapsed[f]);
   function kg() {
     a((f) => {
-      let d = M(f);
+      let d = clonar(f);
       (d.skills || (d.skills = {}),
-        d.care || (d.care = { today: { date: ue(), done: [] }, lifetime: 0 }),
+        d.care || (d.care = { today: { date: fechaHoy(), done: [] }, lifetime: 0 }),
         d.neuro || (d.neuro = Al()),
         d.unlockAll === void 0 && (d.unlockAll = !1),
         d.disabled || (d.disabled = []),
-        d.seenUnlocks || (d.seenUnlocks = $e.filter((N) => yt(d, N.id)).map((N) => N.id)),
+        d.seenUnlocks ||
+          (d.seenUnlocks = sistemas.filter((N) => sistemaAbierto(d, N.id)).map((N) => N.id)),
         d.ui || (d.ui = { collapsed: {} }));
       let m = !tf;
       return (
         af.forEach((N) => {
           d.ui.collapsed[N] = m;
         }),
-        K(d),
+        guardarPartida(d),
         d
       );
     });
   }
   function fe(f, act) {
     a((d) => {
-      let m = M(d);
+      let m = clonar(d);
       return (
         m.skills || (m.skills = {}),
-        m.care || (m.care = { today: { date: ue(), done: [] }, lifetime: 0 }),
+        m.care || (m.care = { today: { date: fechaHoy(), done: [] }, lifetime: 0 }),
         m.neuro || (m.neuro = Al()),
         m.unlockAll === void 0 && (m.unlockAll = !1),
         m.disabled || (m.disabled = []),
-        m.seenUnlocks || (m.seenUnlocks = $e.filter((N) => yt(m, N.id)).map((N) => N.id)),
+        m.seenUnlocks ||
+          (m.seenUnlocks = sistemas.filter((N) => sistemaAbierto(m, N.id)).map((N) => N.id)),
         m.ui || (m.ui = { collapsed: {} }),
         (m.ui.collapsed[f] = act !== void 0 ? !act : !m.ui.collapsed[f]),
-        K(m),
+        guardarPartida(m),
         m
       );
     });
@@ -1011,21 +1046,21 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
       exploration: "exploration",
       achievements: "achievements",
     }[Da];
-    f && !ye(e, f) && $t("training");
+    f && !sistemaActivo(e, f) && $t("training");
   }, [Da, u.level, u.rank, e.unlockAll]);
   function zg() {
     a((f) => {
-      let d = M(f);
-      return (d.lastWeekSummary && (d.lastWeekSummary.seen = !0), K(d), d);
+      let d = clonar(f);
+      return (d.lastWeekSummary && (d.lastWeekSummary.seen = !0), guardarPartida(d), d);
     });
   }
   function Eg(f) {
-    Ne((d) => M2(d, f));
+    Ne((d) => comprar(d, f));
   }
   function Ag() {
     a((f) => {
-      let { state: d, notices: m } = r5(f);
-      return (m && m.length && o((N) => [...N, ...m]), K(d), d);
+      let { state: d, notices: m } = completarTravesia(f);
+      return (m && m.length && o((N) => [...N, ...m]), guardarPartida(d), d);
     });
   }
   function Dg(f) {
@@ -1064,9 +1099,9 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
         o((N) => [...N, "No hay ningún punto de retorno guardado."]);
         return;
       }
-      let { state: d, notices: m } = ei(f);
+      let { state: d, notices: m } = cargarPartida(f);
       (a(d),
-        K(d),
+        guardarPartida(d),
         _l(!1),
         ht(!1),
         Ol("idle"),
@@ -1075,11 +1110,11 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
   }
   function qg(f) {
     (a((d) => {
-      let m = M(d),
-        N = ve.indexOf(f);
+      let m = clonar(d),
+        N = rangos.indexOf(f);
       return (
         (m.progress.rank = f),
-        (m.progress.level = N === 0 ? 1 : au[ve[N - 1]]),
+        (m.progress.level = N === 0 ? 1 : nivelUmbral[rangos[N - 1]]),
         (m.progress.currentXP = 0),
         (m.ascension.pending = !1),
         (m.today.rank = f),
@@ -1087,7 +1122,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
         (m.today.fullCompletion = !1),
         (m.today.mode = "pending"),
         (m.today.reps = { squat: 0, pushup: 0, back: 0, abs: 0 }),
-        K(m),
+        guardarPartida(m),
         m
       );
     }),
@@ -1095,15 +1130,15 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
   }
   function Og() {
     (a((f) => {
-      let d = M(f),
-        m = au[d.progress.rank];
+      let d = clonar(f),
+        m = nivelUmbral[d.progress.rank];
       return (
         m && ((d.progress.level = m), (d.ascension.pending = !0)),
         (d.umbralForzado = d.progress.rank),
         (d.today.completed = !0),
         (d.today.fullCompletion = !0),
         (d.today.rank = d.progress.rank),
-        K(d),
+        guardarPartida(d),
         d
       );
     }),
@@ -1111,24 +1146,24 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
   }
   function jg(f) {
     a((d) => {
-      let m = M(d);
+      let m = clonar(d);
       m.progress.currentXP += f;
       let N = [];
-      return ((m = Ea(m, N)), K(m), N.length && o((_) => [..._, ...N]), m);
+      return ((m = subirNiveles(m, N)), guardarPartida(m), N.length && o((_) => [..._, ...N]), m);
     });
   }
   function Bg() {
     a((f) => {
-      let d = M(f),
+      let d = clonar(f),
         m = new Date(d.today.date + "T00:00:00");
-      (m.setDate(m.getDate() - 1), (d.today.date = __fechaLocal(m)), (d.today.completed = !1));
-      let { state: N, notices: _ } = ei(d);
-      return (K(N), _.length && o((X) => [...X, ..._]), N);
+      (m.setDate(m.getDate() - 1), (d.today.date = fechaLocal(m)), (d.today.completed = !1));
+      let { state: N, notices: _ } = cargarPartida(d);
+      return (guardarPartida(N), _.length && o((X) => [...X, ..._]), N);
     });
   }
   function wg() {
     a((f) => {
-      let d = M(f);
+      let d = clonar(f);
       return (
         (d.today.completed = !1),
         (d.today.fullCompletion = !1),
@@ -1136,7 +1171,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
         (d.today.rank = d.progress.rank),
         (d.today.reps = { squat: 0, pushup: 0, back: 0, abs: 0 }),
         (d.today.stretchDone = !1),
-        K(d),
+        guardarPartida(d),
         d
       );
     });
@@ -1145,8 +1180,8 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
     let f = Math.max(0, parseFloat((Xd || "0").replace(",", ".")) || 0);
     f &&
       (a((d) => {
-        let { state: m } = yd(d, f);
-        return (K(m), m);
+        let { state: m } = sumarTramo(d, f);
+        return (guardarPartida(m), m);
       }),
       Yd(""));
   }
@@ -1156,35 +1191,45 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
     let d = Math.round(((f * vd) / 1e3) * 100) / 100;
     d <= 0 ||
       (a((m) => {
-        let { state: N } = yd(m, d);
-        return (K(N), N);
+        let { state: N } = sumarTramo(m, d);
+        return (guardarPartida(N), N);
       }),
       Gd(""));
   }
   function Hg() {
     a((f) => {
-      let { state: d, notices: m } = f5(f);
-      return (m && m.length && o((N) => [...N, ...m]), K(d), d);
+      let { state: d, notices: m } = descartarTramos(f);
+      return (m && m.length && o((N) => [...N, ...m]), guardarPartida(d), d);
     });
   }
   function Xg() {
     a((f) => {
-      let { state: d, notices: m, found: N } = hy(f);
-      return (m && m.length && o((_) => [..._, ...m]), N && N.length && ru(N), K(d), d);
+      let { state: d, notices: m, found: N } = consolidarKm(f);
+      return (
+        m && m.length && o((_) => [..._, ...m]),
+        N && N.length && ru(N),
+        guardarPartida(d),
+        d
+      );
     });
   }
   function Yg(f) {
     a((d) => {
-      let m = yd(d, f),
-        { state: N, notices: _, found: X } = hy(m.state);
-      return (_ && _.length && o((de) => [...de, ..._]), X && X.length && ru(X), K(N), N);
+      let m = sumarTramo(d, f),
+        { state: N, notices: _, found: X } = consolidarKm(m.state);
+      return (
+        _ && _.length && o((de) => [...de, ..._]),
+        X && X.length && ru(X),
+        guardarPartida(N),
+        N
+      );
     });
   }
   function Gg() {
     (a((f) => {
-      let d = M(f);
+      let d = clonar(f);
       return (
-        (d.dungeon = { date: d.today.date, ...ai(d.progress.rank) }),
+        (d.dungeon = { date: d.today.date, ...travesiaDelDia(d.progress.rank) }),
         d.dungeon.available ||
           (d.dungeon = {
             date: d.today.date,
@@ -1194,7 +1239,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
             challengeText: sdcPortales[0].c,
             rewardXP: Ed[d.progress.rank],
           }),
-        K(d),
+        guardarPartida(d),
         d
       );
     }),
@@ -1202,22 +1247,22 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
   }
   function Zg(f) {
     a((d) => {
-      let m = M(d);
+      let m = clonar(d);
       ((m.streak.current = f), (m.streak.best = Math.max(m.streak.best || 0, f)));
-      let N = da(m);
-      return (N.notices.length && o((_) => [..._, ...N.notices]), K(N.state), N.state);
+      let N = revisarLogros(m);
+      return (N.notices.length && o((_) => [..._, ...N.notices]), guardarPartida(N.state), N.state);
     });
   }
   function Kg() {
     (a((f) => {
-      let d = M(f);
-      return ((d.achievements = Jo.map((m) => m.id)), K(d), d);
+      let d = clonar(f);
+      return ((d.achievements = logros.map((m) => m.id)), guardarPartida(d), d);
     }),
       o((f) => [...f, "[Prueba] Todos los logros desbloqueados."]));
   }
   function Vg() {
     (a((f) => {
-      let d = M(f);
+      let d = clonar(f);
       return (
         (d.combat.villainIndex = 4),
         (d.combat.lastExercise = null),
@@ -1226,10 +1271,10 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
         (d.combat.loadFactor = 1),
         (d.combat.damageFactor = 1),
         (d.combat.bossCats = $o(null)),
-        (d.combat.villainCurrentHP = ti(za(4))),
+        (d.combat.villainCurrentHP = golpesNecesarios(za(4))),
         (d.combat.phase = "resting"),
         (d.combat.roundId = (d.combat.roundId || 0) + 1),
-        K(d),
+        guardarPartida(d),
         d
       );
     }),
@@ -1239,8 +1284,8 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
   }
   function Qg() {
     (a((f) => {
-      let d = M(f);
-      return ((d.combat = Ad()), K(d), d);
+      let d = clonar(f);
+      return ((d.combat = Ad()), guardarPartida(d), d);
     }),
       _l(!1),
       ht(!1),
@@ -1248,26 +1293,26 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
   }
   function Wg() {
     (a((f) => {
-      let d = M(f);
-      d.primal.unlockedCount < Oa.length &&
+      let d = clonar(f);
+      d.primal.unlockedCount < movimientosPrimal.length &&
         ((d.primal.unlockedCount += 1), (d.primal.masteryProgress = 0));
-      let m = da(d);
-      return (m.notices.length && o((N) => [...N, ...m.notices]), K(m.state), m.state);
+      let m = revisarLogros(d);
+      return (m.notices.length && o((N) => [...N, ...m.notices]), guardarPartida(m.state), m.state);
     }),
       o((f) => [...f, "[Prueba] Desbloqueado el siguiente movimiento de Instinto Primal."]));
   }
   function Jg() {
     (a((f) => {
-      let d = M(f);
-      return ((d.primal.today = { date: ue(), count: 0 }), K(d), d);
+      let d = clonar(f);
+      return ((d.primal.today = { date: fechaHoy(), count: 0 }), guardarPartida(d), d);
     }),
       o((f) => [...f, "[Prueba] Contador diario de Instinto Primal reiniciado."]));
   }
   function Fg() {
     a((f) => {
-      let d = M(f);
-      d.primal.today = { date: ue(), count: 8 };
-      let m = ni(d);
+      let d = clonar(f);
+      d.primal.today = { date: fechaHoy(), count: 8 };
+      let m = avisoCarga(d);
       return (
         m.notices.length
           ? o((N) => [...N, ...m.notices])
@@ -1275,7 +1320,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
               ...N,
               '[Prueba] Ya se mostró el aviso hoy, usa "reiniciar contador diario" primero.',
             ]),
-        K(m.state),
+        guardarPartida(m.state),
         m.state
       );
     });
@@ -1418,7 +1463,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
             q ? "Umbral: " + Math.min(u.level, q) + "/" + q : "",
           ),
           (() => {
-            let f = $e.find((d) => !yt(e, d.id));
+            let f = sistemas.find((d) => !sistemaAbierto(e, d.id));
             return f
               ? i.default.createElement(
                   "span",
@@ -1582,7 +1627,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
             style: { marginBottom: 16 },
             collapsed: !1,
             onToggle: fe,
-            right: `${j2.length} temas`,
+            right: `${guia.length} temas`,
           },
           i.default.createElement(
             "div",
@@ -1591,7 +1636,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
           ),
           (() => {
             let sdcGv = "";
-            return j2.map((m) => {
+            return guia.map((m) => {
               let sdcAb = !!sdcTema[m.title],
                 sdcNu = m.g !== sdcGv;
               sdcGv = m.g;
@@ -1702,7 +1747,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
               "Escudos de Racha disponibles: ",
               C.shields,
             ),
-          C.xpBuffDate === ue() &&
+          C.xpBuffDate === fechaHoy() &&
             i.default.createElement(
               "div",
               { className: "text-xs mb-2", style: { color: "#ffb84f" } },
@@ -1713,7 +1758,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
           i.default.createElement(
             "div",
             { className: "mt-2" },
-            Ey.map((m) => {
+            tienda.map((m) => {
               let N = C.points >= m.cost;
               return i.default.createElement(
                 "div",
@@ -1777,21 +1822,33 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
       (() => {
         let f = [
           { id: "training", label: "Entreno", icon: Pb, color: z, on: !0 },
-          { id: "combat", label: "Combate", icon: Vo, color: "#ff5c7a", on: ye(e, "combat") },
-          { id: "primal", label: "Primal", icon: Qs, color: "#3ecf8e", on: ye(e, "primal") },
+          {
+            id: "combat",
+            label: "Combate",
+            icon: Vo,
+            color: "#ff5c7a",
+            on: sistemaActivo(e, "combat"),
+          },
+          {
+            id: "primal",
+            label: "Primal",
+            icon: Qs,
+            color: "#3ecf8e",
+            on: sistemaActivo(e, "primal"),
+          },
           {
             id: "exploration",
             label: "Explorar",
             icon: Ib,
             color: "#7c5cff",
-            on: ye(e, "exploration"),
+            on: sistemaActivo(e, "exploration"),
           },
           {
             id: "achievements",
             label: "Logros",
             icon: Vs,
             color: "#ffb84f",
-            on: ye(e, "achievements"),
+            on: sistemaActivo(e, "achievements"),
           },
           { id: "profile", label: "Perfil", icon: ey, color: "#4f9dff", on: !0 },
         ].filter((d) => d.on);
@@ -2006,7 +2063,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
               { className: "text-xs mt-2", style: { color: "#9aa4bd" } },
               al >= Re
                 ? "Meta semanal cumplida. Todo lo que entrenes de más es ganancia."
-                : `Te quedan ${qy(c.date)} días para completar ${Re - al} ${Re - al === 1 ? "sesión" : "sesiones"}.`,
+                : `Te quedan ${diasRestantesSemana(c.date)} días para completar ${Re - al} ${Re - al === 1 ? "sesión" : "sesiones"}.`,
             ),
             Wy &&
               i.default.createElement(
@@ -2072,7 +2129,8 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                   onClose: () => Kd(null),
                   onLog: (function () {
                     var sq = (Id.find((f) => f.date === Bn) || {}).status;
-                    return Bn < ue() && (sq === "empty" || sq === "skipped" || sq === "missed")
+                    return Bn < fechaHoy() &&
+                      (sq === "empty" || sq === "skipped" || sq === "missed")
                       ? function (fx) {
                           (Ne((dd) => sdcDiaPasado(dd, fx)), Kd(null));
                         }
@@ -2103,7 +2161,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                 return sdcLeg.length ? i.default.createElement(h5, { items: sdcLeg }) : null;
               })(),
             ),
-            ye(e, "missions") &&
+            sistemaActivo(e, "missions") &&
               e.missions &&
               i.default.createElement(
                 "div",
@@ -2166,7 +2224,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                 }),
               ),
           ),
-          ye(e, "dungeon") &&
+          sistemaActivo(e, "dungeon") &&
             y.available &&
             !y.completed &&
             i.default.createElement(
@@ -2255,7 +2313,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                 });
               })(),
             ),
-          ye(e, "dungeon") &&
+          sistemaActivo(e, "dungeon") &&
             y.available &&
             y.completed &&
             i.default.createElement(
@@ -2272,7 +2330,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                 " XP)",
               ),
             ),
-          ye(e, "dungeon") &&
+          sistemaActivo(e, "dungeon") &&
             !y.available &&
             i.default.createElement(
               "div",
@@ -2375,7 +2433,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
               pd = sdcPodia(e),
               pend = null;
             for (var q = 0; q < gs.length; q++) {
-              var ex = _d(gs[q], u.rank, B);
+              var ex = ejercicioDe(gs[q], u.rank, B);
               if (ex && ex.name && pd[ex.name] === void 0) {
                 pend = ex.name;
                 break;
@@ -2558,7 +2616,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                         flexShrink: 0,
                       },
                     }),
-                    Fo[f].label.split(" ")[0],
+                    gruposCuerpo[f].label.split(" ")[0],
                   ),
                   i.default.createElement(
                     "span",
@@ -2584,11 +2642,11 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                   },
                 },
                 "Desequilibrio detectado: tu ",
-                Fo[Wa.hi].label.toLowerCase(),
+                gruposCuerpo[Wa.hi].label.toLowerCase(),
                 " va ",
                 Wa.gap,
                 " niveles por delante de tu ",
-                Fo[Wa.lo].label.toLowerCase(),
+                gruposCuerpo[Wa.lo].label.toLowerCase(),
                 ". Prioriza ese patrón para emparejarlo.",
               ),
             (() => {
@@ -2608,7 +2666,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                       },
                     },
                     "Sin estímulo reciente: ",
-                    f.map((d) => Fo[d.k].label.toLowerCase()).join(", "),
+                    f.map((d) => gruposCuerpo[d.k].label.toLowerCase()).join(", "),
                     ".",
                   );
             })(),
@@ -2792,7 +2850,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                 })(),
                 (() => {
                   let hechas = c.doneModalities || [],
-                    restan = qn(s).filter((id) => !hechas.includes(id));
+                    restan = modalidadesDe(s).filter((id) => !hechas.includes(id));
                   if (!restan.length) return null;
                   return i.default.createElement(
                     "div",
@@ -2876,7 +2934,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                   style: { marginBottom: 16, order: -4 },
                   collapsed: me("rutina"),
                   onToggle: fe,
-                  right: `${(ra.find((f) => f.id === B) || ra[0]).name}`,
+                  right: `${(modalidades.find((f) => f.id === B) || modalidades[0]).name}`,
                 },
                 i.default.createElement(
                   "div",
@@ -2910,7 +2968,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                     "Recuperación",
                   ),
                 ),
-                qn(s).length > 1
+                modalidadesDe(s).length > 1
                   ? i.default.createElement(
                       "div",
                       { className: "mb-2" },
@@ -2922,8 +2980,8 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                       i.default.createElement(
                         "div",
                         { className: "grid grid-cols-3 gap-1" },
-                        qn(s).map((f) => {
-                          let d = ra.find((N) => N.id === f),
+                        modalidadesDe(s).map((f) => {
+                          let d = modalidades.find((N) => N.id === f),
                             m = B === f;
                           return i.default.createElement(
                             "button",
@@ -2951,7 +3009,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                       "div",
                       { className: "text-xs mb-1", style: { color: "#4f9dff" } },
                       "Modalidad de hoy: ",
-                      (ra.find((f) => f.id === B) || ra[0]).name,
+                      (modalidades.find((f) => f.id === B) || modalidades[0]).name,
                     ),
                 i.default.createElement(
                   "div",
@@ -3066,13 +3124,13 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                     onSkip: () => Fd(!1),
                   }),
                 i.default.createElement(Is, {
-                  label: kl(u.rank, s.classification, "squat", B),
+                  label: nombreEjercicio(u.rank, s.classification, "squat", B),
                   value: Aa.squat,
                   base: J.squat,
                   min: 0,
                   max: Math.round(De === "recovery" ? J.squat * 0.5 : J.squat * 1.5),
                   onChange: (f) => Va((d) => ({ ...d, squat: f })),
-                  tip: $s(u.rank, "squat", B) || Js.squat,
+                  tip: alternativaEjercicio(u.rank, "squat", B) || regresiones.squat,
                   guia: sdcGuia(u.rank, "squat", B),
                   abrir: !sdcVistos(e)[sdcEjNom("squat")],
                   weight: void 0,
@@ -3093,13 +3151,13 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                   onAj: (k, v) => sdcAjustar("squat", k, v),
                 }),
                 i.default.createElement(Is, {
-                  label: kl(u.rank, s.classification, "pushup", B),
+                  label: nombreEjercicio(u.rank, s.classification, "pushup", B),
                   value: Aa.pushup,
                   base: J.pushup,
                   min: 0,
                   max: Math.round(De === "recovery" ? J.pushup * 0.5 : J.pushup * 1.5),
                   onChange: (f) => Va((d) => ({ ...d, pushup: f })),
-                  tip: $s(u.rank, "pushup", B) || Js.pushup,
+                  tip: alternativaEjercicio(u.rank, "pushup", B) || regresiones.pushup,
                   guia: sdcGuia(u.rank, "pushup", B),
                   abrir: !sdcVistos(e)[sdcEjNom("pushup")],
                   weight: void 0,
@@ -3120,13 +3178,13 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                   onAj: (k, v) => sdcAjustar("pushup", k, v),
                 }),
                 i.default.createElement(Is, {
-                  label: kl(u.rank, s.classification, "back", B),
+                  label: nombreEjercicio(u.rank, s.classification, "back", B),
                   value: Aa.back,
                   base: J.back,
                   min: 0,
                   max: Math.round(De === "recovery" ? J.back * 0.5 : J.back * 1.5),
                   onChange: (f) => Va((d) => ({ ...d, back: f })),
-                  tip: $s(u.rank, "back", B) || Js.back,
+                  tip: alternativaEjercicio(u.rank, "back", B) || regresiones.back,
                   guia: sdcGuia(u.rank, "back", B),
                   abrir: !sdcVistos(e)[sdcEjNom("back")],
                   weight: void 0,
@@ -3147,13 +3205,13 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                   onAj: (k, v) => sdcAjustar("back", k, v),
                 }),
                 i.default.createElement(Is, {
-                  label: kl(u.rank, s.classification, "abs", B),
+                  label: nombreEjercicio(u.rank, s.classification, "abs", B),
                   value: Aa.abs,
                   base: J.abs,
                   min: 0,
                   max: Math.round(De === "recovery" ? J.abs * 0.5 : J.abs * 1.5),
                   onChange: (f) => Va((d) => ({ ...d, abs: f })),
-                  tip: $s(u.rank, "abs", B) || Js.abs,
+                  tip: alternativaEjercicio(u.rank, "abs", B) || regresiones.abs,
                   guia: sdcGuia(u.rank, "abs", B),
                   abrir: !sdcVistos(e)[sdcEjNom("abs")],
                   weight: void 0,
@@ -3394,7 +3452,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                         let hh = p.index;
                         (Ba(!1),
                           sdcSetEstPz(0),
-                          Ne((N) => sdcPasosHook(c5(N, hh, ps.length), ps, hh)));
+                          Ne((N) => sdcPasosHook(registrarEstiramiento(N, hh, ps.length), ps, hh)));
                       },
                     });
                   })()
@@ -3467,7 +3525,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
       Da === "combat" &&
         (() => {
           let f = za(A.villainIndex),
-            d = ti(f);
+            d = golpesNecesarios(f);
           return i.default.createElement(
             i.default.Fragment,
             null,
@@ -3674,7 +3732,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                     : Math.max(
                         1,
                         Math.round(
-                          hd(
+                          repsCombate(
                             u.rank,
                             s.classification,
                             A.exercise,
@@ -3716,7 +3774,14 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                             "Fase ",
                             N + 1,
                             ": ",
-                            uy(u.rank, s.classification, s.focusProfile, m, B, s.testResults),
+                            repsCombateSuave(
+                              u.rank,
+                              s.classification,
+                              s.focusProfile,
+                              m,
+                              B,
+                              s.testResults,
+                            ),
                             " × ",
                             sy(u.rank, s.classification, m, B),
                           ),
@@ -3817,7 +3882,14 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                               "Fase ",
                               N + 1,
                               ": ",
-                              uy(u.rank, s.classification, s.focusProfile, m, B, s.testResults),
+                              repsCombateSuave(
+                                u.rank,
+                                s.classification,
+                                s.focusProfile,
+                                m,
+                                B,
+                                s.testResults,
+                              ),
                               " × ",
                               sy(u.rank, s.classification, m, B),
                             ),
@@ -3829,7 +3901,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                           Math.max(
                             1,
                             Math.round(
-                              hd(
+                              repsCombate(
                                 u.rank,
                                 s.classification,
                                 A.exercise,
@@ -3867,13 +3939,20 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                 (() => {
                   let fs = f.isBoss
                       ? (A.bossCats || $o(A.lastExercise)).map((m) =>
-                          uy(u.rank, s.classification, s.focusProfile, m, B, s.testResults),
+                          repsCombateSuave(
+                            u.rank,
+                            s.classification,
+                            s.focusProfile,
+                            m,
+                            B,
+                            s.testResults,
+                          ),
                         )
                       : [
                           Math.max(
                             1,
                             Math.round(
-                              hd(
+                              repsCombate(
                                 u.rank,
                                 s.classification,
                                 A.exercise,
@@ -4021,9 +4100,9 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                 className:
                   "grid gap-1 mb-4 grid-cols-" +
                   (1 +
-                    (ye(e, "skills") ? 1 : 0) +
-                    (ye(e, "care") ? 1 : 0) +
-                    (ye(e, "neuro") ? 1 : 0)),
+                    (sistemaActivo(e, "skills") ? 1 : 0) +
+                    (sistemaActivo(e, "care") ? 1 : 0) +
+                    (sistemaActivo(e, "neuro") ? 1 : 0)),
               },
               i.default.createElement(
                 "button",
@@ -4039,7 +4118,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                 },
                 "Movimientos",
               ),
-              ye(e, "skills") &&
+              sistemaActivo(e, "skills") &&
                 i.default.createElement(
                   "button",
                   {
@@ -4055,7 +4134,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                   },
                   "Skills",
                 ),
-              ye(e, "care") &&
+              sistemaActivo(e, "care") &&
                 i.default.createElement(
                   "button",
                   {
@@ -4070,7 +4149,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                   },
                   "Articul.",
                 ),
-              ye(e, "neuro") &&
+              sistemaActivo(e, "neuro") &&
                 i.default.createElement(
                   "button",
                   {
@@ -4088,7 +4167,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                 ),
             ),
             He === "neuro" &&
-              ye(e, "neuro") &&
+              sistemaActivo(e, "neuro") &&
               (() => {
                 let d = e.neuro || {
                     bestSpeedLevel: 0,
@@ -4270,9 +4349,9 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                 );
               })(),
             He === "care" &&
-              ye(e, "care") &&
+              sistemaActivo(e, "care") &&
               (() => {
-                let d = e.care && e.care.today.date === ue() ? e.care.today.done : [];
+                let d = e.care && e.care.today.date === fechaHoy() ? e.care.today.done : [];
                 return i.default.createElement(
                   i.default.Fragment,
                   null,
@@ -4336,7 +4415,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                           border: "1px solid rgba(255,255,255,0.12)",
                         },
                       },
-                      X2,
+                      reglaDolor,
                     ),
                   ),
                   i.default.createElement(
@@ -4356,7 +4435,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                       { className: "text-xs mb-2", style: { color: "#9aa4bd" } },
                       "Si aparece cualquiera de estas, deja el protocolo y busca valoración profesional:",
                     ),
-                    H2.map((m) =>
+                    alarmas.map((m) =>
                       i.default.createElement(
                         "div",
                         { key: m, className: "flex items-start gap-2 py-1" },
@@ -4369,7 +4448,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                       ),
                     ),
                   ),
-                  Dy.map((m) => {
+                  cuidadoArticular.map((m) => {
                     let N = Gy === m.id,
                       _ = d.includes(m.id);
                     return i.default.createElement(
@@ -4492,7 +4571,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                 );
               })(),
             He === "skills" &&
-              ye(e, "skills") &&
+              sistemaActivo(e, "skills") &&
               i.default.createElement(
                 i.default.Fragment,
                 null,
@@ -4525,7 +4604,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                         },
                         Wo(e),
                         " / ",
-                        El.length,
+                        habilidades.length,
                         " aprendidas",
                       ),
                     ),
@@ -4537,7 +4616,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                     "Movimientos raros que se aprenden sin reloj. Marcá cada paso cuando lo domines de verdad: no hay prisa ni penalización por tardar semanas.",
                   ),
                 ),
-                El.map((d) => {
+                habilidades.map((d) => {
                   let m = Td(e, d.id),
                     N = m.filter(Boolean).length,
                     _ = N >= d.steps.length,
@@ -4631,7 +4710,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                             i.default.createElement(
                               "button",
                               {
-                                onClick: () => Ne((wl) => L2(wl, d.id, te)),
+                                onClick: () => Ne((wl) => marcarPasoHabilidad(wl, d.id, te)),
                                 className: "w-full text-left flex items-start gap-2",
                                 style: { background: "transparent", border: "none", padding: 0 },
                               },
@@ -4756,7 +4835,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                         },
                         g.unlockedCount,
                         " / ",
-                        Oa.length,
+                        movimientosPrimal.length,
                         " movimientos",
                       ),
                     ),
@@ -4789,7 +4868,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                               fontSize: 18,
                             },
                           },
-                          Oa[pu].name,
+                          movimientosPrimal[pu].name,
                         ),
                         i.default.createElement(
                           "div",
@@ -4797,7 +4876,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                             className: "mt-1",
                             style: { fontSize: 14, lineHeight: 1.5, color: "#c8d0e4" },
                           },
-                          Oa[pu].desc,
+                          movimientosPrimal[pu].desc,
                         ),
                       ),
                       Qa === "listo"
@@ -4895,7 +4974,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                         style: { marginBottom: 16 },
                         collapsed: me("primalLista"),
                         onToggle: fe,
-                        right: `${g.unlockedCount}/${Oa.length}`,
+                        right: `${g.unlockedCount}/${movimientosPrimal.length}`,
                       },
                       i.default.createElement(
                         "div",
@@ -4915,7 +4994,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                           Yn,
                           " sesiones de hoy. Volvé mañana.",
                         ),
-                      Oa.map((d, m) => {
+                      movimientosPrimal.map((d, m) => {
                         let N = m < g.unlockedCount,
                           _ = m === f,
                           X = !N || Xn >= Yn;
@@ -4972,12 +5051,12 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
       Da === "exploration" &&
         (() => {
           let f = s2(el),
-            d = Po[f],
+            d = sectores[f],
             m = i2(f),
             N = Math.max(0, Math.min(el - m, d.endKm - m)),
             _ = d.endKm - m,
             X = Math.round((N / _) * 100),
-            de = pt.filter((te) => te.sector === f);
+            de = nodosExplorar.filter((te) => te.sector === f);
           return i.default.createElement(
             i.default.Fragment,
             null,
@@ -5262,7 +5341,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                 "div",
                 { className: "text-xs mt-2 text-center", style: { color: "#7a83a0" } },
                 "Hoy llevás ",
-                (x.today.date === ue() ? x.today.km : 0).toFixed(1),
+                (x.today.date === fechaHoy() ? x.today.km : 0).toFixed(1),
                 " km consolidados",
               ),
             ),
@@ -5298,8 +5377,8 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                   ),
                 ),
               ),
-              (uu ? pt : de).map((te) => {
-                let wl = pt.indexOf(te) <= x.unlockedIndex,
+              (uu ? nodosExplorar : de).map((te) => {
+                let wl = nodosExplorar.indexOf(te) <= x.unlockedIndex,
                   Ig = Math.max(0, te.km - el);
                 return i.default.createElement(
                   "div",
@@ -5356,7 +5435,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                 style: { marginBottom: 16 },
                 collapsed: H && H.collapsed && H.collapsed.codice !== void 0 ? me("codice") : !0,
                 onToggle: fe,
-                right: `${(x.relics || []).length} / ${pt.length} · +${Math.round((x.relics || []).length * Ny * 100)}% XP`,
+                right: `${(x.relics || []).length} / ${nodosExplorar.length} · +${Math.round((x.relics || []).length * Ny * 100)}% XP`,
               },
               (x.relics || []).length === 0
                 ? i.default.createElement(
@@ -5364,7 +5443,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                     { className: "text-xs", style: { color: "#7a83a0" } },
                     "Aún no hallaste ninguna reliquia. Caminá y concluí expediciones para llenar el Códice.",
                   )
-                : pt
+                : nodosExplorar
                     .filter((te) => (x.relics || []).includes(te.relic))
                     .map((te) =>
                       i.default.createElement(
@@ -5433,14 +5512,14 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                   },
                   S.length,
                   " / ",
-                  Jo.length,
+                  logros.length,
                 ),
               ),
               i.default.createElement(Vs, { size: 26, color: "#ffb84f" }),
             ),
           ),
-          py.map((f) => {
-            let d = Jo.filter((N) => N.category === f);
+          categoriasLogros.map((f) => {
+            let d = logros.filter((N) => N.category === f);
             if (!d.length) return null;
             let m = d.filter((N) => S.includes(N.id)).length;
             return i.default.createElement(
@@ -5458,7 +5537,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                 onToggle: fe,
                 right: `${m}/${d.length}`,
               },
-              Z2.map((N) => {
+              ordenDificultad.map((N) => {
                 let _ = d.filter((X) => X.tier === N);
                 return _.length
                   ? i.default.createElement(
@@ -5468,7 +5547,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                         "div",
                         {
                           className: "text-xs mb-1",
-                          style: { color: Cl[N], letterSpacing: 1, fontWeight: 700 },
+                          style: { color: colorRango[N], letterSpacing: 1, fontWeight: 700 },
                         },
                         sdcDific[N] || N,
                       ),
@@ -5520,10 +5599,11 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
           let f = Math.max(
               1,
               Math.floor(
-                (new Date(ue() + "T00:00:00") - new Date(s.createdDate + "T00:00:00")) / 864e5,
+                (new Date(fechaHoy() + "T00:00:00") - new Date(s.createdDate + "T00:00:00")) /
+                  864e5,
               ) + 1,
             ),
-            d = jy(u.level, u.currentXP);
+            d = xpTotal(u.level, u.currentXP);
           return i.default.createElement(
             i.default.Fragment,
             null,
@@ -5559,7 +5639,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                 "div",
                 { className: "text-xs mt-1", style: { color: "#9aa4bd" } },
                 "Enfoque: ",
-                Od(s.focusProfile).name,
+                enfoqueDe(s.focusProfile).name,
               ),
               i.default.createElement(
                 "div",
@@ -5578,7 +5658,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                 collapsed:
                   H && H.collapsed && H.collapsed.sistemas !== void 0 ? me("sistemas") : !0,
                 onToggle: fe,
-                right: `${$e.filter((m) => ye(e, m.id)).length + 1}/${$e.length + 1}`,
+                right: `${sistemas.filter((m) => sistemaActivo(e, m.id)).length + 1}/${sistemas.length + 1}`,
               },
               i.default.createElement(
                 "div",
@@ -5625,10 +5705,10 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                   "Base",
                 ),
               ),
-              $e.map((m) => {
-                let N = yt(e, m.id),
+              sistemas.map((m) => {
+                let N = sistemaAbierto(e, m.id),
                   _ = (e.disabled || []).includes(m.id),
-                  X = ye(e, m.id);
+                  X = sistemaActivo(e, m.id);
                 return i.default.createElement(
                   "div",
                   {
@@ -5682,7 +5762,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                 style: { marginBottom: 16 },
                 collapsed: H && H.collapsed && H.collapsed.metodos !== void 0 ? me("metodos") : !0,
                 onToggle: fe,
-                right: (ra.find((m) => m.id === B) || ra[0]).name,
+                right: (modalidades.find((m) => m.id === B) || modalidades[0]).name,
               },
               i.default.createElement(
                 "div",
@@ -5691,12 +5771,12 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                 i.default.createElement(
                   "b",
                   { style: { color: "#4f9dff" } },
-                  (ra.find((m) => m.id === B) || ra[0]).name,
+                  (modalidades.find((m) => m.id === B) || modalidades[0]).name,
                 ),
                 ".",
               ),
-              ra.map((m) => {
-                let N = qn(s).includes(m.id);
+              modalidades.map((m) => {
+                let N = modalidadesDe(s).includes(m.id);
                 return i.default.createElement(
                   "button",
                   {
@@ -5737,7 +5817,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
               i.default.createElement(
                 "button",
                 {
-                  onClick: () => ef(ra.map((m) => m.id)),
+                  onClick: () => ef(modalidades.map((m) => m.id)),
                   className: "w-full py-2 text-xs",
                   style: {
                     background: "rgba(255,184,79,0.1)",
@@ -5748,7 +5828,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                 },
                 "SELECCIONAR TODOS (Atleta Híbrido)",
               ),
-              qn(s).length > 1 &&
+              modalidadesDe(s).length > 1 &&
                 i.default.createElement(
                   "div",
                   { className: "mt-3" },
@@ -5760,12 +5840,12 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                   i.default.createElement(
                     "div",
                     { className: "grid grid-cols-3 gap-1" },
-                    qn(s).map(function (jm) {
+                    modalidadesDe(s).map(function (jm) {
                       var jN = sdcJuego(s) === jm,
                         jT =
-                          ra.find(function (jR) {
+                          modalidades.find(function (jR) {
                             return jR.id === jm;
-                          }) || ra[0];
+                          }) || modalidades[0];
                       return i.default.createElement(
                         "button",
                         {
@@ -5990,7 +6070,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                       { style: { color: "#e8ecf7" } },
                       g.unlockedCount,
                       "/",
-                      Oa.length,
+                      movimientosPrimal.length,
                     ),
                   ),
                   i.default.createElement(
@@ -6017,7 +6097,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                       { style: { color: "#e8ecf7" } },
                       S.length,
                       "/",
-                      Jo.length,
+                      logros.length,
                     ),
                   ),
                   (e.lifetimeVolumeKg || 0) > 0
@@ -6062,7 +6142,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                 let pt = sdcPuntaje(s),
                   ff = sdcRitmoF(s),
                   ix = sdcBandaIx(pt, ff),
-                  sg = ix < vy.length - 1 ? vy[ix + 1] : null;
+                  sg = ix < bandasCalibre.length - 1 ? bandasCalibre[ix + 1] : null;
                 return i.default.createElement(
                   "div",
                   { className: "mb-3" },
@@ -6090,7 +6170,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                         )
                       : null,
                   ),
-                  vy.map((v, k) =>
+                  bandasCalibre.map((v, k) =>
                     i.default.createElement(
                       "div",
                       {
@@ -6116,7 +6196,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                       i.default.createElement(
                         "span",
                         { className: "text-xs", style: { color: "#7a83a0", whiteSpace: "nowrap" } },
-                        k === vy.length - 1
+                        k === bandasCalibre.length - 1
                           ? sdcBandaMin(k, ff) + "+"
                           : sdcBandaMin(k, ff) + "–" + (sdcBandaMin(k + 1, ff) - 1),
                       ),
@@ -6233,7 +6313,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                         i.default.createElement(
                           "span",
                           null,
-                          iu(
+                          puntajePrueba(
                             parseInt(vu || "0", 10),
                             parseInt(xu || "0", 10),
                             parseInt(Nu || "0", 10),
@@ -6566,7 +6646,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
           i.default.createElement(
             "div",
             { className: "grid grid-cols-3 gap-2 mb-3" },
-            ve.map((f) =>
+            rangos.map((f) =>
               i.default.createElement(
                 "button",
                 {
@@ -6574,9 +6654,9 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                   onClick: () => qg(f),
                   className: "py-2 text-xs",
                   style: {
-                    background: u.rank === f ? Cl[f] + "22" : "rgba(255,255,255,0.05)",
-                    border: `1px solid ${Cl[f]}88`,
-                    color: Cl[f],
+                    background: u.rank === f ? colorRango[f] + "22" : "rgba(255,255,255,0.05)",
+                    border: `1px solid ${colorRango[f]}88`,
+                    color: colorRango[f],
                     fontWeight: 700,
                   },
                 },

@@ -1,7 +1,7 @@
 // Series, sonido y vibracion.
-import { ye } from "./sistemas.js";
-import { qn } from "./rutina.js";
-import { Ie } from "../ui/prueba.js";
+import { sistemaActivo } from "./sistemas.js";
+import { modalidadesDe } from "./rutina.js";
+import { pitido } from "../ui/prueba.js";
 
 function sdcSegs(al) {
   if (!al) return 0;
@@ -19,9 +19,9 @@ var sdcCatSis = {
 };
 function sdcCatAbierta(st, cat) {
   var s = sdcCatSis[cat];
-  if (s) return ye(st, s);
+  if (s) return sistemaActivo(st, s);
   var m = sdcCatMod[cat];
-  if (m) return qn(st.profile).indexOf(m) >= 0;
+  if (m) return modalidadesDe(st.profile).indexOf(m) >= 0;
   return !0;
 }
 function sdcNSets(t) {
@@ -46,7 +46,7 @@ function sdcSuma(t, n, k) {
 }
 function sdcBeep(hz, ms) {
   try {
-    Ie(hz, ms);
+    pitido(hz, ms);
   } catch (e) {}
 }
 function sdcVib(p) {

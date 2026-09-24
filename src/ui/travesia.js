@@ -3,7 +3,7 @@ import { i } from "../react.js";
 import { Mn } from "./iconos.js";
 import { sdcPortales } from "../logica/explorar.js";
 import { qa } from "./base.js";
-import { Ie } from "./prueba.js";
+import { pitido } from "./prueba.js";
 import { sdcWakeUse } from "./pantalla.js";
 
 function sdcTravMin(t) {
@@ -33,13 +33,13 @@ function sdcTravCrono({ inicio: e, mins: a, on: l, off: n, onCancel: o, onListo:
     ss = String(rest % 60).padStart(2, "0");
   return (
     (0, i.useEffect)(() => {
-      u > 0 && !listo && Ie(ci ? (fu ? 880 : 440) : 660, ci ? 170 : 120);
+      u > 0 && !listo && pitido(ci ? (fu ? 880 : 440) : 660, ci ? 170 : 120);
     }, [fase]),
     (0, i.useEffect)(() => {
-      listo && Ie(990, 340);
+      listo && pitido(990, 340);
     }, [listo]),
     (0, i.useEffect)(() => {
-      pre === 0 && u < 2 && Ie(880, 180);
+      pre === 0 && u < 2 && pitido(880, 180);
     }, [pre > 0]),
     i.default.createElement(
       "div",

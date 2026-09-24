@@ -1,12 +1,12 @@
 // La guia (¿Como funciona?) y las habilidades.
-import { Ka } from "../logica/tienda.js";
+import { multImpulso } from "../logica/tienda.js";
 import { Al } from "./salud.js";
-import { $e, yt } from "../logica/sistemas.js";
-import { da } from "./logros.js";
-import { ue } from "../logica/rutina.js";
-import { Ea, M } from "../logica/partida.js";
+import { sistemas, sistemaAbierto } from "../logica/sistemas.js";
+import { revisarLogros } from "./logros.js";
+import { fechaHoy } from "../logica/rutina.js";
+import { subirNiveles, clonar } from "../logica/partida.js";
 
-var j2 = [
+var guia = [
     {
       g: "PARA EMPEZAR",
       title: "Tu rutina de hoy",
@@ -98,7 +98,7 @@ var j2 = [
       text: "Esto es importante. Todo lo tuyo se guarda en este teléfono y en ningún otro lado. No hay cuenta ni servidor: nadie ve tus datos, pero tampoco hay una copia esperándote si perdés el teléfono o borrás los datos del navegador. Andá a Perfil, abrí Respaldo de tu progreso, copiá el texto y guardalo donde quieras (un mail a vos mismo alcanza). Con ese texto recuperás todo, o lo pasás a un teléfono nuevo.",
     },
   ],
-  El = [
+  habilidades = [
     {
       id: "handstand",
       name: "Pino (Handstand)",
@@ -480,45 +480,46 @@ function Td(e, a) {
   return ((e.skills && e.skills[a]) || { steps: [] }).steps || [];
 }
 function U2(e, a) {
-  let l = El.find((o) => o.id === a),
+  let l = habilidades.find((o) => o.id === a),
     n = Td(e, a);
   return l && n.filter(Boolean).length >= l.steps.length;
 }
-function L2(e, a, l) {
-  let n = M(e),
+function marcarPasoHabilidad(e, a, l) {
+  let n = clonar(e),
     o = [],
-    s = El.find((v) => v.id === a);
+    s = habilidades.find((v) => v.id === a);
   if (!s) return { state: n, notices: o };
   (n.skills || (n.skills = {}),
-    n.care || (n.care = { today: { date: ue(), done: [] }, lifetime: 0 }),
+    n.care || (n.care = { today: { date: fechaHoy(), done: [] }, lifetime: 0 }),
     n.neuro || (n.neuro = Al()),
     n.unlockAll === void 0 && (n.unlockAll = !1),
     n.disabled || (n.disabled = []),
-    n.seenUnlocks || (n.seenUnlocks = $e.filter((v) => yt(n, v.id)).map((v) => v.id)),
+    n.seenUnlocks ||
+      (n.seenUnlocks = sistemas.filter((v) => sistemaAbierto(n, v.id)).map((v) => v.id)),
     n.skills[a] || (n.skills[a] = { steps: new Array(s.steps.length).fill(!1) }));
   let u = n.skills[a].steps;
   for (; u.length < s.steps.length;) u.push(!1);
   let c = u.filter(Boolean).length >= s.steps.length;
   if (((u[l] = !u[l]), u[l])) {
-    let v = Math.round(B2 * Ka(n));
+    let v = Math.round(B2 * multImpulso(n));
     ((n.progress.currentXP += v),
       (n.today.xpEarned = (n.today.xpEarned || 0) + v),
       o.push(`Paso dominado: ${s.steps[l].name}. +${v} XP.`),
-      (n = Ea(n, o)));
+      (n = subirNiveles(n, o)));
   }
   if (u.filter(Boolean).length >= s.steps.length && !c) {
-    let v = Math.round(w2 * Ka(n));
+    let v = Math.round(w2 * multImpulso(n));
     ((n.progress.currentXP += v),
       (n.today.xpEarned = (n.today.xpEarned || 0) + v),
       (n.dominion.points += dy),
       o.push(`¡Skill aprendida: ${s.name}! +${v} XP y +${dy} Puntos de Dominio.`),
-      (n = Ea(n, o)));
+      (n = subirNiveles(n, o)));
   }
-  let p = da(n);
+  let p = revisarLogros(n);
   return { state: p.state, notices: [...o, ...p.notices] };
 }
 function Wo(e) {
-  return El.filter((a) => U2(e, a.id)).length;
+  return habilidades.filter((a) => U2(e, a.id)).length;
 }
 
-export { j2, El, B2, w2, dy, Td, U2, L2, Wo };
+export { guia, habilidades, B2, w2, dy, Td, U2, marcarPasoHabilidad, Wo };

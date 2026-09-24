@@ -1,8 +1,8 @@
 // Sistemas que se abren con el nivel.
-import { ve } from "../datos/rangos.js";
-import { M } from "./partida.js";
+import { rangos } from "../datos/rangos.js";
+import { clonar } from "./partida.js";
 
-var $e = [
+var sistemas = [
   {
     id: "exploration",
     name: "Explorar",
@@ -84,29 +84,29 @@ var $e = [
     tab: null,
   },
 ];
-function My(e, a) {
-  return ve.indexOf(e) >= ve.indexOf(a);
+function rangoAlcanza(e, a) {
+  return rangos.indexOf(e) >= rangos.indexOf(a);
 }
-function ye(e, a) {
+function sistemaActivo(e, a) {
   if (e.disabled && e.disabled.includes(a)) return !1;
   if (e.unlockAll) return !0;
-  let l = $e.find((n) => n.id === a);
-  return l ? e.progress.level >= l.level && My(e.progress.rank, l.rank) : !0;
+  let l = sistemas.find((n) => n.id === a);
+  return l ? e.progress.level >= l.level && rangoAlcanza(e.progress.rank, l.rank) : !0;
 }
-function yt(e, a) {
+function sistemaAbierto(e, a) {
   if (e.unlockAll) return !0;
-  let l = $e.find((n) => n.id === a);
-  return l ? e.progress.level >= l.level && My(e.progress.rank, l.rank) : !0;
+  let l = sistemas.find((n) => n.id === a);
+  return l ? e.progress.level >= l.level && rangoAlcanza(e.progress.rank, l.rank) : !0;
 }
-function _y(e) {
-  let a = M(e),
+function avisarSistemasNuevos(e) {
+  let a = clonar(e),
     l = [];
   a.seenUnlocks || (a.seenUnlocks = []);
-  for (let n of $e)
-    yt(a, n.id) &&
+  for (let n of sistemas)
+    sistemaAbierto(a, n.id) &&
       !a.seenUnlocks.includes(n.id) &&
       (a.seenUnlocks.push(n.id), l.push(`Nuevo sistema desbloqueado: ${n.name}. ${n.why}`));
   return { state: a, notices: l };
 }
 
-export { $e, My, ye, yt, _y };
+export { sistemas, rangoAlcanza, sistemaActivo, sistemaAbierto, avisarSistemasNuevos };

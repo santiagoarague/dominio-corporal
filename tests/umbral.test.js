@@ -10,14 +10,14 @@ afterEach(() => soltarFecha());
 function conCompletas(e, n, desde = new Date(2026, 8, 23)) {
   const d = new Date(desde);
   for (let k = 0; k < n; k++) {
-    e.history[J.__fechaLocal(d)] = "full";
+    e.history[J.fechaLocal(d)] = "full";
     d.setDate(d.getDate() - 1);
   }
   return e;
 }
 
 function enElUmbral(rango = "E", completas = 0) {
-  const e = conCompletas(jugadorEn(rango, J.au[rango]), completas);
+  const e = conCompletas(jugadorEn(rango, J.nivelUmbral[rango]), completas);
   e.ascension.pending = true;
   e.today.completed = true;
   e.today.fullCompletion = true;
@@ -86,21 +86,21 @@ describe("cruzar el Umbral", () => {
 describe("la prueba del Umbral usa el rango que viene", () => {
   for (const [rango, sig] of [["E", "D"], ["C", "B"], ["S", "Z"]])
     it(`${rango} → ${sig}: ejercicios y volumen de ${sig}, rondas de ${rango}`, () => {
-      const e = jugadorEn(rango, J.au[rango]);
+      const e = jugadorEn(rango, J.nivelUmbral[rango]);
       const p = J.sdcUmbralPrueba(e, "bodyweight");
       expect(p.rango).toBe(sig);
-      expect(p.rounds).toBe(J.gy[rango].rounds);
-      const vol = J.jd(sig, e.profile.classification, e.profile.focusProfile, "bodyweight", e.profile.testResults);
+      expect(p.rounds).toBe(J.pruebaUmbral[rango].rounds);
+      const vol = J.volumen(sig, e.profile.classification, e.profile.focusProfile, "bodyweight", e.profile.testResults);
       for (const g of ["squat", "pushup", "back", "abs"]) {
-        expect(p.nombres[g]).toBe(J._d(g, sig, "bodyweight", e.today.date).name);
-        expect(p.reps[g]).toBe(Math.max(1, Math.round(vol[g] * J.gy[rango].pct)));
+        expect(p.nombres[g]).toBe(J.ejercicioDe(g, sig, "bodyweight", e.today.date).name);
+        expect(p.reps[g]).toBe(Math.max(1, Math.round(vol[g] * J.pruebaUmbral[rango].pct)));
       }
     });
 
   it("los ejercicios no son los del rango actual", () => {
     const e = jugadorEn("E", 50);
     const p = J.sdcUmbralPrueba(e, "bodyweight");
-    const actuales = ["squat", "pushup", "back", "abs"].map((g) => J._d(g, "E", "bodyweight", e.today.date).name);
+    const actuales = ["squat", "pushup", "back", "abs"].map((g) => J.ejercicioDe(g, "E", "bodyweight", e.today.date).name);
     expect(Object.values(p.nombres)).not.toEqual(actuales);
   });
 });

@@ -1,7 +1,7 @@
 // Tarjeta plegable y botones de sistemas.
 import { i } from "../react.js";
 import { Za } from "./iconos.js";
-import { Cl } from "../datos/rangos.js";
+import { colorRango } from "../datos/rangos.js";
 import { Q } from "./base.js";
 
 function ge({
@@ -72,7 +72,7 @@ function Qo({ icon: e, label: a, status: l, done: n, onClick: o }) {
   );
 }
 function k5(e) {
-  return Cl[e] || "#ffb84f";
+  return colorRango[e] || "#ffb84f";
 }
 function Cd({ type: e, size: a = 56, color: l = "#ffb84f", rank: n }) {
   let o = n && ["A", "S", "Z"].includes(n),

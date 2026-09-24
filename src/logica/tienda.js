@@ -1,10 +1,10 @@
 // Tienda de PD, modificadores del dia, mascota y multiplicadores de XP.
-import { Ed, ai, sdcPortales } from "./explorar.js";
-import { Dd, k2 } from "./primal.js";
-import { ue } from "./rutina.js";
-import { M } from "./partida.js";
+import { Ed, travesiaDelDia, sdcPortales } from "./explorar.js";
+import { hashDia, k2 } from "./primal.js";
+import { fechaHoy } from "./rutina.js";
+import { clonar } from "./partida.js";
 
-var Ey = [
+var tienda = [
   {
     id: "primal",
     cost: 4,
@@ -60,13 +60,13 @@ var Ey = [
     desc: "Permanente: sube el bono anterior a +10% de XP en todo.",
   },
 ];
-function Ay() {
+function dominioInicial() {
   return {
     points: 0,
     shields: 0,
     perks: [],
     xpBuffDate: null,
-    extraPrimal: { date: ue(), count: 0 },
+    extraPrimal: { date: fechaHoy(), count: 0 },
   };
 }
 var sdcMods = {
@@ -101,7 +101,7 @@ var sdcMods = {
 };
 function sdcModDia(m, f) {
   var l = sdcMods[m] || sdcMods.bodyweight;
-  return l[Dd(String(f || ue()) + "|" + String(m || "bodyweight"), l.length)];
+  return l[hashDia(String(f || fechaHoy()) + "|" + String(m || "bodyweight"), l.length)];
 }
 var sdcPetPR = [
     '{name} da vueltas sin parar: "¡Ese número no lo habías tocado nunca!"',
@@ -124,7 +124,9 @@ function sdcMascota(o, p, pr) {
     d = (o.streak && o.streak.current) || 0,
     k = pr ? "pr" : d >= 7 ? "ra" : p >= 1 ? "fu" : "pa",
     l = pr ? sdcPetPR : d >= 7 ? sdcPetRacha : p >= 1 ? sdcPetFull : sdcPetParcial;
-  return l[Dd(String(o.today.date) + "|" + k, l.length)].replace("{name}", nm).replace("{d}", d);
+  return l[hashDia(String(o.today.date) + "|" + k, l.length)]
+    .replace("{name}", nm)
+    .replace("{d}", d);
 }
 function sdcRacha(e) {
   let d = (e.streak && e.streak.current) || 0;
@@ -134,25 +136,25 @@ function sdcPerk(e) {
   let p = (e.dominion && e.dominion.perks) || [];
   return p.indexOf("nucleo") >= 0 ? 1.1 : p.indexOf("memoria") >= 0 ? 1.05 : 1;
 }
-function Ka(e) {
-  return e.dominion && e.dominion.xpBuffDate === ue() ? e.dominion.xpBuffMult || 1.25 : 1;
+function multImpulso(e) {
+  return e.dominion && e.dominion.xpBuffDate === fechaHoy() ? e.dominion.xpBuffMult || 1.25 : 1;
 }
-function Sd(e) {
+function sesionesPrimalHoy(e) {
   let a = e.dominion && e.dominion.extraPrimal,
-    l = a && a.date === ue() ? a.count : 0;
+    l = a && a.date === fechaHoy() ? a.count : 0;
   return k2 + l;
 }
-function M2(e, a) {
-  let l = M(e),
+function comprar(e, a) {
+  let l = clonar(e),
     n = [],
-    o = Ey.find((u) => u.id === a);
+    o = tienda.find((u) => u.id === a);
   if (!o) return { state: l, notices: n };
   if (l.dominion.points < o.cost)
     return { state: l, notices: ["No tenés suficientes Puntos de Dominio."] };
-  let s = ue();
+  let s = fechaHoy();
   if (a === "reroll") {
     if (l.dungeon.completed) return { state: l, notices: ["Ya completaste la travesía de hoy."] };
-    ((l.dungeon = { date: s, ...ai(l.progress.rank) }),
+    ((l.dungeon = { date: s, ...travesiaDelDia(l.progress.rank) }),
       l.dungeon.available ||
         (l.dungeon = {
           date: s,
@@ -208,8 +210,8 @@ function M2(e, a) {
 }
 
 export {
-  Ey,
-  Ay,
+  tienda,
+  dominioInicial,
   sdcMods,
   sdcModDia,
   sdcPetPR,
@@ -219,7 +221,7 @@ export {
   sdcMascota,
   sdcRacha,
   sdcPerk,
-  Ka,
-  Sd,
-  M2,
+  multImpulso,
+  sesionesPrimalHoy,
+  comprar,
 };

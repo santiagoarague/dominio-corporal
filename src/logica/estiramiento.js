@@ -1,9 +1,9 @@
 // Estiramiento guiado y chequeo de flexibilidad.
-import { ue } from "./rutina.js";
-import { M } from "./partida.js";
+import { fechaHoy } from "./rutina.js";
+import { clonar } from "./partida.js";
 import { sdcPrimeraAdd } from "./extras.js";
 
-var Pt = [
+var estiramientos = [
   {
     name: "Movilidad de cuello",
     desc: "Gira la cabeza lento de lado a lado y luego oreja a hombro. Sin forzar.",
@@ -68,8 +68,8 @@ function sdcEstLista(corta) {
   var l = [],
     k,
     s;
-  for (k = 0; k < Pt.length; k++) {
-    s = Pt[k];
+  for (k = 0; k < estiramientos.length; k++) {
+    s = estiramientos[k];
     if (corta && !s.corta) continue;
     if (s.lados) {
       l.push({ name: s.name, desc: s.desc, seconds: s.seconds, lado: "lado derecho", prep: s.pr });
@@ -121,14 +121,16 @@ function sdcFlex(e) {
 function sdcFlexToca(e) {
   var f = sdcFlex(e);
   if (!f.fecha) return !0;
-  var d = Math.round((new Date(ue() + "T00:00:00") - new Date(f.fecha + "T00:00:00")) / 864e5);
+  var d = Math.round(
+    (new Date(fechaHoy() + "T00:00:00") - new Date(f.fecha + "T00:00:00")) / 864e5,
+  );
   return d >= 7;
 }
 function sdcFlexSet(e, n) {
-  var a = M(e),
+  var a = clonar(e),
     f = sdcFlex(a),
     pr = f.mejor || 0,
-    hoy = ue(),
+    hoy = fechaHoy(),
     l = [];
   a.flex = {
     nivel: n,
@@ -158,7 +160,7 @@ function sdcFlexSet(e, n) {
 }
 
 export {
-  Pt,
+  estiramientos,
   sdcEstLista,
   sdcEstPrep,
   sdcEstTotal,

@@ -1,6 +1,6 @@
 // Metronomo.
 import { i } from "../react.js";
-import { Ie } from "./prueba.js";
+import { pitido } from "./prueba.js";
 
 function sdcTempoMod(mo) {
   var b = 2,
@@ -19,7 +19,7 @@ function D5({ active: e, tempo: tm }) {
     ((0, i.useEffect)(() => {
       if (!e) return;
       let s = (a === "down" ? t.b : a === "hold" ? t.p : t.s) * 1e3;
-      Ie(a === "down" ? 440 : a === "hold" ? 560 : 660, 120);
+      pitido(a === "down" ? 440 : a === "hold" ? 560 : 660, 120);
       let u = setTimeout(() => l((c) => (c === "down" ? "hold" : c === "hold" ? "up" : "down")), s);
       return () => clearTimeout(u);
     }, [e, a, t.b, t.p, t.s]),

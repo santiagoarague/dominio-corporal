@@ -5,12 +5,12 @@ import { sdcWakeUse } from "./pantalla.js";
 
 var E5 = 2e3,
   A5 = 1e3;
-function Ie(e, a) {
+function pitido(e, a) {
   try {
     let l = window.AudioContext || window.webkitAudioContext;
     if (!l) return;
-    Ie._ctx || (Ie._ctx = new l());
-    let n = Ie._ctx;
+    pitido._ctx || (pitido._ctx = new l());
+    let n = pitido._ctx;
     n.state === "suspended" && n.resume();
     let o = n.createOscillator(),
       s = n.createGain();
@@ -33,26 +33,26 @@ function Ly({ exercise: e, onFinish: a }) {
     (0, i.useEffect)(() => {
       if (l !== "countdown") return;
       if (o <= 0) {
-        (Ie(880, 180), c("down"), n("running"));
+        (pitido(880, 180), c("down"), n("running"));
         return;
       }
-      o <= 3 && Ie(520, 120);
+      o <= 3 && pitido(520, 120);
       let x = setTimeout(() => s((y) => y - 1), 1e3);
       return () => clearTimeout(x);
     }, [l, o]),
     (0, i.useEffect)(() => {
       if (l !== "running") return;
       if (u === "down") {
-        Ie(440, 140);
+        pitido(440, 140);
         let y = setTimeout(() => c("hold"), 2e3);
         return () => clearTimeout(y);
       }
       if (u === "hold") {
-        Ie(560, 120);
+        pitido(560, 120);
         let y = setTimeout(() => c("up"), 1e3);
         return () => clearTimeout(y);
       }
-      Ie(660, 140);
+      pitido(660, 140);
       let x = setTimeout(() => {
         (p((y) => y + 1), c("down"));
       }, 2e3);
@@ -165,4 +165,4 @@ function Ly({ exercise: e, onFinish: a }) {
   );
 }
 
-export { E5, A5, Ie, Ly };
+export { E5, A5, pitido, Ly };

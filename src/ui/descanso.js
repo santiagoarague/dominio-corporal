@@ -3,7 +3,7 @@ import { i } from "../react.js";
 import { sdcEstMMSS } from "../logica/estiramiento.js";
 import { qa } from "./base.js";
 import { sdcVib } from "../logica/series.js";
-import { Ie } from "./prueba.js";
+import { pitido } from "./prueba.js";
 import { sdcWakeUse } from "./pantalla.js";
 
 function T5({ seconds: e, onSkip: a, ini: t0 }) {
@@ -12,7 +12,7 @@ function T5({ seconds: e, onSkip: a, ini: t0 }) {
   sdcWakeUse();
   (0, i.useEffect)(() => {
     if (l <= 0) {
-      (Ie(880, 200), sdcVib([40, 60, 40]), a());
+      (pitido(880, 200), sdcVib([40, 60, 40]), a());
       return;
     }
     let o = setTimeout(() => tk((x) => x + 1), 250);

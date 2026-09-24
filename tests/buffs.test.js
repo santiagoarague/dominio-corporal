@@ -11,28 +11,28 @@ function conPuntos(pd = 500) {
   e.dominion.points = pd;
   return e;
 }
-const comprar = (e, id) => J.M2(e, id).state;
+const comprar = (e, id) => J.comprar(e, id).state;
 // Abrir la app otro dia: ei hace el cambio de dia y de semana.
 function abrirEl(e, dia, mes = 8) {
   fijarFecha(new Date(2026, mes, dia, 12, 0, 0));
-  return J.ei(e).state;
+  return J.cargarPartida(e).state;
 }
 
 describe("Impulso de XP (12 PD) e Impulso Mayor (20 PD)", () => {
   it("+25% hasta la medianoche del dia de compra, no 24 horas", () => {
     const e = comprar(conPuntos(), "xpbuff");
-    expect(J.Ka(e)).toBe(1.25);
+    expect(J.multImpulso(e)).toBe(1.25);
     fijarFecha(new Date(2026, 8, 24, 23, 59, 0));
-    expect(J.Ka(e)).toBe(1.25);
+    expect(J.multImpulso(e)).toBe(1.25);
     fijarFecha(new Date(2026, 8, 25, 0, 1, 0));
-    expect(J.Ka(e)).toBe(1);
+    expect(J.multImpulso(e)).toBe(1);
   });
 
   it("el Mayor da +50% el mismo dia y reemplaza al normal", () => {
     let e = comprar(conPuntos(), "xpbuff");
     e = comprar(e, "bigbuff");
-    expect(J.Ka(e)).toBe(1.5);
-    expect(J.M2(e, "xpbuff").notices[0]).toMatch(/Ya tenés/);
+    expect(J.multImpulso(e)).toBe(1.5);
+    expect(J.comprar(e, "xpbuff").notices[0]).toMatch(/Ya tenés/);
   });
 
   it("multiplica la XP de la rutina de ese dia", () => {
@@ -66,8 +66,8 @@ describe("Impulso de Constancia (8 PD) y buff de Flexibilidad", () => {
   it("los dos son la misma marca: no se suman y no se puede comprar si ya esta", () => {
     let e = conPuntos();
     e.streak.flexBuff = true;
-    expect(J.M2(e, "flex").notices[0]).toMatch(/Ya tenés/);
-    expect(J.M2(e, "flex").state.dominion.points).toBe(500);
+    expect(J.comprar(e, "flex").notices[0]).toMatch(/Ya tenés/);
+    expect(J.comprar(e, "flex").state.dominion.points).toBe(500);
   });
 });
 
@@ -75,7 +75,7 @@ describe("mejoras permanentes", () => {
   it("Memoria +5% y Nucleo Reforzado +10%, para siempre", () => {
     let e = comprar(conPuntos(), "memoria");
     expect(J.sdcPerk(e)).toBe(1.05);
-    expect(J.M2(conPuntos(), "nucleo").notices[0]).toMatch(/Memoria/);
+    expect(J.comprar(conPuntos(), "nucleo").notices[0]).toMatch(/Memoria/);
     e = comprar(e, "nucleo");
     expect(J.sdcPerk(e)).toBe(1.1);
     e = abrirEl(e, 24, 11);

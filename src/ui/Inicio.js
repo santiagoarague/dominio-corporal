@@ -1,9 +1,17 @@
 // Primera vez: presentacion y prueba inicial.
 import { i } from "../react.js";
 import { Za } from "./iconos.js";
-import { Cl } from "../datos/rangos.js";
-import { ra } from "../datos/ejercicios.js";
-import { Nd, Uy, iu, sdcNiveles, sdcRitmoK, vy, wy } from "../logica/rutina.js";
+import { colorRango } from "../datos/rangos.js";
+import { modalidades } from "../datos/ejercicios.js";
+import {
+  enfoques,
+  claseCalibre,
+  puntajePrueba,
+  sdcNiveles,
+  sdcRitmoK,
+  bandasCalibre,
+  bandaCalibre,
+} from "../logica/rutina.js";
 import { Q } from "./base.js";
 import { sdcCalF, sdcCalT, sdcRango } from "../logica/extras.js";
 import { Cd } from "./tarjetas.js";
@@ -54,7 +62,7 @@ function j5({ onFinish: e, onLoadBackup: a }) {
     Ba = Math.max(0, parseInt(A || "0", 10)),
     fa = Math.max(0, parseInt(b || "0", 10)),
     sdcBkN = Math.max(0, parseInt(sdcBk || "0", 10)),
-    Tl = Uy(ja, Ba, fa, sdcBkN),
+    Tl = claseCalibre(ja, Ba, fa, sdcBkN),
     Ud = Tl === "principiante" ? "Principiante" : Tl === "intermedio" ? "Intermedio" : "Avanzado";
   return l
     ? i.default.createElement(
@@ -249,7 +257,7 @@ function j5({ onFinish: e, onLoadBackup: a }) {
                 { className: "text-xs mb-3", style: { color: "#9aa4bd" } },
                 "Elegí uno, varios o todos. Podrás cambiarlo cuando quieras desde tu Perfil.",
               ),
-              ra.map((j) => {
+              modalidades.map((j) => {
                 let Se = v.includes(j.id);
                 return i.default.createElement(
                   "button",
@@ -294,7 +302,7 @@ function j5({ onFinish: e, onLoadBackup: a }) {
               i.default.createElement(
                 "button",
                 {
-                  onClick: () => x(ra.map((j) => j.id)),
+                  onClick: () => x(modalidades.map((j) => j.id)),
                   className: "w-full py-2 text-xs mb-3",
                   style: {
                     background: "rgba(255,184,79,0.1)",
@@ -348,7 +356,7 @@ function j5({ onFinish: e, onLoadBackup: a }) {
                 { className: "text-xs mb-3", style: { color: "#9aa4bd" } },
                 "Elegí cómo querés que se calibre tu carga y tu progresión.",
               ),
-              Nd.map((j) => {
+              enfoques.map((j) => {
                 let Se = r === j.id;
                 return i.default.createElement(
                   "button",
@@ -696,7 +704,12 @@ function j5({ onFinish: e, onLoadBackup: a }) {
                       style: { color: "#ffb84f", fontWeight: 700 },
                     },
                     i.default.createElement("span", null, "Puntaje"),
-                    i.default.createElement("span", null, iu(ja, Ba, fa, sdcBkN), " pts"),
+                    i.default.createElement(
+                      "span",
+                      null,
+                      puntajePrueba(ja, Ba, fa, sdcBkN),
+                      " pts",
+                    ),
                   ),
                   i.default.createElement(
                     "div",
@@ -827,8 +840,8 @@ function j5({ onFinish: e, onLoadBackup: a }) {
             ),
           o === 3 &&
             (() => {
-              let j = wy(ja, Ba, fa, sdcBkN, sdcRitOnb ? sdcRitmoK : 1),
-                Se = Cl["E"];
+              let j = bandaCalibre(ja, Ba, fa, sdcBkN, sdcRitOnb ? sdcRitmoK : 1),
+                Se = colorRango["E"];
               return i.default.createElement(
                 Q,
                 { accent: Se },
@@ -858,16 +871,16 @@ function j5({ onFinish: e, onLoadBackup: a }) {
                   i.default.createElement(
                     "div",
                     { className: "text-xs mt-1", style: { color: "#9aa4bd" } },
-                    sdcCalT(vy.indexOf(j), { modalities: v }),
+                    sdcCalT(bandasCalibre.indexOf(j), { modalities: v }),
                     " · ",
-                    iu(ja, Ba, fa, sdcBkN),
+                    puntajePrueba(ja, Ba, fa, sdcBkN),
                     " pts",
                   ),
                   i.default.createElement(
                     "div",
                     { className: "text-xs mt-1", style: { color: "#9aa4bd" } },
                     "Enfoque: ",
-                    sdcCalF(vy.indexOf(j), { modalities: v }),
+                    sdcCalF(bandasCalibre.indexOf(j), { modalities: v }),
                   ),
                 ),
                 i.default.createElement(

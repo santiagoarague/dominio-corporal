@@ -7,30 +7,30 @@ afterEach(() => soltarFecha());
 
 describe("curva de XP", () => {
   it("el nivel 1 cuesta 48 XP", () => {
-    expect(J.li(1)).toBe(48);
+    expect(J.costoNivel(1)).toBe(48);
   });
 
   it("no salta al cruzar el nivel 50 (antes iba de 192 a 375)", () => {
-    expect(J.li(49)).toBe(192);
-    expect(J.li(50)).toBe(195);
+    expect(J.costoNivel(49)).toBe(192);
+    expect(J.costoNivel(50)).toBe(195);
   });
 
   it("siempre sube", () => {
-    for (let n = 1; n < 400; n++) expect(J.li(n + 1)).toBeGreaterThan(J.li(n));
+    for (let n = 1; n < 400; n++) expect(J.costoNivel(n + 1)).toBeGreaterThan(J.costoNivel(n));
   });
 
   it("la escalera de Umbrales es la de CLAUDE.md", () => {
-    expect(J.au).toEqual({ E: 50, D: 100, C: 140, B: 180, A: 220, S: 260 });
-    expect(J.ve.join("")).toBe("EDCBASZ");
+    expect(J.nivelUmbral).toEqual({ E: 50, D: 100, C: 140, B: 180, A: 220, S: 260 });
+    expect(J.rangos.join("")).toBe("EDCBASZ");
   });
 });
 
 describe("Ea: subir de nivel", () => {
   it("sube varios niveles de una vez si alcanza la XP", () => {
     const e = jugadorNuevo();
-    e.progress.currentXP = J.li(1) + J.li(2) + 5;
+    e.progress.currentXP = J.costoNivel(1) + J.costoNivel(2) + 5;
     const avisos = [];
-    const r = J.Ea(e, avisos);
+    const r = J.subirNiveles(e, avisos);
     expect(r.progress.level).toBe(3);
     expect(r.progress.currentXP).toBe(5);
     expect(avisos).toEqual(expect.arrayContaining(["Subiste a nivel 2.", "Subiste a nivel 3."]));
@@ -39,10 +39,10 @@ describe("Ea: subir de nivel", () => {
   it("se detiene en el Umbral y lo marca pendiente, sin gastar la XP que sobra", () => {
     const e = jugadorEn("E", 49);
     e.progress.currentXP = 10000;
-    const r = J.Ea(e, []);
+    const r = J.subirNiveles(e, []);
     expect(r.progress.level).toBe(50);
     expect(r.ascension.pending).toBe(true);
-    expect(r.progress.currentXP).toBe(10000 - J.li(49));
+    expect(r.progress.currentXP).toBe(10000 - J.costoNivel(49));
   });
 });
 
@@ -56,14 +56,14 @@ describe("cruzar el Umbral", () => {
   }
 
   it("con la rutina de hoy al 100% pasa al rango siguiente", () => {
-    const r = J.d5(listoParaCruzar(true));
+    const r = J.cruzarUmbralBase(listoParaCruzar(true));
     expect(r.state.progress.rank).toBe("D");
     expect(r.state.ascension.pending).toBe(false);
     expect(r.notices.some((n) => n.startsWith("¡Cruzaste a"))).toBe(true);
   });
 
   it("sin la rutina completa no pasa", () => {
-    const r = J.d5(listoParaCruzar(false));
+    const r = J.cruzarUmbralBase(listoParaCruzar(false));
     expect(r.state.progress.rank).toBe("E");
     expect(r.state.ascension.pending).toBe(true);
   });

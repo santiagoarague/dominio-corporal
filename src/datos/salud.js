@@ -1,11 +1,11 @@
 // Senales de alarma, regla del dolor, cuidado articular y neuromotor.
-import { Ka } from "../logica/tienda.js";
-import { $e, yt } from "../logica/sistemas.js";
-import { da } from "./logros.js";
-import { Dl, ue } from "../logica/rutina.js";
-import { Ea, M } from "../logica/partida.js";
+import { multImpulso } from "../logica/tienda.js";
+import { sistemas, sistemaAbierto } from "../logica/sistemas.js";
+import { revisarLogros } from "./logros.js";
+import { anotarDia, fechaHoy } from "../logica/rutina.js";
+import { subirNiveles, clonar } from "../logica/partida.js";
 
-var H2 = [
+var alarmas = [
     "Dolor agudo, punzante o que aparece de golpe",
     "Dolor que te despierta por la noche",
     "Hinchazón, calor o deformidad visible en la articulación",
@@ -14,9 +14,9 @@ var H2 = [
     "Dolor tras una caída, golpe o torsión brusca",
     "Molestia que lleva más de 6 semanas sin mejorar",
   ],
-  X2 =
+  reglaDolor =
     "Regla del dolor: una molestia leve (hasta 3 sobre 10) que no empeora al día siguiente es aceptable. Si sube de ahí, reduce el rango, la carga o el tiempo. El dolor no es la señal de que está funcionando.",
-  Dy = [
+  cuidadoArticular = [
     {
       id: "hombro",
       zone: "Hombro",
@@ -283,27 +283,28 @@ var H2 = [
   ],
   Ty = 20;
 function Y2(e, a) {
-  let l = M(e),
+  let l = clonar(e),
     n = [],
-    o = ue();
+    o = fechaHoy();
   if (
     (l.care || (l.care = { today: { date: o, done: [] }, lifetime: 0 }),
     l.neuro || (l.neuro = Al()),
     l.unlockAll === void 0 && (l.unlockAll = !1),
     l.disabled || (l.disabled = []),
-    l.seenUnlocks || (l.seenUnlocks = $e.filter((r) => yt(l, r.id)).map((r) => r.id)),
+    l.seenUnlocks ||
+      (l.seenUnlocks = sistemas.filter((r) => sistemaAbierto(l, r.id)).map((r) => r.id)),
     l.care.today.date !== o && (l.care.today = { date: o, done: [] }),
     l.care.today.done.includes(a))
   )
     return { state: l, notices: ["Ya registraste este protocolo hoy."] };
   (l.care.today.done.push(a), (l.care.lifetime = (l.care.lifetime || 0) + 1));
-  let s = Math.round(Ty * Ka(l));
+  let s = Math.round(Ty * multImpulso(l));
   (l.streak.flexBuff && (s = Math.round(s * 1.1)),
     (l.progress.currentXP += s),
     (l.today.xpEarned = (l.today.xpEarned || 0) + s));
-  let u = Dy.find((r) => r.id === a);
-  (n.push(`Cuidado articular registrado: ${u ? u.zone : a}. +${s} XP.`), (l = Ea(l, n)));
-  let c = da(l);
+  let u = cuidadoArticular.find((r) => r.id === a);
+  (n.push(`Cuidado articular registrado: ${u ? u.zone : a}. +${s} XP.`), (l = subirNiveles(l, n)));
+  let c = revisarLogros(l);
   return { state: c.state, notices: [...n, ...c.notices] };
 }
 var fy = [
@@ -350,12 +351,13 @@ function Al() {
   };
 }
 function Ps(e, a, l, n) {
-  let o = M(e),
+  let o = clonar(e),
     s = [];
   (o.neuro || (o.neuro = Al()),
     o.unlockAll === void 0 && (o.unlockAll = !1),
     o.disabled || (o.disabled = []),
-    o.seenUnlocks || (o.seenUnlocks = $e.filter((p) => yt(o, p.id)).map((p) => p.id)));
+    o.seenUnlocks ||
+      (o.seenUnlocks = sistemas.filter((p) => sistemaAbierto(o, p.id)).map((p) => p.id)));
   let u = !1;
   (a === "reaction"
     ? (l > (o.neuro.bestSpeedLevel || 0) && ((o.neuro.bestSpeedLevel = l), (u = !0)),
@@ -366,14 +368,14 @@ function Ps(e, a, l, n) {
         ? l > o.neuro.bestDualSec && ((o.neuro.bestDualSec = l), (u = !0))
         : a === "coord" && l > o.neuro.bestBpm && ((o.neuro.bestBpm = l), (u = !0)),
     (o.neuro.sessions = (o.neuro.sessions || 0) + 1));
-  let c = Math.round(G2 * Ka(o));
+  let c = Math.round(G2 * multImpulso(o));
   ((o.progress.currentXP += c),
     (o.today.xpEarned = (o.today.xpEarned || 0) + c),
     s.push(u ? `¡Nueva marca personal! +${c} XP.` : `Sesión neuromotora registrada. +${c} XP.`),
-    n && (o = Dl(o, "Neuromotor")),
-    (o = Ea(o, s)));
-  let r = da(o);
+    n && (o = anotarDia(o, "Neuromotor")),
+    (o = subirNiveles(o, s)));
+  let r = revisarLogros(o);
   return { state: r.state, notices: [...s, ...r.notices] };
 }
 
-export { H2, X2, Dy, Ty, Y2, fy, my, md, pd, bd, G2, Fs, Al, Ps };
+export { alarmas, reglaDolor, cuidadoArticular, Ty, Y2, fy, my, md, pd, bd, G2, Fs, Al, Ps };

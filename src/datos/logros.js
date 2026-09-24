@@ -1,14 +1,14 @@
 // Logros y su revision (da).
-import { ve } from "./rangos.js";
-import { pt } from "../logica/explorar.js";
-import { Oa } from "../logica/primal.js";
-import { Ay } from "../logica/tienda.js";
+import { rangos } from "./rangos.js";
+import { nodosExplorar } from "../logica/explorar.js";
+import { movimientosPrimal } from "../logica/primal.js";
+import { dominioInicial } from "../logica/tienda.js";
 import { Io, Ro, tu } from "../logica/atributos.js";
-import { El, Td, Wo } from "./guia.js";
-import { __fechaLocal, ue } from "../logica/rutina.js";
-import { M } from "../logica/partida.js";
+import { habilidades, Td, Wo } from "./guia.js";
+import { fechaLocal, fechaHoy } from "../logica/rutina.js";
+import { clonar } from "../logica/partida.js";
 
-var py = [
+var categoriasLogros = [
     "Rutina del Día",
     "Repeticiones",
     "Marcas personales",
@@ -22,7 +22,7 @@ var py = [
     "Persistencia",
     "Días que no querías",
   ],
-  Z2 = ["E", "D", "C", "B", "A", "S", "Z"],
+  ordenDificultad = ["E", "D", "C", "B", "A", "S", "Z"],
   sdcDific = {
     E: "FÁCIL",
     D: "ACCESIBLE",
@@ -32,7 +32,7 @@ var py = [
     S: "PARA POCOS",
     Z: "EXCEPCIONAL",
   },
-  Jo = [
+  logros = [
     {
       id: "e_first",
       tier: "E",
@@ -138,7 +138,7 @@ var py = [
       category: "Rutina del Día",
       name: "Primer Umbral",
       desc: "Cruzá tu primer umbral",
-      check: (e) => ve.indexOf(e.progress.rank) >= ve.indexOf("D"),
+      check: (e) => rangos.indexOf(e.progress.rank) >= rangos.indexOf("D"),
     },
     {
       id: "c_streak7",
@@ -220,7 +220,7 @@ var py = [
       category: "Rutina del Día",
       name: "Segundo Umbral",
       desc: "Cruzá tu segundo umbral",
-      check: (e) => ve.indexOf(e.progress.rank) >= ve.indexOf("C"),
+      check: (e) => rangos.indexOf(e.progress.rank) >= rangos.indexOf("C"),
     },
     {
       id: "b_streak14",
@@ -310,7 +310,7 @@ var py = [
       category: "Rutina del Día",
       name: "Tercer Umbral",
       desc: "Cruzá tu tercer umbral",
-      check: (e) => ve.indexOf(e.progress.rank) >= ve.indexOf("B"),
+      check: (e) => rangos.indexOf(e.progress.rank) >= rangos.indexOf("B"),
     },
     {
       id: "a_wstreak4",
@@ -352,7 +352,7 @@ var py = [
       category: "Rutina del Día",
       name: "Dominio Unilateral",
       desc: "Llegá al quinto rango",
-      check: (e) => ve.indexOf(e.progress.rank) >= ve.indexOf("A"),
+      check: (e) => rangos.indexOf(e.progress.rank) >= rangos.indexOf("A"),
     },
     {
       id: "a_combat40",
@@ -418,7 +418,7 @@ var py = [
       category: "Rutina del Día",
       name: "Élite Confirmada",
       desc: "Llegá al sexto rango",
-      check: (e) => ve.indexOf(e.progress.rank) >= ve.indexOf("S"),
+      check: (e) => rangos.indexOf(e.progress.rank) >= rangos.indexOf("S"),
     },
     {
       id: "s_combat100",
@@ -442,7 +442,7 @@ var py = [
       category: "Exploración",
       name: "Fin del Mapa",
       desc: "Descubrí todos los sectores conocidos",
-      check: (e) => e.exploration.unlockedIndex >= pt.length - 1,
+      check: (e) => e.exploration.unlockedIndex >= nodosExplorar.length - 1,
     },
     {
       id: "s_km200",
@@ -458,7 +458,7 @@ var py = [
       category: "Modo Primal",
       name: "Maestro Ancestral",
       desc: "Descubrí todos los movimientos Primal",
-      check: (e) => e.primal.unlockedCount >= Oa.length,
+      check: (e) => e.primal.unlockedCount >= movimientosPrimal.length,
     },
     {
       id: "s_primal200",
@@ -482,7 +482,7 @@ var py = [
       category: "Rutina del Día",
       name: "Trascendencia",
       desc: "Llegá al último rango",
-      check: (e) => ve.indexOf(e.progress.rank) >= ve.indexOf("Z"),
+      check: (e) => rangos.indexOf(e.progress.rank) >= rangos.indexOf("Z"),
     },
     {
       id: "z_pr_squat",
@@ -642,7 +642,7 @@ var py = [
       category: "Skills",
       name: "Primer Paso Técnico",
       desc: "Dominá el primer paso de cualquier skill",
-      check: (e) => El.some((a) => Td(e, a.id).some(Boolean)),
+      check: (e) => habilidades.some((a) => Td(e, a.id).some(Boolean)),
     },
     {
       id: "skill_1",
@@ -674,7 +674,7 @@ var py = [
       category: "Skills",
       name: "Maestro del Movimiento",
       desc: "Aprendé todas las skills",
-      check: (e) => Wo(e) >= El.length,
+      check: (e) => Wo(e) >= habilidades.length,
     },
     {
       id: "gym_10k",
@@ -1249,15 +1249,15 @@ function sdcAnimoCuenta(e) {
   }
   return r;
 }
-function da(e) {
-  let a = M(e),
+function revisarLogros(e) {
+  let a = clonar(e),
     l = [];
   a.achievements || (a.achievements = []);
-  a.dominion || (a.dominion = Ay());
+  a.dominion || (a.dominion = dominioInicial());
   let pd = { E: 1, D: 1, C: 2, B: 2, A: 3, S: 4, Z: 5 },
     sdcN = 0,
     sdcPd = 0;
-  for (let n of Jo)
+  for (let n of logros)
     if (!a.achievements.includes(n.id) && n.check(a)) {
       a.achievements.push(n.id);
       let g = pd[n.tier] || 1;
@@ -1274,8 +1274,8 @@ function da(e) {
     { state: a, notices: l }
   );
 }
-function K2(e) {
-  let a = ue(),
+function cargaDelDia(e) {
+  let a = fechaHoy(),
     l = 0;
   return (
     e.today.date === a &&
@@ -1290,15 +1290,15 @@ function K2(e) {
     l
   );
 }
-function V2(e) {
+function nivelCarga(e) {
   return e >= 8 ? "Muy Alto" : e >= 5 ? "Alto" : e >= 3 ? "Moderado" : "Ligero";
 }
-function ni(e) {
-  let a = M(e),
+function avisoCarga(e) {
+  let a = clonar(e),
     l = [],
-    n = ue();
+    n = fechaHoy();
   return (
-    V2(K2(a)) === "Muy Alto" &&
+    nivelCarga(cargaDelDia(a)) === "Muy Alto" &&
       a.loadWarnedDate !== n &&
       ((a.loadWarnedDate = n),
       l.push(
@@ -1307,13 +1307,25 @@ function ni(e) {
     { state: a, notices: l }
   );
 }
-function Q2(e, a) {
+function ultimos60Dias(e, a) {
   let l = new Date(a + "T00:00:00");
   l.setDate(l.getDate() - 60);
-  let n = __fechaLocal(l),
+  let n = fechaLocal(l),
     o = {};
   for (let s of Object.keys(e || {})) s >= n && (o[s] = e[s]);
   return o;
 }
 
-export { py, Z2, sdcDific, Jo, sdcAnimo, sdcAnimoCuenta, da, K2, V2, ni, Q2 };
+export {
+  categoriasLogros,
+  ordenDificultad,
+  sdcDific,
+  logros,
+  sdcAnimo,
+  sdcAnimoCuenta,
+  revisarLogros,
+  cargaDelDia,
+  nivelCarga,
+  avisoCarga,
+  ultimos60Dias,
+};

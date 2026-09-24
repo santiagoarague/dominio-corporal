@@ -1,7 +1,7 @@
 // Calendario de Constancia.
 import { i } from "../react.js";
 import { zd } from "./iconos.js";
-import { __fechaLocal } from "../logica/rutina.js";
+import { fechaLocal } from "../logica/rutina.js";
 import { sdcAnimoFrase } from "./animo.js";
 
 function h5({ items: e }) {
@@ -37,13 +37,13 @@ var bt = {
   pending: "#2a3148",
   empty: "#161b2e",
 };
-function x5(e, a, l, n) {
+function diasConstancia(e, a, l, n) {
   let o = [],
     s = new Date(a + "T00:00:00");
   for (let u = n - 1; u >= 0; u--) {
     let c = new Date(s);
     c.setDate(c.getDate() - u);
-    let r = __fechaLocal(c),
+    let r = fechaLocal(c),
       p = (e || {})[r];
     (!p && r === a && (p = l), o.push({ date: r, status: p || "empty" }));
   }
@@ -218,4 +218,4 @@ function C5({ date: e, status: a, log: l, onClose: n, onLog: sol, animo: an }) {
   );
 }
 
-export { h5, bt, x5, S5, N5, C5 };
+export { h5, bt, diasConstancia, S5, N5, C5 };

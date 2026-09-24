@@ -1,9 +1,9 @@
 // Explorar (km y terrenos) y las travesias del dia.
-import { ay } from "../datos/rangos.js";
+import { escalaCaminante } from "../datos/rangos.js";
 
 function l2(e) {
-  let a = ay[0];
-  for (let l of ay) e >= l.minKm && (a = l);
+  let a = escalaCaminante[0];
+  for (let l of escalaCaminante) e >= l.minKm && (a = l);
   return a;
 }
 var n2 = 8,
@@ -11,7 +11,7 @@ var n2 = 8,
 function o2(e) {
   return 1 + (e.exploration.relics || []).length * Ny;
 }
-var Po = [
+var sectores = [
   { name: "La Manzana", endKm: 10 },
   { name: "El Barrio", endKm: 25 },
   { name: "Los Bordes", endKm: 50 },
@@ -21,13 +21,13 @@ var Po = [
   { name: "Tu Propio Mapa", endKm: 400 },
 ];
 function i2(e) {
-  return e === 0 ? 0 : Po[e - 1].endKm;
+  return e === 0 ? 0 : sectores[e - 1].endKm;
 }
 function s2(e) {
-  for (let a = 0; a < Po.length; a++) if (e < Po[a].endKm) return a;
-  return Po.length - 1;
+  for (let a = 0; a < sectores.length; a++) if (e < sectores[a].endKm) return a;
+  return sectores.length - 1;
 }
-var pt = [
+var nodosExplorar = [
     {
       km: 1,
       sector: 0,
@@ -259,11 +259,11 @@ var sdcPortales = [
   { n: "El Ancla", c: "20 minutos de planchas y sostenes alternados", on: 45, off: 30 },
   { n: "La Ráfaga", c: "20 minutos de sprints cortos con pausa", on: 20, off: 40 },
 ];
-function ai(e) {
+function travesiaDelDia(e) {
   if (Math.random() > u2)
     return { available: !1, completed: !1, name: null, challengeText: null, rewardXP: null };
   let p = sdcPortales[Math.floor(Math.random() * sdcPortales.length)];
   return { available: !0, completed: !1, name: p.n, challengeText: p.c, rewardXP: Ed[e] };
 }
 
-export { l2, n2, Ny, o2, Po, i2, s2, pt, u2, Ed, sdcPortales, ai };
+export { l2, n2, Ny, o2, sectores, i2, s2, nodosExplorar, u2, Ed, sdcPortales, travesiaDelDia };

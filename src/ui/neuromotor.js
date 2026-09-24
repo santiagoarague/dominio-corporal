@@ -1,7 +1,7 @@
 // Ejercicios neuromotores.
 import { i } from "../react.js";
 import { Fs, bd, fy, md, my, pd } from "../datos/salud.js";
-import { Ie } from "./prueba.js";
+import { pitido } from "./prueba.js";
 
 var kd = [
     { id: "lento", name: "Lento", min: 3500, max: 7e3, level: 1 },
@@ -22,7 +22,7 @@ function M5({ onDone: e }) {
         (r(0), u(null), l("gap"));
         return;
       }
-      p <= 3 && Ie(520, 110);
+      p <= 3 && pitido(520, 110);
       let x = setTimeout(() => v((y) => y - 1), 1e3);
       return () => clearTimeout(x);
     }, [a, p]),
@@ -30,7 +30,7 @@ function M5({ onDone: e }) {
       if (a !== "gap") return;
       let x = n.min + Math.random() * (n.max - n.min),
         y = setTimeout(() => {
-          (u(fy[Math.floor(Math.random() * fy.length)]), Ie(900, 130), l("signal"));
+          (u(fy[Math.floor(Math.random() * fy.length)]), pitido(900, 130), l("signal"));
         }, x);
       return () => clearTimeout(y);
     }, [a, c]),
@@ -38,7 +38,7 @@ function M5({ onDone: e }) {
       if (a !== "signal") return;
       let x = setTimeout(() => {
         let y = c + 1;
-        (r(y), u(null), y >= eu ? (Ie(1100, 250), l("done"), e(n.level)) : l("gap"));
+        (r(y), u(null), y >= eu ? (pitido(1100, 250), l("done"), e(n.level)) : l("gap"));
       }, 2200);
       return () => clearTimeout(x);
     }, [a]),
@@ -211,7 +211,7 @@ function _5({ onDone: e }) {
       let y = setTimeout(() => l("execute"), 700);
       return () => clearTimeout(y);
     }
-    Ie(600, 80);
+    pitido(600, 80);
     let x = setTimeout(() => u((y) => y + 1), 950);
     return () => clearTimeout(x);
   }, [a, s, n.length]);
@@ -495,7 +495,7 @@ function O5({ onDone: e }) {
       if (a !== "run") return;
       let y = 6e4 / x,
         S = setInterval(() => {
-          (v((E) => !E), Ie(700, 60));
+          (v((E) => !E), pitido(700, 60));
         }, y);
       return () => clearInterval(S);
     }, [a, x]),

@@ -2,10 +2,10 @@
 import { i } from "../react.js";
 import { zd } from "./iconos.js";
 import { ry } from "../logica/atributos.js";
-import { kl } from "../logica/rutina.js";
+import { nombreEjercicio } from "../logica/rutina.js";
 import { qa } from "./base.js";
 
-function Rs(e) {
+function colorProgreso(e) {
   let a = [42, 49, 72],
     l = [255, 107, 74],
     n = Math.max(0, Math.min(1, e || 0)),
@@ -14,7 +14,7 @@ function Rs(e) {
     u = Math.round(a[2] + (l[2] - a[2]) * n);
   return `rgb(${o},${s},${u})`;
 }
-var Fo = {
+var gruposCuerpo = {
   pushup: { label: "Pecho y hombros", muscles: "Pectoral, deltoides, tríceps" },
   back: { label: "Espalda", muscles: "Dorsal ancho, trapecio, bíceps" },
   squat: { label: "Piernas y glúteos", muscles: "Cuádriceps, isquios, glúteo" },
@@ -129,7 +129,7 @@ function v5({
   modality: r,
   onClose: p,
 }) {
-  let v = Fo[e],
+  let v = gruposCuerpo[e],
     x = Bd(n),
     y = y5(n),
     S = wd(u, c);
@@ -169,7 +169,7 @@ function v5({
       "div",
       { className: "text-xs mb-1", style: { color: "#e8ecf7" } },
       "Ejercicio: ",
-      kl(a, l, e, r),
+      nombreEjercicio(a, l, e, r),
     ),
     i.default.createElement(
       "div",
@@ -212,4 +212,4 @@ function v5({
   );
 }
 
-export { Rs, Fo, Bd, y5, wd, g5, v5 };
+export { colorProgreso, gruposCuerpo, Bd, y5, wd, g5, v5 };

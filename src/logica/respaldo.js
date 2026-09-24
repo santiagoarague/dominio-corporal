@@ -1,11 +1,11 @@
 // Recordatorio de respaldo.
-import { ue } from "./rutina.js";
+import { fechaHoy } from "./rutina.js";
 
 function sdcRespDias(k) {
   try {
     var v = localStorage.getItem(k);
     if (!v) return null;
-    var d = Math.round((Date.parse(ue()) - Date.parse(v)) / 864e5);
+    var d = Math.round((Date.parse(fechaHoy()) - Date.parse(v)) / 864e5);
     return isFinite(d) ? d : null;
   } catch (x) {
     return null;
@@ -13,13 +13,13 @@ function sdcRespDias(k) {
 }
 function sdcRespaldoOk() {
   try {
-    (localStorage.setItem("dominio-corporal:ultimoRespaldo", ue()),
+    (localStorage.setItem("dominio-corporal:ultimoRespaldo", fechaHoy()),
       localStorage.removeItem("dominio-corporal:respaldoPospuesto"));
   } catch (x) {}
 }
 function sdcRespaldoPosponer() {
   try {
-    localStorage.setItem("dominio-corporal:respaldoPospuesto", ue());
+    localStorage.setItem("dominio-corporal:respaldoPospuesto", fechaHoy());
   } catch (x) {}
 }
 function sdcAvisaRespaldo(e) {

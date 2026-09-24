@@ -1,9 +1,9 @@
 // Como llegas: chequeo de animo.
 import { i } from "../react.js";
-import { X2 } from "../datos/salud.js";
-import { ye } from "../logica/sistemas.js";
-import { da, sdcAnimo, sdcAnimoCuenta } from "../datos/logros.js";
-import { M } from "../logica/partida.js";
+import { reglaDolor } from "../datos/salud.js";
+import { sistemaActivo } from "../logica/sistemas.js";
+import { revisarLogros, sdcAnimo, sdcAnimoCuenta } from "../datos/logros.js";
+import { clonar } from "../logica/partida.js";
 import { sdcBeep, sdcVib } from "../logica/series.js";
 import { sdcCalorIni } from "./calentamiento.js";
 
@@ -50,7 +50,7 @@ function sdcAnimoHoy(e) {
   return e && e.today ? sdcAnimo(e)[e.today.date] || {} : {};
 }
 function sdcAnimoOn(e) {
-  return ye(e, "animo");
+  return sistemaActivo(e, "animo");
 }
 function sdcAnimoOtra(f) {
   return i.default.createElement(
@@ -77,7 +77,7 @@ function sdcAnimoFrase(n) {
   return x ? x.f : "";
 }
 function sdcAnimoPut(e, cp) {
-  var a = M(e),
+  var a = clonar(e),
     d = a.today.date,
     m = {},
     k,
@@ -100,7 +100,7 @@ function sdcAnimoSet(e, cp) {
   return { state: sdcAnimoPut(e, cp), notices: [] };
 }
 function sdcAnimoSetDa(e, cp) {
-  var o = da(sdcAnimoPut(e, cp));
+  var o = revisarLogros(sdcAnimoPut(e, cp));
   return { state: o.state, notices: o.notices };
 }
 function sdcAnimoCalor(e, B) {
@@ -112,7 +112,7 @@ function sdcAnimoCalor(e, B) {
   return r;
 }
 function sdcAbrirCard(e, id) {
-  var a = M(e);
+  var a = clonar(e);
   a.ui = a.ui || { collapsed: {} };
   a.ui.collapsed = a.ui.collapsed || {};
   a.ui.collapsed[id] = !1;
@@ -333,7 +333,7 @@ function sdcAnimoAntes({ st: e, Ne: Ne, mod: B, onModo: om, descLibre: dl, onDes
         "div",
         { className: "mb-3", style: sdcAnimoTx },
         "Si es un dolor agudo o punzante, no entrenes esa zona hoy. ",
-        X2,
+        reglaDolor,
       ),
       dl
         ? cf

@@ -30,7 +30,7 @@ export function soltarFecha() {
 }
 
 export function jugadorNuevo(perfil = {}) {
-  return J.n5({ ...PERFIL_SALTAR, ...perfil });
+  return J.crearPartida({ ...PERFIL_SALTAR, ...perfil });
 }
 
 // Un jugador en un rango y nivel concretos, con el dia ya en ese rango.
@@ -41,7 +41,7 @@ export function jugadorEn(rango, nivel = 1, perfil = {}) {
 }
 
 export function meta(e) {
-  return J.Oy(e);
+  return J.metaDelDia(e);
 }
 
 export function suma(r) {
@@ -50,7 +50,7 @@ export function suma(r) {
 
 // Lo que hace pg(): i5 con las reps hechas, sin reclamar el modificador.
 export function registrar(e, reps = meta(e), { modo = "normal", modificador = false } = {}) {
-  return J.i5(e, modo, reps, modificador, null);
+  return J.registrarRutina(e, modo, reps, modificador, null);
 }
 
 // Una fraccion de la meta, grupo por grupo.
@@ -63,7 +63,7 @@ export function parte(e, f) {
 
 // Lo que hace mmNueva(): abre otra sesion del dia con otra modalidad.
 export function nuevaSesion(e, modalidad) {
-  const m = J.M(e);
+  const m = J.clonar(e);
   m.today.modality = modalidad;
   m.today.completed = false;
   m.today.mode = "pending";

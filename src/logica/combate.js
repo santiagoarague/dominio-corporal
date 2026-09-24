@@ -1,8 +1,8 @@
 // Combate: terrenos, rondas y golpes.
-import { Ka } from "./tienda.js";
-import { da, ni } from "../datos/logros.js";
-import { Dl, jd, kl, ue } from "./rutina.js";
-import { Ea, M } from "./partida.js";
+import { multImpulso } from "./tienda.js";
+import { revisarLogros, avisoCarga } from "../datos/logros.js";
+import { anotarDia, volumen, nombreEjercicio, fechaHoy } from "./rutina.js";
+import { subirNiveles, clonar } from "./partida.js";
 
 var ty = ["Zona Dormida", "Tramo Rígido", "Lado Corto"],
   ly = ["Bisagra Trabada", "Eslabón Flojo"],
@@ -34,7 +34,7 @@ function za(e) {
 function $o(e) {
   return ["upper_front", "upper_back", "lower"].filter((n) => n !== e).slice(0, 2);
 }
-function ti(e) {
+function golpesNecesarios(e) {
   return e.isBoss
     ? Math.min(8, 4 + Math.floor(e.index / 10))
     : Math.min(5, 2 + Math.floor(e.index / 6));
@@ -43,19 +43,19 @@ function f2(e) {
   let a = c2 + e.index * 3;
   return e.isBoss ? Math.round(a * r2) : a;
 }
-function hd(e, a, l, n, o, tr) {
+function repsCombate(e, a, l, n, o, tr) {
   let s = Cy[l];
-  return jd(e, a, n, o, tr)[s];
+  return volumen(e, a, n, o, tr)[s];
 }
 function sy(e, a, l, n) {
   let o = Cy[l];
-  return kl(e, a, o, n);
+  return nombreEjercicio(e, a, o, n);
 }
 function m2(e) {
   return e * 3 + 15;
 }
-function uy(e, a, l, n, o, tr) {
-  return Math.max(3, Math.round(hd(e, a, n, l, o, tr) * 0.8));
+function repsCombateSuave(e, a, l, n, o, tr) {
+  return Math.max(3, Math.round(repsCombate(e, a, n, l, o, tr) * 0.8));
 }
 function p2() {
   return 150;
@@ -70,20 +70,20 @@ function Ad() {
     phase: "choosing",
     villainsDefeated: 0,
     roundId: 0,
-    todayDefeated: { date: ue(), count: 0 },
+    todayDefeated: { date: fechaHoy(), count: 0 },
     loadFactor: 1,
     damageFactor: 1,
     bossCats: null,
   };
 }
 function b2(e, a) {
-  let l = M(e),
+  let l = clonar(e),
     n = l.combat;
   if (a === n.lastExercise) return { state: l, notices: [] };
   let o = za(n.villainIndex);
   return (
     (n.exercise = a),
-    (n.villainCurrentHP = ti(o)),
+    (n.villainCurrentHP = golpesNecesarios(o)),
     (n.lives = 3),
     (n.loadFactor = 1),
     (n.damageFactor = 1),
@@ -93,7 +93,7 @@ function b2(e, a) {
   );
 }
 function y2(e) {
-  let a = M(e);
+  let a = clonar(e);
   return (
     (a.combat.phase = "resting"),
     (a.combat.roundId = (a.combat.roundId || 0) + 1),
@@ -101,7 +101,7 @@ function y2(e) {
   );
 }
 function g2(e) {
-  let a = M(e),
+  let a = clonar(e),
     l = a.combat;
   return (
     (l.loadFactor = Math.max(0.4, (l.loadFactor || 1) * 0.8)),
@@ -117,11 +117,11 @@ function g2(e) {
   );
 }
 function v2(e, a) {
-  let l = M(e),
+  let l = clonar(e),
     n = l.combat,
     o = za(n.villainIndex);
   if (a === n.lastExercise || a === n.exercise) return { state: l, notices: [] };
-  let s = ti(o),
+  let s = golpesNecesarios(o),
     u = s * 0.15;
   return (
     (n.villainCurrentHP = Math.min(s, n.villainCurrentHP + u)),
@@ -134,13 +134,13 @@ function v2(e, a) {
   );
 }
 function h2(e) {
-  let a = M(e),
+  let a = clonar(e),
     l = [],
     n = a.combat,
     o = za(n.villainIndex);
   if (((n.villainCurrentHP -= n.damageFactor || 1), n.villainCurrentHP <= 0.001)) {
     ((n.phase = "victory"), (n.villainsDefeated = (n.villainsDefeated || 0) + 1));
-    let r = ue();
+    let r = fechaHoy();
     if (
       ((!n.todayDefeated || n.todayDefeated.date !== r) &&
         (n.todayDefeated = { date: r, count: 0 }),
@@ -148,23 +148,23 @@ function h2(e) {
       n.todayDefeated.count <= d2)
     ) {
       let p = f2(o);
-      ((a.progress.currentXP += Math.round((a.streak.flexBuff ? p * 1.1 : p) * Ka(a))),
+      ((a.progress.currentXP += Math.round((a.streak.flexBuff ? p * 1.1 : p) * multImpulso(a))),
         (a.today.xpEarned = (a.today.xpEarned || 0) + p),
         l.push(`¡Recuperaste ${o.name}! +${p} XP.`),
-        (a = Dl(a, "Combate")));
+        (a = anotarDia(a, "Combate")));
     } else
       l.push(
         `¡Recuperaste ${o.name}! Ya ganaste tu XP máxima de combate hoy, pero la victoria sigue contando para tu progreso.`,
       );
-    a = Ea(a, l);
+    a = subirNiveles(a, l);
   } else ((n.phase = "resting"), (n.roundId = (n.roundId || 0) + 1));
-  let s = da(a),
+  let s = revisarLogros(a),
     u = { state: s.state, notices: [...l, ...s.notices] },
-    c = ni(u.state);
+    c = avisoCarga(u.state);
   return { state: c.state, notices: [...u.notices, ...c.notices] };
 }
-function x2(e) {
-  let a = M(e),
+function perderVida(e) {
+  let a = clonar(e),
     l = a.combat;
   return (
     (l.lives -= 1),
@@ -173,7 +173,7 @@ function x2(e) {
   );
 }
 function S2(e) {
-  let a = M(e),
+  let a = clonar(e),
     l = a.combat,
     n = za(l.villainIndex);
   ((l.lastExercise = n.isBoss ? null : l.exercise),
@@ -186,7 +186,7 @@ function S2(e) {
   return (
     o.isBoss
       ? ((l.bossCats = $o(l.lastExercise)),
-        (l.villainCurrentHP = ti(o)),
+        (l.villainCurrentHP = golpesNecesarios(o)),
         (l.lives = 3),
         (l.phase = "resting"),
         (l.roundId = (l.roundId || 0) + 1))
@@ -195,7 +195,7 @@ function S2(e) {
   );
 }
 function N2(e) {
-  let a = M(e);
+  let a = clonar(e);
   return (
     (a.combat.phase = "resting"),
     (a.combat.roundId = (a.combat.roundId || 0) + 1),
@@ -220,12 +220,12 @@ export {
   d2,
   za,
   $o,
-  ti,
+  golpesNecesarios,
   f2,
-  hd,
+  repsCombate,
   sy,
   m2,
-  uy,
+  repsCombateSuave,
   p2,
   Ad,
   b2,
@@ -233,7 +233,7 @@ export {
   g2,
   v2,
   h2,
-  x2,
+  perderVida,
   S2,
   N2,
   dd,

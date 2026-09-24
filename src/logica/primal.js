@@ -1,14 +1,14 @@
 // Instinto Primal y utilidades que lo rodean (Dd es el hash del dia).
-import { Ka, Sd } from "./tienda.js";
-import { da, ni } from "../datos/logros.js";
-import { Dl, ue } from "./rutina.js";
-import { Ea, M } from "./partida.js";
+import { multImpulso, sesionesPrimalHoy } from "./tienda.js";
+import { revisarLogros, avisoCarga } from "../datos/logros.js";
+import { anotarDia, fechaHoy } from "./rutina.js";
+import { subirNiveles, clonar } from "./partida.js";
 
 var cy = 15,
   k2 = 5,
   xd = 2,
   z2 = 20,
-  Oa = [
+  movimientosPrimal = [
     {
       name: "Oso",
       desc: "Camina en 4 apoyos con las rodillas cerca del suelo sin tocarlo, alternando brazo y pierna opuesta.",
@@ -107,41 +107,45 @@ var cy = 15,
     },
   ];
 function ky() {
-  return { unlockedCount: 1, masteryProgress: 0, today: { date: ue(), count: 0 } };
+  return { unlockedCount: 1, masteryProgress: 0, today: { date: fechaHoy(), count: 0 } };
 }
 function E2(e, a) {
-  let l = M(e),
+  let l = clonar(e),
     n = [],
-    o = ue();
+    o = fechaHoy();
   if (
     (l.primal.today.date !== o && (l.primal.today = { date: o, count: 0 }),
-    l.primal.today.count >= Sd(l))
+    l.primal.today.count >= sesionesPrimalHoy(l))
   )
     return {
       state: l,
-      notices: [`Ya alcanzaste tu máximo de ${Sd(l)} movimientos hoy en Instinto Primal.`],
+      notices: [
+        `Ya alcanzaste tu máximo de ${sesionesPrimalHoy(l)} movimientos hoy en Instinto Primal.`,
+      ],
     };
   ((l.primal.today.count += 1),
     (l.lifetimePrimal = (l.lifetimePrimal || 0) + 1),
     (l.week.primal = (l.week.primal || 0) + 1),
-    (l = Dl(l, "Instinto Primal")));
+    (l = anotarDia(l, "Instinto Primal")));
   let s = z2;
   (l.streak.flexBuff && (s = Math.round(s * 1.1)),
-    (s = Math.round(s * Ka(l))),
+    (s = Math.round(s * multImpulso(l))),
     (l.progress.currentXP += s),
     (l.today.xpEarned = (l.today.xpEarned || 0) + s),
-    n.push(`+${s} XP por practicar ${Oa[a].name}.`),
+    n.push(`+${s} XP por practicar ${movimientosPrimal[a].name}.`),
     a === l.primal.unlockedCount - 1 &&
       ((l.primal.masteryProgress += 1),
       l.primal.masteryProgress >= xd &&
-        l.primal.unlockedCount < Oa.length &&
+        l.primal.unlockedCount < movimientosPrimal.length &&
         ((l.primal.unlockedCount += 1),
         (l.primal.masteryProgress = 0),
-        n.push(`¡Nuevo movimiento descubierto! ${Oa[l.primal.unlockedCount - 1].name}`))),
-    (l = Ea(l, n)));
-  let u = da(l),
+        n.push(
+          `¡Nuevo movimiento descubierto! ${movimientosPrimal[l.primal.unlockedCount - 1].name}`,
+        ))),
+    (l = subirNiveles(l, n)));
+  let u = revisarLogros(l),
     c = { state: u.state, notices: [...n, ...u.notices] },
-    r = ni(c.state);
+    r = avisoCarga(c.state);
   return { state: r.state, notices: [...c.notices, ...r.notices] };
 }
 var ou = [
@@ -161,7 +165,7 @@ var ou = [
     "Antes de aumentar la dificultad, asegurate de dominar la técnica actual.",
     "Un buen calzado y una superficie estable evitan muchas lesiones innecesarias.",
   ],
-  Js = {
+  regresiones = {
     squat:
       "Si la sentadilla completa es muy exigente, apóyate en una silla o pared, o reduce la profundidad. La forma correcta importa más que el rango completo.",
     pushup:
@@ -169,13 +173,13 @@ var ou = [
     back: "Si te cuesta mantener la posición, reduce cuánto elevas el pecho y las piernas, o sostén por menos tiempo. La técnica limpia vale más que la altura.",
     abs: "Si sientes tensión en el cuello, cruza los brazos sobre el pecho en vez de apoyar las manos detrás de la cabeza.",
   };
-function Dd(e, a) {
+function hashDia(e, a) {
   let l = 0;
   for (let n = 0; n < e.length; n++) l = (l * 31 + e.charCodeAt(n)) >>> 0;
   return l % a;
 }
 function A2(e) {
-  return ou[Dd(e, ou.length)];
+  return ou[hashDia(e, ou.length)];
 }
 var D2 = [
     '{name} te espera en la puerta: "Un día no define tu camino. ¿Volvemos hoy?"',
@@ -187,7 +191,7 @@ var D2 = [
     '{name} asiente: "Hoy fue un día difícil, y está bien. Lo que importa es que apareciste."',
   ];
 function zy(e, a, l) {
-  return e[Dd(a, e.length)].replace("{name}", l || "Tu compañero");
+  return e[hashDia(a, e.length)].replace("{name}", l || "Tu compañero");
 }
 
-export { cy, k2, xd, z2, Oa, ky, E2, ou, Js, Dd, A2, D2, T2, zy };
+export { cy, k2, xd, z2, movimientosPrimal, ky, E2, ou, regresiones, hashDia, A2, D2, T2, zy };

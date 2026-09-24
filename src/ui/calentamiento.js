@@ -1,12 +1,12 @@
 // Calentamiento y los pasos guiados que comparte con el estiramiento.
 import { i } from "../react.js";
 import { Mn, Ph } from "./iconos.js";
-import { Js } from "../logica/primal.js";
-import { Ka } from "../logica/tienda.js";
+import { regresiones } from "../logica/primal.js";
+import { multImpulso } from "../logica/tienda.js";
 import { sdcEstMMSS, sdcEstPaso, sdcEstPrep, sdcEstTotal } from "../logica/estiramiento.js";
-import { da } from "../datos/logros.js";
-import { $s, _d } from "../logica/rutina.js";
-import { Ea, M } from "../logica/partida.js";
+import { revisarLogros } from "../datos/logros.js";
+import { alternativaEjercicio, ejercicioDe } from "../logica/rutina.js";
+import { subirNiveles, clonar } from "../logica/partida.js";
 import { qa } from "./base.js";
 import { sdcIncKg, sdcKgTxt, sdcSugKg } from "../logica/extras.js";
 import { sdcBeep, sdcNSets, sdcSegs, sdcSplit, sdcVib } from "../logica/series.js";
@@ -149,7 +149,7 @@ function sdcCalorLista(mod, rk) {
   for (k = 0; k < gs.length; k++) {
     g = gs[k];
     op = (mod === "flow" && sdcCalorActF[g]) || sdcCalorAct[g];
-    nm = (_d(g, rk, mod) || {}).name || "";
+    nm = (ejercicioDe(g, rk, mod) || {}).name || "";
     a = op[0];
     for (j = 0; j < op.length; j++)
       if (!op[j].ev || !op[j].ev.test(nm)) {
@@ -178,10 +178,10 @@ function sdcCalorEnsayo(e, mod, mt) {
     g = gs[k];
     t = Math.max(0, Math.round((mt && mt[g]) || 0));
     if (!t) continue;
-    x = _d(g, rk, mod) || {};
+    x = ejercicioDe(g, rk, mod) || {};
     if (!x.name) continue;
     pr = sdcSplit(t, sdcNSets(t))[0] || t;
-    sg = sdcSegs($s(rk, g, mod) || Js[g]);
+    sg = sdcSegs(alternativaEjercicio(rk, g, mod) || regresiones[g]);
     if (sg > 0) {
       n = Math.max(5, Math.min(15, Math.round((pr * sg) / 15) * 5));
       tx = n + " segundos, " + (mod === "gym" ? "sin carga extra" : "sin llegar al temblor");
@@ -413,7 +413,7 @@ function sdcCalorT(c) {
   return Math.max(0, Math.floor(((c.pz || Date.now()) - c.ini) / 1e3));
 }
 function sdcCalorIni(e, mod) {
-  var a = M(e),
+  var a = clonar(e),
     c = sdcCalor(a);
   a.today.calentamiento = {
     mod: mod,
@@ -427,43 +427,43 @@ function sdcCalorIni(e, mod) {
   return { state: a, notices: [] };
 }
 function sdcCalorPrep(e, s) {
-  var a = M(e),
+  var a = clonar(e),
     c = a.today.calentamiento;
   c && c.ini && !c.pz && (c.ini -= s * 1e3);
   return { state: a, notices: [] };
 }
 function sdcCalorPausa(e) {
-  var a = M(e),
+  var a = clonar(e),
     c = a.today.calentamiento;
   c && c.ini && !c.pz && (c.pz = Date.now());
   return { state: a, notices: [] };
 }
 function sdcCalorSeguir(e) {
-  var a = M(e),
+  var a = clonar(e),
     c = a.today.calentamiento;
   c && c.ini && c.pz && ((c.ini += Date.now() - c.pz), (c.pz = 0));
   return { state: a, notices: [] };
 }
 function sdcCalorEspera(e, w) {
-  var a = M(e),
+  var a = clonar(e),
     c = a.today.calentamiento;
   c && c.ini && !c.pz && (c.pz = w);
   return { state: a, notices: [] };
 }
 function sdcCalorListo(e, k, d0) {
-  var a = M(e),
+  var a = clonar(e),
     c = a.today.calentamiento;
   c && c.ini && ((c.ini = Date.now() - d0 * 1e3), (c.pz = 0), (c.ok = k));
   return { state: a, notices: [] };
 }
 function sdcCalorPot(e) {
-  var a = M(e),
+  var a = clonar(e),
     c = a.today.calentamiento;
   c && c.ini && (c.pot = (c.pot || 0) + 1);
   return { state: a, notices: [] };
 }
 function sdcCalorFin(e, hh, tt, ls) {
-  var a = M(e),
+  var a = clonar(e),
     c = sdcCalor(a),
     l = [],
     fr,
@@ -491,7 +491,7 @@ function sdcCalorFin(e, hh, tt, ls) {
   a.today.calentamiento.xp = !0;
   n = Math.round(10 * fr);
   a.streak.flexBuff && (n = Math.round(n * 1.1));
-  n = Math.round(n * Ka(a));
+  n = Math.round(n * multImpulso(a));
   a.progress.currentXP += n;
   a.today.xpEarned = (a.today.xpEarned || 0) + n;
   l.push(
@@ -499,8 +499,8 @@ function sdcCalorFin(e, hh, tt, ls) {
       ? "+" + n + " XP por calentar. Ahora sí, la rutina."
       : "+" + n + " XP por lo que alcanzaste a calentar.",
   );
-  a = Ea(a, l);
-  o = da(a);
+  a = subirNiveles(a, l);
+  o = revisarLogros(a);
   return { state: o.state, notices: l.concat(o.notices) };
 }
 function sdcCalorDer(e, mod, mt) {

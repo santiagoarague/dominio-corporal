@@ -1,8 +1,8 @@
 // Primeras veces, titulos, racha, marcas de series, gimnasio y avisos.
-import { sdcDescs, sdcTitulos, zl } from "../datos/rangos.js";
-import { J2 } from "../datos/ejercicios.js";
-import { Md, __fechaLocal, _d, ue, vy } from "./rutina.js";
-import { M, s5 } from "./partida.js";
+import { sdcDescs, sdcTitulos, nombresRango } from "../datos/rangos.js";
+import { descRango } from "../datos/ejercicios.js";
+import { modalidadDelDia, fechaLocal, ejercicioDe, fechaHoy, bandasCalibre } from "./rutina.js";
+import { clonar, deshacerRegistroBase } from "./partida.js";
 
 function sdcPodia(e) {
   return (e && e.podia) || {};
@@ -15,7 +15,7 @@ function sdcPrimeras(e) {
 }
 function sdcPrimeraAdd(e, tx, og) {
   var l = sdcPrimeras(e).slice();
-  l.unshift({ fecha: ue(), texto: tx, origen: og });
+  l.unshift({ fecha: fechaHoy(), texto: tx, origen: og });
   if (l.length > 120) l.length = 120;
   e.primeras = l;
   return e;
@@ -24,7 +24,7 @@ function sdcPrimerasHook(r, rp) {
   if (!r || !r.state) return r;
   var e = r.state,
     gs = ["squat", "pushup", "back", "abs"],
-    md = Md(e.profile, e.today.date, e.today.modality),
+    md = modalidadDelDia(e.profile, e.today.date, e.today.modality),
     src = sdcPodia(e),
     pd = {},
     k;
@@ -37,7 +37,7 @@ function sdcPrimerasHook(r, rp) {
   for (var q = 0; q < gs.length; q++) {
     var g = gs[q];
     if (!rp || !(rp[g] > 0)) continue;
-    var ex = _d(g, e.progress.rank, md);
+    var ex = ejercicioDe(g, e.progress.rank, md);
     if (!ex || !ex.name) continue;
     vs[ex.name] || ((vs[ex.name] = !0), (hv = !0));
     if (pd[ex.name] !== !1) continue;
@@ -60,11 +60,11 @@ function sdcJuego(p) {
 }
 function sdcRango(r, p) {
   var t = sdcTitulos[sdcJuego(p)];
-  return (t && t[r]) || zl[r] || String(r);
+  return (t && t[r]) || nombresRango[r] || String(r);
 }
 function sdcDescRango(r, p) {
   var t = sdcDescs[sdcJuego(p)];
-  return (t && t[r]) || J2[r] || "";
+  return (t && t[r]) || descRango[r] || "";
 }
 var sdcCalTit = {
     bodyweight: [
@@ -120,22 +120,22 @@ var sdcCalTit = {
   };
 function sdcCalT(i, p) {
   var t = sdcCalTit[sdcJuego(p)];
-  return (t && t[i]) || (vy[i] && vy[i].label) || "";
+  return (t && t[i]) || (bandasCalibre[i] && bandasCalibre[i].label) || "";
 }
 function sdcCalF(i, p) {
   var t = sdcCalFoco[sdcJuego(p)];
-  return (t && t[i]) || (vy[i] && vy[i].focus) || "";
+  return (t && t[i]) || (bandasCalibre[i] && bandasCalibre[i].focus) || "";
 }
 function sdcRachaCalc(e) {
   var h = (e && e.history) || {},
-    hoy = ue(),
+    hoy = fechaHoy(),
     d = new Date(hoy + "T00:00:00"),
     n = 0,
     k,
     f,
     s;
   for (k = 0; k < 400; k++) {
-    f = __fechaLocal(d);
+    f = fechaLocal(d);
     s = h[f];
     if (f === hoy && !s) {
       d.setDate(d.getDate() - 1);
@@ -148,9 +148,9 @@ function sdcRachaCalc(e) {
   return n;
 }
 function sdcDiaPasado(e, f) {
-  var a = M(e),
+  var a = clonar(e),
     l = [],
-    hoy = ue();
+    hoy = fechaHoy();
   if (!f || f >= hoy) return { state: a, notices: l };
   var s = a.history[f];
   if (s && s !== "skipped" && s !== "missed")
@@ -209,11 +209,11 @@ function sdcDeshacerHook(ant, r) {
 }
 function sdcDeshacer(e) {
   var u = e && e.undoSnapshot,
-    r = s5(e);
+    r = deshacerRegistroBase(e);
   if (!u || !u.snap || !e.today || u.date !== e.today.date) return r;
   var a = r.state,
     rp = u.reps || {},
-    md = Md(a.profile, a.today.date, a.today.modality);
+    md = modalidadDelDia(a.profile, a.today.date, a.today.modality);
   a.month &&
     a.month.reps &&
     ["squat", "pushup", "back", "abs"].forEach(function (g) {
