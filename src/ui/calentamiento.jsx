@@ -1,17 +1,17 @@
 // Calentamiento y los pasos guiados que comparte con el estiramiento.
-import { i } from "../react.js";
-import { IconoCheck, IconoLlama } from "./iconos.js";
+import { useState, useEffect } from "react";
+import { IconoCheck, IconoLlama } from "./iconos.jsx";
 import { regresiones } from "../logica/primal.js";
 import { multImpulso } from "../logica/tienda.js";
 import { sdcEstMMSS, sdcEstPaso, sdcEstPrep, sdcEstTotal } from "../logica/estiramiento.js";
 import { revisarLogros } from "../datos/logros.js";
 import { alternativaEjercicio, ejercicioDe } from "../logica/rutina.js";
 import { subirNiveles, clonar } from "../logica/partida.js";
-import { BarraXp } from "./base.js";
+import { BarraXp } from "./base.jsx";
 import { sdcIncKg, sdcKgTxt, sdcSugKg } from "../logica/extras.js";
 import { sdcBeep, sdcNSets, sdcSegs, sdcSplit, sdcVib } from "../logica/series.js";
 import { sdcWakeSi } from "./pantalla.js";
-import { AnimoAhora } from "./animo.js";
+import { AnimoAhora } from "./animo.jsx";
 
 var sdcCalorFases = ["PULSO", "MOVILIDAD", "ACTIVACIÓN", "ENSAYO"];
 var sdcCalorPasos = [
@@ -277,133 +277,106 @@ function PasoGuiado({
             ? "PONETE EN POSICIÓN"
             : "PREPARATE"
           : null;
-  return i.default.createElement(
-    "div",
-    null,
-    cab,
-    i.default.createElement(
-      "div",
-      { className: "text-center" },
-      et
-        ? i.default.createElement(
-            "div",
-            {
-              className: "text-xs uppercase",
-              style: {
-                letterSpacing: 2,
-                color: pz && !esp ? "#9aa4bd" : "#ffb84f",
-                fontWeight: 700,
-                marginTop: 2,
-              },
-            },
-            et,
-          )
-        : null,
-      i.default.createElement(
-        "div",
-        {
-          style: {
+  return (
+    <div>
+      {cab}
+      <div className="text-center">
+        {et ? (
+          <div
+            className="text-xs uppercase"
+            style={{
+              letterSpacing: 2,
+              color: pz && !esp ? "#9aa4bd" : "#ffb84f",
+              fontWeight: 700,
+              marginTop: 2,
+            }}
+          >
+            {et}
+          </div>
+        ) : null}
+        <div
+          style={{
             fontFamily: "Chakra Petch, sans-serif",
             fontSize: 20,
             color: "#e8ecf7",
             fontWeight: 700,
-          },
-        },
-        s.name,
-      ),
-      s.lado
-        ? i.default.createElement(
-            "div",
-            { className: "text-sm", style: { color: cc, fontWeight: 700 } },
-            s.lado,
-          )
-        : null,
-      i.default.createElement(
-        "div",
-        {
-          className: "mt-1",
-          style: { fontSize: esp ? 15 : 14, lineHeight: 1.5, color: "#c8d0e4" },
-        },
-        s.desc,
-      ),
-      esp
-        ? null
-        : i.default.createElement(
-            "div",
-            {
-              style: {
-                fontFamily: "Chakra Petch, sans-serif",
-                fontSize: 34,
-                color: pz ? "#7a83a0" : cc,
-                marginTop: 6,
-              },
-            },
-            pr ? p.prep : p.left,
-            "s",
-          ),
-    ),
-    esp
-      ? null
-      : i.default.createElement(BarraXp, {
-          value: pr ? (s.prep || sdcEstPrep) - p.prep : s.seconds - p.left,
-          max: pr ? s.prep || sdcEstPrep : s.seconds,
-          color: pz ? "#5a6178" : cc,
-        }),
-    i.default.createElement(
-      "div",
-      { className: "text-xs mt-2 text-center", style: { color: "#7a83a0" } },
-      m ? (m.name === s.name ? "Ahora el otro lado" : "Sigue: " + m.name) : fn,
-      rs,
-    ),
-    esp
-      ? i.default.createElement(
-          "button",
-          { onClick: oL, className: "w-full mt-3 py-3 text-sm", style: bPri },
-          "Listo, empezar →",
-        )
-      : pz
-        ? i.default.createElement(
-            "button",
-            { onClick: oS, className: "w-full mt-3 py-3 text-sm", style: bPri },
-            "Seguir →",
-          )
-        : pr
-          ? i.default.createElement(
-              "button",
-              {
-                onClick: oY,
-                className: "w-full mt-3 py-2 text-sm",
-                style: {
-                  minHeight: 44,
-                  background: "rgba(255,184,79,0.12)",
-                  border: "1px solid #ffb84f",
-                  color: "#ffb84f",
-                  fontWeight: 700,
-                },
-              },
-              "Ya estoy →",
-            )
-          : null,
-    esp || pz
-      ? i.default.createElement(
-          "button",
-          { onClick: oT, className: "w-full mt-2 py-2 text-sm", style: bSec },
-          "Terminar acá",
-        )
-      : i.default.createElement(
-          "div",
-          { className: "grid grid-cols-2 gap-2 mt-2" },
-          i.default.createElement(
-            "button",
-            { onClick: oP, className: "py-2 text-sm", style: bSec },
-            "Pausa",
-          ),
-          i.default.createElement(
-            "button",
-            { onClick: oT, className: "py-2 text-sm", style: bSec },
-            "Terminar acá",
-          ),
-        ),
+          }}
+        >
+          {s.name}
+        </div>
+        {s.lado ? (
+          <div className="text-sm" style={{ color: cc, fontWeight: 700 }}>
+            {s.lado}
+          </div>
+        ) : null}
+        <div
+          className="mt-1"
+          style={{ fontSize: esp ? 15 : 14, lineHeight: 1.5, color: "#c8d0e4" }}
+        >
+          {s.desc}
+        </div>
+        {esp ? null : (
+          <div
+            style={{
+              fontFamily: "Chakra Petch, sans-serif",
+              fontSize: 34,
+              color: pz ? "#7a83a0" : cc,
+              marginTop: 6,
+            }}
+          >
+            {pr ? p.prep : p.left}s
+          </div>
+        )}
+      </div>
+      {esp ? null : (
+        <BarraXp
+          value={pr ? (s.prep || sdcEstPrep) - p.prep : s.seconds - p.left}
+          max={pr ? s.prep || sdcEstPrep : s.seconds}
+          color={pz ? "#5a6178" : cc}
+        />
+      )}
+      <div className="text-xs mt-2 text-center" style={{ color: "#7a83a0" }}>
+        {m ? (m.name === s.name ? "Ahora el otro lado" : "Sigue: " + m.name) : fn}
+        {rs}
+      </div>
+      {esp ? (
+        <button onClick={oL} className="w-full mt-3 py-3 text-sm" style={bPri}>
+          Listo, empezar →
+        </button>
+      ) : pz ? (
+        <button onClick={oS} className="w-full mt-3 py-3 text-sm" style={bPri}>
+          Seguir →
+        </button>
+      ) : pr ? (
+        <button
+          onClick={oY}
+          className="w-full mt-3 py-2 text-sm"
+          style={{
+            minHeight: 44,
+            background: "rgba(255,184,79,0.12)",
+            border: "1px solid #ffb84f",
+            color: "#ffb84f",
+            fontWeight: 700,
+          }}
+        >
+          Ya estoy →
+        </button>
+      ) : null}
+      {esp || pz ? (
+        <button onClick={oT} className="w-full mt-2 py-2 text-sm" style={bSec}>
+          Terminar acá
+        </button>
+      ) : (
+        <div className="grid grid-cols-2 gap-2 mt-2">
+          <button onClick={oP} className="py-2 text-sm" style={bSec}>
+            Pausa
+          </button>
+          <button onClick={oT} className="py-2 text-sm" style={bSec}>
+            Terminar acá
+          </button>
+        </div>
+      )}
+    </div>
   );
 }
 function sdcCalorCorre(c, mod, tt) {
@@ -514,8 +487,8 @@ function sdcCalorDer(e, mod, mt) {
   );
 }
 function Calentamiento({ st: e, mod: B, metas: mt, Ne: Ne, onModo: om, sinSeries: ss }) {
-  let [, tk] = (0, i.useState)(0),
-    [ul, sul] = (0, i.useState)(-1),
+  let [, tk] = useState(0),
+    [ul, sul] = useState(-1),
     c = sdcCalor(e),
     ls = sdcCalorLista(B, e.progress.rank),
     en = sdcCalorEnsayo(e, B, mt),
@@ -542,12 +515,12 @@ function Calentamiento({ st: e, mod: B, metas: mt, Ne: Ne, onModo: om, sinSeries
       fontWeight: 600,
     };
   sdcWakeSi(corre);
-  (0, i.useEffect)(() => {
+  useEffect(() => {
     if (!corre) return;
     let x = setInterval(() => tk((n) => n + 1), 300);
     return () => clearInterval(x);
   }, [corre, c.ini, c.pz]);
-  (0, i.useEffect)(() => {
+  useEffect(() => {
     if (fs < 0) return;
     if (ul < 0 || fs < ul) {
       sul(fs);
@@ -560,10 +533,10 @@ function Calentamiento({ st: e, mod: B, metas: mt, Ne: Ne, onModo: om, sinSeries
       : fs < 1e3 &&
         (p && p.prep > 0 ? (sdcBeep(520, 120), sdcVib(18)) : (sdcBeep(760, 140), sdcVib(22)));
   }, [fs]);
-  (0, i.useEffect)(() => {
+  useEffect(() => {
     esp && !c.pz && Ne((d) => sdcCalorEspera(d, c.ini + sdcEstDesde(ls, p.index) * 1e3));
   }, [esp, c.pz]);
-  (0, i.useEffect)(() => {
+  useEffect(() => {
     corre &&
       enE &&
       k >= en.length &&
@@ -572,226 +545,176 @@ function Calentamiento({ st: e, mod: B, metas: mt, Ne: Ne, onModo: om, sinSeries
       sdcVib([40, 60, 140]),
       fin(tot));
   }, [corre, enE, k, en.length]);
-  let cab = (f, n) =>
-    i.default.createElement(
-      "div",
-      { className: "flex items-center justify-between mb-1" },
-      i.default.createElement(
-        "span",
-        { className: "text-xs", style: { letterSpacing: 2, color: ac, fontWeight: 700 } },
-        f,
-        " · ",
-        sdcCalorFases[f - 1],
-      ),
-      i.default.createElement(
-        "span",
-        { className: "text-xs", style: { color: "#9aa4bd" } },
-        "Paso ",
-        n,
-        " de ",
-        tot,
-      ),
-    );
+  let cab = (f, n) => (
+    <div className="flex items-center justify-between mb-1">
+      <span className="text-xs" style={{ letterSpacing: 2, color: ac, fontWeight: 700 }}>
+        {f} · {sdcCalorFases[f - 1]}
+      </span>
+      <span className="text-xs" style={{ color: "#9aa4bd" }}>
+        Paso {n} de {tot}
+      </span>
+    </div>
+  );
   if (!corre) {
     if (c.hecho)
-      return i.default.createElement(
-        "div",
-        null,
-        i.default.createElement(
-          "div",
-          { className: "flex items-center gap-2 text-sm", style: { color: "#3ecf8e" } },
-          i.default.createElement(IconoCheck, { size: 16 }),
-          " Calentaste hoy",
-        ),
-        i.default.createElement(AnimoAhora, {
-          st: e,
-          Ne: Ne,
-          onModo: om || function () {},
-          sinSeries: ss,
-        }),
-        i.default.createElement(
-          "div",
-          { className: "text-xs mt-1", style: { color: "#9aa4bd" } },
-          "Si más tarde entrenás otra vez, conviene repetirlo.",
-        ),
-        i.default.createElement(
-          "button",
-          {
-            onClick: arr,
-            className: "w-full mt-2 py-2 text-xs",
-            style: {
+      return (
+        <div>
+          <div className="flex items-center gap-2 text-sm" style={{ color: "#3ecf8e" }}>
+            <IconoCheck size={16} /> Calentaste hoy
+          </div>
+          <AnimoAhora st={e} Ne={Ne} onModo={om || function () {}} sinSeries={ss} />
+          <div className="text-xs mt-1" style={{ color: "#9aa4bd" }}>
+            Si más tarde entrenás otra vez, conviene repetirlo.
+          </div>
+          <button
+            onClick={arr}
+            className="w-full mt-2 py-2 text-xs"
+            style={{
               minHeight: 44,
               background: "transparent",
               border: "1px solid rgba(255,255,255,0.15)",
               color: "#9aa4bd",
-            },
-          },
-          "Calentar de nuevo (sin XP)",
-        ),
+            }}
+          >
+            Calentar de nuevo (sin XP)
+          </button>
+        </div>
       );
-    return i.default.createElement(
-      "div",
-      null,
-      i.default.createElement(
-        "button",
-        {
-          onClick: arr,
-          className: "w-full py-3 px-3 text-sm text-left",
-          style: {
+    return (
+      <div>
+        <button
+          onClick={arr}
+          className="w-full py-3 px-3 text-sm text-left"
+          style={{
             background: "rgba(255,143,90,0.12)",
             border: "1px solid " + ac,
             color: ac,
             fontWeight: 700,
-          },
-        },
-        i.default.createElement(
-          "div",
-          { className: "flex items-center justify-between" },
-          i.default.createElement(
-            "span",
-            { style: { display: "inline-flex", alignItems: "center", gap: 8 } },
-            i.default.createElement(IconoLlama, { size: 16 }),
-            "Empezar",
-          ),
-          i.default.createElement(
-            "span",
-            { className: "text-xs", style: { whiteSpace: "nowrap" } },
-            "≈ ",
-            Math.max(1, Math.round((tt + en.length * 20) / 60)),
-            " min · ",
-            tot,
-            " pasos",
-          ),
-        ),
-        i.default.createElement(
-          "div",
-          { className: "text-xs mt-1", style: { color: "#9aa4bd", fontWeight: 400 } },
-          "Pulso, movilidad, activación y un ensayo suave de tus ejercicios de hoy",
-        ),
-      ),
-      i.default.createElement(
-        "div",
-        { className: "text-xs mt-2", style: { color: "#7a83a0" } },
-        "Da 10 XP una vez por día.",
-      ),
+          }}
+        >
+          <div className="flex items-center justify-between">
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+              <IconoLlama size={16} />
+              Empezar
+            </span>
+            <span className="text-xs" style={{ whiteSpace: "nowrap" }}>
+              ≈ {Math.max(1, Math.round((tt + en.length * 20) / 60))} min · {tot} pasos
+            </span>
+          </div>
+          <div className="text-xs mt-1" style={{ color: "#9aa4bd", fontWeight: 400 }}>
+            Pulso, movilidad, activación y un ensayo suave de tus ejercicios de hoy
+          </div>
+        </button>
+        <div className="text-xs mt-2" style={{ color: "#7a83a0" }}>
+          Da 10 XP una vez por día.
+        </div>
+      </div>
     );
   }
   if (!enE)
-    return i.default.createElement(PasoGuiado, {
-      ls: ls,
-      p: p,
-      cab: cab(ls[p.index].f, p.index + 1),
-      col: ac,
-      esp: esp,
-      pz: !!c.pz && !esp,
-      fin: en.length ? "Sigue: el ensayo de tus ejercicios" : "Último paso",
-      resto: en.length
-        ? " · " + sdcEstMMSS(tt - t) + " hasta el ensayo"
-        : " · queda " + sdcEstMMSS(tt - t),
-      onListo: () => {
-        let d0 = sdcEstDesde(ls, p.index) + Math.max(0, (ls[p.index].prep || sdcEstPrep) - 3);
-        (sdcBeep(660, 100), Ne((d) => sdcCalorListo(d, p.index, d0)));
-      },
-      onYa: () => Ne((d) => sdcCalorPrep(d, p.prep)),
-      onPausa: () => Ne((d) => sdcCalorPausa(d)),
-      onSeguir: () => Ne((d) => sdcCalorSeguir(d)),
-      onTerminar: () => fin(p.index),
-    });
+    return (
+      <PasoGuiado
+        ls={ls}
+        p={p}
+        cab={cab(ls[p.index].f, p.index + 1)}
+        col={ac}
+        esp={esp}
+        pz={!!c.pz && !esp}
+        fin={en.length ? "Sigue: el ensayo de tus ejercicios" : "Último paso"}
+        resto={
+          en.length
+            ? " · " + sdcEstMMSS(tt - t) + " hasta el ensayo"
+            : " · queda " + sdcEstMMSS(tt - t)
+        }
+        onListo={() => {
+          let d0 = sdcEstDesde(ls, p.index) + Math.max(0, (ls[p.index].prep || sdcEstPrep) - 3);
+          (sdcBeep(660, 100), Ne((d) => sdcCalorListo(d, p.index, d0)));
+        }}
+        onYa={() => Ne((d) => sdcCalorPrep(d, p.prep))}
+        onPausa={() => Ne((d) => sdcCalorPausa(d))}
+        onSeguir={() => Ne((d) => sdcCalorSeguir(d))}
+        onTerminar={() => fin(p.index)}
+      />
+    );
   if (k < en.length) {
     let x = en[k],
       gy = B === "gym",
       sig = () => {
         (sdcBeep(760, 120), sdcVib(22), Ne((d) => sdcCalorPot(d)));
       };
-    return i.default.createElement(
-      "div",
-      null,
-      cab(4, ls.length + k + 1),
-      i.default.createElement(
-        "div",
-        { className: "text-center" },
-        i.default.createElement(
-          "div",
-          {
-            className: "text-xs uppercase",
-            style: { letterSpacing: 2, color: "#9aa4bd", marginTop: 2 },
-          },
-          "Ejercicio ",
-          k + 1,
-          " de ",
-          en.length,
-          " · el mismo de tu rutina",
-        ),
-        i.default.createElement(
-          "div",
-          {
-            style: {
+    return (
+      <div>
+        {cab(4, ls.length + k + 1)}
+        <div className="text-center">
+          <div
+            className="text-xs uppercase"
+            style={{ letterSpacing: 2, color: "#9aa4bd", marginTop: 2 }}
+          >
+            Ejercicio {k + 1} de {en.length} · el mismo de tu rutina
+          </div>
+          <div
+            style={{
               fontFamily: "Chakra Petch, sans-serif",
               fontSize: 20,
               color: "#e8ecf7",
               fontWeight: 700,
-            },
-          },
-          x.name,
-        ),
-        i.default.createElement(
-          "div",
-          {
-            style: {
+            }}
+          >
+            {x.name}
+          </div>
+          <div
+            style={{
               fontFamily: "Chakra Petch, sans-serif",
               fontSize: 18,
               color: ac,
               fontWeight: 700,
               marginTop: 4,
-            },
-          },
-          x.dosis,
-        ),
-        i.default.createElement(
-          "div",
-          { className: "mt-1", style: { fontSize: 14, lineHeight: 1.5, color: "#c8d0e4" } },
-          x.sost
-            ? "En la posición exacta y sin apurarte: es un ensayo, no una serie."
-            : "Con todo el recorrido y lejos del cansancio: es un ensayo, no una serie.",
-          gy ? " Si la máquina está ocupada, hazlo justo antes de su primera serie." : "",
-        ),
-      ),
-      i.default.createElement(
-        "button",
-        {
-          onClick: sig,
-          className: "w-full mt-3 py-3 text-sm",
-          style: {
+            }}
+          >
+            {x.dosis}
+          </div>
+          <div className="mt-1" style={{ fontSize: 14, lineHeight: 1.5, color: "#c8d0e4" }}>
+            {x.sost
+              ? "En la posición exacta y sin apurarte: es un ensayo, no una serie."
+              : "Con todo el recorrido y lejos del cansancio: es un ensayo, no una serie."}
+            {gy ? " Si la máquina está ocupada, hazlo justo antes de su primera serie." : ""}
+          </div>
+        </div>
+        <button
+          onClick={sig}
+          className="w-full mt-3 py-3 text-sm"
+          style={{
             minHeight: 48,
             background: ac,
             border: "1px solid " + ac,
             color: "#0a0e1a",
             fontWeight: 700,
-          },
-        },
-        k + 1 < en.length ? "Hecho →" : "Hecho, terminar",
-      ),
-      gy
-        ? i.default.createElement(
-            "button",
-            {
-              onClick: sig,
-              className: "w-full mt-2 py-2 text-xs",
-              style: {
-                minHeight: 44,
-                background: "transparent",
-                border: "1px solid rgba(255,255,255,0.15)",
-                color: "#9aa4bd",
-              },
-            },
-            "Lo hago antes de su primera serie",
-          )
-        : null,
-      i.default.createElement(
-        "button",
-        { onClick: () => fin(ls.length + k), className: "w-full mt-2 py-2 text-sm", style: bSec },
-        "Terminar acá",
-      ),
+          }}
+        >
+          {k + 1 < en.length ? "Hecho →" : "Hecho, terminar"}
+        </button>
+        {gy ? (
+          <button
+            onClick={sig}
+            className="w-full mt-2 py-2 text-xs"
+            style={{
+              minHeight: 44,
+              background: "transparent",
+              border: "1px solid rgba(255,255,255,0.15)",
+              color: "#9aa4bd",
+            }}
+          >
+            Lo hago antes de su primera serie
+          </button>
+        ) : null}
+        <button
+          onClick={() => fin(ls.length + k)}
+          className="w-full mt-2 py-2 text-sm"
+          style={bSec}
+        >
+          Terminar acá
+        </button>
+      </div>
     );
   }
   return null;

@@ -27,7 +27,7 @@ import {
   fechaHoy,
 } from "./rutina.js";
 import { sdcRango } from "./extras.js";
-import { wd } from "../ui/cuerpo.js";
+import { wd } from "../ui/cuerpo.jsx";
 
 function clonar(e) {
   return JSON.parse(JSON.stringify(e));

@@ -1,5 +1,5 @@
 // Pantalla encendida (wake lock).
-import { i } from "../react.js";
+import { useEffect } from "react";
 
 var sdcWL = null;
 function sdcWakeOn() {
@@ -24,7 +24,7 @@ function sdcWakeOff() {
   sdcWL = null;
 }
 function sdcWakeUse() {
-  (0, i.useEffect)(() => {
+  useEffect(() => {
     sdcWakeOn();
     let x = () => {
       document.visibilityState === "visible" && sdcWakeOn();
@@ -38,7 +38,7 @@ function sdcWakeUse() {
   }, []);
 }
 function sdcWakeSi(on) {
-  (0, i.useEffect)(() => {
+  useEffect(() => {
     if (!on) return;
     sdcWakeOn();
     let x = () => {

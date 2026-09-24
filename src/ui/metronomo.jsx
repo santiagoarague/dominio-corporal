@@ -1,6 +1,6 @@
 // Metronomo.
-import { i } from "../react.js";
-import { pitido } from "./prueba.js";
+import { useState, useEffect } from "react";
+import { pitido } from "./prueba.jsx";
 
 function sdcTempoMod(mo) {
   var b = 2,
@@ -14,9 +14,9 @@ function sdcTempoMod(mo) {
 }
 function Metronomo({ active: e, tempo: tm }) {
   let t = tm && tm.b ? tm : { b: 2, p: 1, s: 2 },
-    [a, l] = (0, i.useState)("down");
+    [a, l] = useState("down");
   if (
-    ((0, i.useEffect)(() => {
+    (useEffect(() => {
       if (!e) return;
       let s = (a === "down" ? t.b : a === "hold" ? t.p : t.s) * 1e3;
       pitido(a === "down" ? 440 : a === "hold" ? 560 : 660, 120);
@@ -33,19 +33,17 @@ function Metronomo({ active: e, tempo: tm }) {
           ? "PAUSA (" + t.p + "s)"
           : "SUBE (" + t.s + "s)",
     o = a === "down" ? "#4f9dff" : a === "hold" ? "#ffb84f" : "#3ecf8e";
-  return i.default.createElement(
-    "div",
-    {
-      className: "text-center py-2 mb-2",
-      style: { border: "1px solid " + o + "55", background: "rgba(255,255,255,0.03)" },
-    },
-    i.default.createElement(
-      "div",
-      {
-        style: { fontFamily: "Chakra Petch, sans-serif", fontSize: 24, color: o, letterSpacing: 1 },
-      },
-      n,
-    ),
+  return (
+    <div
+      className="text-center py-2 mb-2"
+      style={{ border: "1px solid " + o + "55", background: "rgba(255,255,255,0.03)" }}
+    >
+      <div
+        style={{ fontFamily: "Chakra Petch, sans-serif", fontSize: 24, color: o, letterSpacing: 1 }}
+      >
+        {n}
+      </div>
+    </div>
   );
 }
 

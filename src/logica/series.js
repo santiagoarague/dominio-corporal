@@ -1,7 +1,7 @@
 // Series, sonido y vibracion.
 import { sistemaActivo } from "./sistemas.js";
 import { modalidadesDe } from "./rutina.js";
-import { pitido } from "../ui/prueba.js";
+import { pitido } from "../ui/prueba.jsx";
 
 function sdcSegs(al) {
   if (!al) return 0;

@@ -1,5 +1,5 @@
 // Atributos del jugador.
-import { Bd } from "../ui/cuerpo.js";
+import { Bd } from "../ui/cuerpo.jsx";
 
 var Io = [
   {

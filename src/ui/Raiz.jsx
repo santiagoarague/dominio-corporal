@@ -1,14 +1,14 @@
 // Raiz: carga la partida y elige entre inicio y app.
-import { i } from "../react.js";
+import { useState, useEffect } from "react";
 import { guardarPartida, cargarPartida, crearPartida, leerPartida } from "../logica/partida.js";
-import { Inicio } from "./Inicio.js";
-import { App } from "./App.js";
+import { Inicio } from "./Inicio.jsx";
+import { App } from "./App.jsx";
 
 function Raiz() {
-  let [e, a] = (0, i.useState)(!0),
-    [l, n] = (0, i.useState)(null),
-    [o, s] = (0, i.useState)([]);
-  (0, i.useEffect)(() => {
+  let [e, a] = useState(!0),
+    [l, n] = useState(null),
+    [o, s] = useState([]);
+  useEffect(() => {
     (async () => {
       let r = await leerPartida();
       if (r) {
@@ -32,32 +32,28 @@ function Raiz() {
       return !1;
     }
   }
-  return i.default.createElement(
-    "div",
-    null,
-    i.default.createElement(
-      "style",
-      null,
-      `
+  return (
+    <div>
+      <style>{`
         * { box-sizing: border-box; }
         @keyframes sdcBlink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
         @keyframes sdcPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.55; } }
         input:focus, button:focus { outline: 2px solid #4f9dff; outline-offset: 1px; }
         @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
-      `,
-    ),
-    e
-      ? i.default.createElement(
-          "div",
-          {
-            className: "min-h-screen flex items-center justify-center",
-            style: { background: "#0a0e1a", color: "#9aa4bd" },
-          },
-          "Cargando...",
-        )
-      : l
-        ? i.default.createElement(App, { player: l, setPlayer: n, initialNotices: o })
-        : i.default.createElement(Inicio, { onFinish: u, onLoadBackup: c }),
+      `}</style>
+      {e ? (
+        <div
+          className="min-h-screen flex items-center justify-center"
+          style={{ background: "#0a0e1a", color: "#9aa4bd" }}
+        >
+          Cargando...
+        </div>
+      ) : l ? (
+        <App player={l} setPlayer={n} initialNotices={o} />
+      ) : (
+        <Inicio onFinish={u} onLoadBackup={c} />
+      )}
+    </div>
   );
 }
 

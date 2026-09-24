@@ -2,7 +2,7 @@
 // pruebas puedan importar las funciones del juego sin dibujar la app.
 import React from "react";
 import { createRoot } from "react-dom/client";
-import { Raiz } from "./ui/Raiz.js";
+import { Raiz } from "./ui/Raiz.jsx";
 
 createRoot(document.getElementById("root")).render(React.createElement(Raiz, null));
 
