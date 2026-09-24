@@ -1447,7 +1447,7 @@ var j2 = [
     {
       g: "CÓMO PROGRESÁS",
       title: "Los rangos y el Umbral",
-      text: "El rango es tu etapa, y hay siete. Cambia dos cosas: qué versión de cada ejercicio te toca (de la más asistida a la más difícil) y cuántas repeticiones hacés. Todo el mundo empieza en el primero: la prueba inicial ajusta cuántas repeticiones hacés, no el rango. Para pasar al siguiente rango hay que llegar a cierto nivel y superar el Umbral, una prueba que aparece sola y encadena varias rondas de los cuatro patrones; solo podés darla un día en el que hayas completado tu rutina al 100%. En el séptimo y último rango el objetivo diario deja de salir de una tabla: es superar tu propio récord por lo menos un 1%, y si pasás siete días sin una rutina completa bajás al anterior hasta que vuelvas.",
+      text: "El rango es tu etapa, y hay siete. Cambia dos cosas: qué versión de cada ejercicio te toca (de la más asistida a la más difícil) y cuántas repeticiones hacés. Todo el mundo empieza en el primero: la prueba inicial ajusta cuántas repeticiones hacés, no el rango. Para pasar al siguiente rango hay que llegar a cierto nivel, sumar 24 rutinas completas en ese rango y superar el Umbral, una prueba que aparece sola y encadena varias rondas de los cuatro patrones con los ejercicios del rango que viene; solo podés darla un día en el que hayas completado tu rutina al 100%. En el séptimo y último rango el objetivo diario deja de salir de una tabla: es superar tu propio récord por lo menos un 1%, y si pasás siete días sin una rutina completa bajás al anterior hasta que vuelvas.",
     },
     {
       g: "CÓMO PROGRESÁS",
@@ -5995,13 +5995,6 @@ var gy = {
   A: { rounds: 5, pct: 0.75, note: "Descanso máximo de 15 s entre rondas." },
   S: { rounds: 5, pct: 0.8, note: "Sin cortes. La prueba del Dominio Total." },
 };
-function I2(e, a, l, n, tr) {
-  let o = gy[e] || gy.C,
-    s = jd(e, a, l, n, tr),
-    u = {};
-  for (let c of Object.keys(s)) u[c] = Math.max(1, Math.round(s[c] * o.pct));
-  return { rounds: o.rounds, note: o.note, reps: u };
-}
 var Nd = [
     {
       id: "fuerza",
@@ -6017,7 +6010,7 @@ var Nd = [
       id: "resistencia",
       name: "Resistencia / Acondicionamiento Físico",
       repMult: 1.4,
-      xpMult: 0.8,
+      xpMult: 0.72,
       streakBonus: 0,
       ajuste: "Repeticiones base altas, mayor volumen total de entrenamiento.",
       ventaja: "Aumento rápido del atributo de Resistencia y mayor gasto energético por sesión.",
@@ -6730,6 +6723,10 @@ function i5(e, a, l, mok, gvol) {
   let S = o.streak.missed;
   let nSes = (o.today.doneModalities || []).length;
   let yaFull = o.history[o.today.date] === "full";
+  // El bono por rutina completa es igual para los tres enfoques: si se
+  // multiplicaba por el xpMult, fuerza (1.5) cobraba ~20% mas que salud por
+  // menos reps cuando la meta es chica.
+  let sdcBono = p >= 1 ? 30 : 0;
   if (p >= 1)
     ((v += 30),
       (o = Dl(o, "Rutina completa")),
@@ -6756,7 +6753,7 @@ function i5(e, a, l, mok, gvol) {
     ),
       s.push(zy(T2, o.today.date, o.profile.pet && o.profile.pet.name)));
   }
-  ((v = Math.round(v * t5(o))),
+  ((v = Math.round((v - sdcBono) * t5(o)) + sdcBono),
     (v = Math.round(v * sdcRacha(o))),
     (v = Math.round(v * sdcPerk(o))),
     (() => {
@@ -6954,6 +6951,64 @@ function d5(e) {
   }
   let o = da(a);
   return { state: o.state, notices: [...l, ...o.notices] };
+}
+// El Umbral pide, ademas del nivel, un minimo de rutinas completas en el
+// rango: el nivel se puede apurar (racha, impulsos, entrenar todos los dias)
+// y el cuerpo necesita semanas con los ejercicios nuevos.
+var sdcUmbralMin = 24;
+function sdcRangoSig(r) {
+  var k = ve.indexOf(r);
+  return k >= 0 && k < ve.length - 1 ? ve[k + 1] : null;
+}
+// Dias con rutina completa desde que empezo el rango actual. El dia en que se
+// cruza cuenta para el rango anterior. Una partida de antes de esta regla no
+// sabe cuando empezo su rango y cuenta toda su historia.
+function sdcRangoCompletas(e) {
+  var d = e.rangoDesde,
+    desde = d && d.rank === e.progress.rank ? d.date : "",
+    h = e.history || {},
+    n = 0,
+    f;
+  for (f in h) if (h[f] === "full" && f > desde) n++;
+  return n;
+}
+function sdcUmbralFalta(e) {
+  if (e.umbralForzado === e.progress.rank) return 0;
+  return Math.max(0, sdcUmbralMin - sdcRangoCompletas(e));
+}
+// La prueba se hace con los ejercicios y el volumen del rango que viene, con
+// las rondas y el porcentaje de gy para el rango que se deja.
+function sdcUmbralPrueba(e, mod) {
+  var r = e.progress.rank,
+    sig = sdcRangoSig(r) || r,
+    p = e.profile,
+    o = gy[r] || gy.C,
+    v = jd(sig, p.classification, p.focusProfile, mod, p.testResults),
+    reps = {},
+    nombres = {},
+    g;
+  for (g in v) {
+    reps[g] = Math.max(1, Math.round(v[g] * o.pct));
+    nombres[g] = _d(g, sig, mod, e.today && e.today.date).name;
+  }
+  return { rounds: o.rounds, note: o.note, reps: reps, nombres: nombres, rango: sig };
+}
+function sdcFaltanTxt(n) {
+  return (
+    (n === 1 ? "Te falta 1 rutina completa" : "Te faltan " + n + " rutinas completas") +
+    " en este rango para cruzar el Umbral."
+  );
+}
+function sdcCruzar(e) {
+  var falta = e.ascension && e.ascension.pending ? sdcUmbralFalta(e) : 0;
+  if (falta > 0) return { state: M(e), notices: [sdcFaltanTxt(falta)] };
+  var antes = e.progress.rank,
+    r = d5(e);
+  if (r.state.progress.rank !== antes) {
+    r.state.rangoDesde = { rank: r.state.progress.rank, date: r.state.today.date };
+    delete r.state.umbralForzado;
+  }
+  return r;
 }
 function yd(e, a) {
   let l = M(e);
@@ -12702,7 +12757,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
   }
   function yg() {
     a((f) => {
-      let { state: d, notices: m } = d5(f);
+      let { state: d, notices: m } = sdcCruzar(f);
       return (m && m.length && o((N) => [...N, ...m]), K(d), d);
     });
   }
@@ -13037,6 +13092,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
         m = au[d.progress.rank];
       return (
         m && ((d.progress.level = m), (d.ascension.pending = !0)),
+        (d.umbralForzado = d.progress.rank),
         (d.today.completed = !0),
         (d.today.fullCompletion = !0),
         (d.today.rank = d.progress.rank),
@@ -14237,7 +14293,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                 ),
               ),
               (() => {
-                let f = I2(u.rank, s.classification, s.focusProfile, B, s.testResults);
+                let f = sdcUmbralPrueba(e, B);
                 return i.default.createElement(
                   "div",
                   { className: "mb-3" },
@@ -14245,7 +14301,9 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                     "div",
                     { className: "text-sm mb-1", style: { color: "#e8ecf7", fontWeight: 600 } },
                     f.rounds,
-                    " rondas encadenadas:",
+                    " rondas encadenadas, con los ejercicios de ",
+                    sdcRango(f.rango, s),
+                    ":",
                   ),
                   ["squat", "pushup", "back", "abs"].map((d) =>
                     i.default.createElement(
@@ -14253,7 +14311,7 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                       { key: d, className: "text-sm", style: { color: "#9aa4bd" } },
                       f.reps[d],
                       " × ",
-                      kl(u.rank, s.classification, d, B),
+                      f.nombres[d],
                     ),
                   ),
                   i.default.createElement(
@@ -14266,13 +14324,22 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
               i.default.createElement(
                 "div",
                 { className: "text-xs mb-3", style: { color: "#9aa4bd" } },
-                "Realiza este desafío en la vida real y luego confírmalo aquí.",
+                "Hacela de verdad y después confirmala acá. Si no te salen, todavía no cruces: seguí entrenando en este rango.",
+              ),
+              i.default.createElement(
+                "div",
+                { className: "text-xs mb-3", style: { color: sdcUmbralFalta(e) > 0 ? "#ffb84f" : "#3ecf8e" } },
+                "Rutinas completas en este rango: ",
+                Math.min(sdcRangoCompletas(e), sdcUmbralMin),
+                " de ",
+                sdcUmbralMin,
+                ".",
               ),
               i.default.createElement(
                 "button",
                 {
                   onClick: yg,
-                  disabled: !(c.completed && c.fullCompletion),
+                  disabled: !(c.completed && c.fullCompletion) || sdcUmbralFalta(e) > 0,
                   className:
                     "w-full flex items-center justify-center gap-2 py-3 text-sm disabled:opacity-40",
                   style: { background: "#ffb84f", color: "#0a0e1a", fontWeight: 700 },
@@ -14280,12 +14347,18 @@ function B5({ player: e, setPlayer: a, initialNotices: l }) {
                 i.default.createElement(Mn, { size: 16 }),
                 " Crucé el Umbral",
               ),
-              !(c.completed && c.fullCompletion) &&
-                i.default.createElement(
-                  "div",
-                  { className: "text-xs mt-2 text-center", style: { color: "#9aa4bd" } },
-                  "Completá tu rutina al 100% hoy para poder cruzar tu Umbral.",
-                ),
+              sdcUmbralFalta(e) > 0
+                ? i.default.createElement(
+                    "div",
+                    { className: "text-xs mt-2 text-center", style: { color: "#9aa4bd" } },
+                    sdcFaltanTxt(sdcUmbralFalta(e)),
+                  )
+                : !(c.completed && c.fullCompletion) &&
+                    i.default.createElement(
+                      "div",
+                      { className: "text-xs mt-2 text-center", style: { color: "#9aa4bd" } },
+                      "Completá tu rutina al 100% hoy para poder cruzar tu Umbral.",
+                    ),
             ),
           (function () {
             var gs = ["squat", "pushup", "back", "abs"],
@@ -18942,7 +19015,13 @@ export {
   yy,
   _d,
   gy,
-  I2,
+  sdcUmbralMin,
+  sdcRangoSig,
+  sdcRangoCompletas,
+  sdcUmbralFalta,
+  sdcUmbralPrueba,
+  sdcFaltanTxt,
+  sdcCruzar,
   Nd,
   R2,
   qd,

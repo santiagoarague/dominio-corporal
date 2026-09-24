@@ -220,8 +220,12 @@ hay un botón para anotar a mano. Es la tesis hecha pantalla.
 - **XP y niveles.** La XP de la rutina son las reps hechas, más **30** si la completás al 100%.
   El primer nivel cuesta 48 XP y **la primera rutina tiene que alcanzar para subirlo**: es la
   recompensa más barata e importante del juego.
-- **Rangos** (7). Para pasar hace falta un nivel y superar el **Umbral**, una prueba que encadena
-  rondas de los cuatro patrones y solo se puede dar un día con la rutina al 100%. Tiempos
+- **Rangos** (7). Para pasar hace falta un nivel, **24 rutinas completas en ese rango** y superar
+  el **Umbral**, una prueba que encadena rondas de los cuatro patrones **con los ejercicios del
+  rango que viene** y solo se puede dar un día con la rutina al 100%. Las dos condiciones nuevas
+  existen porque el nivel se puede apurar y el cuerpo no: entrenando todos los días con racha se
+  llegaba al primer Umbral en 7 semanas, y la prueba se hacía con ejercicios que ya dominabas. Los
+  impulsos de la tienda aceleran poco (~10%) y no se tocaron. Tiempos
   aproximados entrenando 4 veces por semana: 2º rango ~5 meses, 3º ~1,3 años, 4º ~2,6, 5º ~4,4,
   6º ~6,7 y 7º ~9,4 años. En el último rango la meta diaria es superar tu propio récord un 1%.
 - **Calibre**: sale de la prueba de aptitud (4 ejercicios de peso corporal **al mismo ritmo que el
@@ -238,7 +242,10 @@ flow           Primeras posiciones · Piso firme · Aguante continuo · Tránsit
 ```
 
 - **Perfiles de enfoque**: fuerza (65% de reps, ×1,5 XP), salud (100%, +15% con racha) y
-  resistencia (140%, ×0,8). Tienen que pagar parecido por trabajo equivalente.
+  resistencia (140%, ×0,72). Tienen que pagar parecido por trabajo equivalente, y hoy pagan
+  dentro de un 3,4% en todas las modalidades y rangos. El bono de +30 por rutina completa es
+  igual para los tres: antes se multiplicaba por el enfoque y fuerza cobraba ~20% más en peso
+  corporal.
 
 ### Sistemas que se abren con el nivel
 | Nivel | Sistema | Qué es |

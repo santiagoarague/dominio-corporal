@@ -144,9 +144,7 @@ button:disabled.disabled\:opacity-40{opacity:.4;}
 </script>
 <script src="./storage.js"></script>
 <script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
-}
+// El service worker se registra en src/main.js, solo en la version compilada.
 // Sin esto el navegador puede borrar localStorage cuando le falta espacio,
 // y con el se va todo el progreso: no hay servidor ni cuenta.
 if (navigator.storage && navigator.storage.persist) {

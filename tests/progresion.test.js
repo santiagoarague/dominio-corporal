@@ -139,17 +139,21 @@ describe("los tres enfoques pagan parecido por el mismo trabajo", () => {
   }
   const brecha = (x) => Math.max(...Object.values(x)) / Math.min(...Object.values(x));
 
-  for (const [modalidad, rango] of [["gym", "C"], ["gym", "S"], ["flow", "C"], ["flow", "S"]])
-    it(`${modalidad} ${rango}: la diferencia es menor al 10%`, () => {
-      expect(brecha(xpPorEnfoque(modalidad, rango))).toBeLessThan(1.1);
-    });
+  // El bono de +30 no se multiplica por el enfoque (con fuerza a 1.5 cobraba
+  // ~20% mas en peso corporal) y resistencia paga 1.4 × 0.72 ≈ 1 por rep.
+  for (const modalidad of ["bodyweight", "gym", "flow"])
+    for (const rango of ["E", "C", "S"])
+      it(`${modalidad} ${rango}: la diferencia es menor al 5%`, () => {
+        expect(brecha(xpPorEnfoque(modalidad, rango))).toBeLessThan(1.05);
+      });
 
-  // PENDIENTE (decision de diseño): el bono fijo de +30 por rutina completa
-  // tambien se multiplica por el xpMult de fuerza (1.5). Cuando la meta es
-  // chica ese bono pesa mucho, y fuerza cobra mas que salud por menos reps:
-  // ~20% en peso corporal, 10-14% en gimnasio y flow en el primer rango.
-  for (const [modalidad, rango] of [["bodyweight", "E"], ["bodyweight", "C"], ["bodyweight", "S"], ["gym", "E"], ["flow", "E"]])
-    it.fails(`PENDIENTE: ${modalidad} ${rango}, la diferencia es menor al 10%`, () => {
-      expect(brecha(xpPorEnfoque(modalidad, rango))).toBeLessThan(1.1);
-    });
+  it("el bono por rutina completa es el mismo para los tres", () => {
+    for (const f of ["fuerza", "resistencia", "salud"]) {
+      const e = jugadorEn("C", 10, { focusProfile: f });
+      const completa = registrar(e).state.today.xpEarned;
+      const casi = registrar(e, parte(e, 0.99)).state.today.xpEarned;
+      expect(completa - casi, f).toBeGreaterThanOrEqual(30);
+      expect(completa - casi, f).toBeLessThan(30 + 10);
+    }
+  });
 });

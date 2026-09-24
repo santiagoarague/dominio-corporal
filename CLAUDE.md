@@ -256,7 +256,7 @@ Everyone starts at **rank E, level 1** regardless of the test. The test sets vol
 
 ### Volume
 
-`jd(rank, classification, focus, modality, testResults)` = `round(base Ã W2[rank] Ã repFactor Ã repMult[focus])`, per group. `Oy(state, rank)` is the only caller that has the state, and it passes `state.profile.testResults`; `I2` (ascension test) and `hd`/`uy` (combat) take it as a trailing argument so every path prescribes the same volume.
+`jd(rank, classification, focus, modality, testResults)` = `round(base Ã W2[rank] Ã repFactor Ã repMult[focus])`, per group. `Oy(state, rank)` is the only caller that has the state, and it passes `state.profile.testResults`; `sdcUmbralPrueba` (the Umbral test) and `hd`/`uy` (combat) pass it too so every path prescribes the same volume.
 
 `base` comes from `sdcBase(testResults, classification, modality)`, and **each modality has its own model** because they are programmed differently:
 
@@ -320,6 +320,12 @@ La última vez: 30 · 32,5 · 35 kg
 ### Unlocks
 
 `au` is the rank ladder â the level at which each rank offers its Umbral: `{E:50, D:100, C:140, B:180, A:220, S:260}`. It used to be `{E:50, D:100, C:300, B:700, A:1500, S:3000}`, which with the XP curve meant rank B cost 255k XP (about 12 years of training four times a week) and rank Z 22.9M. The game had three reachable ranks out of seven. The current ladder puts D at ~5 months, C at 1.3 years, B at 2.6, A at 4.4, S at 6.7 and Z at 9.4. Z has no entry because there is nothing above it, and the header correctly hides the Umbral line there.
+
+**Crossing the Umbral takes three things now: the level, 24 complete routines in the rank, and a test with the next rank's exercises.** The level alone could be rushed: simulated with the real functions, a beginner who trains every day reached the first Umbral in 7 weeks (50 sessions, against 90 at three a week), because the streak adds up to +30% and salud another +15% — while the shop's boosts shaved only ~10%, since PD run out. And the test (`I2`, removed) prescribed rounds of the *current* rank's exercises, which the player already did every day, so nothing checked whether the next rank's movements were within reach.
+
+- `sdcUmbralMin` (24) full routines, counted by `sdcRangoCompletas` as `history` days equal to `"full"` **after** `state.rangoDesde.date`. The crossing day belongs to the rank you leave. It is derived from `history`, so undo, retro-logging (which writes `"partial"`) and old saves need no bookkeeping: a save without `rangoDesde`, or whose `rangoDesde.rank` is not the current rank (the Z demotion, the test panel's rank jump), counts its whole history, which grandfathers every existing player.
+- `sdcUmbralPrueba(state, modality)` takes rounds, percentage and note from `gy` of the rank being left, and the volume (`jd`) and exercise names (`_d` with today's date) from the next one.
+- `sdcCruzar` wraps `d5`: it refuses with *Te faltan N rutinas completas…* (`sdcFaltanTxt`, singular at 1) and on success writes `rangoDesde = {rank, date}`. The card shows *Rutinas completas en este rango: X de 24* and keeps the button disabled until both the count and today's 100% hold. The test panel's *Forzar Umbral* sets `umbralForzado = rank`, which skips the count for that rank only.
 
 `$e` maps systems to a required level and rank; `ye(state, id)` and `yt(state, id)` test it. The rank requirements are all `"E"` on purpose: rank D needs level 50 and rank C level 100, so the original level-8/12/15 gates paired with rank D/C were unreachable. Keep new entries at rank `"E"` and gate by level alone. Levels in use: 1, 3, 8, 10, 12, 15, 20, 25, 30. **Logros is deliberately level 1**: `da()` is called from thirteen places and none of them is gated, so a player already earned achievements and Dominion Points from their first routine while the tab that explains them stayed locked until level 5 — the reward arrived before the room it lives in. The tab bar is a three-column grid and level 1 shows only Entreno and Perfil, so this fills the empty cell. Categories whose system is still locked start collapsed, via `sdcCatAbierta` and the `sdcCatSis` map.
 
@@ -394,6 +400,10 @@ The collapsed cards themselves were never the problem — they are 54–55 px ea
 
 **The header is permanent UI, not a card.** It carries the name, the calibre, the PD badge, the XP bar (`qa`), `Ascenso: level/threshold` and the next system to unlock. All of that used to live inside the `rango` collapsible, which started closed â so a new player never saw their XP bar move and never learned anything was coming. That card is gone; do not reintroduce one that duplicates the header.
 
+### A dev-only warning that is not new
+
+`npm run dev` logs *Cannot update a component (B5) while rendering a different component (w5)* when a routine is registered. It is old: `Ne` and several handlers call `o(...)` (B5's notice setter) from inside `a(updater)` (w5's player setter), and an updater runs while w5 renders. The original bundle shipped production React, which does not print the warning, so it was never seen. It works, but it is a side effect inside an updater — the kind of thing that duplicates notices under StrictMode — and it belongs to the refactor, not to a patch.
+
 ### Feedback
 
 There were two `@keyframes` in the whole app and neither fired on a reward. Now the head `<style>` also defines `sdcPop` (floating `+N XP`), `sdcRise` (notices) and `.sdc-chip`, all suppressed under `prefers-reduced-motion` â the browser pane has that on, so animations will look dead there while the numbers still render.
@@ -430,7 +440,9 @@ Dominion Points: 3 for a 100% routine, 1 for â¥50%, first session of the day
 
 XP base is literally the reps performed, plus a flat **30** for a 100% routine. That bonus was 20, which made the first routine worth 44 XP against the 48 `li(1)` costs â a new player could not level up in their first session. **Any change to `li`, to the bonus, or to the volume model must keep that first level-up intact;** it is the cheapest, most load-bearing reward in the game.
 
-**The three focus profiles have to pay the same for equivalent work, and one of them did not.** `repMult` sets how many reps a profile does and `xpMult` is supposed to buy that back: `fuerza` does 65% of the reps at 1.5× XP, which nets 0.975. But `resistencia` did **140% of the reps at 1× XP** — it was paid in full for volume the other two trade away. Measured at gym rank C, same session, no streak: fuerza 210, salud 200, **resistencia 268**. `resistencia.xpMult` is now `.8`, which lands it at 214 — still ~2% ahead of fuerza, deliberately, because 238 reps takes longer than 110.
+**The three focus profiles have to pay the same for equivalent work, and one of them did not.** `repMult` sets how many reps a profile does and `xpMult` is supposed to buy that back: `fuerza` does 65% of the reps at 1.5× XP, which nets 0.975. But `resistencia` did **140% of the reps at 1× XP** — it was paid in full for volume the other two trade away. Measured at gym rank C, same session, no streak: fuerza 210, salud 200, **resistencia 268**. `resistencia.xpMult` went to `.8`, which landed it at 214 — still ~2% ahead of fuerza, deliberately, because 238 reps takes longer than 110.
+
+**That balance only held because the +30 completion bonus was multiplied too.** Fuerza's 1.5 applied to it, so where the target is small the bonus dominated and fuerza earned ~20% more than salud for fewer reps in bodyweight (10–14% in gym and flow at rank E) — and a player picking fuerza reached the first Umbral in 72 sessions instead of 90. The bonus is now outside the focus multiplier (`sdcBono` in `i5`: `(v − bono) × t5 + bono`; the streak, perks and buffs still multiply it). With the bonus flat, resistencia's 1.4 × 0.8 = 1.12 per rep showed through at 12–13% ahead in gym and flow, so `xpMult` is now **0.72** (≈1.008 per rep). Measured across the three modalities × ranks E, C, S, the three profiles now pay within **3.4%**, resistencia slightly ahead; `tests/progresion.test.js` holds them under 5%.
 
 **The load is in the XP now, but only where it is earned.** Ten reps at 20 kg used to pay exactly what ten reps at 100 kg paid: `v` starts as the raw rep count and `gymWeights` was never consulted. Progressive overload — the entire point of a gym — was invisible. The gym block in `i5` now collects a `sdcPRb` list when `gb.max` beats `bestLiftKg[b]`, and **+25 XP per pattern** is added after all the multipliers (flat on purpose, so it reads the same every time) with a notice that starts with `+`, so `sdcTier` styles it as good:
 
