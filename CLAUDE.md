@@ -194,6 +194,12 @@ ambas registradas         57/57    (era 24/24)
 
 `v5`, the zone panel, takes the same two numbers, so "Hoy: 57 / 57 reps" agrees with the row above it. Undo restores `dayLog` from the snapshot, `meta` included, so it rolls back with everything else — verified.
 
+### Undo has to undo everything the session wrote
+
+`s5` rolled back XP, level, PD, lifetime and weekly reps, records, history and streak, but **not** `month.reps`, the three modality counters (`week.modalities`, `month.modalities`, `lifetimeModalities`) or the achievements the session unlocked. Found by the test suite on the `modernizacion` branch: three register → undo cycles left the month at 36 squats for 12 done, the modality count at 3 for one session, and — because `s5` subtracted the achievements' PD while the achievements stayed unlocked — re-registering paid 3 PD instead of 5. Monthly missions read `month.reps` and nine achievements read `lifetimeModalities`, so an honest player who undid one mistaken registration was already inflating both.
+
+Both functions stay untouched; the fix wraps them like the other hooks. `pg()` now ends in `sdcDeshacerHook(f, …)`, which stores the pre-session `achievements` in `undoSnapshot.ach`, and the undo button calls `sdcDeshacer(f)`, which runs `s5` and then subtracts the snapshot's reps from `month.reps`, takes one off each modality counter for `Md(profile, today.date, today.modality)` (the restored `today`, so it is the modality of the session being undone) and restores the achievement list. A snapshot written before this change has no `ach`, and undo then behaves as before for that one day.
+
 ### Exercise selection
 
 Rank (`ve` = EâZ) picks the exercise **variant**; the fitness test picks the **volume**. Tables: `by` (bodyweight), `F2` (gym), `P2` (flow â only `squat` and `abs`; push and pull fall back to `by`), resolved by `_d(group, rank, modality)`. Every entry has an `alt` string, surfaced by the "ð¡ alternativa" button, which must name a real equipment-free substitute rather than a technique tip. Targets come from `Oy(state)`; the four groups are always `squat`, `pushup`, `back`, `abs`
