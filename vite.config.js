@@ -21,7 +21,7 @@ function serviceWorker() {
         .slice(0, 10);
 
       const conCache = plantilla.replace(
-        /const CACHE = '[^']*';/,
+        /const CACHE = ['"][^'"]*['"];/,
         `const CACHE = 'dominio-corporal-${version}';`
       );
       const sw = conCache.replace(

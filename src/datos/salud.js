@@ -1,0 +1,379 @@
+// Senales de alarma, regla del dolor, cuidado articular y neuromotor.
+import { Ka } from "../logica/tienda.js";
+import { $e, yt } from "../logica/sistemas.js";
+import { da } from "./logros.js";
+import { Dl, ue } from "../logica/rutina.js";
+import { Ea, M } from "../logica/partida.js";
+
+var H2 = [
+    "Dolor agudo, punzante o que aparece de golpe",
+    "Dolor que te despierta por la noche",
+    "Hinchazón, calor o deformidad visible en la articulación",
+    "Pérdida de fuerza o de movilidad que no mejora",
+    "Hormigueo, entumecimiento o dolor que baja por el brazo o la pierna",
+    "Dolor tras una caída, golpe o torsión brusca",
+    "Molestia que lleva más de 6 semanas sin mejorar",
+  ],
+  X2 =
+    "Regla del dolor: una molestia leve (hasta 3 sobre 10) que no empeora al día siguiente es aceptable. Si sube de ahí, reduce el rango, la carga o el tiempo. El dolor no es la señal de que está funcionando.",
+  Dy = [
+    {
+      id: "hombro",
+      zone: "Hombro",
+      common: "Tendinopatía del manguito rotador y dolor al elevar el brazo",
+      context:
+        "Suele aparecer por mucho empuje (flexiones, press) sin trabajo de rotadores ni escápula. El objetivo es dar carga progresiva al tendón y devolver control a la escápula.",
+      exercises: [
+        {
+          name: "Isométrico de rotación externa",
+          how: "Codo pegado al costado a 90°, empuja contra una pared o marco hacia fuera sin moverte.",
+          dose: "5 × 30 s · 30 s de descanso",
+          why: "Los isométricos suelen calmar el dolor del tendón y le dan carga sin movimiento.",
+        },
+        {
+          name: "Rotación externa con banda",
+          how: "Banda a la altura del codo, gira el antebrazo hacia fuera manteniendo el codo fijo al costado.",
+          dose: "3 × 12 lento (3 s de vuelta)",
+          why: "Fortalece infraespinoso y redondo menor, los que suelen quedarse atrás.",
+        },
+        {
+          name: "Deslizamiento en pared (wall slide)",
+          how: "Antebrazos en la pared, sube y baja manteniendo contacto, sin encoger los hombros.",
+          dose: "3 × 10",
+          why: "Reeduca el ritmo escápulo-humeral: la escápula debe rotar, no solo el brazo.",
+        },
+        {
+          name: "Face pull o remo alto",
+          how: "Con banda a la altura de la cara, tira separando las manos y juntando escápulas.",
+          dose: "3 × 15",
+          why: "Equilibra el exceso de empuje con trabajo de espalda alta.",
+        },
+      ],
+    },
+    {
+      id: "codo",
+      zone: "Codo",
+      common: "Epicondilitis (codo de tenista) y epitrocleitis (codo de golfista)",
+      context:
+        "Muy común en dominadas, remos y trabajo de agarre. El tendón no está roto: está poco tolerante a la carga. Se trata cargándolo despacio, no reposando del todo.",
+      exercises: [
+        {
+          name: "Isométrico de muñeca",
+          how: "Antebrazo apoyado, sujeta un peso ligero y aguanta la muñeca en extensión sin moverla.",
+          dose: "5 × 30 s",
+          why: "Calma el dolor y prepara el tendón para la fase excéntrica.",
+        },
+        {
+          name: "Excéntrico de extensores",
+          how: "Sube la muñeca con la otra mano y baja sola en 4 segundos con peso ligero.",
+          dose: "3 × 15 muy lento",
+          why: "La fase excéntrica lenta es la que mejor remodela el tendón.",
+        },
+        {
+          name: "Excéntrico de flexores",
+          how: "Lo mismo pero con la palma hacia arriba, para el lado interno del codo.",
+          dose: "3 × 15 muy lento",
+          why: "Para el codo de golfista, cara interna.",
+        },
+        {
+          name: "Agarre progresivo",
+          how: "Aprieta una pelota blanda o toalla enrollada y mantén.",
+          dose: "3 × 20 s",
+          why: "Reconstruye tolerancia al agarre, que es lo que dispara el dolor.",
+        },
+      ],
+    },
+    {
+      id: "muneca",
+      zone: "Muñeca",
+      common: "Dolor al apoyar peso (pino, bestia, flexiones)",
+      context:
+        "La muñeca no está preparada para cargar en extensión completa. Se gana con preparación específica, no evitándola.",
+      exercises: [
+        {
+          name: "Movilidad en cuadrupedia",
+          how: "Manos en el suelo, desplaza el peso adelante y atrás, luego círculos suaves.",
+          dose: "2 min antes de entrenar",
+          why: "Prepara el tejido antes de cargar.",
+        },
+        {
+          name: "Apoyo en dorso de la mano",
+          how: "En cuadrupedia, apoya el dorso de las manos y carga suavemente.",
+          dose: "3 × 20 s",
+          why: "Trabaja el rango contrario, que casi nadie entrena.",
+        },
+        {
+          name: "Extensores de muñeca con banda",
+          how: "Banda sobre el dorso de los dedos, ábrelos contra la resistencia.",
+          dose: "3 × 15",
+          why: "Equilibra la musculatura flexora dominante.",
+        },
+        {
+          name: "Apoyo progresivo en puños",
+          how: "Haz las flexiones o el beast hold sobre puños hasta ganar tolerancia.",
+          dose: "Sustituye el apoyo habitual",
+          why: "Permite seguir entrenando mientras la muñeca mejora.",
+        },
+      ],
+    },
+    {
+      id: "lumbar",
+      zone: "Lumbar",
+      common: "Dolor lumbar inespecífico y rigidez al levantarte",
+      context:
+        "Casi siempre mejora con movimiento, no con reposo. La clave es rigidez del core en cargas y movilidad de cadera, para que la lumbar deje de compensar.",
+      exercises: [
+        {
+          name: "Bird dog",
+          how: "En cuadrupedia, extiende brazo y pierna opuestos sin que la cadera rote.",
+          dose: "3 × 8 por lado, 3 s arriba",
+          why: "Anti-rotación: enseña a la columna a quedarse quieta mientras te mueves.",
+        },
+        {
+          name: "Plancha lateral",
+          how: "De lado, apoya antebrazo y rodillas o pies, cadera elevada y alineada.",
+          dose: "3 × 20-30 s por lado",
+          why: "Refuerza el cuadrado lumbar y los oblicuos.",
+        },
+        {
+          name: "Puente de glúteos",
+          how: "Tumbado, eleva la cadera apretando glúteos sin arquear la lumbar.",
+          dose: "3 × 15",
+          why: "Si el glúteo no trabaja, la lumbar hace su trabajo.",
+        },
+        {
+          name: "Gato-vaca y 90/90",
+          how: "Movilidad suave de columna y rotación de cadera sentado.",
+          dose: "2 min",
+          why: "Devuelve movilidad a cadera y torácica para descargar la zona lumbar.",
+        },
+      ],
+    },
+    {
+      id: "cadera",
+      zone: "Cadera",
+      common: "Pinzamiento, rigidez y dolor en la ingle al bajar en sentadilla",
+      context:
+        "Suele mezclarse falta de movilidad con poco control del glúteo. Trabaja ambos, no solo estirar.",
+      exercises: [
+        {
+          name: "Rotaciones 90/90",
+          how: "Sentado con ambas rodillas a 90°, gira de un lado al otro sin usar las manos.",
+          dose: "3 × 8 por lado",
+          why: "Gana rotación interna y externa, lo primero que se pierde.",
+        },
+        {
+          name: "Estiramiento de flexores en zancada",
+          how: "Rodilla trasera en el suelo, mete la pelvis y aprieta el glúteo del lado que estiras.",
+          dose: "3 × 30 s por lado",
+          why: "Estar sentado acorta el psoas y bascula la pelvis.",
+        },
+        {
+          name: "Abducción tumbado de lado",
+          how: "De lado, eleva la pierna de arriba con la punta ligeramente hacia abajo.",
+          dose: "3 × 15 por lado",
+          why: "Activa el glúteo medio, clave para la estabilidad de rodilla y cadera.",
+        },
+        {
+          name: "Sentadilla profunda sostenida",
+          how: "Baja a cuclillas completas y aguanta, usando los codos para abrir rodillas.",
+          dose: "3 × 30 s",
+          why: "Recupera el rango completo que la vida sedentaria elimina.",
+        },
+      ],
+    },
+    {
+      id: "rodilla",
+      zone: "Rodilla",
+      common: "Tendinopatía rotuliana (rodilla del saltador) y dolor femoropatelar",
+      context:
+        "El tendón rotuliano responde muy bien a carga lenta y progresiva. Evitar sentadillas del todo suele empeorarlo a medio plazo.",
+      exercises: [
+        {
+          name: "Sentadilla isométrica en pared",
+          how: "Espalda en la pared, rodillas a 60-90°, aguanta.",
+          dose: "5 × 45 s",
+          why: "Reduce el dolor del tendón y mantiene la fuerza del cuádriceps.",
+        },
+        {
+          name: "Sentadilla lenta a caja",
+          how: "Baja en 4 segundos hasta sentarte y sube normal.",
+          dose: "3 × 8",
+          why: "Carga controlada y progresiva sobre el tendón.",
+        },
+        {
+          name: "Extensión terminal (step-down)",
+          how: "De pie en un escalón, baja lentamente el otro pie hasta rozar el suelo.",
+          dose: "3 × 10 por pierna",
+          why: "Trabaja el control excéntrico donde suele doler.",
+        },
+        {
+          name: "Fortalecer glúteo e isquios",
+          how: "Puente de glúteos y curl nórdico asistido o peso muerto a una pierna.",
+          dose: "3 × 10",
+          why: "Una cadena posterior débil sobrecarga la rodilla.",
+        },
+      ],
+    },
+    {
+      id: "cuello",
+      zone: "Cuello",
+      common: "Rigidez cervical y tensión por postura y pantallas",
+      context: "No es solo el cuello: suele venir de una torácica rígida y una escápula dormida.",
+      exercises: [
+        {
+          name: "Retracción cervical (chin tuck)",
+          how: "Sin mover la cabeza arriba o abajo, lleva el mentón hacia atrás haciendo doble papada.",
+          dose: "3 × 10, 3 s cada una",
+          why: "Activa los flexores profundos, que sostienen la cabeza.",
+        },
+        {
+          name: "Extensión torácica sobre rodillo",
+          how: "Rodillo o toalla enrollada bajo la espalda alta, abre el pecho sin arquear la lumbar.",
+          dose: "2 min",
+          why: "Si la torácica no extiende, el cuello lo compensa.",
+        },
+        {
+          name: "Retracción escapular",
+          how: "Junta las escápulas y bájalas, sin encoger los hombros.",
+          dose: "3 × 12, 3 s",
+          why: "Descarga los trapecios superiores, siempre sobrecargados.",
+        },
+        {
+          name: "Movilidad cervical suave",
+          how: "Rotaciones e inclinaciones lentas, sin llegar al dolor.",
+          dose: "2 min",
+          why: "Mantiene el rango sin provocar.",
+        },
+      ],
+    },
+    {
+      id: "tobillo",
+      zone: "Tobillo y Aquiles",
+      common: "Tendinopatía de Aquiles y falta de dorsiflexión",
+      context:
+        "Poca movilidad de tobillo arruina sentadillas y pistols, y sobrecarga el Aquiles y la rodilla.",
+      exercises: [
+        {
+          name: "Isométrico de gemelo",
+          how: "De puntillas sobre ambos pies, aguanta arriba.",
+          dose: "5 × 30 s",
+          why: "Calma el tendón y mantiene la fuerza.",
+        },
+        {
+          name: "Elevación de talón excéntrica",
+          how: "Sube con dos pies, baja con uno en 4 segundos desde un escalón.",
+          dose: "3 × 12 por pierna",
+          why: "El protocolo excéntrico clásico para el Aquiles.",
+        },
+        {
+          name: "Movilidad de dorsiflexión",
+          how: "Rodilla hacia la pared con el talón clavado, busca tocar sin levantarlo.",
+          dose: "3 × 10 por lado",
+          why: "Gana el rango necesario para sentadilla profunda.",
+        },
+        {
+          name: "Equilibrio a una pierna",
+          how: "Aguanta sobre un pie, luego con los ojos cerrados.",
+          dose: "3 × 30 s por lado",
+          why: "Recupera la propiocepción tras cualquier esguince.",
+        },
+      ],
+    },
+  ],
+  Ty = 20;
+function Y2(e, a) {
+  let l = M(e),
+    n = [],
+    o = ue();
+  if (
+    (l.care || (l.care = { today: { date: o, done: [] }, lifetime: 0 }),
+    l.neuro || (l.neuro = Al()),
+    l.unlockAll === void 0 && (l.unlockAll = !1),
+    l.disabled || (l.disabled = []),
+    l.seenUnlocks || (l.seenUnlocks = $e.filter((r) => yt(l, r.id)).map((r) => r.id)),
+    l.care.today.date !== o && (l.care.today = { date: o, done: [] }),
+    l.care.today.done.includes(a))
+  )
+    return { state: l, notices: ["Ya registraste este protocolo hoy."] };
+  (l.care.today.done.push(a), (l.care.lifetime = (l.care.lifetime || 0) + 1));
+  let s = Math.round(Ty * Ka(l));
+  (l.streak.flexBuff && (s = Math.round(s * 1.1)),
+    (l.progress.currentXP += s),
+    (l.today.xpEarned = (l.today.xpEarned || 0) + s));
+  let u = Dy.find((r) => r.id === a);
+  (n.push(`Cuidado articular registrado: ${u ? u.zone : a}. +${s} XP.`), (l = Ea(l, n)));
+  let c = da(l);
+  return { state: c.state, notices: [...n, ...c.notices] };
+}
+var fy = [
+    { label: "IZQUIERDA", action: "Desplázate un paso lateral a tu izquierda", color: "#4f9dff" },
+    { label: "DERECHA", action: "Desplázate un paso lateral a tu derecha", color: "#3ecf8e" },
+    { label: "ABAJO", action: "Bajá a posición de bestia y volvé", color: "#ffb84f" },
+    { label: "SALTA", action: "Salto vertical con recepción suave", color: "#ff5c7a" },
+    { label: "GIRA", action: "Media vuelta sobre vos mismo", color: "#b084f5" },
+  ],
+  my = [
+    "Bestia",
+    "Cangrejo",
+    "Escorpión",
+    "Underswitch",
+    "Kickthrough",
+    "Sentadilla",
+    "Plancha",
+    "Salto",
+  ],
+  md = ["Plancha frontal", "Sentadilla en pared", "Beast hold", "Plancha lateral", "Hollow hold"],
+  pd = [
+    "Cuenta hacia atrás de 7 en 7 desde 300, en voz alta",
+    "Di nombres de animales sin repetir, uno por segundo",
+    "Recita el alfabeto al revés",
+    "Di los meses del año en orden inverso",
+    "Nombra ciudades por cada letra del abecedario",
+  ],
+  bd = [
+    "Mano derecha toca rodilla izquierda, luego mano izquierda toca rodilla derecha",
+    "Codo derecho a rodilla izquierda, alternando, sin parar",
+    "Mano derecha toca talón izquierdo por detrás, alternando",
+    "Rodilla al pecho alternando + palmada por debajo del muslo",
+  ],
+  G2 = 15,
+  Fs = [60, 72, 84, 96, 108, 120];
+function Al() {
+  return {
+    bestSpeedLevel: 0,
+    reactionDrills: 0,
+    bestSequence: 0,
+    bestDualSec: 0,
+    bestBpm: 0,
+    sessions: 0,
+  };
+}
+function Ps(e, a, l, n) {
+  let o = M(e),
+    s = [];
+  (o.neuro || (o.neuro = Al()),
+    o.unlockAll === void 0 && (o.unlockAll = !1),
+    o.disabled || (o.disabled = []),
+    o.seenUnlocks || (o.seenUnlocks = $e.filter((p) => yt(o, p.id)).map((p) => p.id)));
+  let u = !1;
+  (a === "reaction"
+    ? (l > (o.neuro.bestSpeedLevel || 0) && ((o.neuro.bestSpeedLevel = l), (u = !0)),
+      (o.neuro.reactionDrills = (o.neuro.reactionDrills || 0) + 1))
+    : a === "sequence"
+      ? l > o.neuro.bestSequence && ((o.neuro.bestSequence = l), (u = !0))
+      : a === "dual"
+        ? l > o.neuro.bestDualSec && ((o.neuro.bestDualSec = l), (u = !0))
+        : a === "coord" && l > o.neuro.bestBpm && ((o.neuro.bestBpm = l), (u = !0)),
+    (o.neuro.sessions = (o.neuro.sessions || 0) + 1));
+  let c = Math.round(G2 * Ka(o));
+  ((o.progress.currentXP += c),
+    (o.today.xpEarned = (o.today.xpEarned || 0) + c),
+    s.push(u ? `¡Nueva marca personal! +${c} XP.` : `Sesión neuromotora registrada. +${c} XP.`),
+    n && (o = Dl(o, "Neuromotor")),
+    (o = Ea(o, s)));
+  let r = da(o);
+  return { state: r.state, notices: [...s, ...r.notices] };
+}
+
+export { H2, X2, Dy, Ty, Y2, fy, my, md, pd, bd, G2, Fs, Al, Ps };
