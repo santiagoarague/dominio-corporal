@@ -187,43 +187,45 @@ import { BarraDescanso } from "./descanso.jsx";
 import { Reaccion, Ritmo, Secuencia, kd, TareaDual } from "./neuromotor.jsx";
 
 var sdcDevN = 0;
-function App({ player: e, setPlayer: a, initialNotices: l }) {
+function App({ player, setPlayer, initialNotices }) {
   // Los avisos se agregan en una microtarea. Muchas actualizaciones de la
-  // partida, a(d => ...), los agregan desde adentro, y React ejecuta esa
+  // partida, setPlayer(d => ...), los agregan desde adentro, y React ejecuta esa
   // funcion mientras dibuja Raiz: actualizar App en ese momento es justo lo
   // que React no permite ("Cannot update a component while rendering").
-  function o(x) {
+  function avisar(x) {
     queueMicrotask(() => sdcSetAvisos(x));
   }
-  let [n, sdcSetAvisos] = useState(l || []),
+  let [avisos, sdcSetAvisos] = useState(initialNotices || []),
     {
-      profile: s,
-      progress: u,
-      today: c,
-      week: r,
-      streak: p,
-      ascension: v,
-      exploration: x,
-      dungeon: y,
-      achievements: S,
-      history: E,
-      lifetimeReps: T,
-      combat: A,
-      primal: g,
-      dungeonsCleared: b,
-      lastTrained: h,
-      dominion: C,
-      lastWeekSummary: D,
-      ui: H,
-    } = e,
-    z = colorRango[u.rank],
-    q = nivelUmbral[u.rank],
-    U = costoNivel(u.level),
-    Y = (c.completed && c.rank) || u.rank,
-    B = modalidadDelDia(s, c.date, c.modality),
-    J = metaDelDia(e, Y),
-    [De, On] = useState(() => (sdcAnimoHoy(e).modo === "recovery" ? "recovery" : "normal")),
-    [Aa, Va] = useState({ ...J }),
+      profile,
+      progress,
+      today,
+      week,
+      streak,
+      ascension,
+      exploration,
+      dungeon,
+      achievements,
+      history,
+      lifetimeReps,
+      combat,
+      primal,
+      dungeonsCleared,
+      lastTrained,
+      dominion,
+      lastWeekSummary,
+      ui,
+    } = player,
+    colorDelRango = colorRango[progress.rank],
+    nivelDelUmbral = nivelUmbral[progress.rank],
+    costoDelNivel = costoNivel(progress.level),
+    rangoDeHoy = (today.completed && today.rank) || progress.rank,
+    modalidad = modalidadDelDia(profile, today.date, today.modality),
+    metaDia = metaDelDia(player, rangoDeHoy),
+    [modo, setModo] = useState(() =>
+      sdcAnimoHoy(player).modo === "recovery" ? "recovery" : "normal",
+    ),
+    [metaSesion, setMetaSesion] = useState({ ...metaDia }),
     [sdcSer, sdcSetSer] = useState({ squat: 0, pushup: 0, back: 0, abs: 0 }),
     [sdcFlota, sdcSetFlota] = useState(null),
     [sdcUltEpic, sdcSetUltEpic] = useState(""),
@@ -244,38 +246,38 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
     [sdcEstPz, sdcSetEstPz] = useState(0),
     [sdcEstOk, sdcSetEstOk] = useState(-1),
     [sdcKgS, sdcSetKgS] = useState({}),
-    [ja, Ba] = useState(!1),
-    [fa, Tl] = useState(300),
-    [Ud, j] = useState(!1),
-    [Se, gt] = useState(!1),
-    [oi, Ld] = useState(!1),
-    [jn, Hd] = useState("front"),
-    [ma, Hy] = useState("desarrollo"),
-    [He, ii] = useState("movs"),
-    [Xy, Yy] = useState(null),
-    [Gy, Zy] = useState(null),
-    [Ky, Vy] = useState(null),
-    [vt, su] = useState(null),
-    [Da, $t] = useState("training"),
-    [Xd, Yd] = useState(""),
-    [Ml, Gd] = useState(""),
-    [uu, Qy] = useState(!1),
-    [Wy, Zd] = useState(!1),
-    [Bn, Kd] = useState(null),
-    [Jy, cu] = useState(!1),
-    [It, ru] = useState([]),
-    [du, _l] = useState(!1),
-    [fu, ht] = useState(!1),
-    [xt, ql] = useState(0),
-    [Fy, mu] = useState(0),
-    [Vd, si] = useState(""),
-    [pu, bu] = useState(null),
-    [Qd, ui] = useState(1),
-    [Qa, Ol] = useState("idle"),
-    [jl, wn] = useState(0),
-    [Py, yu] = useState(!1),
-    [Un, gu] = useState(0),
-    ci = [
+    [estirando, setEstirando] = useState(!1),
+    [estSegundos, setEstSegundos] = useState(300),
+    [confirmarReinicio, setConfirmarReinicio] = useState(!1),
+    [panelPruebas, setPanelPruebas] = useState(!1),
+    [hayPuntoRetorno, setHayPuntoRetorno] = useState(!1),
+    [vistaCuerpo, setVistaCuerpo] = useState("front"),
+    [modoMapa, setModoMapa] = useState("desarrollo"),
+    [seccionPrimal, setSeccionPrimal] = useState("movs"),
+    [habilidadAbierta, setHabilidadAbierta] = useState(null),
+    [cuidadoAbierto, setCuidadoAbierto] = useState(null),
+    [neuroAbierto, setNeuroAbierto] = useState(null),
+    [zonaElegida, setZonaElegida] = useState(null),
+    [pestana, setPestana] = useState("training"),
+    [kmTexto, setKmTexto] = useState(""),
+    [pasosTexto, setPasosTexto] = useState(""),
+    [verTodoMapa, setVerTodoMapa] = useState(!1),
+    [cambiandoMeta, setCambiandoMeta] = useState(!1),
+    [diaElegido, setDiaElegido] = useState(null),
+    [confirmarDeshacer, setConfirmarDeshacer] = useState(!1),
+    [hallazgos, setHallazgos] = useState([]),
+    [combPrep, setCombPrep] = useState(!1),
+    [combVentana, setCombVentana] = useState(!1),
+    [combSegundos, setCombSegundos] = useState(0),
+    [combSegundosMax, setCombSegundosMax] = useState(0),
+    [combTexto, setCombTexto] = useState(""),
+    [primalMov, setPrimalMov] = useState(null),
+    [primalRonda, setPrimalRonda] = useState(1),
+    [primalFase, setPrimalFase] = useState("idle"),
+    [primalSegundos, setPrimalSegundos] = useState(0),
+    [repruebaAbierta, setRepruebaAbierta] = useState(!1),
+    [repruebaPaso, setRepruebaPaso] = useState(0),
+    repruebaEjercicios = [
       {
         key: "sq",
         label: "Sentadillas",
@@ -289,78 +291,81 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
         hint: "Bajo una mesa firme, cuerpo recto, tirá hasta tocar el borde con el pecho. Sin mesa: superman en el suelo.",
       },
     ],
-    [vu, hu] = useState(""),
-    [xu, Su] = useState(""),
-    [Nu, Cu] = useState(""),
+    [repSentadillas, setRepSentadillas] = useState(""),
+    [repFlexiones, setRepFlexiones] = useState(""),
+    [repAbdominales, setRepAbdominales] = useState(""),
     [sdcRbk, sdcSetRbk] = useState(""),
-    [$y, Iy] = useState(() => A2(fechaHoy())),
-    [ku, Wd] = useState(""),
-    [Ry, zu] = useState(!1),
-    [Ln, eg] = useState(!1),
-    [Jd, Fd] = useState(!1),
-    ag = { fuerza: 90, resistencia: 45, salud: 60 },
-    Re = metaSemanal(e),
-    sdcYa = c.completed || (c.doneModalities || []).includes(B),
-    Rt = sdcYa ? sdcHoyReps(e) : sdcSumaReps(sdcHoyReps(e), sdcRepsHechas()),
-    sdcMt = sdcYa ? sdcHoyMeta(e, J) : sdcSumaReps(sdcHoyMeta(e, null), J),
-    tg = {
-      squat: (Rt.squat || 0) / (sdcMt.squat || 1),
-      pushup: (Rt.pushup || 0) / (sdcMt.pushup || 1),
-      back: (Rt.back || 0) / (sdcMt.back || 1),
-      abs: (Rt.abs || 0) / (sdcMt.abs || 1),
+    [fraseMascota, setFraseMascota] = useState(() => A2(fechaHoy())),
+    [respaldoTexto, setRespaldoTexto] = useState(""),
+    [confirmarRestaurar, setConfirmarRestaurar] = useState(!1),
+    [metronomoOn, setMetronomoOn] = useState(!1),
+    [descansando, setDescansando] = useState(!1),
+    descansoBase = { fuerza: 90, resistencia: 45, salud: 60 },
+    metaSemana = metaSemanal(player),
+    sdcYa = today.completed || (today.doneModalities || []).includes(modalidad),
+    repsHoy = sdcYa ? sdcHoyReps(player) : sdcSumaReps(sdcHoyReps(player), sdcRepsHechas()),
+    sdcMt = sdcYa ? sdcHoyMeta(player, metaDia) : sdcSumaReps(sdcHoyMeta(player, null), metaDia),
+    ratiosHoy = {
+      squat: (repsHoy.squat || 0) / (sdcMt.squat || 1),
+      pushup: (repsHoy.pushup || 0) / (sdcMt.pushup || 1),
+      back: (repsHoy.back || 0) / (sdcMt.back || 1),
+      abs: (repsHoy.abs || 0) / (sdcMt.abs || 1),
     },
-    Hn = ["squat", "pushup", "back", "abs"],
-    Wa = O2(e),
-    lg = Math.max(10, ...Hn.map((f) => Wa.levels[f])),
-    Pd = (f) => Math.max(1, (J[f] || 1) * Re),
-    ri = (f) =>
-      ma === "hoy"
-        ? (Rt[f] || 0) / (sdcMt[f] || 1)
-        : ma === "semana"
-          ? ((r.reps && r.reps[f]) || 0) / Pd(f)
-          : Wa.levels[f] / lg,
-    $d = {
-      squat: colorProgreso(ri("squat")),
-      pushup: colorProgreso(ri("pushup")),
-      back: colorProgreso(ri("back")),
-      abs: colorProgreso(ri("abs")),
+    grupos = ["squat", "pushup", "back", "abs"],
+    atributos = O2(player),
+    nivelMaxAtributo = Math.max(10, ...grupos.map((f) => atributos.levels[f])),
+    metaSemanaGrupo = (f) => Math.max(1, (metaDia[f] || 1) * metaSemana),
+    ratioMapa = (f) =>
+      modoMapa === "hoy"
+        ? (repsHoy[f] || 0) / (sdcMt[f] || 1)
+        : modoMapa === "semana"
+          ? ((week.reps && week.reps[f]) || 0) / metaSemanaGrupo(f)
+          : atributos.levels[f] / nivelMaxAtributo,
+    coloresMapa = {
+      squat: colorProgreso(ratioMapa("squat")),
+      pushup: colorProgreso(ratioMapa("pushup")),
+      back: colorProgreso(ratioMapa("back")),
+      abs: colorProgreso(ratioMapa("abs")),
     },
-    el = x.lifetimeKm || 0,
-    ng = l2(el),
-    L5 = x.unlockedIndex >= 0 ? nodosExplorar[x.unlockedIndex] : null,
-    di = nodosExplorar[x.unlockedIndex + 1] || null,
-    Xn = g.today.date === fechaHoy() ? g.today.count : 0,
-    Yn = sesionesPrimalHoy(e),
-    al = r.trained || 0,
-    Id = diasConstancia(
-      E,
-      c.date,
-      c.completed
-        ? c.mode === "rest"
+    kmTotales = exploration.lifetimeKm || 0,
+    rangoCaminante = l2(kmTotales),
+    nodoActual = exploration.unlockedIndex >= 0 ? nodosExplorar[exploration.unlockedIndex] : null,
+    nodoSiguiente = nodosExplorar[exploration.unlockedIndex + 1] || null,
+    primalHechasHoy = primal.today.date === fechaHoy() ? primal.today.count : 0,
+    primalSesionesHoy = sesionesPrimalHoy(player),
+    sesionesSemana = week.trained || 0,
+    diasGrilla = diasConstancia(
+      history,
+      today.date,
+      today.completed
+        ? today.mode === "rest"
           ? "rest"
-          : c.fullCompletion
+          : today.fullCompletion
             ? "full"
             : "partial"
-        : (r.sessionDates || []).includes(c.date)
+        : (week.sessionDates || []).includes(today.date)
           ? "partial"
           : "pending",
       28,
     ),
-    fi = A.todayDefeated && A.todayDefeated.date === fechaHoy() ? A.todayDefeated.count : 0;
+    derrotadosHoy =
+      combat.todayDefeated && combat.todayDefeated.date === fechaHoy()
+        ? combat.todayDefeated.count
+        : 0;
   (useEffect(() => {
-    (Va(
-      De === "recovery"
+    (setMetaSesion(
+      modo === "recovery"
         ? {
-            squat: Math.round(J.squat * 0.5),
-            pushup: Math.round(J.pushup * 0.5),
-            back: Math.round(J.back * 0.5),
-            abs: Math.round(J.abs * 0.5),
+            squat: Math.round(metaDia.squat * 0.5),
+            pushup: Math.round(metaDia.pushup * 0.5),
+            back: Math.round(metaDia.back * 0.5),
+            abs: Math.round(metaDia.abs * 0.5),
           }
-        : { ...J },
+        : { ...metaDia },
     ),
       (function () {
-        var mk = sdcMarca(e, sdcMarcaK(B, De));
-        mk && !c.completed && !(c.doneModalities || []).includes(B)
+        var mk = sdcMarca(player, sdcMarcaK(modalidad, modo));
+        mk && !today.completed && !(today.doneModalities || []).includes(modalidad)
           ? (sdcSetSer(mk.ser || { squat: 0, pushup: 0, back: 0, abs: 0 }),
             sdcSetAjuste(mk.aj || {}),
             sdcSetModOk(!!mk.mok),
@@ -371,13 +376,13 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
             sdcSetKgS({}));
       })(),
       sdcSetConfDesc(!1));
-  }, [De, u.rank, B]),
+  }, [modo, progress.rank, modalidad]),
     useEffect(() => {
-      if (!n || !n.length) {
+      if (!avisos || !avisos.length) {
         sdcUltEpic && sdcSetUltEpic("");
         return;
       }
-      let ep = n.find((t) => sdcTier(t) === "epic");
+      let ep = avisos.find((t) => sdcTier(t) === "epic");
       if (!ep) {
         sdcUltEpic && sdcSetUltEpic("");
         return;
@@ -389,145 +394,167 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
         setTimeout(() => sdcBeep(784, 140), 300),
         setTimeout(() => sdcBeep(1047, 340), 450),
         sdcVib([40, 60, 40, 60, 140]));
-    }, [n, sdcUltEpic]),
+    }, [avisos, sdcUltEpic]),
     useEffect(() => {
       sdcSetCombSer({});
-    }, [A.villainIndex, A.exercise, A.phase]),
+    }, [combat.villainIndex, combat.exercise, combat.phase]),
     useEffect(() => {
       if (!sdcFlota) return;
       let f = setTimeout(() => sdcSetFlota(null), 1200);
       return () => clearTimeout(f);
     }, [sdcFlota]),
     useEffect(() => {
-      if (!ja) return;
-      let f = setInterval(() => Tl(Math.floor(((sdcEstPz || Date.now()) - sdcEstIni) / 1e3)), 300);
+      if (!estirando) return;
+      let f = setInterval(
+        () => setEstSegundos(Math.floor(((sdcEstPz || Date.now()) - sdcEstIni) / 1e3)),
+        300,
+      );
       return () => clearInterval(f);
-    }, [ja, sdcEstIni, sdcEstPz]),
+    }, [estirando, sdcEstIni, sdcEstPz]),
     useEffect(() => {
-      if (!ja) return;
+      if (!estirando) return;
       let tt = sdcEstTotal(sdcEstPasos);
-      if (fa >= tt) {
-        (Ba(!1),
+      if (estSegundos >= tt) {
+        (setEstirando(!1),
           sdcBeep(880, 200),
           setTimeout(() => sdcBeep(1175, 340), 210),
           sdcVib([40, 60, 140]),
-          Ne((d) =>
+          aplicar((d) =>
             sdcPasosHook(
               registrarEstiramiento(d, sdcEstPasos.length, sdcEstPasos.length),
               sdcEstPasos,
               sdcEstPasos.length,
             ),
           ),
-          o((d) => [...d, "Rutina de estiramiento completada."]));
+          avisar((d) => [...d, "Rutina de estiramiento completada."]));
         return;
       }
-      let p = sdcEstPaso(sdcEstPasos, fa),
+      let p = sdcEstPaso(sdcEstPasos, estSegundos),
         fs = p.index * 2 + (p.prep > 0 ? 0 : 1);
       p.prep > 0 &&
         !sdcEstPz &&
         sdcEstOk < p.index &&
-        sdcPasoEspera(sdcEstPasos, p.index, sdcPasosV(e)) &&
+        sdcPasoEspera(sdcEstPasos, p.index, sdcPasosV(player)) &&
         sdcSetEstPz(sdcEstIni + sdcEstDesde(sdcEstPasos, p.index) * 1e3);
       fs > sdcEstIdx &&
         (sdcSetEstIdx(fs),
         p.prep > 0 ? (sdcBeep(520, 120), sdcVib(18)) : (sdcBeep(760, 140), sdcVib(22)));
-    }, [ja, fa]),
+    }, [estirando, estSegundos]),
     useEffect(() => {
-      if (Da !== "combat") {
-        (_l(!1), ht(!1));
+      if (pestana !== "combat") {
+        (setCombPrep(!1), setCombVentana(!1));
         return;
       }
-      if (A.phase === "resting") {
-        let d = za(A.villainIndex).isBoss ? 20 : 12;
-        (mu(d), ql(d), _l(!1), ht(!1));
+      if (combat.phase === "resting") {
+        let d = za(combat.villainIndex).isBoss ? 20 : 12;
+        (setCombSegundosMax(d), setCombSegundos(d), setCombPrep(!1), setCombVentana(!1));
       }
-    }, [A.roundId, Da]),
+    }, [combat.roundId, pestana]),
     useEffect(() => {
-      if (!du) return;
-      if (xt <= 0) {
-        _l(!1);
-        let d = za(A.villainIndex),
+      if (!combPrep) return;
+      if (combSegundos <= 0) {
+        setCombPrep(!1);
+        let d = za(combat.villainIndex),
           m = d.isBoss
             ? repsCombateSuave(
-                u.rank,
-                s.classification,
-                s.focusProfile,
-                (A.bossCats || $o(A.lastExercise))[0],
-                B,
-                s.testResults,
+                progress.rank,
+                profile.classification,
+                profile.focusProfile,
+                (combat.bossCats || $o(combat.lastExercise))[0],
+                modalidad,
+                profile.testResults,
               )
             : Math.max(
                 1,
                 Math.round(
                   repsCombate(
-                    u.rank,
-                    s.classification,
-                    A.exercise,
-                    s.focusProfile,
-                    B,
-                    s.testResults,
-                  ) * (A.loadFactor || 1),
+                    progress.rank,
+                    profile.classification,
+                    combat.exercise,
+                    profile.focusProfile,
+                    modalidad,
+                    profile.testResults,
+                  ) * (combat.loadFactor || 1),
                 ),
               ),
           N = d.isBoss ? p2() : m2(m);
-        (mu(N), ql(N), si(""), ht(!0));
+        (setCombSegundosMax(N), setCombSegundos(N), setCombTexto(""), setCombVentana(!0));
         return;
       }
-      let f = setTimeout(() => ql((d) => d - 1), 1e3);
+      let f = setTimeout(() => setCombSegundos((d) => d - 1), 1e3);
       return () => clearTimeout(f);
-    }, [du, xt]),
+    }, [combPrep, combSegundos]),
     useEffect(() => {
-      if (!fu) return;
-      if (xt <= 0) {
-        (ht(!1), Ne((d) => perderVida(d)));
+      if (!combVentana) return;
+      if (combSegundos <= 0) {
+        (setCombVentana(!1), aplicar((d) => perderVida(d)));
         return;
       }
-      let f = setTimeout(() => ql((d) => d - 1), 1e3);
+      let f = setTimeout(() => setCombSegundos((d) => d - 1), 1e3);
       return () => clearTimeout(f);
-    }, [fu, xt]),
+    }, [combVentana, combSegundos]),
     useEffect(() => {
-      if (Qa !== "active") return;
-      if (jl <= 0) {
+      if (primalFase !== "active") return;
+      if (primalSegundos <= 0) {
         (sdcBeep(520, 160), sdcVib(18));
-        if (Qd < dd) (Ol("resting"), wn(cy));
+        if (primalRonda < dd) (setPrimalFase("resting"), setPrimalSegundos(cy));
         else {
-          let d = pu;
-          (Ol("idle"), bu(null), ui(1), Ne((m) => E2(m, d)));
+          let d = primalMov;
+          (setPrimalFase("idle"), setPrimalMov(null), setPrimalRonda(1), aplicar((m) => E2(m, d)));
         }
         return;
       }
-      let f = setTimeout(() => wn((d) => d - 1), 1e3);
+      let f = setTimeout(() => setPrimalSegundos((d) => d - 1), 1e3);
       return () => clearTimeout(f);
-    }, [Qa, jl]),
+    }, [primalFase, primalSegundos]),
     useEffect(() => {
-      if (Qa !== "resting") return;
-      if (jl <= 0) {
-        (sdcBeep(760, 160), sdcVib(22), ui((d) => d + 1), Ol("active"), wn(Ws(u.rank)));
+      if (primalFase !== "resting") return;
+      if (primalSegundos <= 0) {
+        (sdcBeep(760, 160),
+          sdcVib(22),
+          setPrimalRonda((d) => d + 1),
+          setPrimalFase("active"),
+          setPrimalSegundos(Ws(progress.rank)));
         return;
       }
-      let f = setTimeout(() => wn((d) => d - 1), 1e3);
+      let f = setTimeout(() => setPrimalSegundos((d) => d - 1), 1e3);
       return () => clearTimeout(f);
-    }, [Qa, jl]),
-    sdcWakeSi(!!du || !!fu || !!ja || Qa === "active" || Qa === "resting"));
-  function og(f) {
-    (bu(f), ui(0), Ol("listo"));
+    }, [primalFase, primalSegundos]),
+    sdcWakeSi(
+      !!combPrep ||
+        !!combVentana ||
+        !!estirando ||
+        primalFase === "active" ||
+        primalFase === "resting",
+    ));
+  function primalElegir(f) {
+    (setPrimalMov(f), setPrimalRonda(0), setPrimalFase("listo"));
   }
   function sdcPrimalYa() {
-    (sdcBeep(660, 100), sdcVib(22), ui(0), wn(10), Ol("resting"));
+    (sdcBeep(660, 100),
+      sdcVib(22),
+      setPrimalRonda(0),
+      setPrimalSegundos(10),
+      setPrimalFase("resting"));
   }
-  function ig() {
-    (Ol("idle"), bu(null), ui(1));
+  function primalCancelar() {
+    (setPrimalFase("idle"), setPrimalMov(null), setPrimalRonda(1));
   }
-  function sg() {
-    let f = Math.max(0, parseInt(vu || "0", 10)),
-      d = Math.max(0, parseInt(xu || "0", 10)),
-      m = Math.max(0, parseInt(Nu || "0", 10)),
+  function guardarReprueba() {
+    let f = Math.max(0, parseInt(repSentadillas || "0", 10)),
+      d = Math.max(0, parseInt(repFlexiones || "0", 10)),
+      m = Math.max(0, parseInt(repAbdominales || "0", 10)),
       bq = Math.max(0, parseInt(sdcRbk || "0", 10));
-    (Ne((N) => guardarPrueba(N, f, d, m, bq, 5)), yu(!1), hu(""), Su(""), Cu(""), sdcSetRbk(""));
+    (aplicar((N) => guardarPrueba(N, f, d, m, bq, 5)),
+      setRepruebaAbierta(!1),
+      setRepSentadillas(""),
+      setRepFlexiones(""),
+      setRepAbdominales(""),
+      sdcSetRbk(""));
   }
   function bkDescargar() {
     try {
-      let t = JSON.stringify(e),
+      let t = JSON.stringify(player),
         bl = new Blob([t], { type: "application/json" }),
         u2 = URL.createObjectURL(bl),
         el = document.createElement("a");
@@ -538,9 +565,9 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
         document.body.removeChild(el),
         setTimeout(() => URL.revokeObjectURL(u2), 1e3),
         sdcRespaldoOk(),
-        o((d) => [...d, "Respaldo descargado como archivo."]));
+        avisar((d) => [...d, "Respaldo descargado como archivo."]));
     } catch (x) {
-      o((d) => [...d, "No se pudo descargar el archivo."]);
+      avisar((d) => [...d, "No se pudo descargar el archivo."]);
     }
   }
   function bkCargar(ev) {
@@ -548,63 +575,67 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
     if (!f) return;
     let r = new FileReader();
     ((r.onload = () => {
-      (Wd(String(r.result || "")),
-        o((d) => [...d, "Archivo cargado. Tocá Restaurar para aplicarlo."]));
+      (setRespaldoTexto(String(r.result || "")),
+        avisar((d) => [...d, "Archivo cargado. Tocá Restaurar para aplicarlo."]));
     }),
-      (r.onerror = () => o((d) => [...d, "No se pudo leer el archivo."])),
+      (r.onerror = () => avisar((d) => [...d, "No se pudo leer el archivo."])),
       r.readAsText(f),
       (ev.target.value = ""));
   }
-  function ug() {
-    let f = JSON.stringify(e);
+  function copiarRespaldo() {
+    let f = JSON.stringify(player);
     navigator.clipboard && navigator.clipboard.writeText
       ? navigator.clipboard
           .writeText(f)
-          .then(() => (sdcRespaldoOk(), o((d) => [...d, "Respaldo copiado al portapapeles."])))
+          .then(() => (sdcRespaldoOk(), avisar((d) => [...d, "Respaldo copiado al portapapeles."])))
           .catch(() =>
-            o((d) => [
+            avisar((d) => [
               ...d,
               "No se pudo copiar automáticamente. Tocá el cuadro de texto y selecciona todo para copiarlo a mano.",
             ]),
           )
-      : o((d) => [...d, "Tocá el cuadro de texto y selecciona todo para copiarlo a mano."]);
+      : avisar((d) => [...d, "Tocá el cuadro de texto y selecciona todo para copiarlo a mano."]);
   }
-  function cg() {
+  function restaurarRespaldo() {
     try {
-      let f = JSON.parse(ku.trim());
+      let f = JSON.parse(respaldoTexto.trim());
       if (!f || !f.profile || !f.progress) throw new Error("formato inválido");
       let { state: d } = cargarPartida(f);
-      (a(d), guardarPartida(d), o(["¡Progreso restaurado desde el respaldo!"]));
+      (setPlayer(d), guardarPartida(d), avisar(["¡Progreso restaurado desde el respaldo!"]));
     } catch (f) {
-      o((d) => [...d, "Ese respaldo no es válido. Revisá que copiaste todo el texto completo."]);
+      avisar((d) => [
+        ...d,
+        "Ese respaldo no es válido. Revisá que copiaste todo el texto completo.",
+      ]);
     }
-    (Wd(""), zu(!1));
+    (setRespaldoTexto(""), setConfirmarRestaurar(!1));
   }
-  function Ne(f) {
-    a((d) => {
+  function aplicar(f) {
+    setPlayer((d) => {
       let { state: m, notices: N } = f(d);
-      return (N && N.length && o((_) => [..._, ...N]), guardarPartida(m), m);
+      return (N && N.length && avisar((_) => [..._, ...N]), guardarPartida(m), m);
     });
   }
-  function rg(f) {
-    Ne((d) => b2(d, f));
+  function combElegir(f) {
+    aplicar((d) => b2(d, f));
   }
-  function Rd() {
-    Vd.trim().toLowerCase() === "hecho" && (ht(!1), Ne((f) => h2(f)), si(""));
+  function combGolpeTexto() {
+    combTexto.trim().toLowerCase() === "hecho" &&
+      (setCombVentana(!1), aplicar((f) => h2(f)), setCombTexto(""));
   }
-  function dg() {
-    (ht(!1), si(""), sdcSetCombSer({}));
-    let d = za(A.villainIndex).isBoss ? 20 : 12;
-    (mu(d), ql(d), _l(!1));
+  function combCancelar() {
+    (setCombVentana(!1), setCombTexto(""), sdcSetCombSer({}));
+    let d = za(combat.villainIndex).isBoss ? 20 : 12;
+    (setCombSegundosMax(d), setCombSegundos(d), setCombPrep(!1));
   }
-  function fg() {
-    Ne((f) => S2(f));
+  function combSiguiente() {
+    aplicar((f) => S2(f));
   }
-  function mg() {
-    Ne((f) => N2(f));
+  function combReintentar() {
+    aplicar((f) => N2(f));
   }
   function sdcRepsSerie(g, k) {
-    let t = Aa[g] || 0,
+    let t = metaSesion[g] || 0,
       pl = sdcSplit(t, sdcNSets(t)),
       aj = sdcAjuste[g] || {};
     return aj[k] !== void 0 ? aj[k] : pl[k] || 0;
@@ -625,7 +656,12 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
     return h.squat + h.pushup + h.back + h.abs;
   }
   function sdcTotalMeta() {
-    return (Aa.squat || 0) + (Aa.pushup || 0) + (Aa.back || 0) + (Aa.abs || 0);
+    return (
+      (metaSesion.squat || 0) +
+      (metaSesion.pushup || 0) +
+      (metaSesion.back || 0) +
+      (metaSesion.abs || 0)
+    );
   }
   function sdcAjustar(g, k, v) {
     let nx = { ...sdcAjuste, [g]: { ...(sdcAjuste[g] || {}), [k]: Math.max(0, v) } };
@@ -638,10 +674,10 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
       sdcVib([30, 40, 70]));
   }
   function sdcMarcaOk(ser, aj, mok) {
-    a(function (N) {
+    setPlayer(function (N) {
       var _ = clonar(N);
       if (_.today) {
-        var kk = sdcMarcaK(B, De);
+        var kk = sdcMarcaK(modalidad, modo);
         _.today.marcas || (_.today.marcas = {});
         var pv = _.today.marcas[kk] || {};
         _.today.marcas[kk] = { ser: ser, aj: aj, mok: !!mok, kg: pv.kg };
@@ -660,13 +696,15 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
         setTimeout(() => sdcBeep(880, 110), 85),
         sdcVib(18),
         sdcSetFlota({ n: gn, id: Date.now() }),
-        sdcSetDesc(Math.min(180, Math.round((ag[s.focusProfile] || 60) + gn * 1.5))),
+        sdcSetDesc(
+          Math.min(180, Math.round((descansoBase[profile.focusProfile] || 60) + gn * 1.5)),
+        ),
         sdcSetDescIni(Date.now()),
-        Fd(!0));
+        setDescansando(!0));
     } else sdcVib(8);
   }
   function sdcGolpe() {
-    (ht(!1), Ne((f) => h2(f)), si(""), sdcSetCombSer({}));
+    (setCombVentana(!1), aplicar((f) => h2(f)), setCombTexto(""), sdcSetCombSer({}));
   }
   function sdcCombTocar(fa, k) {
     let pv = sdcCombSer[fa] || 0;
@@ -705,10 +743,10 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
   }
   function sdcMarcarTodo() {
     let tod = {
-      squat: sdcNSets(Aa.squat || 0),
-      pushup: sdcNSets(Aa.pushup || 0),
-      back: sdcNSets(Aa.back || 0),
-      abs: sdcNSets(Aa.abs || 0),
+      squat: sdcNSets(metaSesion.squat || 0),
+      pushup: sdcNSets(metaSesion.pushup || 0),
+      back: sdcNSets(metaSesion.back || 0),
+      abs: sdcNSets(metaSesion.abs || 0),
     };
     (sdcSetSer(tod),
       sdcMarcaOk(tod, sdcAjuste, sdcModOk),
@@ -717,14 +755,14 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
   }
   function sdcKgVer(g, k) {
     var lo = sdcKgS[g] || {},
-      pe = sdcGymSer(e)[g] || {},
+      pe = sdcGymSer(player)[g] || {},
       j;
     for (j = k; j >= 1; j--) {
       if (lo[j] !== void 0) return lo[j];
       if (pe[j] !== void 0 && pe[j] !== null && pe[j] !== "") return sdcKgTxt(pe[j]);
     }
     if (lo[0] !== void 0) return lo[0];
-    var pv = (sdcGymUlt(e)[sdcEjNom(g)] || {}).kgs;
+    var pv = (sdcGymUlt(player)[sdcEjNom(g)] || {}).kgs;
     if (pv && pv[k] > 0) return sdcKgTxt(pv[k]);
     if (pv && pv[0] > 0) return sdcKgTxt(pv[0]);
     return "";
@@ -740,7 +778,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
       return o;
     });
     var num = Math.max(0, parseFloat(String(val || "").replace(",", ".")) || 0);
-    a(function (N) {
+    setPlayer(function (N) {
       var _ = clonar(N);
       (_.gymWeights || (_.gymWeights = { squat: 0, pushup: 0, back: 0, abs: 0 }),
         k === 0
@@ -749,7 +787,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
             _.gymSerieKg[g] || (_.gymSerieKg[g] = {}),
             (_.gymSerieKg[g][k] = num)));
       if (_.today) {
-        var kk = sdcMarcaK(B, De);
+        var kk = sdcMarcaK(modalidad, modo);
         (_.today.marcas || (_.today.marcas = {}),
           _.today.marcas[kk] || (_.today.marcas[kk] = {}),
           _.today.marcas[kk].kg || (_.today.marcas[kk].kg = {}),
@@ -760,11 +798,11 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
     });
   }
   function sdcEjNom(g) {
-    var x = ejercicioDe(g, u.rank, B);
+    var x = ejercicioDe(g, progress.rank, modalidad);
     return (x && x.name) || "";
   }
   function sdcKgUsar(g, kg) {
-    var n = sdcNSets(Aa[g] || 0),
+    var n = sdcNSets(metaSesion[g] || 0),
       k;
     for (k = 0; k < n; k++) sdcKgSet(g, k, sdcKgTxt(kg));
   }
@@ -783,7 +821,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
       li;
     for (x = 0; x < 4; x++) {
       g = gs[x];
-      n = sdcNSets(Aa[g] || 0);
+      n = sdcNSets(metaSesion[g] || 0);
       hh = Math.min(sdcSer[g] || 0, n);
       vol = 0;
       mx = 0;
@@ -801,37 +839,37 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
     }
     return o;
   }
-  function pg() {
+  function registrar() {
     let h = sdcRepsHechas(),
-      gv = B === "gym" ? sdcGymVol() : null;
+      gv = modalidad === "gym" ? sdcGymVol() : null;
     (sdcCelebra(),
-      Ne((f) =>
+      aplicar((f) =>
         sdcDeshacerHook(
           f,
-          sdcMetaHook(sdcPrimerasHook(registrarRutina(f, De, h, sdcModOk, gv), h), J),
+          sdcMetaHook(sdcPrimerasHook(registrarRutina(f, modo, h, sdcModOk, gv), h), metaDia),
         ),
       ));
   }
-  function bg() {
-    a((f) => {
+  function tomarDescanso() {
+    setPlayer((f) => {
       let { state: d, notices: m } = usarDescanso(f);
-      return (m && m.length && o((N) => [...N, ...m]), guardarPartida(d), d);
+      return (m && m.length && avisar((N) => [...N, ...m]), guardarPartida(d), d);
     });
   }
-  function yg() {
-    a((f) => {
+  function cruzarUmbral() {
+    setPlayer((f) => {
       let { state: d, notices: m } = sdcCruzar(f);
-      return (m && m.length && o((N) => [...N, ...m]), guardarPartida(d), d);
+      return (m && m.length && avisar((N) => [...N, ...m]), guardarPartida(d), d);
     });
   }
-  function gg(f) {
-    a((d) => {
+  function elegirModalidad(f) {
+    setPlayer((d) => {
       let m = clonar(d);
       return ((m.today.modality = f), guardarPartida(m), m);
     });
   }
   function irTienda() {
-    a((d) => {
+    setPlayer((d) => {
       let m = clonar(d);
       return (
         m.ui || (m.ui = { collapsed: {} }),
@@ -842,7 +880,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
     });
   }
   function mmNueva(f) {
-    (a((d) => {
+    (setPlayer((d) => {
       let m = clonar(d);
       return (
         (m.today.modality = f),
@@ -855,25 +893,25 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
         m
       );
     }),
-      o((d) => [
+      avisar((d) => [
         ...d,
         `Nueva sesión: ${(modalidades.find((r) => r.id === f) || modalidades[0]).name}. Al completarla ganás un bono por combinar estilos.`,
       ]));
   }
   function sdcPonerJuego(f) {
-    a((d) => {
+    setPlayer((d) => {
       let m = clonar(d);
       return ((m.profile.tituloSet = f), guardarPartida(m), m);
     });
   }
   function sdcCamRitmo(v) {
-    a((d) => {
+    setPlayer((d) => {
       let m = clonar(d);
       return ((m.profile.ritmoKmH = v), guardarPartida(m), m);
     });
   }
   function sdcCamEmpezar() {
-    a((d) => {
+    setPlayer((d) => {
       let m = clonar(d);
       return (
         (m.exploration = m.exploration || {}),
@@ -884,18 +922,18 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
     });
   }
   function sdcCamCancelar() {
-    a((d) => {
+    setPlayer((d) => {
       let m = clonar(d);
       return (m.exploration && (m.exploration.walkStart = 0), guardarPartida(m), m);
     });
   }
   function sdcCamListo(km) {
-    (a((d) => {
+    (setPlayer((d) => {
       let m = clonar(d);
       return (m.exploration && (m.exploration.walkStart = 0), guardarPartida(m), m);
     }),
-      Yd(String(km).replace(".", ",")),
-      o((d) => [
+      setKmTexto(String(km).replace(".", ",")),
+      avisar((d) => [
         ...d,
         "Salida terminada. Puse " +
           String(km).replace(".", ",") +
@@ -903,7 +941,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
       ]));
   }
   function sdcTravEmpezar() {
-    a((d) => {
+    setPlayer((d) => {
       let m = clonar(d);
       return (
         (m.dungeon = m.dungeon || {}),
@@ -914,7 +952,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
     });
   }
   function sdcTravCancelar() {
-    a((d) => {
+    setPlayer((d) => {
       let m = clonar(d);
       return (m.dungeon && (m.dungeon.startedAt = 0), guardarPartida(m), m);
     });
@@ -926,14 +964,14 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
     } catch (x) {}
     if (!t || !String(t).trim()) return;
     var tx = String(t).trim().slice(0, 120);
-    (a((d) => {
+    (setPlayer((d) => {
       let m = clonar(d);
       return (sdcPrimeraAdd(m, tx, "escrita"), guardarPartida(m), m);
     }),
-      o((d) => [...d, "Primera vez: " + tx + ". Queda anotado."]));
+      avisar((d) => [...d, "Primera vez: " + tx + ". Queda anotado."]));
   }
   function sdcResponderPodia(nm, v) {
-    a((d) => {
+    setPlayer((d) => {
       let m = clonar(d),
         o2 = {},
         k,
@@ -942,27 +980,27 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
       return ((o2[nm] = v), (m.podia = o2), guardarPartida(m), m);
     });
   }
-  function ef(f) {
-    a((d) => {
+  function ponerModalidades(f) {
+    setPlayer((d) => {
       let m = clonar(d);
       return ((m.profile.modalities = f.length ? f : ["bodyweight"]), guardarPartida(m), m);
     });
   }
-  function vg(f) {
-    let d = modalidadesDe(s),
+  function alternarModalidad(f) {
+    let d = modalidadesDe(profile),
       m = d.includes(f) ? d.filter((N) => N !== f) : [...d, f];
     if (!m.length) {
-      o((N) => [...N, "Debes mantener al menos un método activo."]);
+      avisar((N) => [...N, "Debes mantener al menos un método activo."]);
       return;
     }
-    ef(m);
+    ponerModalidades(m);
   }
-  function hg() {
-    (cu(!1), Ne((f) => sdcDeshacer(f)), Va({ ...J }));
+  function deshacerRegistro() {
+    (setConfirmarDeshacer(!1), aplicar((f) => sdcDeshacer(f)), setMetaSesion({ ...metaDia }));
   }
-  function mi(f, d) {
+  function ponerKg(f, d) {
     let m = Math.max(0, parseFloat((d || "0").replace(",", ".")) || 0);
-    a((N) => {
+    setPlayer((N) => {
       let _ = clonar(N);
       return (
         _.gymWeights || (_.gymWeights = { squat: 0, pushup: 0, back: 0, abs: 0 }),
@@ -972,15 +1010,15 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
       );
     });
   }
-  function xg(f) {
+  function ponerPesoCorporal(f) {
     let d = Math.max(0, parseFloat((f || "0").replace(",", ".")) || 0);
-    a((m) => {
+    setPlayer((m) => {
       let N = clonar(m);
       return ((N.profile.bodyWeight = d), guardarPartida(N), N);
     });
   }
-  function Sg() {
-    a((f) => {
+  function alternarDesbloqueo() {
+    setPlayer((f) => {
       let d = clonar(f);
       return (
         (d.unlockAll = !d.unlockAll),
@@ -990,8 +1028,8 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
       );
     });
   }
-  function Ng(f) {
-    a((d) => {
+  function alternarSistema(f) {
+    setPlayer((d) => {
       let m = clonar(d);
       return (
         m.disabled || (m.disabled = []),
@@ -1003,14 +1041,14 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
       );
     });
   }
-  function Cg(f) {
-    (a((d) => {
+  function ponerMetaSemanal(f) {
+    (setPlayer((d) => {
       let m = clonar(d);
       return ((m.profile.weeklyGoal = f), guardarPartida(m), m);
     }),
-      Zd(!1));
+      setCambiandoMeta(!1));
   }
-  let af = [
+  let plegablesTodos = [
       "calentamiento",
       "racha",
       "mapa",
@@ -1026,9 +1064,9 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
       "primalLista",
       ...categoriasLogros.map((f) => "ach-" + f),
     ],
-    tf = af.every((f) => H && H.collapsed && H.collapsed[f]);
-  function kg() {
-    a((f) => {
+    todoPlegado = plegablesTodos.every((f) => ui && ui.collapsed && ui.collapsed[f]);
+  function alternarTodo() {
+    setPlayer((f) => {
       let d = clonar(f);
       (d.skills || (d.skills = {}),
         d.care || (d.care = { today: { date: fechaHoy(), done: [] }, lifetime: 0 }),
@@ -1038,9 +1076,9 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
         d.seenUnlocks ||
           (d.seenUnlocks = sistemas.filter((N) => sistemaAbierto(d, N.id)).map((N) => N.id)),
         d.ui || (d.ui = { collapsed: {} }));
-      let m = !tf;
+      let m = !todoPlegado;
       return (
-        af.forEach((N) => {
+        plegablesTodos.forEach((N) => {
           d.ui.collapsed[N] = m;
         }),
         guardarPartida(d),
@@ -1048,8 +1086,8 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
       );
     });
   }
-  function fe(f, act) {
-    a((d) => {
+  function alternarPlegable(f, act) {
+    setPlayer((d) => {
       let m = clonar(d);
       return (
         m.skills || (m.skills = {}),
@@ -1066,35 +1104,35 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
       );
     });
   }
-  let me = (f) => !!(H && H.collapsed && H.collapsed[f]);
+  let plegado = (f) => !!(ui && ui.collapsed && ui.collapsed[f]);
   useEffect(() => {
     let f = {
       combat: "combat",
       primal: "primal",
       exploration: "exploration",
       achievements: "achievements",
-    }[Da];
-    f && !sistemaActivo(e, f) && $t("training");
-  }, [Da, u.level, u.rank, e.unlockAll]);
-  function zg() {
-    a((f) => {
+    }[pestana];
+    f && !sistemaActivo(player, f) && setPestana("training");
+  }, [pestana, progress.level, progress.rank, player.unlockAll]);
+  function cerrarResumenSemana() {
+    setPlayer((f) => {
       let d = clonar(f);
       return (d.lastWeekSummary && (d.lastWeekSummary.seen = !0), guardarPartida(d), d);
     });
   }
-  function Eg(f) {
-    Ne((d) => comprar(d, f));
+  function comprarItem(f) {
+    aplicar((d) => comprar(d, f));
   }
-  function Ag() {
-    a((f) => {
+  function terminarTravesia() {
+    setPlayer((f) => {
       let { state: d, notices: m } = completarTravesia(f);
-      return (m && m.length && o((N) => [...N, ...m]), guardarPartida(d), d);
+      return (m && m.length && avisar((N) => [...N, ...m]), guardarPartida(d), d);
     });
   }
-  function Dg(f) {
-    o((d) => d.filter((m, N) => N !== f));
+  function cerrarAviso(f) {
+    avisar((d) => d.filter((m, N) => N !== f));
   }
-  function Tg() {
+  function reiniciarTodo() {
     ((async () => {
       try {
         let f = await window.claude.use("db");
@@ -1103,16 +1141,16 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
         console.error("No se pudo borrar el progreso", f);
       }
     })(),
-      a(null));
+      setPlayer(null));
   }
   useEffect(() => {
-    (async () => Ld(!!(await xy())))();
+    (async () => setHayPuntoRetorno(!!(await xy())))();
   }, []);
-  function Mg() {
+  function guardarPuntoRetorno() {
     (async () => {
-      let f = await m5(e);
-      (Ld(f),
-        o((d) => [
+      let f = await m5(player);
+      (setHayPuntoRetorno(f),
+        avisar((d) => [
           ...d,
           f
             ? "Punto de retorno guardado. Ya podés probar sin miedo."
@@ -1120,24 +1158,24 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
         ]));
     })();
   }
-  function _g() {
+  function volverPuntoRetorno() {
     (async () => {
       let f = await xy();
       if (!f) {
-        o((N) => [...N, "No hay ningún punto de retorno guardado."]);
+        avisar((N) => [...N, "No hay ningún punto de retorno guardado."]);
         return;
       }
       let { state: d, notices: m } = cargarPartida(f);
-      (a(d),
+      (setPlayer(d),
         guardarPartida(d),
-        _l(!1),
-        ht(!1),
-        Ol("idle"),
-        o(["Volviste a tu progreso guardado.", ...(m || [])]));
+        setCombPrep(!1),
+        setCombVentana(!1),
+        setPrimalFase("idle"),
+        avisar(["Volviste a tu progreso guardado.", ...(m || [])]));
     })();
   }
-  function qg(f) {
-    (a((d) => {
+  function saltarRango(f) {
+    (setPlayer((d) => {
       let m = clonar(d),
         N = rangos.indexOf(f);
       return (
@@ -1154,10 +1192,10 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
         m
       );
     }),
-      o((d) => [...d, `[Prueba] Saltaste al rango ${f} para ver sus ejercicios.`]));
+      avisar((d) => [...d, `[Prueba] Saltaste al rango ${f} para ver sus ejercicios.`]));
   }
-  function Og() {
-    (a((f) => {
+  function forzarUmbral() {
+    (setPlayer((f) => {
       let d = clonar(f),
         m = nivelUmbral[d.progress.rank];
       return (
@@ -1170,27 +1208,35 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
         d
       );
     }),
-      o((f) => [...f, "[Prueba] Umbral forzado disponible y día marcado como completo al 100%."]));
+      avisar((f) => [
+        ...f,
+        "[Prueba] Umbral forzado disponible y día marcado como completo al 100%.",
+      ]));
   }
-  function jg(f) {
-    a((d) => {
+  function sumarXp(f) {
+    setPlayer((d) => {
       let m = clonar(d);
       m.progress.currentXP += f;
       let N = [];
-      return ((m = subirNiveles(m, N)), guardarPartida(m), N.length && o((_) => [..._, ...N]), m);
+      return (
+        (m = subirNiveles(m, N)),
+        guardarPartida(m),
+        N.length && avisar((_) => [..._, ...N]),
+        m
+      );
     });
   }
-  function Bg() {
-    a((f) => {
+  function fallarAyer() {
+    setPlayer((f) => {
       let d = clonar(f),
         m = new Date(d.today.date + "T00:00:00");
       (m.setDate(m.getDate() - 1), (d.today.date = fechaLocal(m)), (d.today.completed = !1));
       let { state: N, notices: _ } = cargarPartida(d);
-      return (guardarPartida(N), _.length && o((X) => [...X, ..._]), N);
+      return (guardarPartida(N), _.length && avisar((X) => [...X, ..._]), N);
     });
   }
-  function wg() {
-    a((f) => {
+  function reiniciarHoy() {
+    setPlayer((f) => {
       let d = clonar(f);
       return (
         (d.today.completed = !1),
@@ -1204,57 +1250,57 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
       );
     });
   }
-  function Ug() {
-    let f = Math.max(0, parseFloat((Xd || "0").replace(",", ".")) || 0);
+  function sumarKm() {
+    let f = Math.max(0, parseFloat((kmTexto || "0").replace(",", ".")) || 0);
     f &&
-      (a((d) => {
+      (setPlayer((d) => {
         let { state: m } = sumarTramo(d, f);
         return (guardarPartida(m), m);
       }),
-      Yd(""));
+      setKmTexto(""));
   }
-  function Lg() {
-    let f = Math.max(0, parseInt((Ml || "0").replace(/\D/g, ""), 10) || 0);
+  function sumarPasos() {
+    let f = Math.max(0, parseInt((pasosTexto || "0").replace(/\D/g, ""), 10) || 0);
     if (!f) return;
     let d = Math.round(((f * vd) / 1e3) * 100) / 100;
     d <= 0 ||
-      (a((m) => {
+      (setPlayer((m) => {
         let { state: N } = sumarTramo(m, d);
         return (guardarPartida(N), N);
       }),
-      Gd(""));
+      setPasosTexto(""));
   }
-  function Hg() {
-    a((f) => {
+  function descartarTramosHoy() {
+    setPlayer((f) => {
       let { state: d, notices: m } = descartarTramos(f);
-      return (m && m.length && o((N) => [...N, ...m]), guardarPartida(d), d);
+      return (m && m.length && avisar((N) => [...N, ...m]), guardarPartida(d), d);
     });
   }
-  function Xg() {
-    a((f) => {
+  function consolidarKmHoy() {
+    setPlayer((f) => {
       let { state: d, notices: m, found: N } = consolidarKm(f);
       return (
-        m && m.length && o((_) => [..._, ...m]),
-        N && N.length && ru(N),
+        m && m.length && avisar((_) => [..._, ...m]),
+        N && N.length && setHallazgos(N),
         guardarPartida(d),
         d
       );
     });
   }
-  function Yg(f) {
-    a((d) => {
+  function sumarKmDePrueba(f) {
+    setPlayer((d) => {
       let m = sumarTramo(d, f),
         { state: N, notices: _, found: X } = consolidarKm(m.state);
       return (
-        _ && _.length && o((de) => [...de, ..._]),
-        X && X.length && ru(X),
+        _ && _.length && avisar((de) => [...de, ..._]),
+        X && X.length && setHallazgos(X),
         guardarPartida(N),
         N
       );
     });
   }
-  function Gg() {
-    (a((f) => {
+  function forzarTravesia() {
+    (setPlayer((f) => {
       let d = clonar(f);
       return (
         (d.dungeon = { date: d.today.date, ...travesiaDelDia(d.progress.rank) }),
@@ -1271,25 +1317,29 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
         d
       );
     }),
-      o((f) => [...f, "[Prueba] Travesía forzada disponible."]));
+      avisar((f) => [...f, "[Prueba] Travesía forzada disponible."]));
   }
-  function Zg(f) {
-    a((d) => {
+  function ponerRacha(f) {
+    setPlayer((d) => {
       let m = clonar(d);
       ((m.streak.current = f), (m.streak.best = Math.max(m.streak.best || 0, f)));
       let N = revisarLogros(m);
-      return (N.notices.length && o((_) => [..._, ...N.notices]), guardarPartida(N.state), N.state);
+      return (
+        N.notices.length && avisar((_) => [..._, ...N.notices]),
+        guardarPartida(N.state),
+        N.state
+      );
     });
   }
-  function Kg() {
-    (a((f) => {
+  function desbloquearLogros() {
+    (setPlayer((f) => {
       let d = clonar(f);
       return ((d.achievements = logros.map((m) => m.id)), guardarPartida(d), d);
     }),
-      o((f) => [...f, "[Prueba] Todos los logros desbloqueados."]));
+      avisar((f) => [...f, "[Prueba] Todos los logros desbloqueados."]));
   }
-  function Vg() {
-    (a((f) => {
+  function saltarAlJefe() {
+    (setPlayer((f) => {
       let d = clonar(f);
       return (
         (d.combat.villainIndex = 4),
@@ -1306,45 +1356,49 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
         d
       );
     }),
-      _l(!1),
-      ht(!1),
-      o((f) => [...f, `[Prueba] Saltaste al primer Jefe (${za(4).name}).`]));
+      setCombPrep(!1),
+      setCombVentana(!1),
+      avisar((f) => [...f, `[Prueba] Saltaste al primer Jefe (${za(4).name}).`]));
   }
-  function Qg() {
-    (a((f) => {
+  function reiniciarCombate() {
+    (setPlayer((f) => {
       let d = clonar(f);
       return ((d.combat = Ad()), guardarPartida(d), d);
     }),
-      _l(!1),
-      ht(!1),
-      o((f) => [...f, "[Prueba] Combate reiniciado desde el primer enemigo."]));
+      setCombPrep(!1),
+      setCombVentana(!1),
+      avisar((f) => [...f, "[Prueba] Combate reiniciado desde el primer enemigo."]));
   }
-  function Wg() {
-    (a((f) => {
+  function desbloquearPrimal() {
+    (setPlayer((f) => {
       let d = clonar(f);
       d.primal.unlockedCount < movimientosPrimal.length &&
         ((d.primal.unlockedCount += 1), (d.primal.masteryProgress = 0));
       let m = revisarLogros(d);
-      return (m.notices.length && o((N) => [...N, ...m.notices]), guardarPartida(m.state), m.state);
+      return (
+        m.notices.length && avisar((N) => [...N, ...m.notices]),
+        guardarPartida(m.state),
+        m.state
+      );
     }),
-      o((f) => [...f, "[Prueba] Desbloqueado el siguiente movimiento de Instinto Primal."]));
+      avisar((f) => [...f, "[Prueba] Desbloqueado el siguiente movimiento de Instinto Primal."]));
   }
-  function Jg() {
-    (a((f) => {
+  function reiniciarContadorPrimal() {
+    (setPlayer((f) => {
       let d = clonar(f);
       return ((d.primal.today = { date: fechaHoy(), count: 0 }), guardarPartida(d), d);
     }),
-      o((f) => [...f, "[Prueba] Contador diario de Instinto Primal reiniciado."]));
+      avisar((f) => [...f, "[Prueba] Contador diario de Instinto Primal reiniciado."]));
   }
-  function Fg() {
-    a((f) => {
+  function forzarAvisoCarga() {
+    setPlayer((f) => {
       let d = clonar(f);
       d.primal.today = { date: fechaHoy(), count: 8 };
       let m = avisoCarga(d);
       return (
         m.notices.length
-          ? o((N) => [...N, ...m.notices])
-          : o((N) => [
+          ? avisar((N) => [...N, ...m.notices])
+          : avisar((N) => [
               ...N,
               '[Prueba] Ya se mostró el aviso hoy, usa "reiniciar contador diario" primero.',
             ]),
@@ -1353,8 +1407,8 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
       );
     });
   }
-  let Pg = String(Math.floor(fa / 60)).padStart(2, "0"),
-    $g = String(fa % 60).padStart(2, "0");
+  let estMin = String(Math.floor(estSegundos / 60)).padStart(2, "0"),
+    estSeg = String(estSegundos % 60).padStart(2, "0");
   return (
     <div className="min-h-screen px-4 py-6" style={{ background: "#0a0e1a" }}>
       <div className="mx-auto" style={{ maxWidth: 420 }}>
@@ -1364,10 +1418,10 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
               Dominio Corporal
             </div>
             <div className="text-sm" style={{ color: "#9aa4bd" }}>
-              Bienvenido de vuelta, {s.name}
+              Bienvenido de vuelta, {profile.name}
             </div>
             {(() => {
-              let cb = sdcCalibre(s);
+              let cb = sdcCalibre(profile);
               return cb ? (
                 <div
                   className="text-xs mt-1"
@@ -1401,7 +1455,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
               lineHeight: 1.1,
             }}
           >
-            <span style={{ fontSize: 18, fontWeight: 700 }}>{C.points}</span>
+            <span style={{ fontSize: 18, fontWeight: 700 }}>{dominion.points}</span>
             <span style={{ fontSize: 10, letterSpacing: 1 }}>PD</span>
           </button>
         </div>
@@ -1409,22 +1463,23 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
           <div className="text-xs mb-1 flex items-center justify-between">
             <span
               style={{
-                color: z,
+                color: colorDelRango,
                 fontFamily: "Chakra Petch, sans-serif",
                 fontWeight: 700,
                 letterSpacing: 1,
               }}
             >
-              NV. {u.level} · {sdcRango(u.rank, s)}
+              NV. {progress.level} · {sdcRango(progress.rank, profile)}
             </span>
             <span style={{ color: "#9aa4bd" }}>
-              {c.completed ? u.currentXP : u.currentXP + sdcTotalHechas()} / {U} XP
+              {today.completed ? progress.currentXP : progress.currentXP + sdcTotalHechas()} /{" "}
+              {costoDelNivel} XP
             </span>
           </div>
           <BarraXp
-            value={c.completed ? u.currentXP : u.currentXP + sdcTotalHechas()}
-            max={U}
-            color={z}
+            value={today.completed ? progress.currentXP : progress.currentXP + sdcTotalHechas()}
+            max={costoDelNivel}
+            color={colorDelRango}
           />
           {sdcFlota && sdcFlota.n > 0 && (
             <div
@@ -1435,11 +1490,11 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                 right: 0,
                 top: -6,
                 pointerEvents: "none",
-                color: z,
+                color: colorDelRango,
                 fontFamily: "Chakra Petch, sans-serif",
                 fontSize: 20,
                 fontWeight: 700,
-                textShadow: "0 0 12px " + z,
+                textShadow: "0 0 12px " + colorDelRango,
               }}
             >
               +{sdcFlota.n} XP
@@ -1449,9 +1504,13 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
             className="text-xs mt-1 flex items-center justify-between gap-2"
             style={{ color: "#7a83a0" }}
           >
-            <span>{q ? "Umbral: " + Math.min(u.level, q) + "/" + q : ""}</span>
+            <span>
+              {nivelDelUmbral
+                ? "Umbral: " + Math.min(progress.level, nivelDelUmbral) + "/" + nivelDelUmbral
+                : ""}
+            </span>
             {(() => {
-              let f = sistemas.find((d) => !sistemaAbierto(e, d.id));
+              let f = sistemas.find((d) => !sistemaAbierto(player, d.id));
               return f ? (
                 <span>
                   Próximo: <b style={{ color: "#9aa4bd" }}>{f.name}</b> en Nv. {f.level}
@@ -1459,13 +1518,13 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
               ) : null;
             })()}
           </div>
-          {p.flexBuff && (
+          {streak.flexBuff && (
             <div className="text-xs mt-1" style={{ color: "#ffb84f" }}>
               Buff de Flexibilidad activo (+10% XP)
             </div>
           )}
         </div>
-        {It.length > 0 && (
+        {hallazgos.length > 0 && (
           <Tarjeta accent="#ffb84f" style={{ marginBottom: 16 }}>
             <div className="text-xs uppercase mb-1" style={{ letterSpacing: 2, color: "#ffb84f" }}>
               Hallazgo
@@ -1478,10 +1537,10 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                 fontWeight: 700,
               }}
             >
-              {It[0].name}
+              {hallazgos[0].name}
             </div>
             <div className="text-xs mt-1" style={{ color: "#9aa4bd" }}>
-              {It[0].text}
+              {hallazgos[0].text}
             </div>
             <div
               className="mt-3 p-3"
@@ -1493,29 +1552,29 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
               <div className="flex items-center gap-2 mb-1">
                 <IconoDestello size={14} color="#ffb84f" />
                 <div className="text-sm" style={{ color: "#ffb84f", fontWeight: 700 }}>
-                  {It[0].relic}
+                  {hallazgos[0].relic}
                 </div>
               </div>
               <div className="text-xs" style={{ color: "#e8ecf7" }}>
-                {It[0].lore}
+                {hallazgos[0].lore}
               </div>
             </div>
             <button
-              onClick={() => ru((f) => f.slice(1))}
+              onClick={() => setHallazgos((f) => f.slice(1))}
               className="w-full py-3 text-sm mt-3"
               style={{ background: "#ffb84f", color: "#0a0e1a", fontWeight: 700 }}
             >
-              {It.length > 1
-                ? `Siguiente hallazgo (${It.length - 1} más)`
+              {hallazgos.length > 1
+                ? `Siguiente hallazgo (${hallazgos.length - 1} más)`
                 : "Archivar en el Códice"}
             </button>
           </Tarjeta>
         )}
-        <Avisos notices={n} onDismiss={Dg} onDismissAll={() => o([])} />
+        <Avisos notices={avisos} onDismiss={cerrarAviso} onDismissAll={() => avisar([])} />
         <Tarjeta accent="#ffb84f" style={{ marginBottom: 16 }}>
           <div className="w-full flex items-center mb-2" style={{ justifyContent: "flex-end" }}>
             <button
-              onClick={() => fe("ayuda")}
+              onClick={() => alternarPlegable("ayuda")}
               style={{
                 cursor: "pointer",
                 background: "transparent",
@@ -1533,10 +1592,10 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
           </div>
           <div className="flex items-center gap-3">
             <DibujoMascota
-              type={s.pet ? s.pet.type : "dog"}
+              type={profile.pet ? profile.pet.type : "dog"}
               size={48}
-              color={k5(u.rank)}
-              rank={u.rank}
+              color={k5(progress.rank)}
+              rank={progress.rank}
             />
             <div>
               <div
@@ -1546,15 +1605,15 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                   fontWeight: 700,
                 }}
               >
-                {s.pet && s.pet.name ? s.pet.name : "Tu compañero"}
+                {profile.pet && profile.pet.name ? profile.pet.name : "Tu compañero"}
               </div>
               <div className="text-xs" style={{ color: "#9aa4bd" }}>
-                {$y}
+                {fraseMascota}
               </div>
             </div>
           </div>
           <button
-            onClick={() => Iy(ou[Math.floor(Math.random() * ou.length)])}
+            onClick={() => setFraseMascota(ou[Math.floor(Math.random() * ou.length)])}
             className="text-xs underline"
             style={{
               color: "#ffb84f",
@@ -1566,14 +1625,14 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
             Otro consejo
           </button>
         </Tarjeta>
-        {H && H.collapsed && H.collapsed.ayuda && (
+        {ui && ui.collapsed && ui.collapsed.ayuda && (
           <Plegable
             id="ayuda"
             title="¿Cómo funciona?"
             accent="#8a93ad"
             style={{ marginBottom: 16 }}
             collapsed={!1}
-            onToggle={fe}
+            onToggle={alternarPlegable}
             right={`${guia.length} temas`}
           >
             <div style={{ fontSize: 14, lineHeight: 1.5, color: "#9aa4bd" }}>
@@ -1656,36 +1715,36 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
             })()}
           </Plegable>
         )}
-        {H && H.collapsed && H.collapsed.tienda && (
+        {ui && ui.collapsed && ui.collapsed.tienda && (
           <Plegable
             id="tienda"
             title="Puntos de Dominio"
             accent="#7c5cff"
             style={{ marginBottom: 16 }}
             collapsed={!1}
-            onToggle={fe}
-            right={`${C.points} PD`}
+            onToggle={alternarPlegable}
+            right={`${dominion.points} PD`}
           >
             <div className="text-xs mb-1" style={{ color: "#9aa4bd" }}>
               Ganás 3 puntos el día que completás tu rutina al 100%, o 1 punto si llegás al menos a
               la mitad. Solo cuenta la primera sesión de cada día: los estilos extra dan XP, pero no
               más puntos.
             </div>
-            {C.shields > 0 && (
+            {dominion.shields > 0 && (
               <div className="text-xs mb-2" style={{ color: "#7c5cff" }}>
-                Escudos de Racha disponibles: {C.shields}
+                Escudos de Racha disponibles: {dominion.shields}
               </div>
             )}
-            {C.xpBuffDate === fechaHoy() && (
+            {dominion.xpBuffDate === fechaHoy() && (
               <div className="text-xs mb-2" style={{ color: "#ffb84f" }}>
                 {"Impulso de XP activo hoy (+" +
-                  Math.round(((C.xpBuffMult || 1.25) - 1) * 100) +
+                  Math.round(((dominion.xpBuffMult || 1.25) - 1) * 100) +
                   "%)."}
               </div>
             )}
             <div className="mt-2">
               {tienda.map((m) => {
-                let N = C.points >= m.cost;
+                let N = dominion.points >= m.cost;
                 return (
                   <div
                     key={m.id}
@@ -1702,7 +1761,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                         </div>
                       </div>
                       <button
-                        onClick={() => Eg(m.id)}
+                        onClick={() => comprarItem(m.id)}
                         disabled={!N}
                         className="py-2 px-3 text-xs disabled:opacity-40"
                         style={{
@@ -1724,43 +1783,43 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
         )}
         <div className="flex justify-end mb-2">
           <button
-            onClick={kg}
+            onClick={alternarTodo}
             className="text-xs"
             style={{ color: "#9aa4bd", padding: "15px 8px", margin: "-15px -8px" }}
           >
-            {tf ? "Expandir todo" : "Minimizar todo"}
+            {todoPlegado ? "Expandir todo" : "Minimizar todo"}
           </button>
         </div>
         {(() => {
           let f = [
-            { id: "training", label: "Entreno", icon: IconoPesa, color: z, on: !0 },
+            { id: "training", label: "Entreno", icon: IconoPesa, color: colorDelRango, on: !0 },
             {
               id: "combat",
               label: "Combate",
               icon: IconoEspadas,
               color: "#ff5c7a",
-              on: sistemaActivo(e, "combat"),
+              on: sistemaActivo(player, "combat"),
             },
             {
               id: "primal",
               label: "Primal",
               icon: IconoPata,
               color: "#3ecf8e",
-              on: sistemaActivo(e, "primal"),
+              on: sistemaActivo(player, "primal"),
             },
             {
               id: "exploration",
               label: "Explorar",
               icon: IconoPasos,
               color: "#7c5cff",
-              on: sistemaActivo(e, "exploration"),
+              on: sistemaActivo(player, "exploration"),
             },
             {
               id: "achievements",
               label: "Logros",
               icon: IconoTrofeo,
               color: "#ffb84f",
-              on: sistemaActivo(e, "achievements"),
+              on: sistemaActivo(player, "achievements"),
             },
             { id: "profile", label: "Perfil", icon: IconoPersona, color: "#4f9dff", on: !0 },
           ].filter((d) => d.on);
@@ -1768,11 +1827,11 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
             <div className="grid grid-cols-3 gap-1 mb-4">
               {f.map((d) => {
                 let m = d.icon,
-                  N = Da === d.id;
+                  N = pestana === d.id;
                 return (
                   <button
                     key={d.id}
-                    onClick={() => $t(d.id)}
+                    onClick={() => setPestana(d.id)}
                     className="flex items-center justify-center gap-1 py-2 text-xs"
                     style={{
                       minHeight: 48,
@@ -1789,9 +1848,9 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
             </div>
           );
         })()}
-        {Da === "training" && (
+        {pestana === "training" && (
           <div style={{ display: "flex", flexDirection: "column" }}>
-            {sdcAvisaRespaldo(e) && (
+            {sdcAvisaRespaldo(player) && (
               <Tarjeta accent="#ffb84f" style={{ marginBottom: 16, order: -3 }}>
                 <div className="text-sm mb-1" style={{ color: "#ffb84f", fontWeight: 700 }}>
                   Hacé un respaldo
@@ -1816,7 +1875,10 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                   <button
                     onClick={() => {
                       (sdcRespaldoPosponer(),
-                        o((d) => [...d, "Te vuelvo a recordar lo del respaldo en una semana."]));
+                        avisar((d) => [
+                          ...d,
+                          "Te vuelvo a recordar lo del respaldo en una semana.",
+                        ]));
                     }}
                     className="py-3 px-3 text-xs"
                     style={{
@@ -1831,7 +1893,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                 </div>
               </Tarjeta>
             )}
-            {D && !D.seen && (
+            {lastWeekSummary && !lastWeekSummary.seen && (
               <Tarjeta accent="#ffb84f" style={{ marginBottom: 16 }}>
                 <div
                   style={{
@@ -1846,31 +1908,31 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                 <div className="grid grid-cols-2 gap-2 text-sm mb-3">
                   <div className="flex justify-between">
                     <span style={{ color: "#9aa4bd" }}>Días entrenados</span>
-                    <span style={{ color: "#e8ecf7" }}>{D.trained}</span>
+                    <span style={{ color: "#e8ecf7" }}>{lastWeekSummary.trained}</span>
                   </div>
                   <div className="flex justify-between">
                     <span style={{ color: "#9aa4bd" }}>Días perfectos</span>
-                    <span style={{ color: "#e8ecf7" }}>{D.fullDays}</span>
+                    <span style={{ color: "#e8ecf7" }}>{lastWeekSummary.fullDays}</span>
                   </div>
                   <div className="flex justify-between">
                     <span style={{ color: "#9aa4bd" }}>XP ganada</span>
-                    <span style={{ color: "#e8ecf7" }}>{D.xp}</span>
+                    <span style={{ color: "#e8ecf7" }}>{lastWeekSummary.xp}</span>
                   </div>
                   <div className="flex justify-between">
                     <span style={{ color: "#9aa4bd" }}>Travesías</span>
-                    <span style={{ color: "#e8ecf7" }}>{D.dungeons}</span>
+                    <span style={{ color: "#e8ecf7" }}>{lastWeekSummary.dungeons}</span>
                   </div>
                   <div className="flex justify-between">
                     <span style={{ color: "#9aa4bd" }}>Primal</span>
-                    <span style={{ color: "#e8ecf7" }}>{D.primal}</span>
+                    <span style={{ color: "#e8ecf7" }}>{lastWeekSummary.primal}</span>
                   </div>
                   <div className="flex justify-between">
                     <span style={{ color: "#9aa4bd" }}>Estiramientos</span>
-                    <span style={{ color: "#e8ecf7" }}>{D.stretches}</span>
+                    <span style={{ color: "#e8ecf7" }}>{lastWeekSummary.stretches}</span>
                   </div>
                 </div>
                 <button
-                  onClick={zg}
+                  onClick={cerrarResumenSemana}
                   className="w-full py-2 text-xs"
                   style={{ background: "#ffb84f", color: "#0a0e1a", fontWeight: 700 }}
                 >
@@ -1883,37 +1945,47 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
               title="Constancia"
               accent="#3ecf8e"
               style={{ marginBottom: 16 }}
-              collapsed={H && H.collapsed && H.collapsed.racha !== void 0 ? me("racha") : !0}
-              onToggle={fe}
-              right={`${al}/${Re} esta semana`}
+              collapsed={
+                ui && ui.collapsed && ui.collapsed.racha !== void 0 ? plegado("racha") : !0
+              }
+              onToggle={alternarPlegable}
+              right={`${sesionesSemana}/${metaSemana} esta semana`}
             >
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <IconoLlama size={18} color={al >= Re ? "#ff5c7a" : "#5a6178"} />
+                  <IconoLlama
+                    size={18}
+                    color={sesionesSemana >= metaSemana ? "#ff5c7a" : "#5a6178"}
+                  />
                   <div>
                     <div className="text-sm" style={{ color: "#e8ecf7", fontWeight: 600 }}>
-                      {al} de {Re} sesiones
+                      {sesionesSemana} de {metaSemana} sesiones
                     </div>
                     <div className="text-xs" style={{ color: "#9aa4bd" }}>
-                      Racha semanal: {e.weeklyStreak || 0} · récord {e.bestWeeklyStreak || 0}
+                      Racha semanal: {player.weeklyStreak || 0} · récord{" "}
+                      {player.bestWeeklyStreak || 0}
                     </div>
                   </div>
                 </div>
                 <button
-                  onClick={() => Zd((f) => !f)}
+                  onClick={() => setCambiandoMeta((f) => !f)}
                   className="text-xs underline"
                   style={{ color: "#9aa4bd" }}
                 >
                   Cambiar meta
                 </button>
               </div>
-              <BarraXp value={Math.min(al, Re)} max={Re} color="#3ecf8e" />
+              <BarraXp
+                value={Math.min(sesionesSemana, metaSemana)}
+                max={metaSemana}
+                color="#3ecf8e"
+              />
               <div className="text-xs mt-2" style={{ color: "#9aa4bd" }}>
-                {al >= Re
+                {sesionesSemana >= metaSemana
                   ? "Meta semanal cumplida. Todo lo que entrenes de más es ganancia."
-                  : `Te quedan ${diasRestantesSemana(c.date)} días para completar ${Re - al} ${Re - al === 1 ? "sesión" : "sesiones"}.`}
+                  : `Te quedan ${diasRestantesSemana(today.date)} días para completar ${metaSemana - sesionesSemana} ${metaSemana - sesionesSemana === 1 ? "sesión" : "sesiones"}.`}
               </div>
-              {Wy && (
+              {cambiandoMeta && (
                 <div
                   className="mt-3 p-2"
                   style={{
@@ -1929,12 +2001,14 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                     {[1, 2, 3, 4, 5, 6, 7].map((f) => (
                       <button
                         key={f}
-                        onClick={() => Cg(f)}
+                        onClick={() => ponerMetaSemanal(f)}
                         className="py-2 text-xs"
                         style={{
-                          background: Re === f ? "#3ecf8e" : "rgba(255,255,255,0.05)",
-                          border: "1px solid " + (Re === f ? "#3ecf8e" : "rgba(255,255,255,0.15)"),
-                          color: Re === f ? "#0a0e1a" : "#9aa4bd",
+                          background: metaSemana === f ? "#3ecf8e" : "rgba(255,255,255,0.05)",
+                          border:
+                            "1px solid " +
+                            (metaSemana === f ? "#3ecf8e" : "rgba(255,255,255,0.15)"),
+                          color: metaSemana === f ? "#0a0e1a" : "#9aa4bd",
                           fontWeight: 700,
                         }}
                       >
@@ -1946,26 +2020,27 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
               )}
               <div className="mt-3">
                 <div className="text-xs mb-1" style={{ color: "#9aa4bd" }}>
-                  Racha diaria: {p.current} día{p.current === 1 ? "" : "s"} · récord {p.best}
+                  Racha diaria: {streak.current} día{streak.current === 1 ? "" : "s"} · récord{" "}
+                  {streak.best}
                 </div>
                 <GrillaConstancia
-                  days={Id}
-                  onPick={(f) => Kd((d) => (d === f ? null : f))}
-                  selected={Bn}
+                  days={diasGrilla}
+                  onPick={(f) => setDiaElegido((d) => (d === f ? null : f))}
+                  selected={diaElegido}
                 />
-                {Bn && (
+                {diaElegido && (
                   <DetalleDia
-                    date={Bn}
-                    status={(Id.find((f) => f.date === Bn) || {}).status}
-                    log={(e.dayLog || {})[Bn]}
-                    animo={sdcAnimo(e)[Bn]}
-                    onClose={() => Kd(null)}
+                    date={diaElegido}
+                    status={(diasGrilla.find((f) => f.date === diaElegido) || {}).status}
+                    log={(player.dayLog || {})[diaElegido]}
+                    animo={sdcAnimo(player)[diaElegido]}
+                    onClose={() => setDiaElegido(null)}
                     onLog={(function () {
-                      var sq = (Id.find((f) => f.date === Bn) || {}).status;
-                      return Bn < fechaHoy() &&
+                      var sq = (diasGrilla.find((f) => f.date === diaElegido) || {}).status;
+                      return diaElegido < fechaHoy() &&
                         (sq === "empty" || sq === "skipped" || sq === "missed")
                         ? function (fx) {
-                            (Ne((dd) => sdcDiaPasado(dd, fx)), Kd(null));
+                            (aplicar((dd) => sdcDiaPasado(dd, fx)), setDiaElegido(null));
                           }
                         : null;
                     })()}
@@ -1991,17 +2066,18 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                       k: "empty",
                       borde: "1px solid rgba(255,255,255,0.12)",
                     },
-                  ].filter((sdcZ) => Id.some((sdcD) => sdcD.status === sdcZ.k));
+                  ].filter((sdcZ) => diasGrilla.some((sdcD) => sdcD.status === sdcZ.k));
                   return sdcLeg.length ? <LeyendaConstancia items={sdcLeg} /> : null;
                 })()}
               </div>
-              {sistemaActivo(e, "missions") && e.missions && (
+              {sistemaActivo(player, "missions") && player.missions && (
                 <div className="mt-3">
                   {["week", "month"].map((amb) => {
-                    let m = amb === "week" ? e.missions.weekly : e.missions.monthly;
+                    let m = amb === "week" ? player.missions.weekly : player.missions.monthly;
                     if (!m) return null;
-                    let hecho = amb === "week" ? e.missions.weeklyDone : e.missions.monthlyDone,
-                      pr = Math.min(m.target, misProgreso(e, m, amb)),
+                    let hecho =
+                        amb === "week" ? player.missions.weeklyDone : player.missions.monthlyDone,
+                      pr = Math.min(m.target, misProgreso(player, m, amb)),
                       pct = Math.round((pr / m.target) * 100);
                     return (
                       <div
@@ -2044,7 +2120,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                 </div>
               )}
             </Plegable>
-            {sistemaActivo(e, "dungeon") && y.available && !y.completed && (
+            {sistemaActivo(player, "dungeon") && dungeon.available && !dungeon.completed && (
               <Tarjeta accent="#ff5c7a" style={{ marginBottom: 16 }}>
                 <div className="flex items-center gap-2 mb-2">
                   <IconoEspadas color="#ff5c7a" size={18} />
@@ -2066,17 +2142,17 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                     fontSize: 18,
                   }}
                 >
-                  {y.name}
+                  {dungeon.name}
                 </div>
                 <div className="text-sm mt-2 mb-2" style={{ color: "#e8ecf7" }}>
-                  Desafío: {y.challengeText}
+                  Desafío: {dungeon.challengeText}
                 </div>
                 <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
-                  Recompensa: +{y.rewardXP} XP
+                  Recompensa: +{dungeon.rewardXP} XP
                 </div>
                 {(function () {
-                  var ini = (e.dungeon && e.dungeon.startedAt) || 0,
-                    rit = sdcTravRitmo(y.name);
+                  var ini = (player.dungeon && player.dungeon.startedAt) || 0,
+                    rit = sdcTravRitmo(dungeon.name);
                   if (!ini)
                     return (
                       <>
@@ -2093,7 +2169,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                           <IconoEspadas size={16} /> Empezar la travesía
                         </button>
                         <button
-                          onClick={Ag}
+                          onClick={terminarTravesia}
                           className="w-full text-xs underline mt-2"
                           style={{ minHeight: 44, color: "#9aa4bd" }}
                         >
@@ -2104,29 +2180,30 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                   return (
                     <CronoTravesia
                       inicio={ini}
-                      mins={sdcTravMin(y.challengeText)}
+                      mins={sdcTravMin(dungeon.challengeText)}
                       on={rit.on}
                       off={rit.off}
                       onCancel={sdcTravCancelar}
-                      onListo={Ag}
+                      onListo={terminarTravesia}
                     />
                   );
                 })()}
               </Tarjeta>
             )}
-            {sistemaActivo(e, "dungeon") && y.available && y.completed && (
+            {sistemaActivo(player, "dungeon") && dungeon.available && dungeon.completed && (
               <Tarjeta accent="#ff5c7a" style={{ marginBottom: 16 }}>
                 <div className="flex items-center gap-2 text-sm" style={{ color: "#ff5c7a" }}>
-                  <IconoCheck size={16} /> Travesía completada: {y.name} (+{y.rewardXP} XP)
+                  <IconoCheck size={16} /> Travesía completada: {dungeon.name} (+{dungeon.rewardXP}{" "}
+                  XP)
                 </div>
               </Tarjeta>
             )}
-            {sistemaActivo(e, "dungeon") && !y.available && (
+            {sistemaActivo(player, "dungeon") && !dungeon.available && (
               <div className="text-xs text-center mb-4" style={{ color: "#7a83a0" }}>
                 Hoy no hay travesía. Volvé mañana.
               </div>
             )}
-            {v.pending && (
+            {ascension.pending && (
               <Tarjeta accent="#ffb84f" style={{ marginBottom: 16 }}>
                 <div className="flex items-center gap-2 mb-2">
                   <IconoDestello color="#ffb84f" size={18} />
@@ -2141,11 +2218,12 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                   </div>
                 </div>
                 {(() => {
-                  let f = sdcUmbralPrueba(e, B);
+                  let f = sdcUmbralPrueba(player, modalidad);
                   return (
                     <div className="mb-3">
                       <div className="text-sm mb-1" style={{ color: "#e8ecf7", fontWeight: 600 }}>
-                        {f.rounds} rondas encadenadas, con los ejercicios de {sdcRango(f.rango, s)}:
+                        {f.rounds} rondas encadenadas, con los ejercicios de{" "}
+                        {sdcRango(f.rango, profile)}:
                       </div>
                       {["squat", "pushup", "back", "abs"].map((d) => (
                         <div key={d} className="text-sm" style={{ color: "#9aa4bd" }}>
@@ -2164,25 +2242,27 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                 </div>
                 <div
                   className="text-xs mb-3"
-                  style={{ color: sdcUmbralFalta(e) > 0 ? "#ffb84f" : "#3ecf8e" }}
+                  style={{ color: sdcUmbralFalta(player) > 0 ? "#ffb84f" : "#3ecf8e" }}
                 >
-                  Rutinas completas en este rango: {Math.min(sdcRangoCompletas(e), sdcUmbralMin)} de{" "}
-                  {sdcUmbralMin}.
+                  Rutinas completas en este rango:{" "}
+                  {Math.min(sdcRangoCompletas(player), sdcUmbralMin)} de {sdcUmbralMin}.
                 </div>
                 <button
-                  onClick={yg}
-                  disabled={!(c.completed && c.fullCompletion) || sdcUmbralFalta(e) > 0}
+                  onClick={cruzarUmbral}
+                  disabled={
+                    !(today.completed && today.fullCompletion) || sdcUmbralFalta(player) > 0
+                  }
                   className="w-full flex items-center justify-center gap-2 py-3 text-sm disabled:opacity-40"
                   style={{ background: "#ffb84f", color: "#0a0e1a", fontWeight: 700 }}
                 >
                   <IconoCheck size={16} /> Crucé el Umbral
                 </button>
-                {sdcUmbralFalta(e) > 0 ? (
+                {sdcUmbralFalta(player) > 0 ? (
                   <div className="text-xs mt-2 text-center" style={{ color: "#9aa4bd" }}>
-                    {sdcFaltanTxt(sdcUmbralFalta(e))}
+                    {sdcFaltanTxt(sdcUmbralFalta(player))}
                   </div>
                 ) : (
-                  !(c.completed && c.fullCompletion) && (
+                  !(today.completed && today.fullCompletion) && (
                     <div className="text-xs mt-2 text-center" style={{ color: "#9aa4bd" }}>
                       Completá tu rutina al 100% hoy para poder cruzar tu Umbral.
                     </div>
@@ -2192,10 +2272,10 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
             )}
             {(function () {
               var gs = ["squat", "pushup", "back", "abs"],
-                pd = sdcPodia(e),
+                pd = sdcPodia(player),
                 pend = null;
               for (var q = 0; q < gs.length; q++) {
-                var ex = ejercicioDe(gs[q], u.rank, B);
+                var ex = ejercicioDe(gs[q], progress.rank, modalidad);
                 if (ex && ex.name && pd[ex.name] === void 0) {
                   pend = ex.name;
                   break;
@@ -2255,14 +2335,14 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
               id="mapa"
               title="Tu cuerpo"
               accent="#5a6178"
-              style={{ marginBottom: 16, order: c.completed ? -4 : -2 }}
-              collapsed={H && H.collapsed && H.collapsed.mapa !== void 0 ? me("mapa") : !1}
-              onToggle={fe}
+              style={{ marginBottom: 16, order: today.completed ? -4 : -2 }}
+              collapsed={ui && ui.collapsed && ui.collapsed.mapa !== void 0 ? plegado("mapa") : !1}
+              onToggle={alternarPlegable}
               right={
-                ma === "desarrollo"
-                  ? `Nv. medio ${Math.round(Hn.reduce((f, d) => f + Wa.levels[d], 0) / 4)}`
-                  : ma === "semana"
-                    ? `${Math.round((Hn.reduce((f, d) => f + Math.min(1, ((r.reps && r.reps[d]) || 0) / Pd(d)), 0) / 4) * 100)}% semana`
+                modoMapa === "desarrollo"
+                  ? `Nv. medio ${Math.round(grupos.reduce((f, d) => f + atributos.levels[d], 0) / 4)}`
+                  : modoMapa === "semana"
+                    ? `${Math.round((grupos.reduce((f, d) => f + Math.min(1, ((week.reps && week.reps[d]) || 0) / metaSemanaGrupo(d)), 0) / 4) * 100)}% semana`
                     : "hoy"
               }
             >
@@ -2274,12 +2354,13 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                 ].map(([f, d]) => (
                   <button
                     key={f}
-                    onClick={() => Hy(f)}
+                    onClick={() => setModoMapa(f)}
                     className="py-2 text-xs"
                     style={{
-                      background: ma === f ? "#ff6b4a" : "rgba(255,255,255,0.03)",
-                      border: "1px solid " + (ma === f ? "#ff6b4a" : "rgba(255,255,255,0.12)"),
-                      color: ma === f ? "#0a0e1a" : "#8a93ad",
+                      background: modoMapa === f ? "#ff6b4a" : "rgba(255,255,255,0.03)",
+                      border:
+                        "1px solid " + (modoMapa === f ? "#ff6b4a" : "rgba(255,255,255,0.12)"),
+                      color: modoMapa === f ? "#0a0e1a" : "#8a93ad",
                       fontWeight: 600,
                     }}
                   >
@@ -2288,31 +2369,31 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                 ))}
               </div>
               <div className="text-xs mb-2" style={{ color: "#7a83a0" }}>
-                {ma === "desarrollo"
+                {modoMapa === "desarrollo"
                   ? "Cuánto construiste en cada patrón desde que empezaste. No se reinicia nunca."
-                  : ma === "semana"
-                    ? "Qué trabajaste esta semana frente a tu meta de " + Re + " sesiones."
+                  : modoMapa === "semana"
+                    ? "Qué trabajaste esta semana frente a tu meta de " + metaSemana + " sesiones."
                     : "Progreso de la rutina de hoy."}
               </div>
               <div className="flex items-center justify-end mb-2">
                 <div className="flex gap-1">
                   <button
-                    onClick={() => Hd("front")}
+                    onClick={() => setVistaCuerpo("front")}
                     className="px-2 py-1 text-xs"
                     style={{
-                      background: jn === "front" ? "rgba(255,255,255,0.1)" : "transparent",
-                      color: jn === "front" ? "#e8ecf7" : "#5a6178",
+                      background: vistaCuerpo === "front" ? "rgba(255,255,255,0.1)" : "transparent",
+                      color: vistaCuerpo === "front" ? "#e8ecf7" : "#5a6178",
                       border: "1px solid rgba(255,255,255,0.12)",
                     }}
                   >
                     Frente
                   </button>
                   <button
-                    onClick={() => Hd("back")}
+                    onClick={() => setVistaCuerpo("back")}
                     className="px-2 py-1 text-xs"
                     style={{
-                      background: jn === "back" ? "rgba(255,255,255,0.1)" : "transparent",
-                      color: jn === "back" ? "#e8ecf7" : "#5a6178",
+                      background: vistaCuerpo === "back" ? "rgba(255,255,255,0.1)" : "transparent",
+                      color: vistaCuerpo === "back" ? "#e8ecf7" : "#5a6178",
                       border: "1px solid rgba(255,255,255,0.12)",
                     }}
                   >
@@ -2321,18 +2402,18 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                 </div>
               </div>
               <FiguraCuerpo
-                view={jn}
-                colors={$d}
-                glow={c.stretchDone}
-                ratios={ma === "hoy" ? tg : null}
-                selected={vt}
-                onSelect={su}
+                view={vistaCuerpo}
+                colors={coloresMapa}
+                glow={today.stretchDone}
+                ratios={modoMapa === "hoy" ? ratiosHoy : null}
+                selected={zonaElegida}
+                onSelect={setZonaElegida}
               />
               <div className="grid grid-cols-2 gap-x-3 gap-y-1 mt-3">
-                {Hn.map((f) => (
+                {grupos.map((f) => (
                   <button
                     key={f}
-                    onClick={() => su(vt === f ? null : f)}
+                    onClick={() => setZonaElegida(zonaElegida === f ? null : f)}
                     className="flex items-center justify-between text-xs py-1"
                     style={{ background: "transparent", border: "none" }}
                   >
@@ -2341,7 +2422,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                         style={{
                           width: 10,
                           height: 10,
-                          background: $d[f],
+                          background: coloresMapa[f],
                           display: "inline-block",
                           flexShrink: 0,
                         }}
@@ -2349,16 +2430,16 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                       {gruposCuerpo[f].label.split(" ")[0]}
                     </span>
                     <span style={{ color: "#e8ecf7" }}>
-                      {ma === "desarrollo"
-                        ? "Nv. " + Wa.levels[f]
-                        : ma === "semana"
-                          ? (r.reps && r.reps[f]) || 0
-                          : (Rt[f] || 0) + "/" + (sdcMt[f] || 0)}
+                      {modoMapa === "desarrollo"
+                        ? "Nv. " + atributos.levels[f]
+                        : modoMapa === "semana"
+                          ? (week.reps && week.reps[f]) || 0
+                          : (repsHoy[f] || 0) + "/" + (sdcMt[f] || 0)}
                     </span>
                   </button>
                 ))}
               </div>
-              {Wa.gap >= 2 && (
+              {atributos.gap >= 2 && (
                 <div
                   className="text-xs mt-3 p-2"
                   style={{
@@ -2367,16 +2448,17 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                     border: "1px solid rgba(255,184,79,0.25)",
                   }}
                 >
-                  Desequilibrio detectado: tu {gruposCuerpo[Wa.hi].label.toLowerCase()} va {Wa.gap}{" "}
-                  niveles por delante de tu {gruposCuerpo[Wa.lo].label.toLowerCase()}. Prioriza ese
-                  patrón para emparejarlo.
+                  Desequilibrio detectado: tu {gruposCuerpo[atributos.hi].label.toLowerCase()} va{" "}
+                  {atributos.gap} niveles por delante de tu{" "}
+                  {gruposCuerpo[atributos.lo].label.toLowerCase()}. Prioriza ese patrón para
+                  emparejarlo.
                 </div>
               )}
               {(() => {
-                let f = Hn.map((d) => ({ k: d, d: wd(h ? h[d] : null, c.date) })).filter(
-                  (d) => d.d === null || d.d >= 4,
-                );
-                return !f.length || Wa.gap >= 2 ? null : (
+                let f = grupos
+                  .map((d) => ({ k: d, d: wd(lastTrained ? lastTrained[d] : null, today.date) }))
+                  .filter((d) => d.d === null || d.d >= 4);
+                return !f.length || atributos.gap >= 2 ? null : (
                   <div
                     className="text-xs mt-3 p-2"
                     style={{
@@ -2390,100 +2472,100 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                   </div>
                 );
               })()}
-              {vt && (
+              {zonaElegida && (
                 <PanelZonas
-                  zoneKey={vt}
-                  rank={Y}
-                  classification={s.classification}
-                  lifetime={T[vt] || 0}
-                  target={sdcMt[vt] || 0}
-                  doneToday={Rt[vt] || 0}
-                  lastTrained={h ? h[vt] : null}
-                  today={c.date}
-                  modality={B}
-                  onClose={() => su(null)}
+                  zoneKey={zonaElegida}
+                  rank={rangoDeHoy}
+                  classification={profile.classification}
+                  lifetime={lifetimeReps[zonaElegida] || 0}
+                  target={sdcMt[zonaElegida] || 0}
+                  doneToday={repsHoy[zonaElegida] || 0}
+                  lastTrained={lastTrained ? lastTrained[zonaElegida] : null}
+                  today={today.date}
+                  modality={modalidad}
+                  onClose={() => setZonaElegida(null)}
                 />
               )}
-              {c.stretchDone && (
+              {today.stretchDone && (
                 <div className="flex items-center gap-1 mt-2 text-xs" style={{ color: "#3ecf8e" }}>
                   <IconoDestello size={12} /> Brillo de recuperación activo por tu estiramiento de
                   hoy
                 </div>
               )}
             </Plegable>
-            {sdcAnimoOn(e) &&
-              !c.completed &&
-              !(c.doneModalities || []).length &&
+            {sdcAnimoOn(player) &&
+              !today.completed &&
+              !(today.doneModalities || []).length &&
               sdcTotalHechas() === 0 &&
-              !sdcCalor(e).ini &&
-              !sdcCalor(e).hecho &&
+              !sdcCalor(player).ini &&
+              !sdcCalor(player).hecho &&
               (function (h) {
                 return !h.no;
-              })(sdcAnimoHoy(e)) && (
+              })(sdcAnimoHoy(player)) && (
                 <Tarjeta accent="#4f9dff" style={{ marginBottom: 16, order: -6 }}>
                   <AnimoAntes
-                    st={e}
-                    Ne={Ne}
-                    mod={B}
-                    onModo={On}
-                    descLibre={!r.restDayUsed}
-                    onDescanso={bg}
+                    st={player}
+                    Ne={aplicar}
+                    mod={modalidad}
+                    onModo={setModo}
+                    descLibre={!week.restDayUsed}
+                    onDescanso={tomarDescanso}
                   />
                 </Tarjeta>
               )}
-            {!c.completed && (
+            {!today.completed && (
               <Plegable
                 id="calentamiento"
                 title="Calentamiento"
                 accent="#ff8f5a"
                 style={{ marginBottom: 16, order: -5 }}
                 collapsed={
-                  H && H.collapsed && H.collapsed.calentamiento !== void 0
-                    ? me("calentamiento")
+                  ui && ui.collapsed && ui.collapsed.calentamiento !== void 0
+                    ? plegado("calentamiento")
                     : !1
                 }
-                onToggle={fe}
-                right={sdcCalorDer(e, B, Aa)}
+                onToggle={alternarPlegable}
+                right={sdcCalorDer(player, modalidad, metaSesion)}
               >
                 <Calentamiento
-                  st={e}
-                  mod={B}
-                  metas={Aa}
-                  Ne={Ne}
-                  onModo={On}
+                  st={player}
+                  mod={modalidad}
+                  metas={metaSesion}
+                  Ne={aplicar}
+                  onModo={setModo}
                   sinSeries={sdcTotalHechas() === 0}
                 />
               </Plegable>
             )}
-            {c.completed ? (
-              <Tarjeta accent={z} style={{ marginBottom: 16, order: -1 }}>
-                {sdcAnimoOn(e) && c.mode !== "rest" && (
+            {today.completed ? (
+              <Tarjeta accent={colorDelRango} style={{ marginBottom: 16, order: -1 }}>
+                {sdcAnimoOn(player) && today.mode !== "rest" && (
                   <AnimoDespues
-                    st={e}
-                    Ne={Ne}
+                    st={player}
+                    Ne={aplicar}
                     onPrueba={() => {
-                      ($t("profile"), Ne((d) => sdcAbrirCard(d, "aptitud")));
+                      (setPestana("profile"), aplicar((d) => sdcAbrirCard(d, "aptitud")));
                     }}
                   />
                 )}
                 <div className="flex items-center gap-2 mb-1">
-                  <IconoCheck size={16} color={z} />
+                  <IconoCheck size={16} color={colorDelRango} />
                   <div className="text-sm" style={{ color: "#e8ecf7", fontWeight: 600 }}>
                     Misión de hoy completada
                   </div>
                 </div>
                 <div className="text-xs" style={{ color: "#9aa4bd" }}>
                   Modo:{" "}
-                  {c.mode === "normal"
+                  {today.mode === "normal"
                     ? "Normal"
-                    : c.mode === "recovery"
+                    : today.mode === "recovery"
                       ? "Recuperación"
-                      : c.mode === "rest"
+                      : today.mode === "rest"
                         ? "Descanso"
                         : "Prueba"}{" "}
-                  · +{c.xpEarned} XP hoy
+                  · +{today.xpEarned} XP hoy
                 </div>
-                {c.fullCompletion && (
+                {today.fullCompletion && (
                   <div
                     className="flex items-center gap-1 mt-2 text-xs"
                     style={{ color: "#ffb84f" }}
@@ -2493,9 +2575,9 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                   </div>
                 )}
                 {(() => {
-                  let rp = c.reps || {},
-                    rc = e.records || {},
-                    wk = (r && r.reps) || {},
+                  let rp = today.reps || {},
+                    rc = player.records || {},
+                    wk = (week && week.reps) || {},
                     gs = [
                       ["squat", "Piernas"],
                       ["pushup", "Empuje"],
@@ -2516,7 +2598,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                       {gs.map((g) => {
                         let v = rp[g[0]] || 0,
                           mx = rc[g[0]] || 0,
-                          pr = v > 0 && v >= mx && (T[g[0]] || 0) > v;
+                          pr = v > 0 && v >= mx && (lifetimeReps[g[0]] || 0) > v;
                         return (
                           <div
                             key={g[0]}
@@ -2534,15 +2616,15 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                         );
                       })}
                       <div className="text-xs mt-2" style={{ color: "#7a83a0" }}>
-                        Esta semana: {sem} reps en {r.trained || 0}{" "}
-                        {(r.trained || 0) === 1 ? "sesión" : "sesiones"}
+                        Esta semana: {sem} reps en {week.trained || 0}{" "}
+                        {(week.trained || 0) === 1 ? "sesión" : "sesiones"}
                       </div>
                     </div>
                   );
                 })()}
                 {(() => {
-                  let hechas = c.doneModalities || [],
-                    restan = modalidadesDe(s).filter((id) => !hechas.includes(id));
+                  let hechas = today.doneModalities || [],
+                    restan = modalidadesDe(profile).filter((id) => !hechas.includes(id));
                   if (!restan.length) return null;
                   return (
                     <div className="mt-3">
@@ -2576,21 +2658,25 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                     </div>
                   );
                 })()}
-                {e.undoSnapshot &&
-                  e.undoSnapshot.date === c.date &&
-                  (Jy ? (
+                {player.undoSnapshot &&
+                  player.undoSnapshot.date === today.date &&
+                  (confirmarDeshacer ? (
                     <div className="text-xs text-center mt-3" style={{ color: "#9aa4bd" }}>
                       Se revertirá el XP, los puntos y los récords de esta rutina.{" "}
-                      <button onClick={hg} className="underline" style={{ color: "#ff5c7a" }}>
+                      <button
+                        onClick={deshacerRegistro}
+                        className="underline"
+                        style={{ color: "#ff5c7a" }}
+                      >
                         Sí, deshacer
                       </button>{" "}
-                      <button onClick={() => cu(!1)} className="underline">
+                      <button onClick={() => setConfirmarDeshacer(!1)} className="underline">
                         Cancelar
                       </button>
                     </div>
                   ) : (
                     <button
-                      onClick={() => cu(!0)}
+                      onClick={() => setConfirmarDeshacer(!0)}
                       className="w-full py-2 text-xs mt-3"
                       style={{
                         background: "rgba(255,255,255,0.08)",
@@ -2607,19 +2693,19 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
               <Plegable
                 id="rutina"
                 title="Rutina de hoy"
-                accent={z}
+                accent={colorDelRango}
                 style={{ marginBottom: 16, order: -4 }}
-                collapsed={me("rutina")}
-                onToggle={fe}
-                right={`${(modalidades.find((f) => f.id === B) || modalidades[0]).name}`}
+                collapsed={plegado("rutina")}
+                onToggle={alternarPlegable}
+                right={`${(modalidades.find((f) => f.id === modalidad) || modalidades[0]).name}`}
               >
                 <div className="flex mb-3" style={{ border: "1px solid rgba(255,255,255,0.12)" }}>
                   <button
-                    onClick={() => On("normal")}
+                    onClick={() => setModo("normal")}
                     className="flex-1 py-2 text-xs"
                     style={{
-                      background: De === "normal" ? z : "transparent",
-                      color: De === "normal" ? "#0a0e1a" : "#8a93ad",
+                      background: modo === "normal" ? colorDelRango : "transparent",
+                      color: modo === "normal" ? "#0a0e1a" : "#8a93ad",
                       fontWeight: 600,
                       minHeight: 44,
                     }}
@@ -2627,11 +2713,11 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                     Normal
                   </button>
                   <button
-                    onClick={() => On("recovery")}
+                    onClick={() => setModo("recovery")}
                     className="flex-1 py-2 text-xs"
                     style={{
-                      background: De === "recovery" ? z : "transparent",
-                      color: De === "recovery" ? "#0a0e1a" : "#8a93ad",
+                      background: modo === "recovery" ? colorDelRango : "transparent",
+                      color: modo === "recovery" ? "#0a0e1a" : "#8a93ad",
                       fontWeight: 600,
                       minHeight: 44,
                     }}
@@ -2639,19 +2725,19 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                     Recuperación
                   </button>
                 </div>
-                {modalidadesDe(s).length > 1 ? (
+                {modalidadesDe(profile).length > 1 ? (
                   <div className="mb-2">
                     <div className="text-xs mb-1" style={{ color: "#9aa4bd" }}>
                       ¿Con qué entrenás hoy?
                     </div>
                     <div className="grid grid-cols-3 gap-1">
-                      {modalidadesDe(s).map((f) => {
+                      {modalidadesDe(profile).map((f) => {
                         let d = modalidades.find((N) => N.id === f),
-                          m = B === f;
+                          m = modalidad === f;
                         return (
                           <button
                             key={f}
-                            onClick={() => gg(f)}
+                            onClick={() => elegirModalidad(f)}
                             className="py-2 text-xs"
                             style={{
                               background: m ? "#4f9dff" : "rgba(255,255,255,0.03)",
@@ -2672,14 +2758,15 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                   </div>
                 ) : (
                   <div className="text-xs mb-1" style={{ color: "#4f9dff" }}>
-                    Modalidad de hoy: {(modalidades.find((f) => f.id === B) || modalidades[0]).name}
+                    Modalidad de hoy:{" "}
+                    {(modalidades.find((f) => f.id === modalidad) || modalidades[0]).name}
                   </div>
                 )}
                 <div className="text-xs mb-2" style={{ color: "#7a83a0" }}>
-                  {sdcDescRango(u.rank, s)}
+                  {sdcDescRango(progress.rank, profile)}
                 </div>
                 {(() => {
-                  let mm = sdcModDia(B, c.date);
+                  let mm = sdcModDia(modalidad, today.date);
                   if (!mm) return null;
                   return (
                     <div
@@ -2728,16 +2815,16 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                 </div>
                 <div className="grid grid-cols-2 gap-2 mb-3">
                   <button
-                    onClick={() => eg((f) => !f)}
+                    onClick={() => setMetronomoOn((f) => !f)}
                     className="py-2 text-xs"
                     style={{
-                      background: Ln ? "rgba(79,157,255,0.15)" : "rgba(255,255,255,0.03)",
-                      border: "1px solid " + (Ln ? "#4f9dff" : "rgba(255,255,255,0.12)"),
-                      color: Ln ? "#4f9dff" : "#8a93ad",
+                      background: metronomoOn ? "rgba(79,157,255,0.15)" : "rgba(255,255,255,0.03)",
+                      border: "1px solid " + (metronomoOn ? "#4f9dff" : "rgba(255,255,255,0.12)"),
+                      color: metronomoOn ? "#4f9dff" : "#8a93ad",
                       minHeight: 44,
                     }}
                   >
-                    Metrónomo {Ln ? "ON" : "OFF"}
+                    Metrónomo {metronomoOn ? "ON" : "OFF"}
                   </button>
                   <button
                     onClick={sdcMarcarTodo}
@@ -2756,127 +2843,158 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                   El metrónomo marca el tempo de cada repetición con un pitido, para que no
                   aceleres. No cuenta reps: eso lo marcás vos al tocar cada serie.
                 </div>
-                <Metronomo active={Ln} tempo={sdcTempoMod(sdcModDia(B, c.date))} />
-                {Jd && (
+                <Metronomo
+                  active={metronomoOn}
+                  tempo={sdcTempoMod(sdcModDia(modalidad, today.date))}
+                />
+                {descansando && (
                   <BarraDescanso
-                    seconds={sdcDesc || ag[s.focusProfile] || 60}
+                    seconds={sdcDesc || descansoBase[profile.focusProfile] || 60}
                     ini={sdcDescIni}
-                    onSkip={() => Fd(!1)}
+                    onSkip={() => setDescansando(!1)}
                   />
                 )}
                 <FilaEjercicio
-                  label={nombreEjercicio(u.rank, s.classification, "squat", B)}
-                  value={Aa.squat}
-                  base={J.squat}
+                  label={nombreEjercicio(progress.rank, profile.classification, "squat", modalidad)}
+                  value={metaSesion.squat}
+                  base={metaDia.squat}
                   min={0}
-                  max={Math.round(De === "recovery" ? J.squat * 0.5 : J.squat * 1.5)}
-                  onChange={(f) => Va((d) => ({ ...d, squat: f }))}
-                  tip={alternativaEjercicio(u.rank, "squat", B) || regresiones.squat}
-                  guia={sdcGuia(u.rank, "squat", B)}
-                  abrir={!sdcVistos(e)[sdcEjNom("squat")]}
+                  max={Math.round(modo === "recovery" ? metaDia.squat * 0.5 : metaDia.squat * 1.5)}
+                  onChange={(f) => setMetaSesion((d) => ({ ...d, squat: f }))}
+                  tip={alternativaEjercicio(progress.rank, "squat", modalidad) || regresiones.squat}
+                  guia={sdcGuia(progress.rank, "squat", modalidad)}
+                  abrir={!sdcVistos(player)[sdcEjNom("squat")]}
                   weight={void 0}
-                  onWeight={B === "gym" ? (k, f) => sdcKgSet("squat", k, f) : void 0}
-                  kgv={B === "gym" ? (k) => sdcKgVer("squat", k) : void 0}
-                  kgPrev={B === "gym" ? (sdcGymUlt(e)[sdcEjNom("squat")] || {}).kgs || null : null}
+                  onWeight={modalidad === "gym" ? (k, f) => sdcKgSet("squat", k, f) : void 0}
+                  kgv={modalidad === "gym" ? (k) => sdcKgVer("squat", k) : void 0}
+                  kgPrev={
+                    modalidad === "gym"
+                      ? (sdcGymUlt(player)[sdcEjNom("squat")] || {}).kgs || null
+                      : null
+                  }
                   sug={
-                    B === "gym"
+                    modalidad === "gym"
                       ? {
-                          s: sdcSugKg(e, "squat", sdcEjNom("squat")),
+                          s: sdcSugKg(player, "squat", sdcEjNom("squat")),
                           fn: (k) => sdcKgUsar("squat", k),
                         }
                       : null
                   }
                   done={sdcSer.squat}
                   onSet={(f) => sdcSerie("squat", f)}
-                  accent={z}
+                  accent={colorDelRango}
                   aj={sdcAjuste.squat}
                   onAj={(k, v) => sdcAjustar("squat", k, v)}
                 />
                 <FilaEjercicio
-                  label={nombreEjercicio(u.rank, s.classification, "pushup", B)}
-                  value={Aa.pushup}
-                  base={J.pushup}
+                  label={nombreEjercicio(
+                    progress.rank,
+                    profile.classification,
+                    "pushup",
+                    modalidad,
+                  )}
+                  value={metaSesion.pushup}
+                  base={metaDia.pushup}
                   min={0}
-                  max={Math.round(De === "recovery" ? J.pushup * 0.5 : J.pushup * 1.5)}
-                  onChange={(f) => Va((d) => ({ ...d, pushup: f }))}
-                  tip={alternativaEjercicio(u.rank, "pushup", B) || regresiones.pushup}
-                  guia={sdcGuia(u.rank, "pushup", B)}
-                  abrir={!sdcVistos(e)[sdcEjNom("pushup")]}
+                  max={Math.round(
+                    modo === "recovery" ? metaDia.pushup * 0.5 : metaDia.pushup * 1.5,
+                  )}
+                  onChange={(f) => setMetaSesion((d) => ({ ...d, pushup: f }))}
+                  tip={
+                    alternativaEjercicio(progress.rank, "pushup", modalidad) || regresiones.pushup
+                  }
+                  guia={sdcGuia(progress.rank, "pushup", modalidad)}
+                  abrir={!sdcVistos(player)[sdcEjNom("pushup")]}
                   weight={void 0}
-                  onWeight={B === "gym" ? (k, f) => sdcKgSet("pushup", k, f) : void 0}
-                  kgv={B === "gym" ? (k) => sdcKgVer("pushup", k) : void 0}
-                  kgPrev={B === "gym" ? (sdcGymUlt(e)[sdcEjNom("pushup")] || {}).kgs || null : null}
+                  onWeight={modalidad === "gym" ? (k, f) => sdcKgSet("pushup", k, f) : void 0}
+                  kgv={modalidad === "gym" ? (k) => sdcKgVer("pushup", k) : void 0}
+                  kgPrev={
+                    modalidad === "gym"
+                      ? (sdcGymUlt(player)[sdcEjNom("pushup")] || {}).kgs || null
+                      : null
+                  }
                   sug={
-                    B === "gym"
+                    modalidad === "gym"
                       ? {
-                          s: sdcSugKg(e, "pushup", sdcEjNom("pushup")),
+                          s: sdcSugKg(player, "pushup", sdcEjNom("pushup")),
                           fn: (k) => sdcKgUsar("pushup", k),
                         }
                       : null
                   }
                   done={sdcSer.pushup}
                   onSet={(f) => sdcSerie("pushup", f)}
-                  accent={z}
+                  accent={colorDelRango}
                   aj={sdcAjuste.pushup}
                   onAj={(k, v) => sdcAjustar("pushup", k, v)}
                 />
                 <FilaEjercicio
-                  label={nombreEjercicio(u.rank, s.classification, "back", B)}
-                  value={Aa.back}
-                  base={J.back}
+                  label={nombreEjercicio(progress.rank, profile.classification, "back", modalidad)}
+                  value={metaSesion.back}
+                  base={metaDia.back}
                   min={0}
-                  max={Math.round(De === "recovery" ? J.back * 0.5 : J.back * 1.5)}
-                  onChange={(f) => Va((d) => ({ ...d, back: f }))}
-                  tip={alternativaEjercicio(u.rank, "back", B) || regresiones.back}
-                  guia={sdcGuia(u.rank, "back", B)}
-                  abrir={!sdcVistos(e)[sdcEjNom("back")]}
+                  max={Math.round(modo === "recovery" ? metaDia.back * 0.5 : metaDia.back * 1.5)}
+                  onChange={(f) => setMetaSesion((d) => ({ ...d, back: f }))}
+                  tip={alternativaEjercicio(progress.rank, "back", modalidad) || regresiones.back}
+                  guia={sdcGuia(progress.rank, "back", modalidad)}
+                  abrir={!sdcVistos(player)[sdcEjNom("back")]}
                   weight={void 0}
-                  onWeight={B === "gym" ? (k, f) => sdcKgSet("back", k, f) : void 0}
-                  kgv={B === "gym" ? (k) => sdcKgVer("back", k) : void 0}
-                  kgPrev={B === "gym" ? (sdcGymUlt(e)[sdcEjNom("back")] || {}).kgs || null : null}
+                  onWeight={modalidad === "gym" ? (k, f) => sdcKgSet("back", k, f) : void 0}
+                  kgv={modalidad === "gym" ? (k) => sdcKgVer("back", k) : void 0}
+                  kgPrev={
+                    modalidad === "gym"
+                      ? (sdcGymUlt(player)[sdcEjNom("back")] || {}).kgs || null
+                      : null
+                  }
                   sug={
-                    B === "gym"
+                    modalidad === "gym"
                       ? {
-                          s: sdcSugKg(e, "back", sdcEjNom("back")),
+                          s: sdcSugKg(player, "back", sdcEjNom("back")),
                           fn: (k) => sdcKgUsar("back", k),
                         }
                       : null
                   }
                   done={sdcSer.back}
                   onSet={(f) => sdcSerie("back", f)}
-                  accent={z}
+                  accent={colorDelRango}
                   aj={sdcAjuste.back}
                   onAj={(k, v) => sdcAjustar("back", k, v)}
                 />
                 <FilaEjercicio
-                  label={nombreEjercicio(u.rank, s.classification, "abs", B)}
-                  value={Aa.abs}
-                  base={J.abs}
+                  label={nombreEjercicio(progress.rank, profile.classification, "abs", modalidad)}
+                  value={metaSesion.abs}
+                  base={metaDia.abs}
                   min={0}
-                  max={Math.round(De === "recovery" ? J.abs * 0.5 : J.abs * 1.5)}
-                  onChange={(f) => Va((d) => ({ ...d, abs: f }))}
-                  tip={alternativaEjercicio(u.rank, "abs", B) || regresiones.abs}
-                  guia={sdcGuia(u.rank, "abs", B)}
-                  abrir={!sdcVistos(e)[sdcEjNom("abs")]}
+                  max={Math.round(modo === "recovery" ? metaDia.abs * 0.5 : metaDia.abs * 1.5)}
+                  onChange={(f) => setMetaSesion((d) => ({ ...d, abs: f }))}
+                  tip={alternativaEjercicio(progress.rank, "abs", modalidad) || regresiones.abs}
+                  guia={sdcGuia(progress.rank, "abs", modalidad)}
+                  abrir={!sdcVistos(player)[sdcEjNom("abs")]}
                   weight={void 0}
-                  onWeight={B === "gym" ? (k, f) => sdcKgSet("abs", k, f) : void 0}
-                  kgv={B === "gym" ? (k) => sdcKgVer("abs", k) : void 0}
-                  kgPrev={B === "gym" ? (sdcGymUlt(e)[sdcEjNom("abs")] || {}).kgs || null : null}
+                  onWeight={modalidad === "gym" ? (k, f) => sdcKgSet("abs", k, f) : void 0}
+                  kgv={modalidad === "gym" ? (k) => sdcKgVer("abs", k) : void 0}
+                  kgPrev={
+                    modalidad === "gym"
+                      ? (sdcGymUlt(player)[sdcEjNom("abs")] || {}).kgs || null
+                      : null
+                  }
                   sug={
-                    B === "gym"
-                      ? { s: sdcSugKg(e, "abs", sdcEjNom("abs")), fn: (k) => sdcKgUsar("abs", k) }
+                    modalidad === "gym"
+                      ? {
+                          s: sdcSugKg(player, "abs", sdcEjNom("abs")),
+                          fn: (k) => sdcKgUsar("abs", k),
+                        }
                       : null
                   }
                   done={sdcSer.abs}
                   onSet={(f) => sdcSerie("abs", f)}
-                  accent={z}
+                  accent={colorDelRango}
                   aj={sdcAjuste.abs}
                   onAj={(k, v) => sdcAjustar("abs", k, v)}
                 />
                 <button
-                  onClick={pg}
+                  onClick={registrar}
                   className="w-full py-3 text-sm mt-4"
-                  style={{ background: z, color: "#0a0e1a", fontWeight: 700 }}
+                  style={{ background: colorDelRango, color: "#0a0e1a", fontWeight: 700 }}
                 >
                   Completar rutina · {sdcTotalHechas()}/{sdcTotalMeta()} reps
                 </button>
@@ -2892,7 +3010,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                     <div className="flex gap-2">
                       <button
                         onClick={() => {
-                          (sdcSetConfDesc(!1), bg());
+                          (sdcSetConfDesc(!1), tomarDescanso());
                         }}
                         className="flex-1 py-2 text-xs"
                         style={{ background: "#ffb84f", color: "#0a0e1a", fontWeight: 700 }}
@@ -2915,7 +3033,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                 ) : (
                   <button
                     onClick={() => sdcSetConfDesc(!0)}
-                    disabled={r.restDayUsed}
+                    disabled={week.restDayUsed}
                     className="w-full py-2 text-xs disabled:opacity-30"
                     style={{
                       background: "transparent",
@@ -2923,7 +3041,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                       color: "#9aa4bd",
                     }}
                   >
-                    {r.restDayUsed
+                    {week.restDayUsed
                       ? "Día de descanso ya usado esta semana"
                       : "Usar mi día de descanso"}
                   </button>
@@ -2934,9 +3052,9 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
               id="stretch"
               title="Estiramiento"
               accent="#3ecf8e"
-              collapsed={me("stretch")}
-              onToggle={fe}
-              right={`${r.stretchCount}/2 esta semana`}
+              collapsed={plegado("stretch")}
+              onToggle={alternarPlegable}
+              right={`${week.stretchCount}/2 esta semana`}
             >
               <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
                 Es lo que más rápido cambia de todo lo que hacés acá: en pocas semanas llegás más
@@ -2944,7 +3062,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                 siguiente.
               </div>
               {(() => {
-                let fx = sdcFlex(e);
+                let fx = sdcFlex(player);
                 if (!fx.nivel) return null;
                 return (
                   <div
@@ -2971,7 +3089,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                   </div>
                 );
               })()}
-              {sdcFlexToca(e) && !ja && !c.stretchDone ? (
+              {sdcFlexToca(player) && !estirando && !today.stretchDone ? (
                 <div
                   className="mb-3 p-2"
                   style={{
@@ -2994,7 +3112,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                   {sdcFlexNiv.map((fx) => (
                     <button
                       key={fx.n}
-                      onClick={() => Ne((d) => sdcFlexSet(d, fx.n))}
+                      onClick={() => aplicar((d) => sdcFlexSet(d, fx.n))}
                       className="w-full text-left px-3 py-2 mb-1 text-sm"
                       style={{
                         background: "rgba(62,207,142,0.08)",
@@ -3007,17 +3125,19 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                   ))}
                 </div>
               ) : null}
-              {c.stretchDone ? (
+              {today.stretchDone ? (
                 <div className="flex items-center gap-2 text-sm" style={{ color: "#3ecf8e" }}>
                   <IconoCheck size={16} /> Estiramiento de hoy completado
                 </div>
-              ) : ja ? (
+              ) : estirando ? (
                 (() => {
                   let ps = sdcEstPasos,
                     tt = sdcEstTotal(ps),
-                    p = sdcEstPaso(ps, fa),
+                    p = sdcEstPaso(ps, estSegundos),
                     esp =
-                      p.prep > 0 && sdcEstOk < p.index && sdcPasoEspera(ps, p.index, sdcPasosV(e));
+                      p.prep > 0 &&
+                      sdcEstOk < p.index &&
+                      sdcPasoEspera(ps, p.index, sdcPasosV(player));
                   return (
                     <PasoGuiado
                       ls={ps}
@@ -3031,7 +3151,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                       esp={esp}
                       pz={!!sdcEstPz && !esp}
                       fin="Último estiramiento"
-                      resto={" · queda " + sdcEstMMSS(tt - fa)}
+                      resto={" · queda " + sdcEstMMSS(tt - estSegundos)}
                       onListo={() => {
                         let d0 =
                           sdcEstDesde(ps, p.index) +
@@ -3040,11 +3160,11 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                           sdcSetEstOk(p.index),
                           sdcSetEstPz(0),
                           sdcSetEstIni(Date.now() - d0 * 1e3),
-                          Tl(d0));
+                          setEstSegundos(d0));
                       }}
                       onYa={() => {
                         let q = p.prep;
-                        (sdcSetEstIni((v) => v - q * 1e3), Tl(fa + q));
+                        (sdcSetEstIni((v) => v - q * 1e3), setEstSegundos(estSegundos + q));
                       }}
                       onPausa={() => sdcSetEstPz(Date.now())}
                       onSeguir={() => {
@@ -3053,9 +3173,11 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                       }}
                       onTerminar={() => {
                         let hh = p.index;
-                        (Ba(!1),
+                        (setEstirando(!1),
                           sdcSetEstPz(0),
-                          Ne((N) => sdcPasosHook(registrarEstiramiento(N, hh, ps.length), ps, hh)));
+                          aplicar((N) =>
+                            sdcPasosHook(registrarEstiramiento(N, hh, ps.length), ps, hh),
+                          ));
                       }}
                     />
                   );
@@ -3077,8 +3199,8 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                             sdcSetEstPz(0),
                             sdcSetEstOk(-1),
                             sdcSetEstIni(Date.now()),
-                            Tl(0),
-                            Ba(!0));
+                            setEstSegundos(0),
+                            setEstirando(!0));
                         }}
                         className="w-full py-3 px-3 text-sm mb-2 text-left"
                         style={{
@@ -3114,9 +3236,9 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
             </Plegable>
           </div>
         )}
-        {Da === "combat" &&
+        {pestana === "combat" &&
           (() => {
-            let f = za(A.villainIndex),
+            let f = za(combat.villainIndex),
               d = golpesNecesarios(f);
             return (
               <>
@@ -3142,13 +3264,13 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                     </div>
                     <IconoUbicacion size={28} color={f.isBoss ? "#ffb84f" : "#ff5c7a"} />
                   </div>
-                  {A.villainCurrentHP !== null && (
+                  {combat.villainCurrentHP !== null && (
                     <>
                       <div className="text-xs mb-1" style={{ color: "#9aa4bd" }}>
                         Terreno que falta
                       </div>
                       <BarraXp
-                        value={A.villainCurrentHP}
+                        value={combat.villainCurrentHP}
                         max={d}
                         color={f.isBoss ? "#ffb84f" : "#ff5c7a"}
                       />
@@ -3159,16 +3281,16 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                       <IconoCorazon
                         key={m}
                         size={16}
-                        color={m <= A.lives ? "#ff5c7a" : "#2a3148"}
-                        fill={m <= A.lives ? "#ff5c7a" : "none"}
+                        color={m <= combat.lives ? "#ff5c7a" : "#2a3148"}
+                        fill={m <= combat.lives ? "#ff5c7a" : "none"}
                       />
                     ))}
                     <span className="text-xs ml-1" style={{ color: "#9aa4bd" }}>
-                      {A.villainsDefeated || 0} terrenos recuperados
+                      {combat.villainsDefeated || 0} terrenos recuperados
                     </span>
                   </div>
                 </Tarjeta>
-                {A.phase === "choosing" && (
+                {combat.phase === "choosing" && (
                   <Tarjeta accent="#ff5c7a" style={{ marginBottom: 16 }}>
                     <div
                       style={{
@@ -3184,11 +3306,11 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                       No podés repetir la categoría que usaste en el terreno anterior.
                     </div>
                     {["upper_front", "upper_back", "lower"].map((m) => {
-                      let N = m === A.lastExercise;
+                      let N = m === combat.lastExercise;
                       return (
                         <button
                           key={m}
-                          onClick={() => !N && rg(m)}
+                          onClick={() => !N && combElegir(m)}
                           disabled={N}
                           className="w-full py-3 text-sm mb-2 disabled:opacity-30"
                           style={{
@@ -3203,7 +3325,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                     })}
                   </Tarjeta>
                 )}
-                {A.phase === "decision" && (
+                {combat.phase === "decision" && (
                   <Tarjeta accent="#ffb84f" style={{ marginBottom: 16 }}>
                     <div
                       style={{
@@ -3216,10 +3338,10 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                       Decisión táctica
                     </div>
                     <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
-                      Perdiste un corazón. Te quedan {A.lives}. ¿Cómo seguís?
+                      Perdiste un corazón. Te quedan {combat.lives}. ¿Cómo seguís?
                     </div>
                     <button
-                      onClick={() => Ne((m) => y2(m))}
+                      onClick={() => aplicar((m) => y2(m))}
                       className="w-full text-left px-3 py-2 mb-2"
                       style={{ background: "rgba(255,92,122,0.08)", border: "1px solid #ff5c7a" }}
                     >
@@ -3231,7 +3353,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                       </div>
                     </button>
                     <button
-                      onClick={() => Ne((m) => g2(m))}
+                      onClick={() => aplicar((m) => g2(m))}
                       className="w-full text-left px-3 py-2 mb-2"
                       style={{ background: "rgba(255,184,79,0.08)", border: "1px solid #ffb84f" }}
                     >
@@ -3249,10 +3371,10 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                           Cambio táctico de patrón (perdés un 15% del terreno):
                         </div>
                         {["upper_front", "upper_back", "lower"].map((m) =>
-                          m === A.lastExercise || m === A.exercise ? null : (
+                          m === combat.lastExercise || m === combat.exercise ? null : (
                             <button
                               key={m}
-                              onClick={() => Ne((_) => v2(_, m))}
+                              onClick={() => aplicar((_) => v2(_, m))}
                               className="w-full py-2 text-sm mb-2"
                               style={{
                                 background: "rgba(124,92,255,0.1)",
@@ -3268,9 +3390,9 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                     )}
                   </Tarjeta>
                 )}
-                {A.phase === "resting" &&
-                  !du &&
-                  !fu &&
+                {combat.phase === "resting" &&
+                  !combPrep &&
+                  !combVentana &&
                   (() => {
                     let sdcCr = f.isBoss
                         ? 0
@@ -3278,13 +3400,13 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                             1,
                             Math.round(
                               repsCombate(
-                                u.rank,
-                                s.classification,
-                                A.exercise,
-                                s.focusProfile,
-                                B,
-                                s.testResults,
-                              ) * (A.loadFactor || 1),
+                                progress.rank,
+                                profile.classification,
+                                combat.exercise,
+                                profile.focusProfile,
+                                modalidad,
+                                profile.testResults,
+                              ) * (combat.loadFactor || 1),
                             ),
                           ),
                       sdcCs = f.isBoss ? p2() : m2(sdcCr);
@@ -3305,25 +3427,26 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                             <div style={{ color: "#ffb84f", fontWeight: 700 }}>
                               Superserie enlazada · sin descanso
                             </div>
-                            {(A.bossCats || $o(A.lastExercise)).map((m, N) => (
+                            {(combat.bossCats || $o(combat.lastExercise)).map((m, N) => (
                               <div key={m} className="mt-1">
                                 Fase {N + 1}:{" "}
                                 {repsCombateSuave(
-                                  u.rank,
-                                  s.classification,
-                                  s.focusProfile,
+                                  progress.rank,
+                                  profile.classification,
+                                  profile.focusProfile,
                                   m,
-                                  B,
-                                  s.testResults,
+                                  modalidad,
+                                  profile.testResults,
                                 )}{" "}
-                                × {sy(u.rank, s.classification, m, B)}
+                                × {sy(progress.rank, profile.classification, m, modalidad)}
                               </div>
                             ))}
                           </div>
                         ) : (
                           <div className="text-sm" style={{ color: "#e8ecf7" }}>
-                            {sdcCr} × {sy(u.rank, s.classification, A.exercise, B)}
-                            {(A.loadFactor || 1) < 1 && (
+                            {sdcCr} ×{" "}
+                            {sy(progress.rank, profile.classification, combat.exercise, modalidad)}
+                            {(combat.loadFactor || 1) < 1 && (
                               <div className="text-xs mt-1" style={{ color: "#ffb84f" }}>
                                 Carga recalibrada · daño reducido
                               </div>
@@ -3337,7 +3460,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                         <button
                           onClick={() => {
                             let sdcCd = f.isBoss ? 20 : 12;
-                            (mu(sdcCd), ql(sdcCd), _l(!0));
+                            (setCombSegundosMax(sdcCd), setCombSegundos(sdcCd), setCombPrep(!0));
                           }}
                           className="w-full py-3 text-sm"
                           style={{ background: "#ff5c7a", color: "#0a0e1a", fontWeight: 700 }}
@@ -3347,7 +3470,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                       </Tarjeta>
                     );
                   })()}
-                {A.phase === "resting" && du && (
+                {combat.phase === "resting" && combPrep && (
                   <Tarjeta accent="#ff5c7a" style={{ marginBottom: 16 }}>
                     <div className="text-center">
                       <div className="text-xs" style={{ color: "#9aa4bd" }}>
@@ -3360,10 +3483,10 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                           color: "#ff5c7a",
                         }}
                       >
-                        {xt}
+                        {combSegundos}
                       </div>
                       <button
-                        onClick={() => ql(0)}
+                        onClick={() => setCombSegundos(0)}
                         className="text-xs underline mt-2"
                         style={{ color: "#9aa4bd" }}
                       >
@@ -3372,7 +3495,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                     </div>
                   </Tarjeta>
                 )}
-                {fu && (
+                {combVentana && (
                   <Tarjeta accent="#ff5c7a" style={{ marginBottom: 16 }}>
                     <div className="text-center mb-3">
                       <div className="text-sm" style={{ color: "#e8ecf7" }}>
@@ -3381,18 +3504,18 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                             <div style={{ color: "#ffb84f", fontWeight: 700 }}>
                               Superserie enlazada · sin descanso
                             </div>
-                            {(A.bossCats || $o(A.lastExercise)).map((m, N) => (
+                            {(combat.bossCats || $o(combat.lastExercise)).map((m, N) => (
                               <div key={m} className="mt-1">
                                 Fase {N + 1}:{" "}
                                 {repsCombateSuave(
-                                  u.rank,
-                                  s.classification,
-                                  s.focusProfile,
+                                  progress.rank,
+                                  profile.classification,
+                                  profile.focusProfile,
                                   m,
-                                  B,
-                                  s.testResults,
+                                  modalidad,
+                                  profile.testResults,
                                 )}{" "}
-                                × {sy(u.rank, s.classification, m, B)}
+                                × {sy(progress.rank, profile.classification, m, modalidad)}
                               </div>
                             ))}
                           </>
@@ -3402,17 +3525,18 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                               1,
                               Math.round(
                                 repsCombate(
-                                  u.rank,
-                                  s.classification,
-                                  A.exercise,
-                                  s.focusProfile,
-                                  B,
-                                  s.testResults,
-                                ) * (A.loadFactor || 1),
+                                  progress.rank,
+                                  profile.classification,
+                                  combat.exercise,
+                                  profile.focusProfile,
+                                  modalidad,
+                                  profile.testResults,
+                                ) * (combat.loadFactor || 1),
                               ),
                             )}{" "}
-                            × {sy(u.rank, s.classification, A.exercise, B)}
-                            {(A.loadFactor || 1) < 1 && (
+                            ×{" "}
+                            {sy(progress.rank, profile.classification, combat.exercise, modalidad)}
+                            {(combat.loadFactor || 1) < 1 && (
                               <div className="text-xs mt-1" style={{ color: "#ffb84f" }}>
                                 Carga recalibrada · daño reducido
                               </div>
@@ -3425,23 +3549,23 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                       style={{
                         fontFamily: "Chakra Petch, sans-serif",
                         fontSize: 36,
-                        color: xt <= 5 ? "#ff5c7a" : "#e8ecf7",
+                        color: combSegundos <= 5 ? "#ff5c7a" : "#e8ecf7",
                         textAlign: "center",
                       }}
                     >
-                      {xt}s
+                      {combSegundos}s
                     </div>
-                    <BarraXp value={xt} max={Fy} color="#ff5c7a" />
+                    <BarraXp value={combSegundos} max={combSegundosMax} color="#ff5c7a" />
                     {(() => {
                       let fs = f.isBoss
-                          ? (A.bossCats || $o(A.lastExercise)).map((m) =>
+                          ? (combat.bossCats || $o(combat.lastExercise)).map((m) =>
                               repsCombateSuave(
-                                u.rank,
-                                s.classification,
-                                s.focusProfile,
+                                progress.rank,
+                                profile.classification,
+                                profile.focusProfile,
                                 m,
-                                B,
-                                s.testResults,
+                                modalidad,
+                                profile.testResults,
                               ),
                             )
                           : [
@@ -3449,13 +3573,13 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                                 1,
                                 Math.round(
                                   repsCombate(
-                                    u.rank,
-                                    s.classification,
-                                    A.exercise,
-                                    s.focusProfile,
-                                    B,
-                                    s.testResults,
-                                  ) * (A.loadFactor || 1),
+                                    progress.rank,
+                                    profile.classification,
+                                    combat.exercise,
+                                    profile.focusProfile,
+                                    modalidad,
+                                    profile.testResults,
+                                  ) * (combat.loadFactor || 1),
                                 ),
                               ),
                             ],
@@ -3484,7 +3608,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                       );
                     })()}
                     <button
-                      onClick={dg}
+                      onClick={combCancelar}
                       className="w-full py-2 text-xs mt-2"
                       style={{
                         background: "rgba(255,255,255,0.08)",
@@ -3497,7 +3621,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                     </button>
                   </Tarjeta>
                 )}
-                {A.phase === "victory" && (
+                {combat.phase === "victory" && (
                   <Tarjeta accent="#3ecf8e" style={{ marginBottom: 16 }}>
                     <div className="text-center">
                       <IconoTrofeo size={32} color="#3ecf8e" style={{ margin: "0 auto" }} />
@@ -3517,7 +3641,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                       </div>
                     </div>
                     <button
-                      onClick={fg}
+                      onClick={combSiguiente}
                       className="w-full py-3 text-sm mt-4"
                       style={{ background: "#3ecf8e", color: "#0a0e1a", fontWeight: 700 }}
                     >
@@ -3525,7 +3649,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                     </button>
                   </Tarjeta>
                 )}
-                {A.phase === "defeat" && (
+                {combat.phase === "defeat" && (
                   <Tarjeta accent="#ff5c7a" style={{ marginBottom: 16 }}>
                     <div className="text-center">
                       <div
@@ -3544,7 +3668,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                       </div>
                     </div>
                     <button
-                      onClick={mg}
+                      onClick={combReintentar}
                       className="w-full py-3 text-sm mt-4"
                       style={{ background: "#ff5c7a", color: "#0a0e1a", fontWeight: 700 }}
                     >
@@ -3555,71 +3679,78 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
               </>
             );
           })()}
-        {Da === "primal" &&
+        {pestana === "primal" &&
           (() => {
-            let f = g.unlockedCount - 1;
+            let f = primal.unlockedCount - 1;
             return (
               <>
                 <div
                   className={
                     "grid gap-1 mb-4 grid-cols-" +
                     (1 +
-                      (sistemaActivo(e, "skills") ? 1 : 0) +
-                      (sistemaActivo(e, "care") ? 1 : 0) +
-                      (sistemaActivo(e, "neuro") ? 1 : 0))
+                      (sistemaActivo(player, "skills") ? 1 : 0) +
+                      (sistemaActivo(player, "care") ? 1 : 0) +
+                      (sistemaActivo(player, "neuro") ? 1 : 0))
                   }
                 >
                   <button
-                    onClick={() => ii("movs")}
+                    onClick={() => setSeccionPrimal("movs")}
                     className="py-2 text-xs"
                     style={{
-                      background: He === "movs" ? "#3ecf8e" : "rgba(255,255,255,0.03)",
-                      border: "1px solid " + (He === "movs" ? "#3ecf8e" : "rgba(255,255,255,0.12)"),
-                      color: He === "movs" ? "#0a0e1a" : "#8a93ad",
+                      background: seccionPrimal === "movs" ? "#3ecf8e" : "rgba(255,255,255,0.03)",
+                      border:
+                        "1px solid " +
+                        (seccionPrimal === "movs" ? "#3ecf8e" : "rgba(255,255,255,0.12)"),
+                      color: seccionPrimal === "movs" ? "#0a0e1a" : "#8a93ad",
                       fontWeight: 600,
                     }}
                   >
                     Movimientos
                   </button>
-                  {sistemaActivo(e, "skills") && (
+                  {sistemaActivo(player, "skills") && (
                     <button
-                      onClick={() => ii("skills")}
+                      onClick={() => setSeccionPrimal("skills")}
                       className="py-2 text-xs"
                       style={{
-                        background: He === "skills" ? "#b084f5" : "rgba(255,255,255,0.03)",
+                        background:
+                          seccionPrimal === "skills" ? "#b084f5" : "rgba(255,255,255,0.03)",
                         border:
-                          "1px solid " + (He === "skills" ? "#b084f5" : "rgba(255,255,255,0.12)"),
-                        color: He === "skills" ? "#0a0e1a" : "#8a93ad",
+                          "1px solid " +
+                          (seccionPrimal === "skills" ? "#b084f5" : "rgba(255,255,255,0.12)"),
+                        color: seccionPrimal === "skills" ? "#0a0e1a" : "#8a93ad",
                         fontWeight: 600,
                       }}
                     >
                       Skills
                     </button>
                   )}
-                  {sistemaActivo(e, "care") && (
+                  {sistemaActivo(player, "care") && (
                     <button
-                      onClick={() => ii("care")}
+                      onClick={() => setSeccionPrimal("care")}
                       className="py-2 text-xs"
                       style={{
-                        background: He === "care" ? "#4f9dff" : "rgba(255,255,255,0.03)",
+                        background: seccionPrimal === "care" ? "#4f9dff" : "rgba(255,255,255,0.03)",
                         border:
-                          "1px solid " + (He === "care" ? "#4f9dff" : "rgba(255,255,255,0.12)"),
-                        color: He === "care" ? "#0a0e1a" : "#8a93ad",
+                          "1px solid " +
+                          (seccionPrimal === "care" ? "#4f9dff" : "rgba(255,255,255,0.12)"),
+                        color: seccionPrimal === "care" ? "#0a0e1a" : "#8a93ad",
                         fontWeight: 600,
                       }}
                     >
                       Articul.
                     </button>
                   )}
-                  {sistemaActivo(e, "neuro") && (
+                  {sistemaActivo(player, "neuro") && (
                     <button
-                      onClick={() => ii("neuro")}
+                      onClick={() => setSeccionPrimal("neuro")}
                       className="py-2 text-xs"
                       style={{
-                        background: He === "neuro" ? "#ff6b4a" : "rgba(255,255,255,0.03)",
+                        background:
+                          seccionPrimal === "neuro" ? "#ff6b4a" : "rgba(255,255,255,0.03)",
                         border:
-                          "1px solid " + (He === "neuro" ? "#ff6b4a" : "rgba(255,255,255,0.12)"),
-                        color: He === "neuro" ? "#0a0e1a" : "#8a93ad",
+                          "1px solid " +
+                          (seccionPrimal === "neuro" ? "#ff6b4a" : "rgba(255,255,255,0.12)"),
+                        color: seccionPrimal === "neuro" ? "#0a0e1a" : "#8a93ad",
                         fontWeight: 600,
                       }}
                     >
@@ -3627,10 +3758,10 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                     </button>
                   )}
                 </div>
-                {He === "neuro" &&
-                  sistemaActivo(e, "neuro") &&
+                {seccionPrimal === "neuro" &&
+                  sistemaActivo(player, "neuro") &&
                   (() => {
-                    let d = e.neuro || {
+                    let d = player.neuro || {
                         bestSpeedLevel: 0,
                         bestSequence: 0,
                         bestDualSec: 0,
@@ -3714,11 +3845,11 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                           </div>
                         </Tarjeta>
                         {m.map((N) => {
-                          let _ = Ky === N.id;
+                          let _ = neuroAbierto === N.id;
                           return (
                             <Tarjeta key={N.id} accent={N.accent} style={{ marginBottom: 12 }}>
                               <button
-                                onClick={() => Vy(_ ? null : N.id)}
+                                onClick={() => setNeuroAbierto(_ ? null : N.id)}
                                 className="w-full text-left"
                                 style={{ background: "transparent", border: "none", padding: 0 }}
                               >
@@ -3757,21 +3888,23 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                                 <div className="mt-3">
                                   {N.id === "reaction" && (
                                     <Reaccion
-                                      onDone={(X) => Ne((de) => Ps(de, "reaction", X, !1))}
+                                      onDone={(X) => aplicar((de) => Ps(de, "reaction", X, !1))}
                                     />
                                   )}
                                   {N.id === "sequence" && (
                                     <Secuencia
-                                      onDone={(X) => Ne((de) => Ps(de, "sequence", X, !1))}
+                                      onDone={(X) => aplicar((de) => Ps(de, "sequence", X, !1))}
                                     />
                                   )}
                                   {N.id === "dual" && (
                                     <TareaDual
-                                      onDone={(X) => Ne((de) => Ps(de, "dual", X, X >= 45))}
+                                      onDone={(X) => aplicar((de) => Ps(de, "dual", X, X >= 45))}
                                     />
                                   )}
                                   {N.id === "coord" && (
-                                    <Ritmo onDone={(X) => Ne((de) => Ps(de, "coord", X, !1))} />
+                                    <Ritmo
+                                      onDone={(X) => aplicar((de) => Ps(de, "coord", X, !1))}
+                                    />
                                   )}
                                 </div>
                               )}
@@ -3781,10 +3914,13 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                       </>
                     );
                   })()}
-                {He === "care" &&
-                  sistemaActivo(e, "care") &&
+                {seccionPrimal === "care" &&
+                  sistemaActivo(player, "care") &&
                   (() => {
-                    let d = e.care && e.care.today.date === fechaHoy() ? e.care.today.done : [];
+                    let d =
+                      player.care && player.care.today.date === fechaHoy()
+                        ? player.care.today.done
+                        : [];
                     return (
                       <>
                         <Tarjeta accent="#4f9dff" style={{ marginBottom: 16 }}>
@@ -3804,7 +3940,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                                   fontWeight: 700,
                                 }}
                               >
-                                {(e.care && e.care.lifetime) || 0} protocolos hechos
+                                {(player.care && player.care.lifetime) || 0} protocolos hechos
                               </div>
                             </div>
                             <IconoCorazon size={24} color="#4f9dff" />
@@ -3842,11 +3978,11 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                           accent="#ff5c7a"
                           style={{ marginBottom: 16 }}
                           collapsed={
-                            H && H.collapsed && H.collapsed.banderas !== void 0
-                              ? me("banderas")
+                            ui && ui.collapsed && ui.collapsed.banderas !== void 0
+                              ? plegado("banderas")
                               : !0
                           }
-                          onToggle={fe}
+                          onToggle={alternarPlegable}
                           right="señales de alarma"
                         >
                           <div className="text-xs mb-2" style={{ color: "#9aa4bd" }}>
@@ -3863,7 +3999,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                           ))}
                         </Plegable>
                         {cuidadoArticular.map((m) => {
-                          let N = Gy === m.id,
+                          let N = cuidadoAbierto === m.id,
                             _ = d.includes(m.id);
                           return (
                             <Tarjeta
@@ -3872,7 +4008,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                               style={{ marginBottom: 12 }}
                             >
                               <button
-                                onClick={() => Zy(N ? null : m.id)}
+                                onClick={() => setCuidadoAbierto(N ? null : m.id)}
                                 className="w-full text-left"
                                 style={{ background: "transparent", border: "none", padding: 0 }}
                               >
@@ -3936,7 +4072,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                                     </div>
                                   ))}
                                   <button
-                                    onClick={() => Ne((X) => Y2(X, m.id))}
+                                    onClick={() => aplicar((X) => Y2(X, m.id))}
                                     disabled={_}
                                     className="w-full py-3 text-sm mt-3 disabled:opacity-40"
                                     style={{
@@ -3955,7 +4091,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                       </>
                     );
                   })()}
-                {He === "skills" && sistemaActivo(e, "skills") && (
+                {seccionPrimal === "skills" && sistemaActivo(player, "skills") && (
                   <>
                     <Tarjeta accent="#b084f5" style={{ marginBottom: 16 }}>
                       <div className="flex items-center justify-between mb-1">
@@ -3974,7 +4110,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                               fontWeight: 700,
                             }}
                           >
-                            {Wo(e)} / {habilidades.length} aprendidas
+                            {Wo(player)} / {habilidades.length} aprendidas
                           </div>
                         </div>
                         <IconoDestello size={24} color="#b084f5" />
@@ -3985,10 +4121,10 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                       </div>
                     </Tarjeta>
                     {habilidades.map((d) => {
-                      let m = Td(e, d.id),
+                      let m = Td(player, d.id),
                         N = m.filter(Boolean).length,
                         _ = N >= d.steps.length,
-                        X = Xy === d.id;
+                        X = habilidadAbierta === d.id;
                       return (
                         <Tarjeta
                           key={d.id}
@@ -3996,7 +4132,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                           style={{ marginBottom: 12 }}
                         >
                           <button
-                            onClick={() => Yy(X ? null : d.id)}
+                            onClick={() => setHabilidadAbierta(X ? null : d.id)}
                             className="w-full text-left"
                             style={{ background: "transparent", border: "none", padding: 0 }}
                           >
@@ -4052,7 +4188,9 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                                     style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}
                                   >
                                     <button
-                                      onClick={() => Ne((wl) => marcarPasoHabilidad(wl, d.id, te))}
+                                      onClick={() =>
+                                        aplicar((wl) => marcarPasoHabilidad(wl, d.id, te))
+                                      }
                                       className="w-full text-left flex items-start gap-2"
                                       style={{
                                         background: "transparent",
@@ -4140,7 +4278,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                     })}
                   </>
                 )}
-                {He === "movs" && (
+                {seccionPrimal === "movs" && (
                   <>
                     <Tarjeta accent="#3ecf8e" style={{ marginBottom: 16 }}>
                       <div className="flex items-center justify-between mb-2">
@@ -4159,16 +4297,16 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                               fontWeight: 700,
                             }}
                           >
-                            {g.unlockedCount} / {movimientosPrimal.length} movimientos
+                            {primal.unlockedCount} / {movimientosPrimal.length} movimientos
                           </div>
                         </div>
                         <IconoPata size={26} color="#3ecf8e" />
                       </div>
                       <div className="text-xs" style={{ color: "#9aa4bd" }}>
-                        Hoy: {Xn}/{Yn} sesiones
+                        Hoy: {primalHechasHoy}/{primalSesionesHoy} sesiones
                       </div>
                     </Tarjeta>
-                    {Qa !== "idle" ? (
+                    {primalFase !== "idle" ? (
                       <Tarjeta accent="#3ecf8e" style={{ marginBottom: 16 }}>
                         <div className="text-center mb-2">
                           <div
@@ -4179,19 +4317,19 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                               fontSize: 18,
                             }}
                           >
-                            {movimientosPrimal[pu].name}
+                            {movimientosPrimal[primalMov].name}
                           </div>
                           <div
                             className="mt-1"
                             style={{ fontSize: 14, lineHeight: 1.5, color: "#c8d0e4" }}
                           >
-                            {movimientosPrimal[pu].desc}
+                            {movimientosPrimal[primalMov].desc}
                           </div>
                         </div>
-                        {Qa === "listo" ? (
+                        {primalFase === "listo" ? (
                           <>
                             <div className="text-center text-xs mb-3" style={{ color: "#9aa4bd" }}>
-                              {dd} rondas de {Ws(u.rank)} segundos.
+                              {dd} rondas de {Ws(progress.rank)} segundos.
                             </div>
                             <button
                               onClick={sdcPrimalYa}
@@ -4212,39 +4350,45 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                             <div
                               className="text-center text-xs mb-1"
                               style={
-                                Qd === 0
+                                primalRonda === 0
                                   ? { color: "#ffb84f", fontWeight: 700, letterSpacing: 2 }
                                   : { color: "#9aa4bd" }
                               }
                             >
-                              {Qd === 0
+                              {primalRonda === 0
                                 ? "PONETE EN POSICIÓN"
                                 : "Ronda " +
-                                  Qd +
+                                  primalRonda +
                                   "/" +
                                   dd +
                                   " · " +
-                                  (Qa === "active" ? "En marcha" : "Descanso")}
+                                  (primalFase === "active" ? "En marcha" : "Descanso")}
                             </div>
                             <div
                               style={{
                                 fontFamily: "Chakra Petch, sans-serif",
                                 fontSize: 48,
                                 textAlign: "center",
-                                color: Qa === "active" ? "#3ecf8e" : "#ffb84f",
+                                color: primalFase === "active" ? "#3ecf8e" : "#ffb84f",
                               }}
                             >
-                              {jl}s
+                              {primalSegundos}s
                             </div>
                             <BarraXp
-                              value={jl}
-                              max={Qa === "active" ? Ws(u.rank) : Qd === 0 ? 10 : cy}
-                              color={Qa === "active" ? "#3ecf8e" : "#ffb84f"}
+                              value={primalSegundos}
+                              max={
+                                primalFase === "active"
+                                  ? Ws(progress.rank)
+                                  : primalRonda === 0
+                                    ? 10
+                                    : cy
+                              }
+                              color={primalFase === "active" ? "#3ecf8e" : "#ffb84f"}
                             />
                           </>
                         )}
                         <button
-                          onClick={ig}
+                          onClick={primalCancelar}
                           className="w-full py-2 text-xs mt-4"
                           style={{
                             background: "rgba(255,255,255,0.08)",
@@ -4262,27 +4406,27 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                         title="Elegí un movimiento"
                         accent="#3ecf8e"
                         style={{ marginBottom: 16 }}
-                        collapsed={me("primalLista")}
-                        onToggle={fe}
-                        right={`${g.unlockedCount}/${movimientosPrimal.length}`}
+                        collapsed={plegado("primalLista")}
+                        onToggle={alternarPlegable}
+                        right={`${primal.unlockedCount}/${movimientosPrimal.length}`}
                       >
                         <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
-                          {dd} rondas de {Ws(u.rank)} segundos. Dominá el más nuevo {xd} veces para
-                          descubrir el siguiente.
+                          {dd} rondas de {Ws(progress.rank)} segundos. Dominá el más nuevo {xd}{" "}
+                          veces para descubrir el siguiente.
                         </div>
-                        {Xn >= Yn && (
+                        {primalHechasHoy >= primalSesionesHoy && (
                           <div className="text-xs mb-3" style={{ color: "#ffb84f" }}>
-                            Ya completaste tus {Yn} sesiones de hoy. Volvé mañana.
+                            Ya completaste tus {primalSesionesHoy} sesiones de hoy. Volvé mañana.
                           </div>
                         )}
                         {movimientosPrimal.map((d, m) => {
-                          let N = m < g.unlockedCount,
+                          let N = m < primal.unlockedCount,
                             _ = m === f,
-                            X = !N || Xn >= Yn;
+                            X = !N || primalHechasHoy >= primalSesionesHoy;
                           return (
                             <button
                               key={d.name}
-                              onClick={() => !X && og(m)}
+                              onClick={() => !X && primalElegir(m)}
                               disabled={X}
                               className="w-full text-left py-2 px-3 mb-2 disabled:opacity-40"
                               style={{
@@ -4307,7 +4451,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                                 </div>
                                 {_ && (
                                   <span className="text-xs ml-auto" style={{ color: "#ffb84f" }}>
-                                    {g.masteryProgress}/{xd}
+                                    {primal.masteryProgress}/{xd}
                                   </span>
                                 )}
                               </div>
@@ -4326,12 +4470,12 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
               </>
             );
           })()}
-        {Da === "exploration" &&
+        {pestana === "exploration" &&
           (() => {
-            let f = s2(el),
+            let f = s2(kmTotales),
               d = sectores[f],
               m = i2(f),
-              N = Math.max(0, Math.min(el - m, d.endKm - m)),
+              N = Math.max(0, Math.min(kmTotales - m, d.endKm - m)),
               _ = d.endKm - m,
               X = Math.round((N / _) * 100),
               de = nodosExplorar.filter((te) => te.sector === f);
@@ -4367,11 +4511,12 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                   </div>
                   <BarraXp value={N} max={_} color="#7c5cff" />
                   <div className="text-xs mt-3" style={{ color: "#9aa4bd" }}>
-                    {el.toFixed(1)} km totales · {ng.name}
+                    {kmTotales.toFixed(1)} km totales · {rangoCaminante.name}
                   </div>
-                  {di && (
+                  {nodoSiguiente && (
                     <div className="text-xs mt-1" style={{ color: "#7a83a0" }}>
-                      Próximo nodo: {di.name} a {di.km} km (faltan {(di.km - el).toFixed(1)})
+                      Próximo nodo: {nodoSiguiente.name} a {nodoSiguiente.km} km (faltan{" "}
+                      {(nodoSiguiente.km - kmTotales).toFixed(1)})
                     </div>
                   )}
                 </Tarjeta>
@@ -4391,8 +4536,8 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                     expedición.
                   </div>
                   {(function () {
-                    var ws = (e.exploration && e.exploration.walkStart) || 0,
-                      kmh = (e.profile && e.profile.ritmoKmH) || 5;
+                    var ws = (player.exploration && player.exploration.walkStart) || 0,
+                      kmh = (player.profile && player.profile.ritmoKmH) || 5;
                     if (ws)
                       return (
                         <CronoCaminata
@@ -4462,8 +4607,8 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                     <input
                       type="text"
                       inputMode="decimal"
-                      value={Xd}
-                      onChange={(te) => Yd(te.target.value.replace(/[^0-9.,]/g, ""))}
+                      value={kmTexto}
+                      onChange={(te) => setKmTexto(te.target.value.replace(/[^0-9.,]/g, ""))}
                       placeholder="Km del tramo"
                       className="px-3 py-2 text-sm"
                       style={{
@@ -4474,7 +4619,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                       }}
                     />
                     <button
-                      onClick={Ug}
+                      onClick={sumarKm}
                       className="px-3 py-2 text-sm"
                       style={{
                         background: "rgba(124,92,255,0.15)",
@@ -4491,8 +4636,8 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                     <input
                       type="text"
                       inputMode="numeric"
-                      value={Ml}
-                      onChange={(te) => Gd(te.target.value.replace(/[^0-9]/g, ""))}
+                      value={pasosTexto}
+                      onChange={(te) => setPasosTexto(te.target.value.replace(/[^0-9]/g, ""))}
                       placeholder="o pasos dados"
                       className="px-3 py-2 text-sm"
                       style={{
@@ -4503,7 +4648,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                       }}
                     />
                     <button
-                      onClick={Lg}
+                      onClick={sumarPasos}
                       className="px-3 py-2 text-sm"
                       style={{
                         background: "rgba(124,92,255,0.15)",
@@ -4516,10 +4661,10 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                       + Pasos
                     </button>
                   </div>
-                  {Ml && parseInt(Ml, 10) > 0 && (
+                  {pasosTexto && parseInt(pasosTexto, 10) > 0 && (
                     <div className="text-xs mb-2" style={{ color: "#7a83a0" }}>
-                      {parseInt(Ml, 10).toLocaleString("es")} pasos ≈{" "}
-                      {((parseInt(Ml, 10) * vd) / 1e3).toFixed(2)} km
+                      {parseInt(pasosTexto, 10).toLocaleString("es")} pasos ≈{" "}
+                      {((parseInt(pasosTexto, 10) * vd) / 1e3).toFixed(2)} km
                     </div>
                   )}
                   <div
@@ -4539,20 +4684,20 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                         color: "#b9a5ff",
                       }}
                     >
-                      {(x.pendingKm || 0).toFixed(1)} km
+                      {(exploration.pendingKm || 0).toFixed(1)} km
                     </div>
                   </div>
                   <button
-                    onClick={Xg}
-                    disabled={!(x.pendingKm > 0)}
+                    onClick={consolidarKmHoy}
+                    disabled={!(exploration.pendingKm > 0)}
                     className="w-full py-3 text-sm disabled:opacity-40"
                     style={{ background: "#7c5cff", color: "#0a0e1a", fontWeight: 700 }}
                   >
                     Concluir Expedición
                   </button>
-                  {x.pendingKm > 0 && (
+                  {exploration.pendingKm > 0 && (
                     <button
-                      onClick={Hg}
+                      onClick={descartarTramosHoy}
                       className="w-full py-2 text-xs mt-2"
                       style={{
                         background: "rgba(255,255,255,0.08)",
@@ -4565,8 +4710,9 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                     </button>
                   )}
                   <div className="text-xs mt-2 text-center" style={{ color: "#7a83a0" }}>
-                    Hoy llevás {(x.today.date === fechaHoy() ? x.today.km : 0).toFixed(1)} km
-                    consolidados
+                    Hoy llevás{" "}
+                    {(exploration.today.date === fechaHoy() ? exploration.today.km : 0).toFixed(1)}{" "}
+                    km consolidados
                   </div>
                 </Tarjeta>
                 <Plegable
@@ -4574,14 +4720,14 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                   title="Mapa del sector"
                   accent="#5a6178"
                   style={{ marginBottom: 16 }}
-                  collapsed={me("mapaSector")}
-                  onToggle={fe}
-                  right={uu ? "todo" : "sector"}
+                  collapsed={plegado("mapaSector")}
+                  onToggle={alternarPlegable}
+                  right={verTodoMapa ? "todo" : "sector"}
                 >
                   <div className="flex items-center justify-end mb-3">
                     <div className="flex gap-1">
                       <button
-                        onClick={() => Qy((te) => !te)}
+                        onClick={() => setVerTodoMapa((te) => !te)}
                         className="px-2 py-1 text-xs"
                         style={{
                           background: "rgba(255,255,255,0.05)",
@@ -4589,13 +4735,13 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                           color: "#9aa4bd",
                         }}
                       >
-                        {uu ? "Ver sector" : "Ver todo"}
+                        {verTodoMapa ? "Ver sector" : "Ver todo"}
                       </button>
                     </div>
                   </div>
-                  {(uu ? nodosExplorar : de).map((te) => {
-                    let wl = nodosExplorar.indexOf(te) <= x.unlockedIndex,
-                      Ig = Math.max(0, te.km - el);
+                  {(verTodoMapa ? nodosExplorar : de).map((te) => {
+                    let wl = nodosExplorar.indexOf(te) <= exploration.unlockedIndex,
+                      Ig = Math.max(0, te.km - kmTotales);
                     return (
                       <div
                         key={te.name}
@@ -4639,18 +4785,20 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                   title="Códice"
                   accent="#ffb84f"
                   style={{ marginBottom: 16 }}
-                  collapsed={H && H.collapsed && H.collapsed.codice !== void 0 ? me("codice") : !0}
-                  onToggle={fe}
-                  right={`${(x.relics || []).length} / ${nodosExplorar.length} · +${Math.round((x.relics || []).length * Ny * 100)}% XP`}
+                  collapsed={
+                    ui && ui.collapsed && ui.collapsed.codice !== void 0 ? plegado("codice") : !0
+                  }
+                  onToggle={alternarPlegable}
+                  right={`${(exploration.relics || []).length} / ${nodosExplorar.length} · +${Math.round((exploration.relics || []).length * Ny * 100)}% XP`}
                 >
-                  {(x.relics || []).length === 0 ? (
+                  {(exploration.relics || []).length === 0 ? (
                     <div className="text-xs" style={{ color: "#7a83a0" }}>
                       Aún no hallaste ninguna reliquia. Caminá y concluí expediciones para llenar el
                       Códice.
                     </div>
                   ) : (
                     nodosExplorar
-                      .filter((te) => (x.relics || []).includes(te.relic))
+                      .filter((te) => (exploration.relics || []).includes(te.relic))
                       .map((te) => (
                         <div
                           key={te.relic}
@@ -4676,7 +4824,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
               </>
             );
           })()}
-        {Da === "achievements" && (
+        {pestana === "achievements" && (
           <>
             <Tarjeta accent="#ffb84f" style={{ marginBottom: 16 }}>
               <div className="flex items-center justify-between">
@@ -4692,7 +4840,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                       fontWeight: 700,
                     }}
                   >
-                    {S.length} / {logros.length}
+                    {achievements.length} / {logros.length}
                   </div>
                 </div>
                 <IconoTrofeo size={26} color="#ffb84f" />
@@ -4701,7 +4849,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
             {categoriasLogros.map((f) => {
               let d = logros.filter((N) => N.category === f);
               if (!d.length) return null;
-              let m = d.filter((N) => S.includes(N.id)).length;
+              let m = d.filter((N) => achievements.includes(N.id)).length;
               return (
                 <Plegable
                   key={f}
@@ -4710,11 +4858,11 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                   accent="#5a6178"
                   style={{ marginBottom: 16 }}
                   collapsed={
-                    H && H.collapsed && H.collapsed["ach-" + f] !== void 0
-                      ? me("ach-" + f)
-                      : !sdcCatAbierta(e, f)
+                    ui && ui.collapsed && ui.collapsed["ach-" + f] !== void 0
+                      ? plegado("ach-" + f)
+                      : !sdcCatAbierta(player, f)
                   }
-                  onToggle={fe}
+                  onToggle={alternarPlegable}
                   right={`${m}/${d.length}`}
                 >
                   {ordenDificultad.map((N) => {
@@ -4728,7 +4876,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                           {sdcDific[N] || N}
                         </div>
                         {_.map((X) => {
-                          let de = S.includes(X.id);
+                          let de = achievements.includes(X.id);
                           return (
                             <div
                               key={X.id}
@@ -4768,16 +4916,17 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
             })}
           </>
         )}
-        {Da === "profile" &&
+        {pestana === "profile" &&
           (() => {
             let f = Math.max(
                 1,
                 Math.floor(
-                  (new Date(fechaHoy() + "T00:00:00") - new Date(s.createdDate + "T00:00:00")) /
+                  (new Date(fechaHoy() + "T00:00:00") -
+                    new Date(profile.createdDate + "T00:00:00")) /
                     864e5,
                 ) + 1,
               ),
-              d = xpTotal(u.level, u.currentXP);
+              d = xpTotal(progress.level, progress.currentXP);
             return (
               <>
                 <Tarjeta accent="#4f9dff" style={{ marginBottom: 16 }}>
@@ -4791,17 +4940,17 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                         fontWeight: 700,
                       }}
                     >
-                      {s.name}
+                      {profile.name}
                     </div>
                   </div>
                   <div className="text-xs" style={{ color: "#9aa4bd" }}>
-                    Entrenando desde el {s.createdDate} · Día {f}
+                    Entrenando desde el {profile.createdDate} · Día {f}
                   </div>
                   <div className="text-xs mt-1" style={{ color: "#9aa4bd" }}>
-                    Enfoque: {enfoqueDe(s.focusProfile).name}
+                    Enfoque: {enfoqueDe(profile.focusProfile).name}
                   </div>
                   <div className="text-xs mt-1" style={{ color: "#9aa4bd" }}>
-                    Clasificación: {s.classification}
+                    Clasificación: {profile.classification}
                   </div>
                 </Tarjeta>
                 <Plegable
@@ -4810,26 +4959,28 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                   accent="#ffb84f"
                   style={{ marginBottom: 16 }}
                   collapsed={
-                    H && H.collapsed && H.collapsed.sistemas !== void 0 ? me("sistemas") : !0
+                    ui && ui.collapsed && ui.collapsed.sistemas !== void 0
+                      ? plegado("sistemas")
+                      : !0
                   }
-                  onToggle={fe}
-                  right={`${sistemas.filter((m) => sistemaActivo(e, m.id)).length + 1}/${sistemas.length + 1}`}
+                  onToggle={alternarPlegable}
+                  right={`${sistemas.filter((m) => sistemaActivo(player, m.id)).length + 1}/${sistemas.length + 1}`}
                 >
                   <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
                     Los sistemas se abren solos a medida que subís de nivel. Podés abrirlos todos de
                     golpe o apagar los que no uses.
                   </div>
                   <button
-                    onClick={Sg}
+                    onClick={alternarDesbloqueo}
                     className="w-full py-3 text-sm mb-3"
                     style={{
-                      background: e.unlockAll ? "#ffb84f" : "rgba(255,184,79,0.1)",
+                      background: player.unlockAll ? "#ffb84f" : "rgba(255,184,79,0.1)",
                       border: "1px solid #ffb84f",
-                      color: e.unlockAll ? "#0a0e1a" : "#ffb84f",
+                      color: player.unlockAll ? "#0a0e1a" : "#ffb84f",
                       fontWeight: 700,
                     }}
                   >
-                    {e.unlockAll ? "Desbloqueo total ACTIVO" : "Desbloquear todo ahora"}
+                    {player.unlockAll ? "Desbloqueo total ACTIVO" : "Desbloquear todo ahora"}
                   </button>
                   <div
                     className="flex items-center justify-between py-2"
@@ -4848,9 +4999,9 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                     </span>
                   </div>
                   {sistemas.map((m) => {
-                    let N = sistemaAbierto(e, m.id),
-                      _ = (e.disabled || []).includes(m.id),
-                      X = sistemaActivo(e, m.id);
+                    let N = sistemaAbierto(player, m.id),
+                      _ = (player.disabled || []).includes(m.id),
+                      X = sistemaActivo(player, m.id);
                     return (
                       <div
                         key={m.id}
@@ -4870,7 +5021,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                         </div>
                         {N ? (
                           <button
-                            onClick={() => Ng(m.id)}
+                            onClick={() => alternarSistema(m.id)}
                             className="py-2 px-3 text-xs"
                             style={{
                               background: _ ? "rgba(255,255,255,0.05)" : "rgba(62,207,142,0.12)",
@@ -4895,25 +5046,25 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                   accent="#4f9dff"
                   style={{ marginBottom: 16 }}
                   collapsed={
-                    H && H.collapsed && H.collapsed.metodos !== void 0 ? me("metodos") : !0
+                    ui && ui.collapsed && ui.collapsed.metodos !== void 0 ? plegado("metodos") : !0
                   }
-                  onToggle={fe}
-                  right={(modalidades.find((m) => m.id === B) || modalidades[0]).name}
+                  onToggle={alternarPlegable}
+                  right={(modalidades.find((m) => m.id === modalidad) || modalidades[0]).name}
                 >
                   <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
                     Activa o desactiva modalidades cuando quieras. Con varias activas elegís cuál
                     usar cada día en la Rutina. Hoy:{" "}
                     <b style={{ color: "#4f9dff" }}>
-                      {(modalidades.find((m) => m.id === B) || modalidades[0]).name}
+                      {(modalidades.find((m) => m.id === modalidad) || modalidades[0]).name}
                     </b>
                     .
                   </div>
                   {modalidades.map((m) => {
-                    let N = modalidadesDe(s).includes(m.id);
+                    let N = modalidadesDe(profile).includes(m.id);
                     return (
                       <button
                         key={m.id}
-                        onClick={() => vg(m.id)}
+                        onClick={() => alternarModalidad(m.id)}
                         className="w-full text-left px-3 py-2 mb-2"
                         style={{
                           background: N ? "rgba(79,157,255,0.14)" : "rgba(255,255,255,0.03)",
@@ -4942,7 +5093,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                     );
                   })}
                   <button
-                    onClick={() => ef(modalidades.map((m) => m.id))}
+                    onClick={() => ponerModalidades(modalidades.map((m) => m.id))}
                     className="w-full py-2 text-xs"
                     style={{
                       background: "rgba(255,184,79,0.1)",
@@ -4953,15 +5104,15 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                   >
                     SELECCIONAR TODOS (Atleta Híbrido)
                   </button>
-                  {modalidadesDe(s).length > 1 && (
+                  {modalidadesDe(profile).length > 1 && (
                     <div className="mt-3">
                       <div className="text-xs mb-2" style={{ color: "#9aa4bd" }}>
                         Cómo se llaman tus rangos. Es solo el nombre: no cambia tu progreso ni tus
                         repeticiones.
                       </div>
                       <div className="grid grid-cols-3 gap-1">
-                        {modalidadesDe(s).map(function (jm) {
-                          var jN = sdcJuego(s) === jm,
+                        {modalidadesDe(profile).map(function (jm) {
+                          var jN = sdcJuego(profile) === jm,
                             jT =
                               modalidades.find(function (jR) {
                                 return jR.id === jm;
@@ -4985,7 +5136,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                               <div
                                 style={{ fontFamily: "Chakra Petch, sans-serif", fontWeight: 700 }}
                               >
-                                {(sdcTitulos[jm] || {})[u.rank] || ""}
+                                {(sdcTitulos[jm] || {})[progress.rank] || ""}
                               </div>
                               <div style={{ fontSize: 10, color: "#7a83a0" }}>{jT.name}</div>
                             </button>
@@ -5001,13 +5152,20 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                   accent="#b084f5"
                   style={{ marginBottom: 16 }}
                   collapsed={
-                    H && H.collapsed && H.collapsed.numeros !== void 0 ? me("numeros") : !0
+                    ui && ui.collapsed && ui.collapsed.numeros !== void 0 ? plegado("numeros") : !0
                   }
-                  onToggle={fe}
-                  right={(T.squat + T.pushup + T.back + T.abs).toLocaleString("es") + " reps"}
+                  onToggle={alternarPlegable}
+                  right={
+                    (
+                      lifetimeReps.squat +
+                      lifetimeReps.pushup +
+                      lifetimeReps.back +
+                      lifetimeReps.abs
+                    ).toLocaleString("es") + " reps"
+                  }
                 >
                   {(() => {
-                    let ct = sdcAnimoCuenta(e);
+                    let ct = sdcAnimoCuenta(player);
                     if (!ct.no && !ct.ambas) return null;
                     let fila = (t, v) => (
                       <div className="flex justify-between text-sm mb-1">
@@ -5045,7 +5203,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                     No se compran: suben solos con lo que entrenás.
                   </div>
                   {Io.map((m) => {
-                    let N = tu(e, m),
+                    let N = tu(player, m),
                       _ = q2(N);
                     return (
                       <div key={m.key} className="mb-3">
@@ -5073,19 +5231,27 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                     <div className="grid grid-cols-2 gap-2 text-sm">
                       <div className="flex justify-between">
                         <span style={{ color: "#9aa4bd" }}>Sentadillas</span>
-                        <span style={{ color: "#e8ecf7" }}>{T.squat.toLocaleString("es")}</span>
+                        <span style={{ color: "#e8ecf7" }}>
+                          {lifetimeReps.squat.toLocaleString("es")}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span style={{ color: "#9aa4bd" }}>Flexiones</span>
-                        <span style={{ color: "#e8ecf7" }}>{T.pushup.toLocaleString("es")}</span>
+                        <span style={{ color: "#e8ecf7" }}>
+                          {lifetimeReps.pushup.toLocaleString("es")}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span style={{ color: "#9aa4bd" }}>Espalda</span>
-                        <span style={{ color: "#e8ecf7" }}>{T.back.toLocaleString("es")}</span>
+                        <span style={{ color: "#e8ecf7" }}>
+                          {lifetimeReps.back.toLocaleString("es")}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span style={{ color: "#9aa4bd" }}>Abdominales</span>
-                        <span style={{ color: "#e8ecf7" }}>{T.abs.toLocaleString("es")}</span>
+                        <span style={{ color: "#e8ecf7" }}>
+                          {lifetimeReps.abs.toLocaleString("es")}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -5105,33 +5271,33 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                     <div className="space-y-1 text-sm">
                       <div className="flex justify-between">
                         <span style={{ color: "#9aa4bd" }}>Travesías completadas</span>
-                        <span style={{ color: "#e8ecf7" }}>{b}</span>
+                        <span style={{ color: "#e8ecf7" }}>{dungeonsCleared}</span>
                       </div>
                       <div className="flex justify-between">
                         <span style={{ color: "#9aa4bd" }}>Terrenos recuperados</span>
-                        <span style={{ color: "#e8ecf7" }}>{A.villainsDefeated}</span>
+                        <span style={{ color: "#e8ecf7" }}>{combat.villainsDefeated}</span>
                       </div>
                       <div className="flex justify-between">
                         <span style={{ color: "#9aa4bd" }}>Movimientos de Instinto Primal</span>
                         <span style={{ color: "#e8ecf7" }}>
-                          {g.unlockedCount}/{movimientosPrimal.length}
+                          {primal.unlockedCount}/{movimientosPrimal.length}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span style={{ color: "#9aa4bd" }}>Distancia recorrida</span>
-                        <span style={{ color: "#e8ecf7" }}>{el.toFixed(1)} km</span>
+                        <span style={{ color: "#e8ecf7" }}>{kmTotales.toFixed(1)} km</span>
                       </div>
                       <div className="flex justify-between">
                         <span style={{ color: "#9aa4bd" }}>Logros</span>
                         <span style={{ color: "#e8ecf7" }}>
-                          {S.length}/{logros.length}
+                          {achievements.length}/{logros.length}
                         </span>
                       </div>
-                      {(e.lifetimeVolumeKg || 0) > 0 ? (
+                      {(player.lifetimeVolumeKg || 0) > 0 ? (
                         <div className="flex justify-between">
                           <span style={{ color: "#9aa4bd" }}>Kilos movidos en el gimnasio</span>
                           <span style={{ color: "#e8ecf7" }}>
-                            {(e.lifetimeVolumeKg || 0).toLocaleString("es")} kg
+                            {(player.lifetimeVolumeKg || 0).toLocaleString("es")} kg
                           </span>
                         </div>
                       ) : null}
@@ -5144,18 +5310,18 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                   accent="#ffb84f"
                   style={{ marginBottom: 16 }}
                   collapsed={
-                    H && H.collapsed && H.collapsed.aptitud !== void 0 ? me("aptitud") : !0
+                    ui && ui.collapsed && ui.collapsed.aptitud !== void 0 ? plegado("aptitud") : !0
                   }
-                  onToggle={fe}
-                  right={sdcCalibre(s) || s.classification}
+                  onToggle={alternarPlegable}
+                  right={sdcCalibre(profile) || profile.classification}
                 >
                   <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
-                    Clasificación actual: {s.classification}. Repetirla no cambia tu rango ni tu
-                    progreso, solo ajusta el volumen de tu rutina y tu calibre.
+                    Clasificación actual: {profile.classification}. Repetirla no cambia tu rango ni
+                    tu progreso, solo ajusta el volumen de tu rutina y tu calibre.
                   </div>
                   {(() => {
-                    let pt = sdcPuntaje(s),
-                      ff = sdcRitmoF(s),
+                    let pt = sdcPuntaje(profile),
+                      ff = sdcRitmoF(profile),
                       ix = sdcBandaIx(pt, ff),
                       sg = ix < bandasCalibre.length - 1 ? bandasCalibre[ix + 1] : null;
                     return (
@@ -5165,9 +5331,9 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                           <div style={{ color: "#7a83a0", marginTop: 2 }}>
                             sentadillas + 2×flexiones + 2×remo + abdominales
                           </div>
-                          {sdcCalibre(s) ? (
+                          {sdcCalibre(profile) ? (
                             <div style={{ color: "#7a83a0", marginTop: 2 }}>
-                              Enfoque: {sdcCalF(ix, s)}
+                              Enfoque: {sdcCalF(ix, profile)}
                             </div>
                           ) : null}
                         </div>
@@ -5189,7 +5355,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                               }}
                             >
                               {k < ix ? "✓ " : k === ix ? "● " : ""}
-                              {sdcCalT(k, s)}
+                              {sdcCalT(k, profile)}
                             </span>
                             <span
                               className="text-xs"
@@ -5203,7 +5369,8 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                         ))}
                         {sg ? (
                           <div className="text-xs mt-2" style={{ color: "#3ecf8e" }}>
-                            Te faltan {sdcBandaMin(ix + 1, ff) - pt} pts para {sdcCalT(ix + 1, s)}.
+                            Te faltan {sdcBandaMin(ix + 1, ff) - pt} pts para{" "}
+                            {sdcCalT(ix + 1, profile)}.
                           </div>
                         ) : (
                           <div className="text-xs mt-2" style={{ color: "#ffb84f" }}>
@@ -5213,26 +5380,27 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                       </div>
                     );
                   })()}
-                  {Py ? (
-                    Un < ci.length ? (
+                  {repruebaAbierta ? (
+                    repruebaPaso < repruebaEjercicios.length ? (
                       <>
                         <div className="text-xs mb-2" style={{ color: "#9aa4bd" }}>
-                          Punto de Partida ({Un + 1}/{ci.length}) · sigue la cadencia del metrónomo.
+                          Punto de Partida ({repruebaPaso + 1}/{repruebaEjercicios.length}) · sigue
+                          la cadencia del metrónomo.
                         </div>
                         <PruebaAptitud
-                          key={"re-" + ci[Un].key}
-                          exercise={ci[Un]}
+                          key={"re-" + repruebaEjercicios[repruebaPaso].key}
+                          exercise={repruebaEjercicios[repruebaPaso]}
                           onFinish={(m) => {
-                            let N = ci[Un].key;
-                            (N === "sq" && hu(String(m)),
-                              N === "pu" && Su(String(m)),
-                              N === "ab" && Cu(String(m)),
+                            let N = repruebaEjercicios[repruebaPaso].key;
+                            (N === "sq" && setRepSentadillas(String(m)),
+                              N === "pu" && setRepFlexiones(String(m)),
+                              N === "ab" && setRepAbdominales(String(m)),
                               N === "bk" && sdcSetRbk(String(m)),
-                              gu((_) => _ + 1));
+                              setRepruebaPaso((_) => _ + 1));
                           }}
                         />
                         <button
-                          onClick={() => yu(!1)}
+                          onClick={() => setRepruebaAbierta(!1)}
                           className="w-full py-2 text-xs mt-2"
                           style={{
                             background: "rgba(255,255,255,0.08)",
@@ -5251,14 +5419,14 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                           style={{ color: "#9aa4bd" }}
                         >
                           <span>Sentadillas</span>
-                          <span style={{ color: "#e8ecf7" }}>{vu || 0}</span>
+                          <span style={{ color: "#e8ecf7" }}>{repSentadillas || 0}</span>
                         </div>
                         <div
                           className="flex justify-between text-sm mb-1"
                           style={{ color: "#9aa4bd" }}
                         >
                           <span>Flexiones (×2)</span>
-                          <span style={{ color: "#e8ecf7" }}>{xu || 0}</span>
+                          <span style={{ color: "#e8ecf7" }}>{repFlexiones || 0}</span>
                         </div>
                         <div
                           className="flex justify-between text-sm mb-1"
@@ -5272,7 +5440,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                           style={{ color: "#9aa4bd" }}
                         >
                           <span>Abdominales</span>
-                          <span style={{ color: "#e8ecf7" }}>{Nu || 0}</span>
+                          <span style={{ color: "#e8ecf7" }}>{repAbdominales || 0}</span>
                         </div>
                         <div
                           className="flex justify-between text-sm mb-3"
@@ -5281,9 +5449,9 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                           <span>Puntaje</span>
                           <span>
                             {puntajePrueba(
-                              parseInt(vu || "0", 10),
-                              parseInt(xu || "0", 10),
-                              parseInt(Nu || "0", 10),
+                              parseInt(repSentadillas || "0", 10),
+                              parseInt(repFlexiones || "0", 10),
+                              parseInt(repAbdominales || "0", 10),
                               parseInt(sdcRbk || "0", 10),
                             )}{" "}
                             pts
@@ -5291,7 +5459,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                         </div>
                         <div className="flex gap-2">
                           <button
-                            onClick={() => gu(0)}
+                            onClick={() => setRepruebaPaso(0)}
                             className="flex-1 py-2 text-xs"
                             style={{
                               background: "rgba(255,255,255,0.08)",
@@ -5303,7 +5471,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                             Repetir
                           </button>
                           <button
-                            onClick={sg}
+                            onClick={guardarReprueba}
                             className="flex-1 py-2 text-xs"
                             style={{ background: "#ffb84f", color: "#0a0e1a", fontWeight: 700 }}
                           >
@@ -5315,7 +5483,11 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                   ) : (
                     <button
                       onClick={() => {
-                        (gu(0), hu(""), Su(""), Cu(""), yu(!0));
+                        (setRepruebaPaso(0),
+                          setRepSentadillas(""),
+                          setRepFlexiones(""),
+                          setRepAbdominales(""),
+                          setRepruebaAbierta(!0));
                       }}
                       className="w-full py-3 text-sm"
                       style={{
@@ -5334,10 +5506,12 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                   accent="#b084f5"
                   style={{ marginBottom: 16 }}
                   collapsed={
-                    H && H.collapsed && H.collapsed.primeras !== void 0 ? me("primeras") : !0
+                    ui && ui.collapsed && ui.collapsed.primeras !== void 0
+                      ? plegado("primeras")
+                      : !0
                   }
-                  onToggle={fe}
-                  right={String(sdcPrimeras(e).length)}
+                  onToggle={alternarPlegable}
+                  right={String(sdcPrimeras(player).length)}
                 >
                   <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
                     El día que hacés algo que antes no podías, queda acá. No se borra nunca.
@@ -5355,12 +5529,12 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                   >
                     Hoy pude algo que antes no podía
                   </button>
-                  {sdcPrimeras(e).length === 0 ? (
+                  {sdcPrimeras(player).length === 0 ? (
                     <div className="text-xs" style={{ color: "#7a83a0" }}>
                       Todavía no hay ninguna. Van a aparecer solas.
                     </div>
                   ) : (
-                    sdcPrimeras(e).map(function (jp, ji) {
+                    sdcPrimeras(player).map(function (jp, ji) {
                       return (
                         <div
                           key={ji}
@@ -5388,9 +5562,11 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                   accent="#4f9dff"
                   style={{ marginBottom: 16 }}
                   collapsed={
-                    H && H.collapsed && H.collapsed.respaldo !== void 0 ? me("respaldo") : !0
+                    ui && ui.collapsed && ui.collapsed.respaldo !== void 0
+                      ? plegado("respaldo")
+                      : !0
                   }
-                  onToggle={fe}
+                  onToggle={alternarPlegable}
                 >
                   <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
                     Tu progreso ya se guarda solo en este dispositivo. Usá esto para tener una copia
@@ -5401,7 +5577,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                   </div>
                   <textarea
                     readOnly={!0}
-                    value={JSON.stringify(e)}
+                    value={JSON.stringify(player)}
                     onClick={(m) => m.target.select()}
                     rows={3}
                     className="w-full mb-2 px-2 py-2 text-xs"
@@ -5413,7 +5589,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                     }}
                   />
                   <button
-                    onClick={ug}
+                    onClick={copiarRespaldo}
                     className="w-full py-2 text-xs mb-2"
                     style={{
                       background: "rgba(79,157,255,0.1)",
@@ -5434,8 +5610,8 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                     Restaurar desde un respaldo:
                   </div>
                   <textarea
-                    value={ku}
-                    onChange={(m) => Wd(m.target.value)}
+                    value={respaldoTexto}
+                    onChange={(m) => setRespaldoTexto(m.target.value)}
                     placeholder="Pega aquí tu texto de respaldo"
                     rows={3}
                     className="w-full mb-2 px-2 py-2 text-xs"
@@ -5456,20 +5632,24 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                     className="w-full mb-2 text-xs"
                     style={{ color: "#9aa4bd" }}
                   />
-                  {Ry ? (
+                  {confirmarRestaurar ? (
                     <div className="text-xs text-center" style={{ color: "#9aa4bd" }}>
                       ¿Seguro? Esto reemplaza tu progreso actual.{" "}
-                      <button onClick={cg} className="underline" style={{ color: "#ff5c7a" }}>
+                      <button
+                        onClick={restaurarRespaldo}
+                        className="underline"
+                        style={{ color: "#ff5c7a" }}
+                      >
                         Sí, restaurar
                       </button>{" "}
-                      <button onClick={() => zu(!1)} className="underline">
+                      <button onClick={() => setConfirmarRestaurar(!1)} className="underline">
                         Cancelar
                       </button>
                     </div>
                   ) : (
                     <button
-                      onClick={() => zu(!0)}
-                      disabled={!ku.trim()}
+                      onClick={() => setConfirmarRestaurar(!0)}
+                      disabled={!respaldoTexto.trim()}
                       className="w-full py-2 text-xs disabled:opacity-40"
                       style={{
                         background: "rgba(255,92,122,0.1)",
@@ -5484,20 +5664,20 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
               </>
             );
           })()}
-        {Da === "profile" && (
+        {pestana === "profile" && (
           <div className="text-center mt-8">
             <button
               onClick={() => {
-                if (Se) {
-                  (gt(!1), (sdcDevN = 0));
+                if (panelPruebas) {
+                  (setPanelPruebas(!1), (sdcDevN = 0));
                   return;
                 }
-                ((sdcDevN += 1), sdcDevN >= 5 && ((sdcDevN = 0), gt(!0)));
+                ((sdcDevN += 1), sdcDevN >= 5 && ((sdcDevN = 0), setPanelPruebas(!0)));
               }}
               className="text-xs"
-              style={{ color: Se ? "#9aa4bd" : "#333a4d" }}
+              style={{ color: panelPruebas ? "#9aa4bd" : "#333a4d" }}
             >
-              {Se ? "Ocultar panel de pruebas" : "v1.0"}
+              {panelPruebas ? "Ocultar panel de pruebas" : "v1.0"}
             </button>
             <a
               href="./privacidad.html"
@@ -5510,7 +5690,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
             </a>
           </div>
         )}
-        {Se && Da === "profile" && (
+        {panelPruebas && pestana === "profile" && (
           <Tarjeta accent="#5a6178" style={{ marginTop: 12, borderStyle: "dashed" }}>
             <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
               Solo para probar. Estos botones cambian tu progreso al instante, sin esperar a mañana.
@@ -5523,7 +5703,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                 Guardá tu progreso real antes de probar cosas, y volvé a él cuando termines.
               </div>
               <button
-                onClick={Mg}
+                onClick={guardarPuntoRetorno}
                 className="w-full py-2 text-xs mb-2"
                 style={{
                   background: "rgba(62,207,142,0.12)",
@@ -5535,8 +5715,8 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
                 Guardar punto de retorno
               </button>
               <button
-                onClick={_g}
-                disabled={!oi}
+                onClick={volverPuntoRetorno}
+                disabled={!hayPuntoRetorno}
                 className="w-full py-2 text-xs disabled:opacity-40"
                 style={{
                   background: "#3ecf8e",
@@ -5547,7 +5727,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
               >
                 Volver a mi progreso
               </button>
-              {!oi && (
+              {!hayPuntoRetorno && (
                 <div className="text-xs mt-2" style={{ color: "#9aa4bd" }}>
                   Aún no guardaste ningún punto de retorno.
                 </div>
@@ -5560,10 +5740,11 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
               {rangos.map((f) => (
                 <button
                   key={f}
-                  onClick={() => qg(f)}
+                  onClick={() => saltarRango(f)}
                   className="py-2 text-xs"
                   style={{
-                    background: u.rank === f ? colorRango[f] + "22" : "rgba(255,255,255,0.05)",
+                    background:
+                      progress.rank === f ? colorRango[f] + "22" : "rgba(255,255,255,0.05)",
                     border: `1px solid ${colorRango[f]}88`,
                     color: colorRango[f],
                     fontWeight: 700,
@@ -5574,7 +5755,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
               ))}
             </div>
             <button
-              onClick={Og}
+              onClick={forzarUmbral}
               className="w-full py-2 text-xs mb-2"
               style={{
                 background: "rgba(255,184,79,0.1)",
@@ -5585,7 +5766,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
               Forzar Umbral disponible ahora
             </button>
             <button
-              onClick={() => jg(200)}
+              onClick={() => sumarXp(200)}
               className="w-full py-2 text-xs mb-2"
               style={{
                 background: "rgba(255,255,255,0.05)",
@@ -5596,7 +5777,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
               Añadir 200 XP
             </button>
             <button
-              onClick={Bg}
+              onClick={fallarAyer}
               className="w-full py-2 text-xs mb-2"
               style={{
                 background: "rgba(255,92,122,0.1)",
@@ -5607,7 +5788,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
               Simular que fallé el día de ayer
             </button>
             <button
-              onClick={wg}
+              onClick={reiniciarHoy}
               className="w-full py-2 text-xs mb-2"
               style={{
                 background: "rgba(255,255,255,0.05)",
@@ -5618,7 +5799,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
               Reiniciar el día de hoy (repetir rutina)
             </button>
             <button
-              onClick={() => Yg(5)}
+              onClick={() => sumarKmDePrueba(5)}
               className="w-full py-2 text-xs mb-2"
               style={{
                 background: "rgba(124,92,255,0.1)",
@@ -5629,7 +5810,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
               Exploración: añadir 5 km de golpe
             </button>
             <button
-              onClick={Gg}
+              onClick={forzarTravesia}
               className="w-full py-2 text-xs mb-2"
               style={{
                 background: "rgba(255,92,122,0.1)",
@@ -5640,7 +5821,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
               Forzar travesía de hoy
             </button>
             <button
-              onClick={() => Zg(10)}
+              onClick={() => ponerRacha(10)}
               className="w-full py-2 text-xs mb-2"
               style={{
                 background: "rgba(62,207,142,0.1)",
@@ -5651,7 +5832,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
               Forzar racha a 10 días
             </button>
             <button
-              onClick={Kg}
+              onClick={desbloquearLogros}
               className="w-full py-2 text-xs mb-2"
               style={{
                 background: "rgba(255,184,79,0.1)",
@@ -5662,7 +5843,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
               Desbloquear todos los logros
             </button>
             <button
-              onClick={Vg}
+              onClick={saltarAlJefe}
               className="w-full py-2 text-xs mb-2"
               style={{
                 background: "rgba(255,92,122,0.1)",
@@ -5673,7 +5854,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
               Combate: saltar al primer Jefe
             </button>
             <button
-              onClick={Qg}
+              onClick={reiniciarCombate}
               className="w-full py-2 text-xs mb-2"
               style={{
                 background: "rgba(255,255,255,0.05)",
@@ -5684,7 +5865,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
               Combate: reiniciar desde el primer enemigo
             </button>
             <button
-              onClick={Wg}
+              onClick={desbloquearPrimal}
               className="w-full py-2 text-xs mb-2"
               style={{
                 background: "rgba(62,207,142,0.1)",
@@ -5695,7 +5876,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
               Primal: desbloquear siguiente movimiento
             </button>
             <button
-              onClick={Jg}
+              onClick={reiniciarContadorPrimal}
               className="w-full py-2 text-xs mb-2"
               style={{
                 background: "rgba(255,255,255,0.05)",
@@ -5706,7 +5887,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
               Primal: reiniciar contador diario
             </button>
             <button
-              onClick={Fg}
+              onClick={forzarAvisoCarga}
               className="w-full py-2 text-xs"
               style={{
                 background: "rgba(255,92,122,0.1)",
@@ -5719,18 +5900,18 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
           </Tarjeta>
         )}
         <div className="text-center mt-4">
-          {Ud ? (
+          {confirmarReinicio ? (
             <div className="text-xs" style={{ color: "#9aa4bd" }}>
               ¿Seguro? Esto borra todo tu progreso.{" "}
               <button
-                onClick={Tg}
+                onClick={reiniciarTodo}
                 className="underline"
                 style={{ color: "#ff5c7a", display: "inline-block", padding: "15px 12px" }}
               >
                 Sí, reiniciar
               </button>{" "}
               <button
-                onClick={() => j(!1)}
+                onClick={() => setConfirmarReinicio(!1)}
                 className="underline"
                 style={{ display: "inline-block", padding: "15px 12px" }}
               >
@@ -5739,7 +5920,7 @@ function App({ player: e, setPlayer: a, initialNotices: l }) {
             </div>
           ) : (
             <button
-              onClick={() => j(!0)}
+              onClick={() => setConfirmarReinicio(!0)}
               className="text-xs"
               style={{
                 color: "#9aa4bd",
