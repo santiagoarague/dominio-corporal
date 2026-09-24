@@ -14,7 +14,32 @@ Deployed files: `index.html`, `storage.js`, `sw.js`, `manifest.webmanifest`, `pr
 
 `storage.js` must load **before** the bundle: it defines `window.claude.use("db")` against `localStorage`, replacing the Claude Artifacts database the app was written for. All progress lives in one key, `dominio-corporal:player/state`. There is no server and no account.
 
+## Branch `modernizacion`: the game has source code again
+
+This branch is turning the minified single file into a normal Vite project, step by step, while `main` keeps being the published game. The tag **`v1-html`** marks the last commit of the old shape; `git checkout v1-html` gets it back, and a zip of it sits next to the repo folder. The branch lives in its own worktree (`../dominio-corporal-moderno`) so the main folder never leaves `main`.
+
+**Layout.**
+
+| path | what it is |
+|---|---|
+| `index.html` | the Vite entry (8 KB): the head `<style>`, the splash, `storage.js`, the service-worker registration, and `<script type="module" src="./src/juego.js">` |
+| `src/juego.js` | the whole game, formatted (≈18.700 lines). Identifiers are still the minifier's (`i5`, `Ea`, `B5`), so the rest of this file is still the map |
+| `src/sw.js` | the service worker as a **template**: the build writes `dist/sw.js` with a new `CACHE` name per build and the hashed bundle files added to `ASSETS` (plugin in `vite.config.js`, which fails the build if the two markers disappear) |
+| `public/` | copied verbatim to `dist/`: `storage.js`, `manifest.webmanifest`, `privacidad.html`, `fuentes/`, the icons, `.nojekyll` |
+
+**Commands** (Node 24 and npm are installed now): `npm install`, `npm run dev` (port 5173, hot reload), `npm run build` → `dist/`, `npm run preview` (port 4173, serves `dist/`). `.claude/launch.json` has `moderno-dev` and `moderno-build` for `preview_start`. The Vite warnings about `./fuentes/*.woff2` and `storage.js` are expected: those stay as runtime paths into `public/`.
+
+**React comes from npm, pinned to 19.2.5**, the exact version the bundle carried. The game reaches React through two names esbuild left behind, and `src/juego.js` recreates them in its header: `i` (`{...React, default: React}`, because the code uses both `i.default.createElement` and `i.useState`) and `Sy` (`react-dom/client`). The game uses only `createElement`, `Fragment`, `useState`, `useEffect` and `createRoot`.
+
+**How the extraction was proven equal.** The code became an ES module, which runs in strict mode; a scope analysis found no undeclared assignments and no `this`, so nothing changes meaning. The formatted file (Prettier, plus `\xE1`-style escapes rewritten as real UTF-8 in string literals only) parses to **the same AST** as the original bundle, once quoted and bare object keys are treated as equal. Then the same flow — skip onboarding, mark all sets, register — was run on the old build and the new one: the saved state was identical except the day's travesía, which `ai()` picks with `Math.random()`.
+
+**A latent bug surfaced and was deliberately left in place** so the extraction stayed exact: `L2`, `kg` and `fe` backfill `care` with `{today:{date:t, …}}`, and `t` is not declared anywhere in scope. It only runs for a save with no `care`, which `ei` backfills on load, but if it ever runs it throws `ReferenceError`.
+
+**While this branch is open, `main` can still change**, and anything changed there has to be ported here by hand (the perl procedure below applies to `main`; here you edit `src/juego.js` like any file).
+
 ## Editing the minified bundle
+
+This applies to `main`, the published version, until this branch replaces it.
 
 This is the part that will bite you. Follow it exactly.
 
@@ -112,7 +137,7 @@ The CSS at the top of `index.html` is a small hand-written subset that *looks* l
 
 ## Running locally
 
-Node and Python are not installed on this machine (`python` is the Microsoft Store stub). `.claude/serve.ps1` serves the folder with a PowerShell `System.Net.HttpListener`, and `.claude/launch.json` points the Browser pane's `preview_start` at it (config name `dominio-corporal`, port 8787). It binds to `http://localhost:<port>/`, which needs no elevation, sends `Cache-Control: no-store`, and rejects paths that escape the root. `localhost` is not reachable from a phone on the LAN â to test on a real device, deploy.
+On this branch, use `npm run dev` / `npm run preview` (see above); what follows describes how `main` is served. Node 24 is installed now; Python is not (`python` is the Microsoft Store stub). `.claude/serve.ps1` serves the folder with a PowerShell `System.Net.HttpListener`, and `.claude/launch.json` points the Browser pane's `preview_start` at it (config name `dominio-corporal`, port 8787). It binds to `http://localhost:<port>/`, which needs no elevation, sends `Cache-Control: no-store`, and rejects paths that escape the root. `localhost` is not reachable from a phone on the LAN â to test on a real device, deploy.
 
 Testing notes that save time:
 - **15â20 s pass before the first button appears, but only ~5 s of that is the typewriter** (140 characters at 28â40 ms). The rest is the 450 KB bundle. Wait for it; do not assume a blank page is a crash.

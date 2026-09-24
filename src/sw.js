@@ -1,5 +1,9 @@
+// Plantilla: vite.config.js la copia a dist/sw.js al compilar, cambia el nombre
+// de CACHE en cada version y agrega a ASSETS los archivos del bundle, que
+// llevan un hash en el nombre y no se conocen hasta ese momento.
 const CACHE = 'dominio-corporal-v4';
 const ASSETS = [
+  /* __BUNDLE__ */
   './',
   './index.html',
   './storage.js',
