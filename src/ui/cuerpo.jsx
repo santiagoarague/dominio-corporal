@@ -4,14 +4,14 @@ import { atributosDeZona } from "../logica/atributos.js";
 import { nombreEjercicio } from "../logica/rutina.js";
 import { BarraXp } from "./base.jsx";
 
-function colorProgreso(e) {
-  let a = [42, 49, 72],
-    l = [255, 107, 74],
-    n = Math.max(0, Math.min(1, e || 0)),
-    o = Math.round(a[0] + (l[0] - a[0]) * n),
-    s = Math.round(a[1] + (l[1] - a[1]) * n),
-    u = Math.round(a[2] + (l[2] - a[2]) * n);
-  return `rgb(${o},${s},${u})`;
+function colorProgreso(ratio) {
+  let desde = [42, 49, 72],
+    hasta = [255, 107, 74],
+    mezcla = Math.max(0, Math.min(1, ratio || 0)),
+    rojo = Math.round(desde[0] + (hasta[0] - desde[0]) * mezcla),
+    verde = Math.round(desde[1] + (hasta[1] - desde[1]) * mezcla),
+    azul = Math.round(desde[2] + (hasta[2] - desde[2]) * mezcla);
+  return `rgb(${rojo},${verde},${azul})`;
 }
 var gruposCuerpo = {
   pushup: { label: "Pecho y hombros", muscles: "Pectoral, deltoides, tríceps" },
@@ -19,47 +19,49 @@ var gruposCuerpo = {
   squat: { label: "Piernas y glúteos", muscles: "Cuádriceps, isquios, glúteo" },
   abs: { label: "Core", muscles: "Recto abdominal, oblicuos, transverso" },
 };
-function nivelZona(e) {
-  return Math.floor(Math.sqrt((e || 0) / 25)) + 1;
+function nivelZona(reps) {
+  return Math.floor(Math.sqrt((reps || 0) / 25)) + 1;
 }
-function progresoZona(e) {
-  let a = nivelZona(e),
-    l = Math.pow(a - 1, 2) * 25,
-    n = Math.pow(a, 2) * 25;
-  return { cur: (e || 0) - l, need: n - l, next: n };
+function progresoZona(reps) {
+  let nivel = nivelZona(reps),
+    piso = Math.pow(nivel - 1, 2) * 25,
+    techo = Math.pow(nivel, 2) * 25;
+  return { cur: (reps || 0) - piso, need: techo - piso, next: techo };
 }
-function diasEntre(e, a) {
-  return e ? Math.round((new Date(a + "T00:00:00") - new Date(e + "T00:00:00")) / 864e5) : null;
+function diasEntre(desde, hasta) {
+  return desde
+    ? Math.round((new Date(hasta + "T00:00:00") - new Date(desde + "T00:00:00")) / 864e5)
+    : null;
 }
-function FiguraCuerpo({ view: e, colors: a, glow: l, ratios: n, selected: o, onSelect: s }) {
-  let u = "#161b2e",
-    c = "#2a3148",
-    r = (p) => ({
-      fill: a[p],
-      stroke: o === p ? "#ffffff" : c,
-      strokeWidth: o === p ? 2 : 1,
-      onClick: () => s(o === p ? null : p),
+function FiguraCuerpo({ view, colors, glow, ratios, selected, onSelect }) {
+  let relleno = "#161b2e",
+    borde = "#2a3148",
+    propsDe = (grupo) => ({
+      fill: colors[grupo],
+      stroke: selected === grupo ? "#ffffff" : borde,
+      strokeWidth: selected === grupo ? 2 : 1,
+      onClick: () => onSelect(selected === grupo ? null : grupo),
       style: {
         cursor: "pointer",
-        animation: n && n[p] >= 1 ? "sdcPulse 1.6s ease-in-out infinite" : "none",
+        animation: ratios && ratios[grupo] >= 1 ? "sdcPulse 1.6s ease-in-out infinite" : "none",
       },
     }),
     sdcMir = "translate(200,0) scale(-1,1)",
-    sdcSim = (d, p) => <path d={d} {...r(p)} />,
-    sdcPar = (d, p) => (
+    sdcSim = (trazo, grupo) => <path d={trazo} {...propsDe(grupo)} />,
+    sdcPar = (trazo, grupo) => (
       <g>
-        <path d={d} {...r(p)} />
-        <path d={d} transform={sdcMir} {...r(p)} />
+        <path d={trazo} {...propsDe(grupo)} />
+        <path d={trazo} transform={sdcMir} {...propsDe(grupo)} />
       </g>
     ),
-    sdcIne = (d, dob) =>
-      dob ? (
+    sdcIne = (trazo, doble) =>
+      doble ? (
         <g>
-          <path d={d} fill={u} stroke={c} strokeWidth="1" />
-          <path d={d} transform={sdcMir} fill={u} stroke={c} strokeWidth="1" />
+          <path d={trazo} fill={relleno} stroke={borde} strokeWidth="1" />
+          <path d={trazo} transform={sdcMir} fill={relleno} stroke={borde} strokeWidth="1" />
         </g>
       ) : (
-        <path d={d} fill={u} stroke={c} strokeWidth="1" />
+        <path d={trazo} fill={relleno} stroke={borde} strokeWidth="1" />
       );
   return (
     <svg
@@ -69,12 +71,12 @@ function FiguraCuerpo({ view: e, colors: a, glow: l, ratios: n, selected: o, onS
         maxWidth: 200,
         margin: "0 auto",
         display: "block",
-        filter: l ? "drop-shadow(0 0 8px rgba(62,207,142,0.65))" : "none",
+        filter: glow ? "drop-shadow(0 0 8px rgba(62,207,142,0.65))" : "none",
       }}
     >
       {sdcIne("M100,8 L113,17 L115,35 L107,48 L93,48 L85,35 L87,17 Z")}
       {sdcIne("M94,47 L106,47 L107,58 L93,58 Z")}
-      {e === "front" ? (
+      {view === "front" ? (
         <>
           {sdcIne("M89,57 L111,57 L119,67 L81,67 Z")}
           {sdcPar("M84,58 L74,61 L64,72 L62,88 L76,84 L84,70 Z", "pushup")}
@@ -108,21 +110,21 @@ function FiguraCuerpo({ view: e, colors: a, glow: l, ratios: n, selected: o, onS
   );
 }
 function PanelZonas({
-  zoneKey: e,
-  rank: a,
-  classification: l,
-  lifetime: n,
-  target: o,
-  doneToday: s,
-  lastTrained: u,
-  today: c,
-  modality: r,
-  onClose: p,
+  zoneKey,
+  rank,
+  classification,
+  lifetime,
+  target,
+  doneToday,
+  lastTrained,
+  today,
+  modality,
+  onClose,
 }) {
-  let v = gruposCuerpo[e],
-    x = nivelZona(n),
-    y = progresoZona(n),
-    S = diasEntre(u, c);
+  let grupo = gruposCuerpo[zoneKey],
+    nivel = nivelZona(lifetime),
+    progreso = progresoZona(lifetime),
+    dias = diasEntre(lastTrained, today);
   return (
     <div
       className="mt-3 p-3"
@@ -130,46 +132,51 @@ function PanelZonas({
     >
       <div className="flex items-center justify-between mb-1">
         <div style={{ fontFamily: "Chakra Petch, sans-serif", color: "#e8ecf7", fontWeight: 700 }}>
-          {v.label}
+          {grupo.label}
         </div>
-        <button onClick={p} className="text-xs" style={{ color: "#9aa4bd" }} aria-label="Cerrar">
+        <button
+          onClick={onClose}
+          className="text-xs"
+          style={{ color: "#9aa4bd" }}
+          aria-label="Cerrar"
+        >
           <IconoCerrar size={14} color="#9aa4bd" />
         </button>
       </div>
       <div className="text-xs mb-1" style={{ color: "#9aa4bd" }}>
-        {v.muscles}
+        {grupo.muscles}
       </div>
-      {atributosDeZona(e) && (
+      {atributosDeZona(zoneKey) && (
         <div className="text-xs mb-2" style={{ color: "#b084f5" }}>
-          Alimenta: {atributosDeZona(e)}
+          Alimenta: {atributosDeZona(zoneKey)}
         </div>
       )}
       <div className="text-xs mb-1" style={{ color: "#e8ecf7" }}>
-        Ejercicio: {nombreEjercicio(a, l, e, r)}
+        Ejercicio: {nombreEjercicio(rank, classification, zoneKey, modality)}
       </div>
       <div className="text-xs mb-2" style={{ color: "#9aa4bd" }}>
-        Hoy: {s} / {o} reps
+        Hoy: {doneToday} / {target} reps
       </div>
       <div className="flex justify-between text-xs mb-1" style={{ color: "#9aa4bd" }}>
-        <span>Desarrollo · Nivel {x}</span>
+        <span>Desarrollo · Nivel {nivel}</span>
         <span>
-          {y.cur} / {y.need}
+          {progreso.cur} / {progreso.need}
         </span>
       </div>
-      <BarraXp value={y.cur} max={y.need} color="#3ecf8e" />
+      <BarraXp value={progreso.cur} max={progreso.need} color="#3ecf8e" />
       <div className="text-xs mt-2" style={{ color: "#9aa4bd" }}>
-        {n.toLocaleString("es")} reps de por vida ·{" "}
-        {S === null
+        {lifetime.toLocaleString("es")} reps de por vida ·{" "}
+        {dias === null
           ? "sin estímulo registrado"
-          : S === 0
+          : dias === 0
             ? "entrenado hoy"
-            : S === 1
+            : dias === 1
               ? "último estímulo: ayer"
-              : `último estímulo: hace ${S} días`}
+              : `último estímulo: hace ${dias} días`}
       </div>
-      {S !== null && S >= 3 && (
+      {dias !== null && dias >= 3 && (
         <div className="text-xs mt-2" style={{ color: "#ffb84f" }}>
-          Esta zona lleva {S} días sin estímulo.
+          Esta zona lleva {dias} días sin estímulo.
         </div>
       )}
     </div>

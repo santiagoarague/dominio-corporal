@@ -4,72 +4,72 @@ import { IconoMas, IconoCheck, IconoMenos, IconoFlecha } from "./iconos.jsx";
 import { sdcKgTxt } from "../logica/extras.js";
 import { sdcNSets, sdcSegs, sdcSplit } from "../logica/series.js";
 
-function sdcGuiaLin(t, v) {
-  return v ? (
+function sdcGuiaLin(titulo, texto) {
+  return texto ? (
     <div style={{ marginBottom: 5 }}>
-      <span style={{ color: "#ffb84f", fontWeight: 700 }}>{t}: </span>
-      {v}
+      <span style={{ color: "#ffb84f", fontWeight: 700 }}>{titulo}: </span>
+      {texto}
     </div>
   ) : null;
 }
 function FilaEjercicio({
-  label: e,
-  value: a,
-  base: l,
-  min: n,
-  max: o,
-  onChange: s,
-  tip: u,
-  onWeight: r,
-  done: sd,
-  onSet: so,
-  accent: sa,
-  aj: sj,
-  onAj: soa,
-  kgv: skg,
-  kgPrev: spv,
-  sug: ssug,
-  guia: sgu,
-  abrir: sab,
+  label,
+  value,
+  base,
+  min,
+  max,
+  onChange,
+  tip,
+  onWeight,
+  done,
+  onSet,
+  accent,
+  aj: ajustes,
+  onAj,
+  kgv,
+  kgPrev,
+  sug,
+  guia,
+  abrir,
 }) {
-  let p = Math.max(1, Math.round(l * 0.1)),
-    [sv, x] = useState(null),
-    v = sv === null ? !!sab : sv,
-    sn = sdcNSets(a),
-    sp = sdcSplit(a, sn),
-    sf = function (k, v) {
-      return sj && sj[k] !== void 0 ? sj[k] : v;
+  let paso = Math.max(1, Math.round(base * 0.1)),
+    [guiaTocada, setGuiaTocada] = useState(null),
+    guiaAbierta = guiaTocada === null ? !!abrir : guiaTocada,
+    nSeries = sdcNSets(value),
+    series = sdcSplit(value, nSeries),
+    repsSerie = function (i, porDefecto) {
+      return ajustes && ajustes[i] !== void 0 ? ajustes[i] : porDefecto;
     },
-    sh = sp.reduce(function (ac, vv, kk) {
-      return kk < (sd || 0) ? ac + sf(kk, vv) : ac;
+    hechas = series.reduce(function (suma, reps, i) {
+      return i < (done || 0) ? suma + repsSerie(i, reps) : suma;
     }, 0),
-    sc = sa || "#4f9dff",
-    sl = (sd || 0) >= sn && a > 0,
-    sg = sdcSegs(u),
+    color = accent || "#4f9dff",
+    completa = (done || 0) >= nSeries && value > 0,
+    segs = sdcSegs(tip),
     [sdcAbre, sdcSetAbre] = useState(!1),
-    [sdcCierra, sdcSetCierra] = useState(() => !!(sl && so));
+    [sdcCierra, sdcSetCierra] = useState(() => !!(completa && onSet));
   useEffect(
     function () {
-      (x(null), sdcSetAbre(!1));
+      (setGuiaTocada(null), sdcSetAbre(!1));
     },
-    [e],
+    [label],
   );
   useEffect(
     function () {
-      if (sl && so) {
+      if (completa && onSet) {
         if (sdcCierra) return;
-        var t = setTimeout(function () {
+        var espera = setTimeout(function () {
           sdcSetCierra(!0);
         }, 1200);
         return function () {
-          clearTimeout(t);
+          clearTimeout(espera);
         };
       }
       (sdcCierra && sdcSetCierra(!1), sdcAbre && sdcSetAbre(!1));
     },
-    [sl],
+    [completa],
   );
-  if (sl && so && sdcCierra && !sdcAbre)
+  if (completa && onSet && sdcCierra && !sdcAbre)
     return (
       <button
         onClick={function () {
@@ -85,20 +85,20 @@ function FilaEjercicio({
       >
         <span className="flex items-center gap-2 text-sm" style={{ color: "#9aa4bd" }}>
           <IconoCheck size={16} color="#3ecf8e" />
-          {e}
+          {label}
         </span>
         <span
           className="flex items-center gap-1 text-xs"
           style={{ color: "#3ecf8e", whiteSpace: "nowrap" }}
         >
-          {sg > 0 ? sh * sg + " s" : sh + " reps"}
+          {segs > 0 ? hechas * segs + " s" : hechas + " reps"}
           <IconoFlecha size={12} color="#5a6178" />
         </span>
       </button>
     );
   return (
     <div className="py-2" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-      {sl && so && sdcCierra && sdcAbre ? (
+      {completa && onSet && sdcCierra && sdcAbre ? (
         <button
           onClick={function () {
             sdcSetAbre(!1);
@@ -114,16 +114,16 @@ function FilaEjercicio({
         <div>
           <div className="flex items-center gap-1">
             <span className="text-sm" style={{ color: "#e8ecf7" }}>
-              {e}
+              {label}
             </span>
           </div>
           <div className="flex items-center gap-2 text-xs" style={{ color: "#9aa4bd" }}>
             <span>
-              Meta: {a} reps{sg > 0 ? " · " + a * sg + "s de sostén" : ""}
+              Meta: {value} reps{segs > 0 ? " · " + value * segs + "s de sostén" : ""}
             </span>
-            {(u || sgu) && (
+            {(tip || guia) && (
               <button
-                onClick={() => x(!v)}
+                onClick={() => setGuiaTocada(!guiaAbierta)}
                 className="text-xs"
                 style={{
                   color: "#ffb84f",
@@ -133,14 +133,14 @@ function FilaEjercicio({
                 }}
                 aria-label="Cómo se hace"
               >
-                {sgu ? "¿Cómo se hace?" : "💡 alternativa"}
+                {guia ? "¿Cómo se hace?" : "💡 alternativa"}
               </button>
             )}
           </div>
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => s(Math.max(n, a - p))}
+            onClick={() => onChange(Math.max(min, value - paso))}
             className="flex items-center justify-center"
             style={{
               width: 44,
@@ -161,10 +161,10 @@ function FilaEjercicio({
               color: "#e8ecf7",
             }}
           >
-            {a}
+            {value}
           </div>
           <button
-            onClick={() => s(Math.min(o, a + p))}
+            onClick={() => onChange(Math.min(max, value + paso))}
             className="flex items-center justify-center"
             style={{
               width: 44,
@@ -178,27 +178,29 @@ function FilaEjercicio({
           </button>
         </div>
       </div>
-      {so && (
+      {onSet && (
         <div className="flex gap-2 mt-2">
-          {sp.map(function (sr, sk) {
-            var ef = sf(sk, sr),
-              hc = sk < (sd || 0),
-              sx = sk === (sd || 0) && !!soa,
-              cu =
-                sg > 0 ? (
+          {series.map(function (reps, i) {
+            var efectivas = repsSerie(i, reps),
+              hecha = i < (done || 0),
+              ajustable = i === (done || 0) && !!onAj,
+              contenido =
+                segs > 0 ? (
                   <div>
-                    <div>{hc ? "✓ " + ef : ef}</div>
-                    <div style={{ fontSize: 11, fontWeight: 400, opacity: 0.8 }}>{ef * sg}s</div>
+                    <div>{hecha ? "✓ " + efectivas : efectivas}</div>
+                    <div style={{ fontSize: 11, fontWeight: 400, opacity: 0.8 }}>
+                      {efectivas * segs}s
+                    </div>
                   </div>
-                ) : hc ? (
-                  "✓ " + ef
+                ) : hecha ? (
+                  "✓ " + efectivas
                 ) : (
-                  ef
+                  efectivas
                 );
-            if (sx)
+            if (ajustable)
               return (
                 <div
-                  key={sk}
+                  key={i}
                   className="sdc-chip flex-1 flex items-stretch"
                   style={{
                     border: "1px solid rgba(255,255,255,0.28)",
@@ -208,19 +210,21 @@ function FilaEjercicio({
                 >
                   <button
                     onClick={function () {
-                      soa(sk, ef - 1);
+                      onAj(i, efectivas - 1);
                     }}
                     style={{ width: 28, color: "#9aa4bd", fontSize: 17 }}
-                    aria-label={"Una repetición menos en la serie " + (sk + 1)}
+                    aria-label={"Una repetición menos en la serie " + (i + 1)}
                   >
                     −
                   </button>
                   <button
                     onClick={function () {
-                      so(sk + 1);
+                      onSet(i + 1);
                     }}
                     className="flex-1"
-                    aria-label={"Marcar serie " + (sk + 1) + " de " + sn + " con " + ef + " reps"}
+                    aria-label={
+                      "Marcar serie " + (i + 1) + " de " + nSeries + " con " + efectivas + " reps"
+                    }
                     style={{
                       fontFamily: "Chakra Petch, sans-serif",
                       fontSize: 16,
@@ -228,14 +232,14 @@ function FilaEjercicio({
                       color: "#e8ecf7",
                     }}
                   >
-                    {cu}
+                    {contenido}
                   </button>
                   <button
                     onClick={function () {
-                      soa(sk, ef + 1);
+                      onAj(i, efectivas + 1);
                     }}
                     style={{ width: 28, color: "#9aa4bd", fontSize: 17 }}
-                    aria-label={"Una repetición más en la serie " + (sk + 1)}
+                    aria-label={"Una repetición más en la serie " + (i + 1)}
                   >
                     +
                   </button>
@@ -243,39 +247,41 @@ function FilaEjercicio({
               );
             return (
               <button
-                key={sk}
+                key={i}
                 onClick={function () {
-                  so(sd === sk + 1 ? sk : sk + 1);
+                  onSet(done === i + 1 ? i : i + 1);
                 }}
                 className="sdc-chip flex-1 py-3"
-                aria-label={"Serie " + (sk + 1) + " de " + sn + (hc ? ", hecha" : ", pendiente")}
+                aria-label={
+                  "Serie " + (i + 1) + " de " + nSeries + (hecha ? ", hecha" : ", pendiente")
+                }
                 style={{
-                  background: hc ? sc : "rgba(255,255,255,0.04)",
-                  border: "1px solid " + (hc ? sc : "rgba(255,255,255,0.18)"),
-                  color: hc ? "#0a0e1a" : "#8a93ad",
+                  background: hecha ? color : "rgba(255,255,255,0.04)",
+                  border: "1px solid " + (hecha ? color : "rgba(255,255,255,0.18)"),
+                  color: hecha ? "#0a0e1a" : "#8a93ad",
                   fontFamily: "Chakra Petch, sans-serif",
                   fontSize: 16,
                   fontWeight: 700,
                   minHeight: 48,
                 }}
               >
-                {cu}
+                {contenido}
               </button>
             );
           })}
         </div>
       )}
-      {r && (
+      {onWeight && (
         <>
           <div className="flex gap-2 mt-2">
-            {sp.map(function (sr, sk) {
+            {series.map(function (reps, i) {
               return (
                 <input
-                  key={sk}
+                  key={i}
                   type="text"
                   inputMode="decimal"
-                  value={skg ? skg(sk) : ""}
-                  onChange={(y) => r(sk, y.target.value.replace(/[^0-9.,]/g, ""))}
+                  value={kgv ? kgv(i) : ""}
+                  onChange={(evento) => onWeight(i, evento.target.value.replace(/[^0-9.,]/g, ""))}
                   placeholder="kg"
                   className="flex-1 px-1 py-2 text-center text-xs"
                   style={{
@@ -286,21 +292,21 @@ function FilaEjercicio({
                     border: "1px solid rgba(255,255,255,0.15)",
                     color: "#e8ecf7",
                   }}
-                  aria-label={"Kilos de la serie " + (sk + 1) + " de " + sn}
+                  aria-label={"Kilos de la serie " + (i + 1) + " de " + nSeries}
                 />
               );
             })}
           </div>
           <div className="text-xs mt-1" style={{ color: "#7a83a0" }}>
-            {spv && spv.length ? (
-              <>La última vez: {spv.map(sdcKgTxt).join(" · ")} kg</>
+            {kgPrev && kgPrev.length ? (
+              <>La última vez: {kgPrev.map(sdcKgTxt).join(" · ")} kg</>
             ) : (
               "Kilos de cada serie. Podés subirlos serie a serie."
             )}
           </div>
-          {ssug && ssug.s ? (
+          {sug && sug.s ? (
             <button
-              onClick={() => ssug.fn(ssug.s.kg)}
+              onClick={() => sug.fn(sug.s.kg)}
               className="text-xs text-left"
               style={{
                 display: "block",
@@ -312,21 +318,29 @@ function FilaEjercicio({
                 marginBottom: -6,
               }}
             >
-              {ssug.s.sube
-                ? "Hoy probá " + sdcKgTxt(ssug.s.kg) + " kg →"
-                : "Repetí " + sdcKgTxt(ssug.s.kg) + " kg y cerralo →"}
+              {sug.s.sube
+                ? "Hoy probá " + sdcKgTxt(sug.s.kg) + " kg →"
+                : "Repetí " + sdcKgTxt(sug.s.kg) + " kg y cerralo →"}
             </button>
           ) : null}
         </>
       )}
-      {so && (
-        <div className="text-xs mt-1" style={{ color: sl ? "#3ecf8e" : "#5a6178" }}>
-          {sl
-            ? "✓ Series hechas · " + sh + " reps" + (sg > 0 ? " (" + sh * sg + "s)" : "")
-            : "Llevás " + sh + " de " + a + " reps" + (sg > 0 ? " (" + sh * sg + "s)" : "")}
+      {onSet && (
+        <div className="text-xs mt-1" style={{ color: completa ? "#3ecf8e" : "#5a6178" }}>
+          {completa
+            ? "✓ Series hechas · " +
+              hechas +
+              " reps" +
+              (segs > 0 ? " (" + hechas * segs + "s)" : "")
+            : "Llevás " +
+              hechas +
+              " de " +
+              value +
+              " reps" +
+              (segs > 0 ? " (" + hechas * segs + "s)" : "")}
         </div>
       )}
-      {v && (u || sgu) && (
+      {guiaAbierta && (tip || guia) && (
         <div
           className="mt-2 p-2"
           style={{
@@ -337,14 +351,14 @@ function FilaEjercicio({
             border: "1px solid rgba(255,184,79,0.25)",
           }}
         >
-          {sgu ? (
+          {guia ? (
             <>
-              {sdcGuiaLin("Posición", sgu.pos)}
-              {sdcGuiaLin("Movimiento", sgu.mov)}
-              {sdcGuiaLin("Error común", sgu.err)}
+              {sdcGuiaLin("Posición", guia.pos)}
+              {sdcGuiaLin("Movimiento", guia.mov)}
+              {sdcGuiaLin("Error común", guia.err)}
             </>
           ) : null}
-          {u ? <div style={{ color: "#9aa4bd", marginTop: sgu ? 6 : 0 }}>{u}</div> : null}
+          {tip ? <div style={{ color: "#9aa4bd", marginTop: guia ? 6 : 0 }}>{tip}</div> : null}
         </div>
       )}
     </div>
