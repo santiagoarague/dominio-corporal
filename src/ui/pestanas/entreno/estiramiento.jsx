@@ -57,8 +57,8 @@ export function TarjetaEstiramiento({
         notás en el cuerpo. Dos veces por semana te dan +10% de XP la semana siguiente.
       </div>
       {(() => {
-        let fx = sdcFlex(player);
-        if (!fx.nivel) return null;
+        let flex = sdcFlex(player);
+        if (!flex.nivel) return null;
         return (
           <div
             className="mb-3 p-2"
@@ -71,11 +71,11 @@ export function TarjetaEstiramiento({
               TU ALCANCE
             </div>
             <div className="text-sm" style={{ color: "#e8ecf7", fontWeight: 600 }}>
-              {sdcFlexTxt(fx.nivel)}
+              {sdcFlexTxt(flex.nivel)}
             </div>
-            {fx.primero && fx.primero < fx.nivel ? (
+            {flex.primero && flex.primero < flex.nivel ? (
               <div className="text-xs mt-1" style={{ color: "#9aa4bd" }}>
-                Cuando empezaste llegabas {sdcFlexTxt(fx.primero).toLowerCase()}.
+                Cuando empezaste llegabas {sdcFlexTxt(flex.primero).toLowerCase()}.
               </div>
             ) : null}
           </div>
@@ -98,10 +98,10 @@ export function TarjetaEstiramiento({
           <div className="text-xs mb-2" style={{ color: "#9aa4bd" }}>
             Sin rebotar, hasta donde llegues sin dolor.
           </div>
-          {sdcFlexNiv.map((fx) => (
+          {sdcFlexNiv.map((opcion) => (
             <button
-              key={fx.n}
-              onClick={() => aplicar((d) => sdcFlexSet(d, fx.n))}
+              key={opcion.n}
+              onClick={() => aplicar((partida) => sdcFlexSet(partida, opcion.n))}
               className="w-full text-left px-3 py-2 mb-1 text-sm"
               style={{
                 background: "rgba(62,207,142,0.08)",
@@ -109,7 +109,7 @@ export function TarjetaEstiramiento({
                 color: "#e8ecf7",
               }}
             >
-              {fx.t}
+              {opcion.t}
             </button>
           ))}
         </div>
@@ -120,47 +120,58 @@ export function TarjetaEstiramiento({
         </div>
       ) : estirando ? (
         (() => {
-          let ps = sdcEstPasos,
-            tt = sdcEstTotal(ps),
-            p = sdcEstPaso(ps, estSegundos),
-            esp = p.prep > 0 && sdcEstOk < p.index && sdcPasoEspera(ps, p.index, sdcPasosV(player));
+          let pasos = sdcEstPasos,
+            total = sdcEstTotal(pasos),
+            paso = sdcEstPaso(pasos, estSegundos),
+            esp =
+              paso.prep > 0 &&
+              sdcEstOk < paso.index &&
+              sdcPasoEspera(pasos, paso.index, sdcPasosV(player));
           return (
             <PasoGuiado
-              ls={ps}
-              p={p}
+              ls={pasos}
+              p={paso}
               cab={
                 <div className="text-xs text-center mb-1" style={{ color: "#9aa4bd" }}>
-                  Paso {p.index + 1} de {ps.length}
+                  Paso {paso.index + 1} de {pasos.length}
                 </div>
               }
               col="#3ecf8e"
               esp={esp}
               pz={!!sdcEstPz && !esp}
               fin="Último estiramiento"
-              resto={" · queda " + sdcEstMMSS(tt - estSegundos)}
+              resto={" · queda " + sdcEstMMSS(total - estSegundos)}
               onListo={() => {
-                let d0 =
-                  sdcEstDesde(ps, p.index) + Math.max(0, (ps[p.index].prep || sdcEstPrep) - 3);
+                let hasta =
+                  sdcEstDesde(pasos, paso.index) +
+                  Math.max(0, (pasos[paso.index].prep || sdcEstPrep) - 3);
                 (sdcBeep(660, 100),
-                  sdcSetEstOk(p.index),
+                  sdcSetEstOk(paso.index),
                   sdcSetEstPz(0),
-                  sdcSetEstIni(Date.now() - d0 * 1e3),
-                  setEstSegundos(d0));
+                  sdcSetEstIni(Date.now() - hasta * 1e3),
+                  setEstSegundos(hasta));
               }}
               onYa={() => {
-                let q = p.prep;
-                (sdcSetEstIni((v) => v - q * 1e3), setEstSegundos(estSegundos + q));
+                let falta = paso.prep;
+                (sdcSetEstIni((previo) => previo - falta * 1e3),
+                  setEstSegundos(estSegundos + falta));
               }}
               onPausa={() => sdcSetEstPz(Date.now())}
               onSeguir={() => {
-                let dd = Date.now() - sdcEstPz;
-                (sdcSetEstIni((v) => v + dd), sdcSetEstPz(0));
+                let pausado = Date.now() - sdcEstPz;
+                (sdcSetEstIni((previo) => previo + pausado), sdcSetEstPz(0));
               }}
               onTerminar={() => {
-                let hh = p.index;
+                let hechos = paso.index;
                 (setEstirando(!1),
                   sdcSetEstPz(0),
-                  aplicar((N) => sdcPasosHook(registrarEstiramiento(N, hh, ps.length), ps, hh)));
+                  aplicar((partida) =>
+                    sdcPasosHook(
+                      registrarEstiramiento(partida, hechos, pasos.length),
+                      pasos,
+                      hechos,
+                    ),
+                  ));
               }}
             />
           );
@@ -170,14 +181,14 @@ export function TarjetaEstiramiento({
           {[
             { c: 1, lb: "Corta", su: "Lo que más se agradece justo después de entrenar" },
             { c: 0, lb: "Completa", su: "Todo el cuerpo, de la cabeza a las caderas" },
-          ].map((op) => {
-            let ls = sdcEstLista(op.c),
-              tt = sdcEstTotal(ls);
+          ].map((rutina) => {
+            let lista = sdcEstLista(rutina.c),
+              total = sdcEstTotal(lista);
             return (
               <button
-                key={op.lb}
+                key={rutina.lb}
                 onClick={() => {
-                  (sdcSetEstPasos(ls),
+                  (sdcSetEstPasos(lista),
                     sdcSetEstIdx(0),
                     sdcSetEstPz(0),
                     sdcSetEstOk(-1),
@@ -196,14 +207,14 @@ export function TarjetaEstiramiento({
                 <div className="flex items-center justify-between">
                   <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
                     <IconoReloj size={16} />
-                    {op.lb}
+                    {rutina.lb}
                   </span>
                   <span className="text-xs">
-                    {sdcEstMMSS(tt)} · {ls.length} pasos
+                    {sdcEstMMSS(total)} · {lista.length} pasos
                   </span>
                 </div>
                 <div className="text-xs mt-1" style={{ color: "#9aa4bd", fontWeight: 400 }}>
-                  {op.su}
+                  {rutina.su}
                 </div>
               </button>
             );

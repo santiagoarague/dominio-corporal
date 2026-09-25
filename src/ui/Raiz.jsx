@@ -5,36 +5,36 @@ import { Inicio } from "./Inicio.jsx";
 import { App } from "./App.jsx";
 
 function Raiz() {
-  let [e, a] = useState(!0),
-    [l, n] = useState(null),
-    [o, s] = useState([]);
+  let [cargando, setCargando] = useState(!0),
+    [player, setPlayer] = useState(null),
+    [avisos, setAvisos] = useState([]);
   useEffect(() => {
     (async () => {
-      let r = await leerPartida();
-      if (r) {
-        let { state: p, notices: v } = cargarPartida(r);
-        (n(p), s(v || []));
+      let guardada = await leerPartida();
+      if (guardada) {
+        let { state: partida, notices: nuevos } = cargarPartida(guardada);
+        (setPlayer(partida), setAvisos(nuevos || []));
       }
-      a(!1);
+      setCargando(!1);
     })();
   }, []);
   // La partida se guarda en un solo lugar: cada vez que cambia. App, Inicio y la
-  // carga de un respaldo solo la reemplazan con n(...), asi que ningun cambio
+  // carga de un respaldo solo la reemplazan con setPlayer(...), asi que ningun cambio
   // puede quedar sin guardar. Reiniciar todo la deja en null y no guarda nada.
   useEffect(() => {
-    l && guardarPartida(l);
-  }, [l]);
-  function u(r) {
-    let p = crearPartida(r);
-    n(p);
+    player && guardarPartida(player);
+  }, [player]);
+  function empezar(datos) {
+    let partida = crearPartida(datos);
+    setPlayer(partida);
   }
-  function c(r) {
+  function cargarRespaldo(texto) {
     try {
-      let p = JSON.parse(r.trim());
-      if (!p || !p.profile || !p.progress) return !1;
-      let { state: v, notices: x } = cargarPartida(p);
-      return (n(v), s(x || []), !0);
-    } catch (p) {
+      let datos = JSON.parse(texto.trim());
+      if (!datos || !datos.profile || !datos.progress) return !1;
+      let { state: partida, notices: nuevos } = cargarPartida(datos);
+      return (setPlayer(partida), setAvisos(nuevos || []), !0);
+    } catch (err) {
       return !1;
     }
   }
@@ -47,17 +47,17 @@ function Raiz() {
         input:focus, button:focus { outline: 2px solid #4f9dff; outline-offset: 1px; }
         @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
       `}</style>
-      {e ? (
+      {cargando ? (
         <div
           className="min-h-screen flex items-center justify-center"
           style={{ background: "#0a0e1a", color: "#9aa4bd" }}
         >
           Cargando...
         </div>
-      ) : l ? (
-        <App player={l} setPlayer={n} initialNotices={o} />
+      ) : player ? (
+        <App player={player} setPlayer={setPlayer} initialNotices={avisos} />
       ) : (
-        <Inicio onFinish={u} onLoadBackup={c} />
+        <Inicio onFinish={empezar} onLoadBackup={cargarRespaldo} />
       )}
     </div>
   );

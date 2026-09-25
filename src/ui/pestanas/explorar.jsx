@@ -37,20 +37,20 @@ export function PestanaExplorar({
   ui,
   verTodoMapa,
 }) {
-  let f = sectorDeKm(kmTotales),
-    d = sectores[f],
-    m = inicioSector(f),
-    N = Math.max(0, Math.min(kmTotales - m, d.endKm - m)),
-    _ = d.endKm - m,
-    X = Math.round((N / _) * 100),
-    de = nodosExplorar.filter((te) => te.sector === f);
+  let sector = sectorDeKm(kmTotales),
+    datosSector = sectores[sector],
+    inicio = inicioSector(sector),
+    recorrido = Math.max(0, Math.min(kmTotales - inicio, datosSector.endKm - inicio)),
+    largo = datosSector.endKm - inicio,
+    pct = Math.round((recorrido / largo) * 100),
+    nodosSector = nodosExplorar.filter((nodo) => nodo.sector === sector);
   return (
     <>
       <Tarjeta accent="#7c5cff" style={{ marginBottom: 16 }}>
         <div className="flex items-center justify-between mb-2">
           <div>
             <div className="text-xs uppercase" style={{ letterSpacing: 2, color: "#7c5cff" }}>
-              Sector {f + 1}
+              Sector {sector + 1}
             </div>
             <div
               style={{
@@ -60,7 +60,7 @@ export function PestanaExplorar({
                 fontWeight: 700,
               }}
             >
-              {d.name}
+              {datosSector.name}
             </div>
           </div>
           <IconoPasos size={26} color="#7c5cff" />
@@ -68,10 +68,10 @@ export function PestanaExplorar({
         <div className="text-xs mb-1 flex justify-between" style={{ color: "#9aa4bd" }}>
           <span>Progreso del sector</span>
           <span>
-            {X}% · {N.toFixed(1)} / {_} km
+            {pct}% · {recorrido.toFixed(1)} / {largo} km
           </span>
         </div>
-        <BarraXp value={N} max={_} color="#7c5cff" />
+        <BarraXp value={recorrido} max={largo} color="#7c5cff" />
         <div className="text-xs mt-3" style={{ color: "#9aa4bd" }}>
           {kmTotales.toFixed(1)} km totales · {rangoCaminante.name}
         </div>
@@ -98,12 +98,12 @@ export function PestanaExplorar({
           expedición.
         </div>
         {(function () {
-          var ws = (player.exploration && player.exploration.walkStart) || 0,
+          var salida = (player.exploration && player.exploration.walkStart) || 0,
             kmh = (player.profile && player.profile.ritmoKmH) || 5;
-          if (ws)
+          if (salida)
             return (
               <CronoCaminata
-                inicio={ws}
+                inicio={salida}
                 kmh={kmh}
                 onCancel={sdcCamCancelar}
                 onListo={sdcCamListo}
@@ -125,13 +125,13 @@ export function PestanaExplorar({
                 corregir.
               </div>
               <div className="grid grid-cols-2 gap-1 mb-2">
-                {sdcRitmos.map(function (jr) {
-                  var sel = Math.abs(kmh - jr.v) < 0.01;
+                {sdcRitmos.map(function (ritmo) {
+                  var sel = Math.abs(kmh - ritmo.v) < 0.01;
                   return (
                     <button
-                      key={jr.t}
+                      key={ritmo.t}
                       onClick={function () {
-                        sdcCamRitmo(jr.v);
+                        sdcCamRitmo(ritmo.v);
                       }}
                       className="py-2 text-xs"
                       style={{
@@ -141,7 +141,7 @@ export function PestanaExplorar({
                         color: sel ? "#e8ecf7" : "#9aa4bd",
                       }}
                     >
-                      {jr.t}
+                      {ritmo.t}
                     </button>
                   );
                 })}
@@ -166,7 +166,7 @@ export function PestanaExplorar({
             type="text"
             inputMode="decimal"
             value={kmTexto}
-            onChange={(te) => setKmTexto(te.target.value.replace(/[^0-9.,]/g, ""))}
+            onChange={(evento) => setKmTexto(evento.target.value.replace(/[^0-9.,]/g, ""))}
             placeholder="Km del tramo"
             className="px-3 py-2 text-sm"
             style={{
@@ -195,7 +195,7 @@ export function PestanaExplorar({
             type="text"
             inputMode="numeric"
             value={pasosTexto}
-            onChange={(te) => setPasosTexto(te.target.value.replace(/[^0-9]/g, ""))}
+            onChange={(evento) => setPasosTexto(evento.target.value.replace(/[^0-9]/g, ""))}
             placeholder="o pasos dados"
             className="px-3 py-2 text-sm"
             style={{
@@ -284,7 +284,7 @@ export function PestanaExplorar({
         <div className="flex items-center justify-end mb-3">
           <div className="flex gap-1">
             <button
-              onClick={() => setVerTodoMapa((te) => !te)}
+              onClick={() => setVerTodoMapa((previo) => !previo)}
               className="px-2 py-1 text-xs"
               style={{
                 background: "rgba(255,255,255,0.05)",
@@ -296,16 +296,16 @@ export function PestanaExplorar({
             </button>
           </div>
         </div>
-        {(verTodoMapa ? nodosExplorar : de).map((te) => {
-          let wl = nodosExplorar.indexOf(te) <= exploration.unlockedIndex,
-            Ig = Math.max(0, te.km - kmTotales);
+        {(verTodoMapa ? nodosExplorar : nodosSector).map((nodo) => {
+          let abierto = nodosExplorar.indexOf(nodo) <= exploration.unlockedIndex,
+            faltan = Math.max(0, nodo.km - kmTotales);
           return (
             <div
-              key={te.name}
+              key={nodo.name}
               className="flex items-start gap-2 py-2"
               style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
             >
-              {wl ? (
+              {abierto ? (
                 <IconoUbicacion size={16} color="#7c5cff" />
               ) : (
                 <IconoCandado size={16} color="#7a83a0" />
@@ -314,22 +314,22 @@ export function PestanaExplorar({
                 <div
                   className="text-sm"
                   style={{
-                    color: wl ? "#e8ecf7" : "#5a6178",
-                    fontWeight: wl ? 600 : 400,
+                    color: abierto ? "#e8ecf7" : "#5a6178",
+                    fontWeight: abierto ? 600 : 400,
                   }}
                 >
-                  {te.name}{" "}
+                  {nodo.name}{" "}
                   <span className="text-xs" style={{ color: "#7a83a0" }}>
-                    · {te.km} km
+                    · {nodo.km} km
                   </span>
                 </div>
-                {wl ? (
+                {abierto ? (
                   <div className="text-xs" style={{ color: "#9aa4bd" }}>
-                    {te.text}
+                    {nodo.text}
                   </div>
                 ) : (
                   <div className="text-xs" style={{ color: "#7a83a0" }}>
-                    Bloqueado — faltan {Ig.toFixed(1)} km
+                    Bloqueado — faltan {faltan.toFixed(1)} km
                   </div>
                 )}
               </div>
@@ -352,24 +352,24 @@ export function PestanaExplorar({
           </div>
         ) : (
           nodosExplorar
-            .filter((te) => (exploration.relics || []).includes(te.relic))
-            .map((te) => (
+            .filter((nodo) => (exploration.relics || []).includes(nodo.relic))
+            .map((nodo) => (
               <div
-                key={te.relic}
+                key={nodo.relic}
                 className="py-2"
                 style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
               >
                 <div className="flex items-center gap-2">
                   <IconoDestello size={14} color="#ffb84f" />
                   <div className="text-sm" style={{ color: "#e8ecf7", fontWeight: 600 }}>
-                    {te.relic}
+                    {nodo.relic}
                   </div>
                 </div>
                 <div className="text-xs mt-1" style={{ color: "#9aa4bd" }}>
-                  {te.lore}
+                  {nodo.lore}
                 </div>
                 <div className="text-xs mt-1" style={{ color: "#7a83a0" }}>
-                  Hallada en {te.name} · {te.km} km
+                  Hallada en {nodo.name} · {nodo.km} km
                 </div>
               </div>
             ))

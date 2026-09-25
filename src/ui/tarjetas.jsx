@@ -3,21 +3,12 @@ import { IconoFlecha } from "./iconos.jsx";
 import { colorRango } from "../datos/rangos.js";
 import { Tarjeta } from "./base.jsx";
 
-function Plegable({
-  id: e,
-  title: a,
-  accent: l,
-  collapsed: n,
-  onToggle: o,
-  right: s,
-  children: u,
-  style: c,
-}) {
-  let r = !n;
+function Plegable({ id, title, accent, collapsed, onToggle, right, children, style }) {
+  let abierto = !collapsed;
   return (
-    <Tarjeta accent={l} style={c}>
+    <Tarjeta accent={accent} style={style}>
       <button
-        onClick={() => o(e, !!n)}
+        onClick={() => onToggle(id, !!collapsed)}
         className="w-full flex items-center justify-between"
         style={{ background: "transparent", border: "none", padding: "12px 0", margin: "-12px 0" }}
       >
@@ -25,7 +16,7 @@ function Plegable({
           <span
             style={{
               display: "inline-block",
-              transform: r ? "rotate(90deg)" : "rotate(0deg)",
+              transform: abierto ? "rotate(90deg)" : "rotate(0deg)",
               transition: "transform .2s",
             }}
           >
@@ -34,33 +25,38 @@ function Plegable({
           <span
             style={{ fontFamily: "Chakra Petch, sans-serif", color: "#e8ecf7", fontWeight: 700 }}
           >
-            {a}
+            {title}
           </span>
         </div>
         <span className="text-xs" style={{ color: "#9aa4bd" }}>
-          {s}
+          {right}
         </span>
       </button>
-      {r && <div className="mt-3">{u}</div>}
+      {abierto && <div className="mt-3">{children}</div>}
     </Tarjeta>
   );
 }
-function colorDeRango(e) {
-  return colorRango[e] || "#ffb84f";
+function colorDeRango(rango) {
+  return colorRango[rango] || "#ffb84f";
 }
-function DibujoMascota({ type: e, size: a = 56, color: l = "#ffb84f", rank: n }) {
-  let o = n && ["A", "S", "Z"].includes(n),
-    s = n && ["S", "Z"].includes(n),
-    u = { width: a, height: a, display: "block", filter: s ? `drop-shadow(0 0 6px ${l})` : "none" },
-    c = o ? (
-      <path d="M32,6 L40,16 L50,4 L60,16 L68,6 L66,22 L34,22 Z" fill={l} opacity="0.95" />
+function DibujoMascota({ type, size = 56, color = "#ffb84f", rank }) {
+  let conCorona = rank && ["A", "S", "Z"].includes(rank),
+    brilla = rank && ["S", "Z"].includes(rank),
+    estilo = {
+      width: size,
+      height: size,
+      display: "block",
+      filter: brilla ? `drop-shadow(0 0 6px ${color})` : "none",
+    },
+    corona = conCorona ? (
+      <path d="M32,6 L40,16 L50,4 L60,16 L68,6 L66,22 L34,22 Z" fill={color} opacity="0.95" />
     ) : null;
-  return e === "cat" ? (
-    <svg viewBox="0 0 100 100" style={u}>
-      <path d="M25,38 L33,10 L45,32 Z" fill={l} />
-      <path d="M75,38 L67,10 L55,32 Z" fill={l} />
-      {c}
-      <circle cx="50" cy="55" r="28" fill={l} />
+  return type === "cat" ? (
+    <svg viewBox="0 0 100 100" style={estilo}>
+      <path d="M25,38 L33,10 L45,32 Z" fill={color} />
+      <path d="M75,38 L67,10 L55,32 Z" fill={color} />
+      {corona}
+      <circle cx="50" cy="55" r="28" fill={color} />
       <circle cx="40" cy="52" r="4" fill="#161b2e" />
       <circle cx="60" cy="52" r="4" fill="#161b2e" />
       <path d="M46,62 L54,62 L50,67 Z" fill="#161b2e" />
@@ -72,11 +68,11 @@ function DibujoMascota({ type: e, size: a = 56, color: l = "#ffb84f", rank: n })
       <line x1="86" y1="65" x2="70" y2="65" stroke="#161b2e" strokeWidth="1.5" />
     </svg>
   ) : (
-    <svg viewBox="0 0 100 100" style={u}>
-      <ellipse cx="21" cy="46" rx="11" ry="19" transform="rotate(-15 21 46)" fill={l} />
-      <ellipse cx="79" cy="46" rx="11" ry="19" transform="rotate(15 79 46)" fill={l} />
-      {c}
-      <circle cx="50" cy="55" r="27" fill={l} />
+    <svg viewBox="0 0 100 100" style={estilo}>
+      <ellipse cx="21" cy="46" rx="11" ry="19" transform="rotate(-15 21 46)" fill={color} />
+      <ellipse cx="79" cy="46" rx="11" ry="19" transform="rotate(15 79 46)" fill={color} />
+      {corona}
+      <circle cx="50" cy="55" r="27" fill={color} />
       <ellipse cx="50" cy="66" rx="15" ry="11" fill="#ffe0b3" />
       <circle cx="41" cy="50" r="4" fill="#161b2e" />
       <circle cx="59" cy="50" r="4" fill="#161b2e" />

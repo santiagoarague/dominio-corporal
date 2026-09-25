@@ -38,18 +38,20 @@ export function PestanaCombate({
   setCombSegundos,
   setCombSegundosMax,
 }) {
-  let f = terreno(combat.villainIndex),
-    d = golpesNecesarios(f);
+  let terrenoActual = terreno(combat.villainIndex),
+    golpes = golpesNecesarios(terrenoActual);
   return (
     <>
-      <Tarjeta accent={f.isBoss ? "#ffb84f" : "#ff5c7a"} style={{ marginBottom: 16 }}>
+      <Tarjeta accent={terrenoActual.isBoss ? "#ffb84f" : "#ff5c7a"} style={{ marginBottom: 16 }}>
         <div className="flex items-center justify-between mb-2">
           <div>
             <div
               className="text-xs uppercase"
-              style={{ letterSpacing: 2, color: f.isBoss ? "#ffb84f" : "#ff5c7a" }}
+              style={{ letterSpacing: 2, color: terrenoActual.isBoss ? "#ffb84f" : "#ff5c7a" }}
             >
-              {f.isBoss ? "JEFE · DOS PATRONES ENCADENADOS" : `Terreno #${f.index + 1}`}
+              {terrenoActual.isBoss
+                ? "JEFE · DOS PATRONES ENCADENADOS"
+                : `Terreno #${terrenoActual.index + 1}`}
             </div>
             <div
               style={{
@@ -59,10 +61,10 @@ export function PestanaCombate({
                 fontWeight: 700,
               }}
             >
-              {f.name}
+              {terrenoActual.name}
             </div>
           </div>
-          <IconoUbicacion size={28} color={f.isBoss ? "#ffb84f" : "#ff5c7a"} />
+          <IconoUbicacion size={28} color={terrenoActual.isBoss ? "#ffb84f" : "#ff5c7a"} />
         </div>
         {combat.villainCurrentHP !== null && (
           <>
@@ -71,18 +73,18 @@ export function PestanaCombate({
             </div>
             <BarraXp
               value={combat.villainCurrentHP}
-              max={d}
-              color={f.isBoss ? "#ffb84f" : "#ff5c7a"}
+              max={golpes}
+              color={terrenoActual.isBoss ? "#ffb84f" : "#ff5c7a"}
             />
           </>
         )}
         <div className="flex items-center gap-1 mt-3">
-          {[1, 2, 3].map((m) => (
+          {[1, 2, 3].map((vida) => (
             <IconoCorazon
-              key={m}
+              key={vida}
               size={16}
-              color={m <= combat.lives ? "#ff5c7a" : "#2a3148"}
-              fill={m <= combat.lives ? "#ff5c7a" : "none"}
+              color={vida <= combat.lives ? "#ff5c7a" : "#2a3148"}
+              fill={vida <= combat.lives ? "#ff5c7a" : "none"}
             />
           ))}
           <span className="text-xs ml-1" style={{ color: "#9aa4bd" }}>
@@ -105,21 +107,21 @@ export function PestanaCombate({
           <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
             No podés repetir la categoría que usaste en el terreno anterior.
           </div>
-          {["upper_front", "upper_back", "lower"].map((m) => {
-            let N = m === combat.lastExercise;
+          {["upper_front", "upper_back", "lower"].map((tren) => {
+            let usado = tren === combat.lastExercise;
             return (
               <button
-                key={m}
-                onClick={() => !N && combElegir(m)}
-                disabled={N}
+                key={tren}
+                onClick={() => !usado && combElegir(tren)}
+                disabled={usado}
                 className="w-full py-3 text-sm mb-2 disabled:opacity-30"
                 style={{
-                  background: N ? "rgba(255,255,255,0.03)" : "rgba(255,92,122,0.1)",
-                  border: "1px solid " + (N ? "rgba(255,255,255,0.1)" : "#ff5c7a"),
-                  color: N ? "#5a6178" : "#ff5c7a",
+                  background: usado ? "rgba(255,255,255,0.03)" : "rgba(255,92,122,0.1)",
+                  border: "1px solid " + (usado ? "rgba(255,255,255,0.1)" : "#ff5c7a"),
+                  color: usado ? "#5a6178" : "#ff5c7a",
                 }}
               >
-                {nombresTren[m]}
+                {nombresTren[tren]}
               </button>
             );
           })}
@@ -141,7 +143,7 @@ export function PestanaCombate({
             Perdiste un corazón. Te quedan {combat.lives}. ¿Cómo seguís?
           </div>
           <button
-            onClick={() => aplicar((m) => reintentarRonda(m))}
+            onClick={() => aplicar((partida) => reintentarRonda(partida))}
             className="w-full text-left px-3 py-2 mb-2"
             style={{ background: "rgba(255,92,122,0.08)", border: "1px solid #ff5c7a" }}
           >
@@ -153,7 +155,7 @@ export function PestanaCombate({
             </div>
           </button>
           <button
-            onClick={() => aplicar((m) => ajustarCarga(m))}
+            onClick={() => aplicar((partida) => ajustarCarga(partida))}
             className="w-full text-left px-3 py-2 mb-2"
             style={{ background: "rgba(255,184,79,0.08)", border: "1px solid #ffb84f" }}
           >
@@ -164,16 +166,16 @@ export function PestanaCombate({
               −20% de repeticiones en el mismo tiempo. Tus golpes harán un 30% menos de daño.
             </div>
           </button>
-          {!f.isBoss && (
+          {!terrenoActual.isBoss && (
             <>
               <div className="text-xs mt-3 mb-1" style={{ color: "#9aa4bd" }}>
                 Cambio táctico de patrón (perdés un 15% del terreno):
               </div>
-              {["upper_front", "upper_back", "lower"].map((m) =>
-                m === combat.lastExercise || m === combat.exercise ? null : (
+              {["upper_front", "upper_back", "lower"].map((tren) =>
+                tren === combat.lastExercise || tren === combat.exercise ? null : (
                   <button
-                    key={m}
-                    onClick={() => aplicar((_) => cambiarTren(_, m))}
+                    key={tren}
+                    onClick={() => aplicar((partida) => cambiarTren(partida, tren))}
                     className="w-full py-2 text-sm mb-2"
                     style={{
                       background: "rgba(124,92,255,0.1)",
@@ -181,7 +183,7 @@ export function PestanaCombate({
                       color: "#b9a5ff",
                     }}
                   >
-                    {nombresTren[m]}
+                    {nombresTren[tren]}
                   </button>
                 ),
               )}
@@ -193,7 +195,7 @@ export function PestanaCombate({
         !combPrep &&
         !combVentana &&
         (() => {
-          let sdcCr = f.isBoss
+          let sdcCr = terrenoActual.isBoss
               ? 0
               : Math.max(
                   1,
@@ -208,7 +210,7 @@ export function PestanaCombate({
                     ) * (combat.loadFactor || 1),
                   ),
                 ),
-            sdcCs = f.isBoss ? segundosVentanaJefe() : segundosVentana(sdcCr);
+            sdcCs = terrenoActual.isBoss ? segundosVentanaJefe() : segundosVentana(sdcCr);
           return (
             <Tarjeta accent="#ff5c7a" style={{ marginBottom: 16 }}>
               <div
@@ -221,23 +223,23 @@ export function PestanaCombate({
               >
                 Cuando estés listo
               </div>
-              {f.isBoss ? (
+              {terrenoActual.isBoss ? (
                 <div className="text-sm" style={{ color: "#e8ecf7" }}>
                   <div style={{ color: "#ffb84f", fontWeight: 700 }}>
                     Superserie enlazada · sin descanso
                   </div>
-                  {(combat.bossCats || trenesJefe(combat.lastExercise)).map((m, N) => (
-                    <div key={m} className="mt-1">
-                      Fase {N + 1}:{" "}
+                  {(combat.bossCats || trenesJefe(combat.lastExercise)).map((tren, i) => (
+                    <div key={tren} className="mt-1">
+                      Fase {i + 1}:{" "}
                       {repsCombateSuave(
                         progress.rank,
                         profile.classification,
                         profile.focusProfile,
-                        m,
+                        tren,
                         modalidad,
                         profile.testResults,
                       )}{" "}
-                      × {ejercicioDeTren(progress.rank, profile.classification, m, modalidad)}
+                      × {ejercicioDeTren(progress.rank, profile.classification, tren, modalidad)}
                     </div>
                   ))}
                 </div>
@@ -263,7 +265,7 @@ export function PestanaCombate({
               </div>
               <button
                 onClick={() => {
-                  let sdcCd = f.isBoss ? 20 : 12;
+                  let sdcCd = terrenoActual.isBoss ? 20 : 12;
                   (setCombSegundosMax(sdcCd), setCombSegundos(sdcCd), setCombPrep(!0));
                 }}
                 className="w-full py-3 text-sm"
@@ -303,23 +305,23 @@ export function PestanaCombate({
         <Tarjeta accent="#ff5c7a" style={{ marginBottom: 16 }}>
           <div className="text-center mb-3">
             <div className="text-sm" style={{ color: "#e8ecf7" }}>
-              {f.isBoss ? (
+              {terrenoActual.isBoss ? (
                 <>
                   <div style={{ color: "#ffb84f", fontWeight: 700 }}>
                     Superserie enlazada · sin descanso
                   </div>
-                  {(combat.bossCats || trenesJefe(combat.lastExercise)).map((m, N) => (
-                    <div key={m} className="mt-1">
-                      Fase {N + 1}:{" "}
+                  {(combat.bossCats || trenesJefe(combat.lastExercise)).map((tren, i) => (
+                    <div key={tren} className="mt-1">
+                      Fase {i + 1}:{" "}
                       {repsCombateSuave(
                         progress.rank,
                         profile.classification,
                         profile.focusProfile,
-                        m,
+                        tren,
                         modalidad,
                         profile.testResults,
                       )}{" "}
-                      × {ejercicioDeTren(progress.rank, profile.classification, m, modalidad)}
+                      × {ejercicioDeTren(progress.rank, profile.classification, tren, modalidad)}
                     </div>
                   ))}
                 </>
@@ -366,13 +368,13 @@ export function PestanaCombate({
           </div>
           <BarraXp value={combSegundos} max={combSegundosMax} color="#ff5c7a" />
           {(() => {
-            let fs = f.isBoss
-                ? (combat.bossCats || trenesJefe(combat.lastExercise)).map((m) =>
+            let fases = terrenoActual.isBoss
+                ? (combat.bossCats || trenesJefe(combat.lastExercise)).map((tren) =>
                     repsCombateSuave(
                       progress.rank,
                       profile.classification,
                       profile.focusProfile,
-                      m,
+                      tren,
                       modalidad,
                       profile.testResults,
                     ),
@@ -392,17 +394,17 @@ export function PestanaCombate({
                       ),
                     ),
                   ],
-              listo = fs.every((rq, ix) => (sdcCombSer[ix] || 0) >= sdcNSets(rq));
+              listo = fases.every((reps, i) => (sdcCombSer[i] || 0) >= sdcNSets(reps));
             return (
               <>
-                {fs.map((rq, ix) => (
-                  <div key={ix} className="mt-3">
-                    {f.isBoss && (
+                {fases.map((reps, i) => (
+                  <div key={i} className="mt-3">
+                    {terrenoActual.isBoss && (
                       <div className="text-xs mb-1" style={{ color: "#ffb84f" }}>
-                        Fase {ix + 1}
+                        Fase {i + 1}
                       </div>
                     )}
-                    {sdcCombChips(ix, rq)}
+                    {sdcCombChips(i, reps)}
                   </div>
                 ))}
                 <button
@@ -446,7 +448,7 @@ export function PestanaCombate({
               ¡Victoria!
             </div>
             <div className="text-sm mt-1" style={{ color: "#e8ecf7" }}>
-              Recuperaste {f.name}
+              Recuperaste {terrenoActual.name}
             </div>
           </div>
           <button
@@ -472,8 +474,8 @@ export function PestanaCombate({
               Te quedaste sin vidas
             </div>
             <div className="text-sm mt-1" style={{ color: "#9aa4bd" }}>
-              {f.name} sigue activa, pero no perdiste el daño que ya le hiciste. Recuperá el aliento
-              e intentalo de nuevo.
+              {terrenoActual.name} sigue activa, pero no perdiste el daño que ya le hiciste.
+              Recuperá el aliento e intentalo de nuevo.
             </div>
           </div>
           <button
