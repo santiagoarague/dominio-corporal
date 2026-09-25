@@ -364,7 +364,6 @@ export function TarjetaRutina({
         tip={alternativaEjercicio(progress.rank, "squat", modalidad) || regresiones.squat}
         guia={sdcGuia(progress.rank, "squat", modalidad)}
         abrir={!sdcVistos(player)[sdcEjNom("squat")]}
-        weight={void 0}
         onWeight={modalidad === "gym" ? (k, f) => sdcKgSet("squat", k, f) : void 0}
         kgv={modalidad === "gym" ? (k) => sdcKgVer("squat", k) : void 0}
         kgPrev={
@@ -394,7 +393,6 @@ export function TarjetaRutina({
         tip={alternativaEjercicio(progress.rank, "pushup", modalidad) || regresiones.pushup}
         guia={sdcGuia(progress.rank, "pushup", modalidad)}
         abrir={!sdcVistos(player)[sdcEjNom("pushup")]}
-        weight={void 0}
         onWeight={modalidad === "gym" ? (k, f) => sdcKgSet("pushup", k, f) : void 0}
         kgv={modalidad === "gym" ? (k) => sdcKgVer("pushup", k) : void 0}
         kgPrev={
@@ -424,7 +422,6 @@ export function TarjetaRutina({
         tip={alternativaEjercicio(progress.rank, "back", modalidad) || regresiones.back}
         guia={sdcGuia(progress.rank, "back", modalidad)}
         abrir={!sdcVistos(player)[sdcEjNom("back")]}
-        weight={void 0}
         onWeight={modalidad === "gym" ? (k, f) => sdcKgSet("back", k, f) : void 0}
         kgv={modalidad === "gym" ? (k) => sdcKgVer("back", k) : void 0}
         kgPrev={
@@ -454,7 +451,6 @@ export function TarjetaRutina({
         tip={alternativaEjercicio(progress.rank, "abs", modalidad) || regresiones.abs}
         guia={sdcGuia(progress.rank, "abs", modalidad)}
         abrir={!sdcVistos(player)[sdcEjNom("abs")]}
-        weight={void 0}
         onWeight={modalidad === "gym" ? (k, f) => sdcKgSet("abs", k, f) : void 0}
         kgv={modalidad === "gym" ? (k) => sdcKgVer("abs", k) : void 0}
         kgPrev={modalidad === "gym" ? (sdcGymUlt(player)[sdcEjNom("abs")] || {}).kgs || null : null}

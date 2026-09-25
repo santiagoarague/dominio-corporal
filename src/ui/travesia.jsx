@@ -4,7 +4,7 @@ import { IconoCheck } from "./iconos.jsx";
 import { sdcPortales } from "../logica/explorar.js";
 import { BarraXp } from "./base.jsx";
 import { pitido } from "./prueba.jsx";
-import { sdcWakeUse } from "./pantalla.js";
+import { usePantallaEncendida } from "./pantalla.js";
 
 function sdcTravMin(t) {
   var m = /(\d+)\s*minutos/.exec(String(t || ""));
@@ -17,7 +17,7 @@ function sdcTravRitmo(n) {
 function CronoTravesia({ inicio: e, mins: a, on: l, off: n, onCancel: o, onListo: s }) {
   let [u1, c] = useState(Math.floor((Date.now() - e) / 1e3)),
     u = Math.max(0, u1);
-  sdcWakeUse();
+  usePantallaEncendida();
   useEffect(() => {
     let t = setInterval(() => c(Math.floor((Date.now() - e) / 1e3)), 500);
     return () => clearInterval(t);

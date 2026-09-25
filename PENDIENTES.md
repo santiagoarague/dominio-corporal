@@ -16,8 +16,11 @@ ni la dirección del sitio.
 - **Código fuente de verdad**: Vite + React 19, en módulos por tema, con nombres reales en vez
   de los del minificador, y en JSX. Cada paso se comprobó comparando el resultado con la versión
   publicada, pantalla por pantalla.
+- **Revisor automático (ESLint)**: marca variables que no existen, código que nadie usa y hooks de
+  React dentro de un `if`. Corre antes de publicar, igual que las pruebas. En la primera pasada
+  encontró que el campo del peso corporal se había perdido y una docena de valores muertos.
 - **Pruebas**: 114 automáticas (curva de XP, Umbral, buffos, deshacer, sonidos…) y 9 de punta a
-  punta en Edge. **Si alguna falla, no se publica nada**: el deploy lo hace GitHub Actions y las
+  punta en Edge. **Si alguna falla, o el revisor encuentra un error, no se publica nada**: el deploy lo hace GitHub Actions y las
   corre antes.
 - **App partida**: cada pestaña en su archivo (`src/ui/pestanas/`) y Entreno en tarjetas.
 - **La partida se guarda en un solo lugar**, cada vez que cambia: ningún cambio puede quedar sin

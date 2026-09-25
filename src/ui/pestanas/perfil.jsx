@@ -2,7 +2,6 @@
 import { useState } from "react";
 import {
   fechaHoy,
-  xpTotal,
   enfoqueDe,
   modalidadesDe,
   sdcCalibre,
@@ -143,12 +142,11 @@ export function PestanaPerfil({
   ui,
 }) {
   let f = Math.max(
-      1,
-      Math.floor(
-        (new Date(fechaHoy() + "T00:00:00") - new Date(profile.createdDate + "T00:00:00")) / 864e5,
-      ) + 1,
-    ),
-    d = xpTotal(progress.level, progress.currentXP);
+    1,
+    Math.floor(
+      (new Date(fechaHoy() + "T00:00:00") - new Date(profile.createdDate + "T00:00:00")) / 864e5,
+    ) + 1,
+  );
   return (
     <>
       <Tarjeta accent="#4f9dff" style={{ marginBottom: 16 }}>

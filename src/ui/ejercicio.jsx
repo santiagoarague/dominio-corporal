@@ -20,7 +20,6 @@ function FilaEjercicio({
   max: o,
   onChange: s,
   tip: u,
-  weight: c,
   onWeight: r,
   done: sd,
   onSet: so,

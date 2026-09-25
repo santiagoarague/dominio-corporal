@@ -1,6 +1,6 @@
 // Cronometro de caminata.
 import { useState, useEffect } from "react";
-import { sdcWakeUse } from "./pantalla.js";
+import { usePantallaEncendida } from "./pantalla.js";
 
 var sdcRitmos = [
   { t: "Caminata tranquila", v: 4 },
@@ -10,7 +10,7 @@ var sdcRitmos = [
 ];
 function CronoCaminata({ inicio: e, kmh: a, onCancel: l, onListo: n }) {
   let [o, s] = useState(Math.max(0, Math.floor((Date.now() - e) / 1e3)));
-  sdcWakeUse();
+  usePantallaEncendida();
   useEffect(() => {
     let t = setInterval(() => s(Math.max(0, Math.floor((Date.now() - e) / 1e3))), 500);
     return () => clearInterval(t);

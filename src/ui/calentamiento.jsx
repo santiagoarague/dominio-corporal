@@ -10,7 +10,7 @@ import { subirNiveles, clonar } from "../logica/partida.js";
 import { BarraXp } from "./base.jsx";
 import { sdcIncKg, sdcKgTxt, sdcSugKg } from "../logica/extras.js";
 import { sdcBeep, sdcNSets, sdcSegs, sdcSplit, sdcVib } from "../logica/series.js";
-import { sdcWakeSi } from "./pantalla.js";
+import { usePantallaSi } from "./pantalla.js";
 import { AnimoAhora } from "./animo.jsx";
 
 var sdcCalorFases = ["PULSO", "MOVILIDAD", "ACTIVACIÓN", "ENSAYO"];
@@ -514,7 +514,7 @@ function Calentamiento({ st: e, mod: B, metas: mt, Ne: Ne, onModo: om, sinSeries
       color: "#e8ecf7",
       fontWeight: 600,
     };
-  sdcWakeSi(corre);
+  usePantallaSi(corre);
   useEffect(() => {
     if (!corre) return;
     let x = setInterval(() => tk((n) => n + 1), 300);

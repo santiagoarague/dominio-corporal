@@ -1,7 +1,7 @@
 // Prueba de aptitud y el pitido (Ie).
 import { useState, useEffect } from "react";
 import { Tarjeta } from "./base.jsx";
-import { sdcWakeUse } from "./pantalla.js";
+import { usePantallaEncendida } from "./pantalla.js";
 
 var E5 = 2e3,
   A5 = 1e3;
@@ -41,7 +41,7 @@ function PruebaAptitud({ exercise: e, onFinish: a }) {
     [o, s] = useState(10),
     [u, c] = useState("down"),
     [r, p] = useState(0);
-  (sdcWakeUse(),
+  (usePantallaEncendida(),
     useEffect(() => {
       if (l !== "countdown") return;
       if (o <= 0) {

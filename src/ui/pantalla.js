@@ -41,7 +41,7 @@ function sdcWakeOff() {
   } catch (x) {}
   sdcWL = null;
 }
-function sdcWakeUse() {
+function usePantallaEncendida() {
   useEffect(() => {
     sdcWakeOn();
     let x = () => {
@@ -55,7 +55,7 @@ function sdcWakeUse() {
     );
   }, []);
 }
-function sdcWakeSi(on) {
+function usePantallaSi(on) {
   useEffect(() => {
     if (!on) return;
     sdcWakeOn();
@@ -71,4 +71,4 @@ function sdcWakeSi(on) {
   }, [on]);
 }
 
-export { sdcWL, sdcWakeOn, sdcWakeOff, sdcWakePedir, sdcWakeUse, sdcWakeSi };
+export { sdcWL, sdcWakeOn, sdcWakeOff, sdcWakePedir, usePantallaEncendida, usePantallaSi };

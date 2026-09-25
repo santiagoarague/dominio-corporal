@@ -5,7 +5,6 @@ import { colorRango } from "../datos/rangos.js";
 import { modalidades } from "../datos/ejercicios.js";
 import {
   enfoques,
-  claseCalibre,
   puntajePrueba,
   sdcNiveles,
   sdcRitmoK,
@@ -61,9 +60,7 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
     ja = Math.max(0, parseInt(E || "0", 10)),
     Ba = Math.max(0, parseInt(A || "0", 10)),
     fa = Math.max(0, parseInt(b || "0", 10)),
-    sdcBkN = Math.max(0, parseInt(sdcBk || "0", 10)),
-    Tl = claseCalibre(ja, Ba, fa, sdcBkN),
-    Ud = Tl === "principiante" ? "Principiante" : Tl === "intermedio" ? "Intermedio" : "Avanzado";
+    sdcBkN = Math.max(0, parseInt(sdcBk || "0", 10));
   return l ? (
     <div
       className="min-h-screen flex flex-col items-center justify-center px-4"

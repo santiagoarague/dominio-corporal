@@ -100,7 +100,7 @@ import { colorProgreso } from "./cuerpo.jsx";
 import { diasConstancia } from "./constancia.jsx";
 import { DibujoMascota, Plegable, k5 } from "./tarjetas.jsx";
 import { sdcRespaldoOk } from "../logica/respaldo.js";
-import { sdcWakeSi } from "./pantalla.js";
+import { usePantallaSi } from "./pantalla.js";
 import { sdcEstDesde, sdcPasoEspera, sdcPasosHook, sdcPasosV } from "./calentamiento.jsx";
 import { sdcAnimoHoy } from "./animo.jsx";
 import { PestanaLogros } from "./pestanas/logros.jsx";
@@ -195,7 +195,6 @@ function App({ player, setPlayer, initialNotices }) {
     [combVentana, setCombVentana] = useState(!1),
     [combSegundos, setCombSegundos] = useState(0),
     [combSegundosMax, setCombSegundosMax] = useState(0),
-    [combTexto, setCombTexto] = useState(""),
     [primalMov, setPrimalMov] = useState(null),
     [primalRonda, setPrimalRonda] = useState(1),
     [primalFase, setPrimalFase] = useState("idle"),
@@ -256,7 +255,6 @@ function App({ player, setPlayer, initialNotices }) {
     },
     kmTotales = exploration.lifetimeKm || 0,
     rangoCaminante = l2(kmTotales),
-    nodoActual = exploration.unlockedIndex >= 0 ? nodosExplorar[exploration.unlockedIndex] : null,
     nodoSiguiente = nodosExplorar[exploration.unlockedIndex + 1] || null,
     primalHechasHoy = primal.today.date === fechaHoy() ? primal.today.count : 0,
     primalSesionesHoy = sesionesPrimalHoy(player),
@@ -274,11 +272,7 @@ function App({ player, setPlayer, initialNotices }) {
           ? "partial"
           : "pending",
       28,
-    ),
-    derrotadosHoy =
-      combat.todayDefeated && combat.todayDefeated.date === fechaHoy()
-        ? combat.todayDefeated.count
-        : 0;
+    );
   (useEffect(() => {
     (setMetaSesion(
       modo === "recovery"
@@ -405,7 +399,7 @@ function App({ player, setPlayer, initialNotices }) {
                 ),
               ),
           N = d.isBoss ? p2() : m2(m);
-        (setCombSegundosMax(N), setCombSegundos(N), setCombTexto(""), setCombVentana(!0));
+        (setCombSegundosMax(N), setCombSegundos(N), setCombVentana(!0));
         return;
       }
       let f = setTimeout(() => setCombSegundos((d) => d - 1), 1e3);
@@ -467,7 +461,7 @@ function App({ player, setPlayer, initialNotices }) {
     }, [primalFase, primalFin, primalPausa]),
     // La pantalla no se apaga mientras corre algo con reloj, ni en medio de la
     // rutina: desde la primera serie marcada hasta registrarla, en Entreno.
-    sdcWakeSi(
+    usePantallaSi(
       !!combPrep ||
         !!combVentana ||
         !!estirando ||
@@ -576,12 +570,8 @@ function App({ player, setPlayer, initialNotices }) {
   function combElegir(f) {
     aplicar((d) => b2(d, f));
   }
-  function combGolpeTexto() {
-    combTexto.trim().toLowerCase() === "hecho" &&
-      (setCombVentana(!1), aplicar((f) => h2(f)), setCombTexto(""));
-  }
   function combCancelar() {
-    (setCombVentana(!1), setCombTexto(""), sdcSetCombSer({}));
+    (setCombVentana(!1), sdcSetCombSer({}));
     let d = za(combat.villainIndex).isBoss ? 20 : 12;
     (setCombSegundosMax(d), setCombSegundos(d), setCombPrep(!1));
   }
@@ -661,7 +651,7 @@ function App({ player, setPlayer, initialNotices }) {
     } else sdcVib(8);
   }
   function sdcGolpe() {
-    (setCombVentana(!1), aplicar((f) => h2(f)), setCombTexto(""), sdcSetCombSer({}));
+    (setCombVentana(!1), aplicar((f) => h2(f)), sdcSetCombSer({}));
   }
   function sdcCombTocar(fa, k) {
     let pv = sdcCombSer[fa] || 0;
@@ -938,17 +928,6 @@ function App({ player, setPlayer, initialNotices }) {
   }
   function deshacerRegistro() {
     (setConfirmarDeshacer(!1), aplicar((f) => sdcDeshacer(f)), setMetaSesion({ ...metaDia }));
-  }
-  function ponerKg(f, d) {
-    let m = Math.max(0, parseFloat((d || "0").replace(",", ".")) || 0);
-    setPlayer((N) => {
-      let _ = clonar(N);
-      return (
-        _.gymWeights || (_.gymWeights = { squat: 0, pushup: 0, back: 0, abs: 0 }),
-        (_.gymWeights[f] = m),
-        _
-      );
-    });
   }
   function ponerPesoCorporal(f) {
     let d = Math.max(0, parseFloat((f || "0").replace(",", ".")) || 0);
@@ -1313,8 +1292,6 @@ function App({ player, setPlayer, initialNotices }) {
       );
     });
   }
-  let estMin = String(Math.floor(estSegundos / 60)).padStart(2, "0"),
-    estSeg = String(estSegundos % 60).padStart(2, "0");
   return (
     <div className="min-h-screen px-4 py-6" style={{ background: "#0a0e1a" }}>
       <div className="mx-auto" style={{ maxWidth: 420 }}>

@@ -4,12 +4,12 @@ import { sdcEstMMSS } from "../logica/estiramiento.js";
 import { BarraXp } from "./base.jsx";
 import { sdcVib } from "../logica/series.js";
 import { pitido } from "./prueba.jsx";
-import { sdcWakeUse } from "./pantalla.js";
+import { usePantallaEncendida } from "./pantalla.js";
 
 function BarraDescanso({ seconds: e, onSkip: a, ini: t0 }) {
   let [n, tk] = useState(0),
     l = Math.max(0, e - Math.floor((Date.now() - (t0 || Date.now())) / 1e3));
-  sdcWakeUse();
+  usePantallaEncendida();
   useEffect(() => {
     if (l <= 0) {
       (pitido(880, 200), sdcVib([40, 60, 40]), a());

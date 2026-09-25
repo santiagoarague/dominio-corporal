@@ -1,5 +1,6 @@
 # Cada push a main prueba, compila y publica dist/ en GitHub Pages.
-# Si una prueba falla no se publica nada y queda en linea la version anterior.
+# Si el revisor (ESLint) o una prueba fallan, no se publica nada y queda en
+# linea la version anterior.
 name: Publicar
 
 on:
@@ -30,6 +31,7 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      - run: npm run lint
       - run: npm test
       - run: npm run build
       - uses: actions/configure-pages@v6

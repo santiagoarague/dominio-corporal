@@ -506,7 +506,6 @@ function registrarRutina(e, a, l, mok, gvol) {
     let pd = (o.today.doneModalities || []).length > 0 ? 0 : p >= 1 ? 3 : p >= 0.5 ? 1 : 0;
     pd > 0 && ((o.dominion.points += pd), s.push(`+${pd} Puntos de Dominio.`));
   })();
-  let S = o.streak.missed;
   let nSes = (o.today.doneModalities || []).length;
   let yaFull = o.history[o.today.date] === "full";
   // El bono por rutina completa es igual para los tres enfoques: si se
