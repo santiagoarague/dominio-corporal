@@ -5,39 +5,45 @@ import { clonar } from "./partida.js";
 import { sdcCalT } from "./extras.js";
 import { sdcSegs } from "./series.js";
 
-function modalidadesDe(e) {
-  let a = (e && e.modalities) || ["bodyweight"];
-  return a.length ? a : ["bodyweight"];
+function modalidadesDe(perfil) {
+  let lista = (perfil && perfil.modalities) || ["bodyweight"];
+  return lista.length ? lista : ["bodyweight"];
 }
-function modalidadDelDia(e, a, l) {
-  let n = modalidadesDe(e);
-  if (l && n.includes(l)) return l;
-  if (n.length === 1) return n[0];
-  let o = hashDia(a || fechaHoy(), n.length);
-  return n[o];
+function modalidadDelDia(perfil, fecha, elegida) {
+  let activas = modalidadesDe(perfil);
+  if (elegida && activas.includes(elegida)) return elegida;
+  if (activas.length === 1) return activas[0];
+  let indice = hashDia(fecha || fechaHoy(), activas.length);
+  return activas[indice];
 }
-function tablaEjercicios(e) {
-  return e === "gym" ? ejerciciosGym : e === "flow" ? ejerciciosFlow : null;
+function tablaEjercicios(modalidad) {
+  return modalidad === "gym" ? ejerciciosGym : modalidad === "flow" ? ejerciciosFlow : null;
 }
 var baseClase = {
   principiante: { squat: 12, pushup: 8, back: 8, abs: 12 },
   intermedio: { squat: 18, pushup: 12, back: 10, abs: 18 },
   avanzado: { squat: 24, pushup: 16, back: 14, abs: 24 },
 };
-function ejercicioDe(e, a, l, fx) {
-  var n = tablaEjercicios(l),
-    o = n && n[e] && n[e][a] ? n[e][a] : null;
-  if (!o) {
-    var b = ejerciciosPeso[e] || ejerciciosPeso.squat;
-    o = b[a] || b.C;
+function ejercicioDe(grupo, rango, modalidad, fecha) {
+  var tabla = tablaEjercicios(modalidad),
+    entrada = tabla && tabla[grupo] && tabla[grupo][rango] ? tabla[grupo][rango] : null;
+  if (!entrada) {
+    var delPeso = ejerciciosPeso[grupo] || ejerciciosPeso.squat;
+    entrada = delPeso[rango] || delPeso.C;
   }
-  if (!o) return { name: "", repFactor: 1, alt: "" };
-  if (!Array.isArray(o)) return o;
-  if (o.length < 2) return o[0] || { name: "", repFactor: 1, alt: "" };
-  return o[
+  if (!entrada) return { name: "", repFactor: 1, alt: "" };
+  if (!Array.isArray(entrada)) return entrada;
+  if (entrada.length < 2) return entrada[0] || { name: "", repFactor: 1, alt: "" };
+  return entrada[
     hashDia(
-      String(fx || fechaHoy()) + "|" + e + "|" + a + "|" + String(l || "bodyweight"),
-      o.length,
+      String(fecha || fechaHoy()) +
+        "|" +
+        grupo +
+        "|" +
+        rango +
+        "|" +
+        String(modalidad || "bodyweight"),
+      entrada.length,
     )
   ];
 }
@@ -85,108 +91,124 @@ var enfoques = [
   ],
   rachaBonoSalud = 3,
   metaSemanalDefecto = 3;
-function anotarDia(e, a) {
-  let l = e.today.date;
+function anotarDia(partida, actividad) {
+  let fecha = partida.today.date;
   return (
-    e.week.sessionDates || (e.week.sessionDates = []),
-    e.week.reps || (e.week.reps = { squat: 0, pushup: 0, back: 0, abs: 0 }),
-    e.dayLog || (e.dayLog = {}),
-    e.dayLog[l] || (e.dayLog[l] = { acts: [], reps: null, xp: 0 }),
-    a && !e.dayLog[l].acts.includes(a) && e.dayLog[l].acts.push(a),
-    e.week.sessionDates.includes(l) ||
-      (e.week.sessionDates.push(l),
-      (e.week.trained = e.week.sessionDates.length),
-      e.streak.missed >= 3 &&
-        (e.maxComebackStreak = Math.max(e.maxComebackStreak || 0, e.streak.missed)),
-      (e.streak.missed = 0),
-      (e.streak.current += 1),
-      (e.streak.best = Math.max(e.streak.best || 0, e.streak.current)),
-      e.history[l] || (e.history[l] = "partial")),
-    e
+    partida.week.sessionDates || (partida.week.sessionDates = []),
+    partida.week.reps || (partida.week.reps = { squat: 0, pushup: 0, back: 0, abs: 0 }),
+    partida.dayLog || (partida.dayLog = {}),
+    partida.dayLog[fecha] || (partida.dayLog[fecha] = { acts: [], reps: null, xp: 0 }),
+    actividad &&
+      !partida.dayLog[fecha].acts.includes(actividad) &&
+      partida.dayLog[fecha].acts.push(actividad),
+    partida.week.sessionDates.includes(fecha) ||
+      (partida.week.sessionDates.push(fecha),
+      (partida.week.trained = partida.week.sessionDates.length),
+      partida.streak.missed >= 3 &&
+        (partida.maxComebackStreak = Math.max(
+          partida.maxComebackStreak || 0,
+          partida.streak.missed,
+        )),
+      (partida.streak.missed = 0),
+      (partida.streak.current += 1),
+      (partida.streak.best = Math.max(partida.streak.best || 0, partida.streak.current)),
+      partida.history[fecha] || (partida.history[fecha] = "partial")),
+    partida
   );
 }
-function metaSemanal(e) {
-  return (e.profile && e.profile.weeklyGoal) || metaSemanalDefecto;
+function metaSemanal(partida) {
+  return (partida.profile && partida.profile.weeklyGoal) || metaSemanalDefecto;
 }
-function diasRestantesSemana(e) {
-  let l = new Date(e + "T00:00:00").getDay();
-  return 7 - (l === 0 ? 6 : l - 1);
+function diasRestantesSemana(fecha) {
+  let diaSemana = new Date(fecha + "T00:00:00").getDay();
+  return 7 - (diaSemana === 0 ? 6 : diaSemana - 1);
 }
-function enfoqueDe(e) {
-  return enfoques.find((a) => a.id === e) || enfoques[2];
+function enfoqueDe(id) {
+  return enfoques.find((enf) => enf.id === id) || enfoques[2];
 }
 var mejoraMinimaZ = 1.01,
   diasParaBajarZ = 7;
-function metaDelDia(e, a) {
-  let l = a || e.progress.rank,
-    n = modalidadDelDia(e.profile, e.today && e.today.date, e.today && e.today.modality),
-    o = volumen(l, e.profile.classification, e.profile.focusProfile, n, e.profile.testResults);
-  if (l !== "Z") return o;
-  let s = e.records || {},
-    u = {};
-  for (let c of Object.keys(o)) {
-    let r = s[c] || 0;
-    u[c] = r > 0 ? Math.max(o[c], Math.ceil(r * mejoraMinimaZ), r + 1) : o[c];
+function metaDelDia(partida, rangoPedido) {
+  let rango = rangoPedido || partida.progress.rank,
+    modalidad = modalidadDelDia(
+      partida.profile,
+      partida.today && partida.today.date,
+      partida.today && partida.today.modality,
+    ),
+    vol = volumen(
+      rango,
+      partida.profile.classification,
+      partida.profile.focusProfile,
+      modalidad,
+      partida.profile.testResults,
+    );
+  if (rango !== "Z") return vol;
+  let records = partida.records || {},
+    meta = {};
+  for (let grupo of Object.keys(vol)) {
+    let record = records[grupo] || 0;
+    meta[grupo] =
+      record > 0 ? Math.max(vol[grupo], Math.ceil(record * mejoraMinimaZ), record + 1) : vol[grupo];
   }
-  return u;
+  return meta;
 }
-function sdcPuntaje(p) {
-  var t = p && p.testResults;
-  if (!t) return 0;
+function sdcPuntaje(perfil) {
+  var prueba = perfil && perfil.testResults;
+  if (!prueba) return 0;
   return puntajePrueba(
-    Number(t.squat) || 0,
-    Number(t.pushup) || 0,
-    Number(t.abs) || 0,
-    Number(t.back) || 0,
+    Number(prueba.squat) || 0,
+    Number(prueba.pushup) || 0,
+    Number(prueba.abs) || 0,
+    Number(prueba.back) || 0,
   );
 }
-function sdcCalibre(p) {
-  var t = p && p.testResults;
-  if (!t) return null;
-  var sq = Number(t.squat) || 0,
-    pu = Number(t.pushup) || 0,
-    ab = Number(t.abs) || 0,
-    bk = Number(t.back) || 0;
+function sdcCalibre(perfil) {
+  var prueba = perfil && perfil.testResults;
+  if (!prueba) return null;
+  var sq = Number(prueba.squat) || 0,
+    pu = Number(prueba.pushup) || 0,
+    ab = Number(prueba.abs) || 0,
+    bk = Number(prueba.back) || 0;
   if (!sq && !pu && !ab && !bk) return null;
-  var b = bandaCalibre(sq, pu, ab, bk, sdcRitmoF(p));
-  return b ? sdcCalT(bandasCalibre.indexOf(b), p) : null;
+  var banda = bandaCalibre(sq, pu, ab, bk, sdcRitmoF(perfil));
+  return banda ? sdcCalT(bandasCalibre.indexOf(banda), perfil) : null;
 }
 var sdcModBase = {
   gym: { squat: 50, pushup: 45, back: 45, abs: 50 },
   flow: { squat: 40, pushup: 36, back: 36, abs: 40 },
 };
-function sdcBase(tr, cl, mod) {
-  var mb = sdcModBase[mod];
-  if (mb) return mb;
-  var b = baseClase[cl] || baseClase.intermedio;
-  if (!tr) return b;
-  var K = 1.15,
-    sq = Number(tr.squat) || 0,
-    pu = Number(tr.pushup) || 0,
-    ab = Number(tr.abs) || 0,
-    bk = Number(tr.back) || 0;
-  if (!sq && !pu && !ab) return b;
-  var cp = function (v) {
-    return Math.min(v, 340);
+function sdcBase(prueba, clase, mod) {
+  var fija = sdcModBase[mod];
+  if (fija) return fija;
+  var piso = baseClase[clase] || baseClase.intermedio;
+  if (!prueba) return piso;
+  var margen = 1.15,
+    sq = Number(prueba.squat) || 0,
+    pu = Number(prueba.pushup) || 0,
+    ab = Number(prueba.abs) || 0,
+    bk = Number(prueba.back) || 0;
+  if (!sq && !pu && !ab) return piso;
+  var tope = function (valor) {
+    return Math.min(valor, 340);
   };
   return {
-    squat: Math.max(b.squat, cp(Math.round(sq * K))),
-    pushup: Math.max(b.pushup, cp(Math.round(pu * K))),
-    back: Math.max(b.back, cp(Math.round((bk > 0 ? bk : pu * 0.85) * K))),
-    abs: Math.max(b.abs, cp(Math.round(ab * K))),
+    squat: Math.max(piso.squat, tope(Math.round(sq * margen))),
+    pushup: Math.max(piso.pushup, tope(Math.round(pu * margen))),
+    back: Math.max(piso.back, tope(Math.round((bk > 0 ? bk : pu * 0.85) * margen))),
+    abs: Math.max(piso.abs, tope(Math.round(ab * margen))),
   };
 }
-function volumen(e, a, l, n, tr) {
-  let o = enfoqueDe(l).repMult,
-    s = factorRango[e] || 1,
-    u = sdcBase(tr, a, n),
-    c = {};
-  for (let r of Object.keys(u)) {
-    let ej = ejercicioDe(r, e, n),
-      f = sdcGymFijo(ej, n) ? factorRango.E : s * ej.repFactor;
-    c[r] = Math.max(1, Math.round(u[r] * f * o));
+function volumen(rango, clase, enfoque, modalidad, prueba) {
+  let repMult = enfoqueDe(enfoque).repMult,
+    factor = factorRango[rango] || 1,
+    base = sdcBase(prueba, clase, modalidad),
+    vol = {};
+  for (let grupo of Object.keys(base)) {
+    let ej = ejercicioDe(grupo, rango, modalidad),
+      mult = sdcGymFijo(ej, modalidad) ? factorRango.E : factor * ej.repFactor;
+    vol[grupo] = Math.max(1, Math.round(base[grupo] * mult * repMult));
   }
-  return c;
+  return vol;
 }
 // En el gimnasio lo que sube con el rango es el ejercicio y la carga, no las
 // repeticiones: cada serie queda en el rango del enfoque (salud 12/10/8, fuerza
@@ -197,34 +219,37 @@ function sdcGymFijo(ej, mod) {
 }
 // Lo que vale en XP cada rep de gimnasio de ese patron: lo necesario para que
 // una rutina completa pague lo mismo que cuando las reps subian con el rango.
-function sdcGymXp(g, rank) {
-  let ej = ejercicioDe(g, rank, "gym");
+function sdcGymXp(grupo, rank) {
+  let ej = ejercicioDe(grupo, rank, "gym");
   return sdcGymFijo(ej, "gym") ? ((factorRango[rank] || 1) * ej.repFactor) / factorRango.E : 1;
 }
-function multEnfoque(e) {
-  let a = enfoqueDe(e.profile.focusProfile),
-    l = a.xpMult;
-  return (a.streakBonus && e.streak.current >= rachaBonoSalud && (l *= 1 + a.streakBonus), l);
+function multEnfoque(partida) {
+  let enf = enfoqueDe(partida.profile.focusProfile),
+    mult = enf.xpMult;
+  return (
+    enf.streakBonus && partida.streak.current >= rachaBonoSalud && (mult *= 1 + enf.streakBonus),
+    mult
+  );
 }
-function costoNivel(e) {
-  return e < 50 ? 45 + e * 3 : 5 * e - 55;
+function costoNivel(nivel) {
+  return nivel < 50 ? 45 + nivel * 3 : 5 * nivel - 55;
 }
-function xpTotal(e, a) {
-  let l = a;
-  for (let n = 1; n < e; n++) l += costoNivel(n);
-  return l;
+function xpTotal(nivel, xpActual) {
+  let total = xpActual;
+  for (let nivelPrevio = 1; nivelPrevio < nivel; nivelPrevio++) total += costoNivel(nivelPrevio);
+  return total;
 }
-function fechaLocal(d) {
-  return new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
+function fechaLocal(momento) {
+  return new Date(momento.getTime() - momento.getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
 }
 function fechaHoy() {
   return fechaLocal(new Date());
 }
-function inicioSemana(e) {
-  let a = new Date(e + "T00:00:00"),
-    l = a.getDay(),
-    n = (l === 0 ? -6 : 1) - l;
-  return (a.setDate(a.getDate() + n), fechaLocal(a));
+function inicioSemana(fecha) {
+  let dia = new Date(fecha + "T00:00:00"),
+    diaSemana = dia.getDay(),
+    hastaLunes = (diaSemana === 0 ? -6 : 1) - diaSemana;
+  return (dia.setDate(dia.getDate() + hastaLunes), fechaLocal(dia));
 }
 var bandasCalibre = [
   {
@@ -284,53 +309,54 @@ var sdcNiveles = [
   { t: "Entreno hace años", d: "Unas 30 flexiones seguidas.", sq: 45, pu: 30, ab: 42, bk: 19 },
   { t: "Alto rendimiento", d: "40 flexiones seguidas o más.", sq: 60, pu: 40, ab: 55, bk: 25 },
 ];
-function puntajePrueba(e, a, l, k) {
-  return 2 * a + e + l + 2 * (k || 0);
+function puntajePrueba(sentadillas, flexiones, abdominales, remo) {
+  return 2 * flexiones + sentadillas + abdominales + 2 * (remo || 0);
 }
-function bandaCalibre(e, a, l, k, ff) {
-  let n = puntajePrueba(e, a, l, k);
-  return bandasCalibre[sdcBandaIx(n, ff || 1)];
+function bandaCalibre(sentadillas, flexiones, abdominales, remo, factor) {
+  let puntos = puntajePrueba(sentadillas, flexiones, abdominales, remo);
+  return bandasCalibre[sdcBandaIx(puntos, factor || 1)];
 }
 var sdcRitmoK = 0.6;
-function sdcRitmoF(p) {
-  return p && p.testResults && p.testResults.ritmo === 5 ? sdcRitmoK : 1;
+function sdcRitmoF(perfil) {
+  return perfil && perfil.testResults && perfil.testResults.ritmo === 5 ? sdcRitmoK : 1;
 }
-function sdcBandaMin(k, f) {
-  return Math.round(bandasCalibre[k].min * (f || 1));
+function sdcBandaMin(indice, factor) {
+  return Math.round(bandasCalibre[indice].min * (factor || 1));
 }
-function sdcBandaIx(n, f) {
-  var r = 0,
-    k;
-  for (k = 0; k < bandasCalibre.length; k++) n >= sdcBandaMin(k, f) && (r = k);
-  return r;
+function sdcBandaIx(puntos, factor) {
+  var elegida = 0,
+    indice;
+  for (indice = 0; indice < bandasCalibre.length; indice++)
+    puntos >= sdcBandaMin(indice, factor) && (elegida = indice);
+  return elegida;
 }
-function claseCalibre(e, a, l, k, ff) {
-  return bandaCalibre(e, a, l, k, ff).classification;
+function claseCalibre(sentadillas, flexiones, abdominales, remo, factor) {
+  return bandaCalibre(sentadillas, flexiones, abdominales, remo, factor).classification;
 }
-function guardarPrueba(e, a, l, n, k, rt) {
-  let o = clonar(e),
-    s = claseCalibre(a, l, n, k, rt === 5 ? sdcRitmoK : 1),
-    u = o.profile.classification;
-  ((o.profile.classification = s),
-    (o.profile.testResults = rt
-      ? { squat: a, pushup: l, abs: n, back: k || 0, ritmo: rt }
-      : { squat: a, pushup: l, abs: n, back: k || 0 }));
-  let c = [
-    u === s
-      ? `Prueba de aptitud actualizada. Seguís en ${s}.`
-      : `¡Prueba de aptitud actualizada! Pasaste de ${u} a ${s}.`,
+function guardarPrueba(actual, sentadillas, flexiones, abdominales, remo, ritmo) {
+  let partida = clonar(actual),
+    nueva = claseCalibre(sentadillas, flexiones, abdominales, remo, ritmo === 5 ? sdcRitmoK : 1),
+    anterior = partida.profile.classification;
+  ((partida.profile.classification = nueva),
+    (partida.profile.testResults = ritmo
+      ? { squat: sentadillas, pushup: flexiones, abs: abdominales, back: remo || 0, ritmo: ritmo }
+      : { squat: sentadillas, pushup: flexiones, abs: abdominales, back: remo || 0 }));
+  let avisos = [
+    anterior === nueva
+      ? `Prueba de aptitud actualizada. Seguís en ${nueva}.`
+      : `¡Prueba de aptitud actualizada! Pasaste de ${anterior} a ${nueva}.`,
   ];
-  return { state: o, notices: c };
+  return { state: partida, notices: avisos };
 }
-function nombreEjercicio(e, a, l, n) {
-  return ejercicioDe(l, e, n).name;
+function nombreEjercicio(rango, clase, grupo, modalidad) {
+  return ejercicioDe(grupo, rango, modalidad).name;
 }
-function alternativaEjercicio(e, a, l) {
-  return ejercicioDe(a, e, l).alt;
+function alternativaEjercicio(rango, grupo, modalidad) {
+  return ejercicioDe(grupo, rango, modalidad).alt;
 }
-function sdcGuia(e, a, l) {
-  var x = ejercicioDe(a, e, l);
-  return x && (x.pos || x.mov || x.err) ? x : null;
+function sdcGuia(rango, grupo, modalidad) {
+  var ej = ejercicioDe(grupo, rango, modalidad);
+  return ej && (ej.pos || ej.mov || ej.err) ? ej : null;
 }
 
 export {
