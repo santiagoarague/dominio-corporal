@@ -8,16 +8,21 @@ var sdcRitmos = [
   { t: "Trote suave", v: 8 },
   { t: "Corriendo", v: 10 },
 ];
-function CronoCaminata({ inicio: e, kmh: a, onCancel: l, onListo: n }) {
-  let [o, s] = useState(Math.max(0, Math.floor((Date.now() - e) / 1e3)));
+function CronoCaminata({ inicio, kmh, onCancel, onListo }) {
+  let [transcurrido, setTranscurrido] = useState(
+    Math.max(0, Math.floor((Date.now() - inicio) / 1e3)),
+  );
   usePantallaEncendida();
   useEffect(() => {
-    let t = setInterval(() => s(Math.max(0, Math.floor((Date.now() - e) / 1e3))), 500);
-    return () => clearInterval(t);
-  }, [e]);
-  let km = Math.round((o / 3600) * a * 100) / 100,
-    mm = String(Math.floor(o / 60)).padStart(2, "0"),
-    ss = String(o % 60).padStart(2, "0");
+    let reloj = setInterval(
+      () => setTranscurrido(Math.max(0, Math.floor((Date.now() - inicio) / 1e3))),
+      500,
+    );
+    return () => clearInterval(reloj);
+  }, [inicio]);
+  let km = Math.round((transcurrido / 3600) * kmh * 100) / 100,
+    minutos = String(Math.floor(transcurrido / 60)).padStart(2, "0"),
+    segundos = String(transcurrido % 60).padStart(2, "0");
   return (
     <div className="mb-3">
       <div
@@ -28,19 +33,19 @@ function CronoCaminata({ inicio: e, kmh: a, onCancel: l, onListo: n }) {
           Salida en curso
         </div>
         <div style={{ fontFamily: "Chakra Petch, sans-serif", fontSize: 38, color: "#b9a5ff" }}>
-          {mm + ":" + ss}
+          {minutos + ":" + segundos}
         </div>
         <div className="text-xs" style={{ color: "#9aa4bd" }}>
           {"≈ " +
             km.toFixed(2).replace(".", ",") +
             " km a " +
-            String(a).replace(".", ",") +
+            String(kmh).replace(".", ",") +
             " km/h"}
         </div>
       </div>
       <div className="grid grid-cols-2 gap-2">
         <button
-          onClick={() => n(km)}
+          onClick={() => onListo(km)}
           className="py-2 text-xs"
           style={{
             minHeight: 44,
@@ -53,7 +58,7 @@ function CronoCaminata({ inicio: e, kmh: a, onCancel: l, onListo: n }) {
           Terminar
         </button>
         <button
-          onClick={l}
+          onClick={onCancel}
           className="py-2 text-xs"
           style={{
             minHeight: 44,

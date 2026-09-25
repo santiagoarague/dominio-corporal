@@ -2,31 +2,31 @@
 import { IconoCerrar } from "./iconos.jsx";
 import { sdcEstilo, sdcOrden, sdcTier } from "../logica/extras.js";
 
-function Avisos({ notices: e, onDismiss: a, onDismissAll: d }) {
-  if (!e || e.length === 0) return null;
-  var li = e.map(function (t, k) {
-    return { t: t, k: k, g: sdcTier(t) };
+function Avisos({ notices, onDismiss, onDismissAll }) {
+  if (!notices || notices.length === 0) return null;
+  var lista = notices.map(function (texto, indice) {
+    return { t: texto, k: indice, g: sdcTier(texto) };
   });
-  li.sort(function (x, y) {
-    return sdcOrden[x.g] - sdcOrden[y.g] || x.k - y.k;
+  lista.sort(function (uno, otro) {
+    return sdcOrden[uno.g] - sdcOrden[otro.g] || uno.k - otro.k;
   });
   return (
     <div className="mb-4">
       <div className="space-y-2">
-        {li.map(function (it) {
-          var ep = it.g === "epic",
-            st = sdcEstilo[it.g];
+        {lista.map(function (aviso) {
+          var epico = aviso.g === "epic",
+            estilo = sdcEstilo[aviso.g];
           return (
             <div
-              key={it.k}
+              key={aviso.k}
               className={
-                "sdc-rise flex items-start justify-between gap-2 px-3 " + (ep ? "py-3" : "py-2")
+                "sdc-rise flex items-start justify-between gap-2 px-3 " + (epico ? "py-3" : "py-2")
               }
-              style={{ background: st.background, border: st.border, color: st.color }}
+              style={{ background: estilo.background, border: estilo.border, color: estilo.color }}
             >
               <span
                 style={
-                  ep
+                  epico
                     ? {
                         fontFamily: "Chakra Petch, sans-serif",
                         fontSize: 17,
@@ -36,11 +36,11 @@ function Avisos({ notices: e, onDismiss: a, onDismissAll: d }) {
                     : { fontSize: 14 }
                 }
               >
-                {it.t}
+                {aviso.t}
               </span>
               <button
                 onClick={function () {
-                  a(it.k);
+                  onDismiss(aviso.k);
                 }}
                 className="opacity-60"
                 aria-label="Cerrar"
@@ -51,9 +51,9 @@ function Avisos({ notices: e, onDismiss: a, onDismissAll: d }) {
           );
         })}
       </div>
-      {e.length > 1 && d && (
+      {notices.length > 1 && onDismissAll && (
         <button
-          onClick={d}
+          onClick={onDismissAll}
           className="w-full py-2 text-xs mt-2"
           style={{
             background: "rgba(255,255,255,0.04)",
@@ -61,7 +61,7 @@ function Avisos({ notices: e, onDismiss: a, onDismissAll: d }) {
             color: "#9aa4bd",
           }}
         >
-          Cerrar todo ({e.length})
+          Cerrar todo ({notices.length})
         </button>
       )}
     </div>

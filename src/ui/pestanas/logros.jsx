@@ -29,44 +29,44 @@ export function PestanaLogros({ achievements, alternarPlegable, player, plegado,
           <IconoTrofeo size={26} color="#ffb84f" />
         </div>
       </Tarjeta>
-      {categoriasLogros.map((f) => {
-        let d = logros.filter((N) => N.category === f);
-        if (!d.length) return null;
-        let m = d.filter((N) => achievements.includes(N.id)).length;
+      {categoriasLogros.map((categoria) => {
+        let lista = logros.filter((logro) => logro.category === categoria);
+        if (!lista.length) return null;
+        let hechos = lista.filter((logro) => achievements.includes(logro.id)).length;
         return (
           <Plegable
-            key={f}
-            id={"ach-" + f}
-            title={f}
+            key={categoria}
+            id={"ach-" + categoria}
+            title={categoria}
             accent="#5a6178"
             style={{ marginBottom: 16 }}
             collapsed={
-              ui && ui.collapsed && ui.collapsed["ach-" + f] !== void 0
-                ? plegado("ach-" + f)
-                : !sdcCatAbierta(player, f)
+              ui && ui.collapsed && ui.collapsed["ach-" + categoria] !== void 0
+                ? plegado("ach-" + categoria)
+                : !sdcCatAbierta(player, categoria)
             }
             onToggle={alternarPlegable}
-            right={`${m}/${d.length}`}
+            right={`${hechos}/${lista.length}`}
           >
-            {ordenDificultad.map((N) => {
-              let _ = d.filter((X) => X.tier === N);
-              return _.length ? (
-                <div key={N} className="mb-2">
+            {ordenDificultad.map((dificultad) => {
+              let delNivel = lista.filter((logro) => logro.tier === dificultad);
+              return delNivel.length ? (
+                <div key={dificultad} className="mb-2">
                   <div
                     className="text-xs mb-1"
-                    style={{ color: colorRango[N], letterSpacing: 1, fontWeight: 700 }}
+                    style={{ color: colorRango[dificultad], letterSpacing: 1, fontWeight: 700 }}
                   >
-                    {sdcDific[N] || N}
+                    {sdcDific[dificultad] || dificultad}
                   </div>
-                  {_.map((X) => {
-                    let de = achievements.includes(X.id);
+                  {delNivel.map((logro) => {
+                    let hecho = achievements.includes(logro.id);
                     return (
                       <div
-                        key={X.id}
+                        key={logro.id}
                         className="flex items-start gap-2 py-2"
                         style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
                       >
-                        {de ? (
+                        {hecho ? (
                           <IconoTrofeo size={16} color="#ffb84f" />
                         ) : (
                           <IconoCandado size={16} color="#7a83a0" />
@@ -75,14 +75,14 @@ export function PestanaLogros({ achievements, alternarPlegable, player, plegado,
                           <div
                             className="text-sm"
                             style={{
-                              color: de ? "#e8ecf7" : "#5a6178",
-                              fontWeight: de ? 600 : 400,
+                              color: hecho ? "#e8ecf7" : "#5a6178",
+                              fontWeight: hecho ? 600 : 400,
                             }}
                           >
-                            {X.name}
+                            {logro.name}
                           </div>
-                          <div className="text-xs" style={{ color: de ? "#8a93ad" : "#5a6178" }}>
-                            {X.desc}
+                          <div className="text-xs" style={{ color: hecho ? "#8a93ad" : "#5a6178" }}>
+                            {logro.desc}
                           </div>
                         </div>
                       </div>

@@ -1,27 +1,29 @@
 // Texto maquina de escribir y pantallas de intro.
 import { useState, useEffect } from "react";
 
-function MaquinaEscribir({ text: e, speed: a = 45, onDone: l, style: n, showCursor: o }) {
-  let [s, u] = useState("");
+function MaquinaEscribir({ text, speed = 45, onDone, style, showCursor }) {
+  let [escrito, setEscrito] = useState("");
   return (
     useEffect(() => {
-      u("");
-      let c = 0,
-        r = setInterval(() => {
-          ((c += 1), u(e.slice(0, c)), c >= e.length && (clearInterval(r), l && l()));
-        }, a);
-      return () => clearInterval(r);
-    }, [e]),
+      setEscrito("");
+      let letras = 0,
+        reloj = setInterval(() => {
+          ((letras += 1),
+            setEscrito(text.slice(0, letras)),
+            letras >= text.length && (clearInterval(reloj), onDone && onDone()));
+        }, speed);
+      return () => clearInterval(reloj);
+    }, [text]),
     (
-      <div style={n}>
-        {s}
-        {o && <span style={{ animation: "sdcBlink 1s step-end infinite" }}>▊</span>}
+      <div style={style}>
+        {escrito}
+        {showCursor && <span style={{ animation: "sdcBlink 1s step-end infinite" }}>▊</span>}
       </div>
     )
   );
 }
-function Bienvenida({ onDone: e }) {
-  let [a, l] = useState(0);
+function Bienvenida({ onDone }) {
+  let [paso, setPaso] = useState(0);
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center px-4"
@@ -31,31 +33,31 @@ function Bienvenida({ onDone: e }) {
         <MaquinaEscribir
           text="Nadie te contó de qué es capaz tu cuerpo."
           speed={38}
-          showCursor={a === 0}
-          onDone={() => l(1)}
+          showCursor={paso === 0}
+          onDone={() => setPaso(1)}
           style={{ color: "#e8ecf7", fontSize: 19, marginBottom: 14, letterSpacing: 0.5 }}
         />
-        {a >= 1 && (
+        {paso >= 1 && (
           <MaquinaEscribir
             text="Ni vos lo sabés todavía."
             speed={38}
-            showCursor={a === 1}
-            onDone={() => l(2)}
+            showCursor={paso === 1}
+            onDone={() => setPaso(2)}
             style={{ color: "#9aa4bd", fontSize: 16, marginBottom: 14 }}
           />
         )}
-        {a >= 2 && (
+        {paso >= 2 && (
           <MaquinaEscribir
             text="Vamos a averiguarlo."
             speed={45}
-            showCursor={a === 2}
-            onDone={() => l(3)}
+            showCursor={paso === 2}
+            onDone={() => setPaso(3)}
             style={{ color: "#ffb84f", fontSize: 17, lineHeight: 1.5 }}
           />
         )}
-        {a >= 3 && (
+        {paso >= 3 && (
           <button
-            onClick={e}
+            onClick={onDone}
             className="w-full py-3 text-sm"
             style={{
               marginTop: 28,

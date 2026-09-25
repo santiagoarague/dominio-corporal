@@ -39,9 +39,9 @@ export function TarjetaCuerpo({
       onToggle={alternarPlegable}
       right={
         modoMapa === "desarrollo"
-          ? `Nv. medio ${Math.round(grupos.reduce((f, d) => f + atributos.levels[d], 0) / 4)}`
+          ? `Nv. medio ${Math.round(grupos.reduce((suma, grupo) => suma + atributos.levels[grupo], 0) / 4)}`
           : modoMapa === "semana"
-            ? `${Math.round((grupos.reduce((f, d) => f + Math.min(1, ((week.reps && week.reps[d]) || 0) / metaSemanaGrupo(d)), 0) / 4) * 100)}% semana`
+            ? `${Math.round((grupos.reduce((suma, grupo) => suma + Math.min(1, ((week.reps && week.reps[grupo]) || 0) / metaSemanaGrupo(grupo)), 0) / 4) * 100)}% semana`
             : "hoy"
       }
     >
@@ -50,19 +50,19 @@ export function TarjetaCuerpo({
           ["desarrollo", "Desarrollo"],
           ["semana", "Semana"],
           ["hoy", "Hoy"],
-        ].map(([f, d]) => (
+        ].map(([modo, etiqueta]) => (
           <button
-            key={f}
-            onClick={() => setModoMapa(f)}
+            key={modo}
+            onClick={() => setModoMapa(modo)}
             className="py-2 text-xs"
             style={{
-              background: modoMapa === f ? "#ff6b4a" : "rgba(255,255,255,0.03)",
-              border: "1px solid " + (modoMapa === f ? "#ff6b4a" : "rgba(255,255,255,0.12)"),
-              color: modoMapa === f ? "#0a0e1a" : "#8a93ad",
+              background: modoMapa === modo ? "#ff6b4a" : "rgba(255,255,255,0.03)",
+              border: "1px solid " + (modoMapa === modo ? "#ff6b4a" : "rgba(255,255,255,0.12)"),
+              color: modoMapa === modo ? "#0a0e1a" : "#8a93ad",
               fontWeight: 600,
             }}
           >
-            {d}
+            {etiqueta}
           </button>
         ))}
       </div>
@@ -108,10 +108,10 @@ export function TarjetaCuerpo({
         onSelect={setZonaElegida}
       />
       <div className="grid grid-cols-2 gap-x-3 gap-y-1 mt-3">
-        {grupos.map((f) => (
+        {grupos.map((grupo) => (
           <button
-            key={f}
-            onClick={() => setZonaElegida(zonaElegida === f ? null : f)}
+            key={grupo}
+            onClick={() => setZonaElegida(zonaElegida === grupo ? null : grupo)}
             className="flex items-center justify-between text-xs py-1"
             style={{ background: "transparent", border: "none" }}
           >
@@ -120,19 +120,19 @@ export function TarjetaCuerpo({
                 style={{
                   width: 10,
                   height: 10,
-                  background: coloresMapa[f],
+                  background: coloresMapa[grupo],
                   display: "inline-block",
                   flexShrink: 0,
                 }}
               />
-              {gruposCuerpo[f].label.split(" ")[0]}
+              {gruposCuerpo[grupo].label.split(" ")[0]}
             </span>
             <span style={{ color: "#e8ecf7" }}>
               {modoMapa === "desarrollo"
-                ? "Nv. " + atributos.levels[f]
+                ? "Nv. " + atributos.levels[grupo]
                 : modoMapa === "semana"
-                  ? (week.reps && week.reps[f]) || 0
-                  : (repsHoy[f] || 0) + "/" + (sdcMt[f] || 0)}
+                  ? (week.reps && week.reps[grupo]) || 0
+                  : (repsHoy[grupo] || 0) + "/" + (sdcMt[grupo] || 0)}
             </span>
           </button>
         ))}
@@ -152,10 +152,13 @@ export function TarjetaCuerpo({
         </div>
       )}
       {(() => {
-        let f = grupos
-          .map((d) => ({ k: d, d: diasEntre(lastTrained ? lastTrained[d] : null, today.date) }))
-          .filter((d) => d.d === null || d.d >= 4);
-        return !f.length || atributos.gap >= 2 ? null : (
+        let olvidados = grupos
+          .map((grupo) => ({
+            k: grupo,
+            d: diasEntre(lastTrained ? lastTrained[grupo] : null, today.date),
+          }))
+          .filter((item) => item.d === null || item.d >= 4);
+        return !olvidados.length || atributos.gap >= 2 ? null : (
           <div
             className="text-xs mt-3 p-2"
             style={{
@@ -164,7 +167,8 @@ export function TarjetaCuerpo({
               border: "1px solid rgba(255,255,255,0.1)",
             }}
           >
-            Sin estímulo reciente: {f.map((d) => gruposCuerpo[d.k].label.toLowerCase()).join(", ")}.
+            Sin estímulo reciente:{" "}
+            {olvidados.map((item) => gruposCuerpo[item.k].label.toLowerCase()).join(", ")}.
           </div>
         );
       })()}

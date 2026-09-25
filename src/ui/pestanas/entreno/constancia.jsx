@@ -54,7 +54,7 @@ export function TarjetaConstancia({
           </div>
         </div>
         <button
-          onClick={() => setCambiandoMeta((f) => !f)}
+          onClick={() => setCambiandoMeta((abierto) => !abierto)}
           className="text-xs underline"
           style={{ color: "#9aa4bd" }}
         >
@@ -80,19 +80,20 @@ export function TarjetaConstancia({
             alcanzarla.
           </div>
           <div className="grid grid-cols-7 gap-1">
-            {[1, 2, 3, 4, 5, 6, 7].map((f) => (
+            {[1, 2, 3, 4, 5, 6, 7].map((dias) => (
               <button
-                key={f}
-                onClick={() => ponerMetaSemanal(f)}
+                key={dias}
+                onClick={() => ponerMetaSemanal(dias)}
                 className="py-2 text-xs"
                 style={{
-                  background: metaSemana === f ? "#3ecf8e" : "rgba(255,255,255,0.05)",
-                  border: "1px solid " + (metaSemana === f ? "#3ecf8e" : "rgba(255,255,255,0.15)"),
-                  color: metaSemana === f ? "#0a0e1a" : "#9aa4bd",
+                  background: metaSemana === dias ? "#3ecf8e" : "rgba(255,255,255,0.05)",
+                  border:
+                    "1px solid " + (metaSemana === dias ? "#3ecf8e" : "rgba(255,255,255,0.15)"),
+                  color: metaSemana === dias ? "#0a0e1a" : "#9aa4bd",
                   fontWeight: 700,
                 }}
               >
-                {f}
+                {dias}
               </button>
             ))}
           </div>
@@ -104,22 +105,22 @@ export function TarjetaConstancia({
         </div>
         <GrillaConstancia
           days={diasGrilla}
-          onPick={(f) => setDiaElegido((d) => (d === f ? null : f))}
+          onPick={(fecha) => setDiaElegido((elegido) => (elegido === fecha ? null : fecha))}
           selected={diaElegido}
         />
         {diaElegido && (
           <DetalleDia
             date={diaElegido}
-            status={(diasGrilla.find((f) => f.date === diaElegido) || {}).status}
+            status={(diasGrilla.find((dia) => dia.date === diaElegido) || {}).status}
             log={(player.dayLog || {})[diaElegido]}
             animo={sdcAnimo(player)[diaElegido]}
             onClose={() => setDiaElegido(null)}
             onLog={(function () {
-              var sq = (diasGrilla.find((f) => f.date === diaElegido) || {}).status;
+              var estado = (diasGrilla.find((dia) => dia.date === diaElegido) || {}).status;
               return diaElegido < fechaHoy() &&
-                (sq === "empty" || sq === "skipped" || sq === "missed")
-                ? function (fx) {
-                    (aplicar((dd) => sdcDiaPasado(dd, fx)), setDiaElegido(null));
+                (estado === "empty" || estado === "skipped" || estado === "missed")
+                ? function (fecha) {
+                    (aplicar((partida) => sdcDiaPasado(partida, fecha)), setDiaElegido(null));
                   }
                 : null;
             })()}
@@ -152,11 +153,11 @@ export function TarjetaConstancia({
       {sistemaActivo(player, "missions") && player.missions && (
         <div className="mt-3">
           {["week", "month"].map((amb) => {
-            let m = amb === "week" ? player.missions.weekly : player.missions.monthly;
-            if (!m) return null;
+            let mision = amb === "week" ? player.missions.weekly : player.missions.monthly;
+            if (!mision) return null;
             let hecho = amb === "week" ? player.missions.weeklyDone : player.missions.monthlyDone,
-              pr = Math.min(m.target, misProgreso(player, m, amb)),
-              pct = Math.round((pr / m.target) * 100);
+              progreso = Math.min(mision.target, misProgreso(player, mision, amb)),
+              pct = Math.round((progreso / mision.target) * 100);
             return (
               <div
                 key={amb}
@@ -172,11 +173,11 @@ export function TarjetaConstancia({
                     {amb === "week" ? "Misión semanal" : "Misión mensual"}
                   </span>
                   <span style={{ color: "#9aa4bd" }}>
-                    {hecho ? "Completada" : pr + " / " + m.target}
+                    {hecho ? "Completada" : progreso + " / " + mision.target}
                   </span>
                 </div>
                 <div className="text-xs mb-1" style={{ color: "#e8ecf7" }}>
-                  {misTexto(m, amb)}
+                  {misTexto(mision, amb)}
                 </div>
                 <div style={{ height: 4, background: "#161b2e" }}>
                   <div
@@ -189,7 +190,7 @@ export function TarjetaConstancia({
                   />
                 </div>
                 <div className="text-xs mt-1" style={{ color: "#7a83a0" }}>
-                  {"Recompensa: +" + m.xp + " XP y +" + m.pd + " PD"}
+                  {"Recompensa: +" + mision.xp + " XP y +" + mision.pd + " PD"}
                 </div>
               </div>
             );
