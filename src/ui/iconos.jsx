@@ -2,7 +2,7 @@
 
 function Icono({ size = 16, style, children }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" style={style}>
+    <svg width={size} height={size} viewBox="0 0 24 24" style={{ flexShrink: 0, ...style }}>
       {children}
     </svg>
   );

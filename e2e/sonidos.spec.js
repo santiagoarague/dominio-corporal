@@ -156,3 +156,61 @@ test("Instinto Primal: la pausa congela el reloj y el reloj no se atrasa", async
   await quedan(8);
   expect(errores).toEqual([]);
 });
+
+// El ejercicio de core del primer rango ese jueves es un sostén: 10 reps de 3 s,
+// en series de 4, 3 y 3.
+const partida = (page) =>
+  page.evaluate(() => JSON.parse(localStorage.getItem("dominio-corporal:player/state")));
+
+test("sostén: 10 s para ponerse, 3-2-1, arranque, y al terminar marca la serie", async ({
+  page,
+}) => {
+  const errores = [];
+  page.on("pageerror", (e) => errores.push(e.message));
+  await empezar(page);
+  await boton(page, "Hoy no").click();
+  await boton(page, "Sostener 12 s").click();
+  const t0 = await ahora(page);
+  const frec = (xs) => xs.map((x) => x.desde);
+  await expect(page.getByText("Ponete en posición")).toBeVisible();
+
+  await pasar(page, 10_500);
+  await expect(page.getByText("Sostené", { exact: true })).toBeVisible();
+  let t = await tonosDesde(page, t0);
+  expect(frec(t.filter((x) => x.ms >= 5500 && x.ms < 10_500))).toEqual([1047, 1047, 1047, 1319]);
+
+  // 12 s de sostén: 3-2-1, el fin (dos notas que bajan) y el sonido de la serie marcada.
+  await pasar(page, 12_000);
+  t = await tonosDesde(page, t0 + 17_500);
+  expect(frec(t)).toEqual([1047, 1047, 1047, 1175, 660, 880, 784]);
+  await expect(page.getByRole("button", { name: "Serie 1 de 3, hecha" })).toBeVisible();
+  await expect(page.getByText("DESCANSO", { exact: true })).toBeVisible();
+  await expect(boton(page, "Sostener 9 s")).toBeVisible();
+  expect((await partida(page)).today.marcas["bodyweight|normal"].ser.abs).toBe(1);
+  expect(errores).toEqual([]);
+});
+
+test("sostén: la pausa congela el reloj y Terminé antes anota lo que sostuviste", async ({
+  page,
+}) => {
+  const errores = [];
+  page.on("pageerror", (e) => errores.push(e.message));
+  await empezar(page);
+  await boton(page, "Hoy no").click();
+  await boton(page, "Sostener 12 s").click();
+  await boton(page, "Ya estoy →").click();
+  await pasar(page, 4_200);
+  await boton(page, "Pausa").click();
+  await pasar(page, 20_000);
+  await expect(page.getByText("En pausa")).toBeVisible();
+  await boton(page, "Seguir →").click();
+  await pasar(page, 3_000);
+  // 7 s sostenidos de los 12: 2 reps de 3 s, y la serie queda marcada con 2.
+  await boton(page, "Terminé antes").click();
+  await pasar(page, 500);
+  await expect(page.getByRole("button", { name: "Serie 1 de 3, hecha" })).toHaveText(/✓ 2/);
+  const marca = (await partida(page)).today.marcas["bodyweight|normal"];
+  expect(marca.ser.abs).toBe(1);
+  expect(marca.aj.abs).toEqual({ 0: 2 });
+  expect(errores).toEqual([]);
+});

@@ -109,7 +109,7 @@ function Inicio({ onFinish, onLoadBackup }) {
             >
               Continuar <IconoFlecha size={16} />
             </button>
-            <div className="text-center text-xs my-3" style={{ color: "#7a83a0" }}>
+            <div className="text-center text-xs my-3" style={{ color: "#8a93ad" }}>
               o
             </div>
             {restaurando ? (
@@ -161,7 +161,7 @@ function Inicio({ onFinish, onLoadBackup }) {
                         );
                     }}
                     className="flex-1 py-3 text-sm disabled:opacity-40"
-                    style={{ background: "#7c5cff", color: "#0a0e1a", fontWeight: 700 }}
+                    style={{ background: "#9278ff", color: "#0a0e1a", fontWeight: 700 }}
                   >
                     Cargar
                   </button>
@@ -379,7 +379,7 @@ function Inicio({ onFinish, onLoadBackup }) {
                 </button>
               ))}
             </div>
-            <div className="text-xs mb-3" style={{ color: "#7a83a0" }}>
+            <div className="text-xs mb-3" style={{ color: "#8a93ad" }}>
               {meta <= 2
                 ? "Ritmo suave: ideal para empezar sin romperte."
                 : meta <= 4

@@ -38,6 +38,17 @@ function sdcSplit(total, series) {
   }
   return (partes.push(Math.max(0, total - acumulado)), partes);
 }
+// El reloj de un sostén: prep segundos para ponerse en posición y después el
+// sostén, contados desde ini y congelados en pausa (el momento en que se pausó).
+var sdcSostenPrep = 10;
+function sdcSostenEstado(ini, pausa, prep, total, ahora) {
+  var transcurrido = Math.max(0, ((pausa || ahora) - ini) / 1e3);
+  if (transcurrido < prep)
+    return { fase: "prep", quedan: Math.ceil(prep - transcurrido), hecho: 0 };
+  var hecho = transcurrido - prep;
+  if (hecho >= total) return { fase: "fin", quedan: 0, hecho: total };
+  return { fase: "sosten", quedan: Math.ceil(total - hecho), hecho: Math.floor(hecho) };
+}
 function sdcSuma(total, series, hasta) {
   let partes = sdcSplit(total, series),
     suma = 0;
@@ -72,6 +83,8 @@ function sdcVib(patron) {
 
 export {
   sdcPrimalSon,
+  sdcSostenPrep,
+  sdcSostenEstado,
   sdcSegs,
   sdcCatMod,
   sdcCatSis,

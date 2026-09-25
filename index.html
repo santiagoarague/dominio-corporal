@@ -17,7 +17,8 @@ body{padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-i
 @supports(-webkit-touch-callout:none){input,textarea,select{font-size:16px;}}
 body{font-family:'Inter','Chakra Petch',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;}
 input,button,textarea{font:inherit;}
-button{cursor:pointer;touch-action:manipulation;background:transparent;border:none;color:inherit;}
+button{cursor:pointer;touch-action:manipulation;background:transparent;border:none;color:inherit;min-height:44px;min-width:44px;}
+input,select,textarea{min-height:44px;}
 input:focus,button:focus,textarea:focus{outline:2px solid #4f9dff;outline-offset:1px;}
 .absolute{position:absolute;}
 .relative{position:relative;}
@@ -80,16 +81,16 @@ input:focus,button:focus,textarea:focus{outline:2px solid #4f9dff;outline-offset
 .py-6{padding-top:1.5rem;padding-bottom:1.5rem;}
 .text-center{text-align:center;}
 .text-left{text-align:left;}
-.text-sm{font-size:.875rem;line-height:1.25rem;}
-.text-xs{font-size:.75rem;line-height:1rem;}
+.text-sm{font-size:1rem;line-height:1.375rem;}
+.text-xs{font-size:.875rem;line-height:1.25rem;}
 .uppercase{text-transform:uppercase;}
 .underline{text-decoration:underline;}
 .overflow-hidden{overflow:hidden;}
 .opacity-60{opacity:.6;}
 .transition-all{transition-property:all;}
 .duration-500{transition-duration:500ms;}
-button:disabled.disabled\:opacity-30{opacity:.3;}
-button:disabled.disabled\:opacity-40{opacity:.4;}
+button:disabled.disabled\:opacity-30{opacity:.6;}
+button:disabled.disabled\:opacity-40{opacity:.6;}
 @media (prefers-reduced-motion: reduce){*{transition:none !important;}}
 
 @keyframes sdcPop{0%{opacity:0;transform:translateY(6px) scale(.85);}18%{opacity:1;transform:translateY(0) scale(1.15);}100%{opacity:0;transform:translateY(-24px) scale(1);}}
@@ -112,7 +113,7 @@ button:disabled.disabled\:opacity-40{opacity:.4;}
 #sdcSplash{position:fixed;inset:0;z-index:9999;background:#0a0e1a;display:flex;align-items:center;justify-content:center;transition:opacity .25s ease}
 #sdcSplash .sdcSplashIn{width:100%;max-width:300px;padding:0 16px;text-align:center}
 #sdcSplash .sdcSplashT{font-family:'Chakra Petch',system-ui,sans-serif;font-size:15px;font-weight:700;letter-spacing:4px;color:#4f9dff}
-#sdcSplash .sdcSplashN{font-family:'Inter',system-ui,sans-serif;font-size:14px;color:#7a83a0;margin-top:10px;min-height:20px}
+#sdcSplash .sdcSplashN{font-family:'Inter',system-ui,sans-serif;font-size:14px;color:#8a93ad;margin-top:10px;min-height:20px}
 #sdcSplash .sdcSplashBar{margin-top:22px;height:2px;background:rgba(255,255,255,0.08);overflow:hidden}
 #sdcSplash .sdcSplashBar span{display:block;height:2px;width:40%;background:#4f9dff;animation:sdcSplashSlide 1.1s ease-in-out infinite}
 @keyframes sdcSplashSlide{0%{transform:translateX(-110%)}100%{transform:translateX(260%)}}

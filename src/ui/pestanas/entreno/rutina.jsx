@@ -1,4 +1,5 @@
 // Rutina de hoy: las cuatro filas con sus series, el metronomo, el descanso y el registro; ya registrada, el resumen del dia.
+import { useState } from "react";
 import { sdcAnimoOn, sdcAbrirCard, AnimoDespues } from "../../animo.jsx";
 import { modalidades } from "../../../datos/ejercicios.js";
 import {
@@ -66,6 +67,13 @@ export function TarjetaRutina({
   tomarDescanso,
   week,
 }) {
+  // El ejercicio de sostén con el reloj en marcha: calla el metrónomo, corta el
+  // descanso y no deja arrancar otro sostén a la vez.
+  let [sosten, setSosten] = useState(null),
+    sostenDe = (grupo) => ({
+      sostenLibre: !sosten || sosten === grupo,
+      onSosten: (activo) => (setSosten(activo ? grupo : null), activo && setDescansando(!1)),
+    });
   return today.completed ? (
     <Tarjeta accent={colorDelRango} style={{ marginBottom: 16, order: -1 }}>
       {sdcAnimoOn(player) && today.mode !== "rest" && (
@@ -129,12 +137,12 @@ export function TarjetaRutina({
                   </span>
                   <span style={{ color: "#e8ecf7" }}>
                     {reps}
-                    <span style={{ color: "#7a83a0" }}> / {mejor} máx</span>
+                    <span style={{ color: "#8a93ad" }}> / {mejor} máx</span>
                   </span>
                 </div>
               );
             })}
-            <div className="text-xs mt-2" style={{ color: "#7a83a0" }}>
+            <div className="text-xs mt-2" style={{ color: "#8a93ad" }}>
               Esta semana: {sem} reps en {week.trained || 0}{" "}
               {(week.trained || 0) === 1 ? "sesión" : "sesiones"}
             </div>
@@ -270,7 +278,7 @@ export function TarjetaRutina({
           {(modalidades.find((mod) => mod.id === modalidad) || modalidades[0]).name}
         </div>
       )}
-      <div className="text-xs mb-2" style={{ color: "#7a83a0" }}>
+      <div className="text-xs mb-2" style={{ color: "#8a93ad" }}>
         {sdcDescRango(progress.rank, profile)}
       </div>
       {(() => {
@@ -318,8 +326,7 @@ export function TarjetaRutina({
         );
       })()}
       <div className="text-xs mb-2" style={{ color: "#9aa4bd" }}>
-        Tocá cada serie cuando la termines. Solo cuenta lo que marcás, y el descanso empieza
-        automáticamente.
+        Tocá cada serie al terminarla. El descanso arranca solo.
       </div>
       <div className="grid grid-cols-2 gap-2 mb-3">
         <button
@@ -347,11 +354,13 @@ export function TarjetaRutina({
           MARCAR TODAS
         </button>
       </div>
-      <div className="text-xs mb-2" style={{ color: "#7a83a0" }}>
-        El metrónomo marca el tempo de cada repetición con un pitido, para que no aceleres. No
-        cuenta reps: eso lo marcás vos al tocar cada serie.
+      <div className="text-xs mb-2" style={{ color: "#8a93ad" }}>
+        El metrónomo marca el ritmo de cada repetición. Los sostenes tienen su propio reloj.
       </div>
-      <Metronomo active={metronomoOn} tempo={sdcTempoMod(sdcModDia(modalidad, today.date))} />
+      <Metronomo
+        active={metronomoOn && !sosten}
+        tempo={sdcTempoMod(sdcModDia(modalidad, today.date))}
+      />
       {descansando && (
         <BarraDescanso
           seconds={sdcDesc || descansoBase[profile.focusProfile] || 60}
@@ -387,6 +396,7 @@ export function TarjetaRutina({
         accent={colorDelRango}
         aj={sdcAjuste.squat}
         onAj={(serie, reps) => sdcAjustar("squat", serie, reps)}
+        {...sostenDe("squat")}
       />
       <FilaEjercicio
         label={nombreEjercicio(progress.rank, profile.classification, "pushup", modalidad)}
@@ -416,6 +426,7 @@ export function TarjetaRutina({
         accent={colorDelRango}
         aj={sdcAjuste.pushup}
         onAj={(serie, reps) => sdcAjustar("pushup", serie, reps)}
+        {...sostenDe("pushup")}
       />
       <FilaEjercicio
         label={nombreEjercicio(progress.rank, profile.classification, "back", modalidad)}
@@ -445,6 +456,7 @@ export function TarjetaRutina({
         accent={colorDelRango}
         aj={sdcAjuste.back}
         onAj={(serie, reps) => sdcAjustar("back", serie, reps)}
+        {...sostenDe("back")}
       />
       <FilaEjercicio
         label={nombreEjercicio(progress.rank, profile.classification, "abs", modalidad)}
@@ -472,6 +484,7 @@ export function TarjetaRutina({
         accent={colorDelRango}
         aj={sdcAjuste.abs}
         onAj={(serie, reps) => sdcAjustar("abs", serie, reps)}
+        {...sostenDe("abs")}
       />
       <button
         onClick={registrar}

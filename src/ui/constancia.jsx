@@ -63,7 +63,8 @@ function GrillaConstancia({ days, onPick, selected }) {
           onClick={() => onPick && onPick(dia.date)}
           title={dia.date}
           style={{
-            height: 18,
+            height: 40,
+            minWidth: 0,
             padding: 0,
             background: coloresEstado[dia.status] || coloresEstado.empty,
             border:
@@ -129,7 +130,7 @@ function DetalleDia({ date, status, log, onClose, onLog, animo }) {
           )}
         </>
       ) : (
-        <div className="text-xs" style={{ color: "#7a83a0" }}>
+        <div className="text-xs" style={{ color: "#8a93ad" }}>
           No hay actividades registradas.
         </div>
       )}

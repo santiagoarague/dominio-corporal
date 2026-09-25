@@ -190,8 +190,7 @@ export function PestanaPerfil({
         right={`${sistemas.filter((sistema) => sistemaActivo(player, sistema.id)).length + 1}/${sistemas.length + 1}`}
       >
         <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
-          Los sistemas se abren solos a medida que subís de nivel. Podés abrirlos todos de golpe o
-          apagar los que no uses.
+          Se abren al subir de nivel. Podés abrirlos todos o apagar los que no uses.
         </div>
         <button
           onClick={alternarDesbloqueo}
@@ -213,7 +212,7 @@ export function PestanaPerfil({
             <div className="text-sm" style={{ color: "#e8ecf7", fontWeight: 600 }}>
               Rutina del día
             </div>
-            <div className="text-xs" style={{ color: "#7a83a0" }}>
+            <div className="text-xs" style={{ color: "#8a93ad" }}>
               El núcleo. Siempre activo.
             </div>
           </div>
@@ -234,11 +233,11 @@ export function PestanaPerfil({
               <div style={{ flex: 1 }}>
                 <div
                   className="text-sm"
-                  style={{ color: activo ? "#e8ecf7" : "#5a6178", fontWeight: 600 }}
+                  style={{ color: activo ? "#e8ecf7" : "#8a93ad", fontWeight: 600 }}
                 >
                   {sistema.name}
                 </div>
-                <div className="text-xs" style={{ color: "#7a83a0" }}>
+                <div className="text-xs" style={{ color: "#8a93ad" }}>
                   {abierto ? sistema.why : `Se abre en el nivel ${sistema.level}`}
                 </div>
               </div>
@@ -257,7 +256,7 @@ export function PestanaPerfil({
                   {apagado ? "Apagado" : "Activo"}
                 </button>
               ) : (
-                <IconoCandado size={16} color="#7a83a0" />
+                <IconoCandado size={16} color="#8a93ad" />
               )}
             </div>
           );
@@ -355,7 +354,7 @@ export function PestanaPerfil({
                     <div style={{ fontFamily: "Chakra Petch, sans-serif", fontWeight: 700 }}>
                       {(sdcTitulos[mod] || {})[progress.rank] || ""}
                     </div>
-                    <div style={{ fontSize: 10, color: "#7a83a0" }}>{datos.name}</div>
+                    <div style={{ fontSize: 14, color: "#8a93ad" }}>{datos.name}</div>
                   </button>
                 );
               })}
@@ -398,7 +397,7 @@ export function PestanaPerfil({
             >
               <div
                 className="text-xs uppercase mb-2"
-                style={{ letterSpacing: 2, color: "#7a83a0" }}
+                style={{ letterSpacing: 2, color: "#8a93ad" }}
               >
                 CÓMO LLEGÁS Y CÓMO TE VAS
               </div>
@@ -408,7 +407,7 @@ export function PestanaPerfil({
             </div>
           );
         })()}
-        <div className="text-xs uppercase mb-2" style={{ letterSpacing: 2, color: "#7a83a0" }}>
+        <div className="text-xs uppercase mb-2" style={{ letterSpacing: 2, color: "#8a93ad" }}>
           ATRIBUTOS
         </div>
         <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
@@ -434,7 +433,7 @@ export function PestanaPerfil({
             marginTop: 4,
           }}
         >
-          <div className="text-xs uppercase mb-2" style={{ letterSpacing: 2, color: "#7a83a0" }}>
+          <div className="text-xs uppercase mb-2" style={{ letterSpacing: 2, color: "#8a93ad" }}>
             REPETICIONES DE POR VIDA
           </div>
           <div className="grid grid-cols-2 gap-2 text-sm">
@@ -463,7 +462,7 @@ export function PestanaPerfil({
             marginTop: 12,
           }}
         >
-          <div className="text-xs uppercase mb-2" style={{ letterSpacing: 2, color: "#7a83a0" }}>
+          <div className="text-xs uppercase mb-2" style={{ letterSpacing: 2, color: "#8a93ad" }}>
             HAZAÑAS
           </div>
           <div className="space-y-1 text-sm">
@@ -524,7 +523,7 @@ export function PestanaPerfil({
                   }}
                 />
               </div>
-              <div className="text-xs mt-1" style={{ color: "#7a83a0" }}>
+              <div className="text-xs mt-1" style={{ color: "#8a93ad" }}>
                 En kilos. Lo usan los logros Tu Propio Peso, Uno y Medio y Doble Cuerpo.
               </div>
             </div>
@@ -553,11 +552,11 @@ export function PestanaPerfil({
             <div className="mb-3">
               <div className="text-xs mb-2" style={{ color: "#9aa4bd" }}>
                 Tu puntaje: <b style={{ color: "#ffb84f", fontSize: 14 }}>{puntaje} pts</b>
-                <div style={{ color: "#7a83a0", marginTop: 2 }}>
+                <div style={{ color: "#8a93ad", marginTop: 2 }}>
                   sentadillas + 2×flexiones + 2×remo + abdominales
                 </div>
                 {sdcCalibre(profile) ? (
-                  <div style={{ color: "#7a83a0", marginTop: 2 }}>
+                  <div style={{ color: "#8a93ad", marginTop: 2 }}>
                     Enfoque: {sdcCalF(banda, profile)}
                   </div>
                 ) : null}
@@ -574,14 +573,14 @@ export function PestanaPerfil({
                   <span
                     className="text-xs"
                     style={{
-                      color: i === banda ? "#ffe2b0" : i < banda ? "#5a6178" : "#8a93ad",
+                      color: i === banda ? "#ffe2b0" : i < banda ? "#8a93ad" : "#8a93ad",
                       fontWeight: i === banda ? 700 : 400,
                     }}
                   >
                     {i < banda ? "✓ " : i === banda ? "● " : ""}
                     {sdcCalT(i, profile)}
                   </span>
-                  <span className="text-xs" style={{ color: "#7a83a0", whiteSpace: "nowrap" }}>
+                  <span className="text-xs" style={{ color: "#8a93ad", whiteSpace: "nowrap" }}>
                     {i === bandasCalibre.length - 1
                       ? sdcBandaMin(i, factor) + "+"
                       : sdcBandaMin(i, factor) + "–" + (sdcBandaMin(i + 1, factor) - 1)}
@@ -725,7 +724,7 @@ export function PestanaPerfil({
         </div>
         <AnotarPrimera onAnotar={sdcPrimeraManual} />
         {sdcPrimeras(player).length === 0 ? (
-          <div className="text-xs" style={{ color: "#7a83a0" }}>
+          <div className="text-xs" style={{ color: "#8a93ad" }}>
             Todavía no hay ninguna. Van a aparecer solas.
           </div>
         ) : (
@@ -742,7 +741,7 @@ export function PestanaPerfil({
                 <div className="text-xs" style={{ color: "#e8ecf7" }}>
                   {primera.texto}
                 </div>
-                <div className="text-xs" style={{ color: "#7a83a0" }}>
+                <div className="text-xs" style={{ color: "#8a93ad" }}>
                   {primera.fecha +
                     (primera.origen === "escrita" ? " · lo anotaste vos" : " · primera vez")}
                 </div>

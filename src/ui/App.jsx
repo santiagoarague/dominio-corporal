@@ -1407,7 +1407,7 @@ function App({ player, setPlayer, initialNotices }) {
             }}
           >
             <span style={{ fontSize: 18, fontWeight: 700 }}>{dominion.points}</span>
-            <span style={{ fontSize: 10, letterSpacing: 1 }}>PD</span>
+            <span style={{ fontSize: 14, letterSpacing: 1 }}>PD</span>
           </button>
         </div>
         <div className="mb-4" style={{ position: "relative" }}>
@@ -1453,7 +1453,7 @@ function App({ player, setPlayer, initialNotices }) {
           )}
           <div
             className="text-xs mt-1 flex items-center justify-between gap-2"
-            style={{ color: "#7a83a0" }}
+            style={{ color: "#8a93ad" }}
           >
             <span>
               {nivelDelUmbral
@@ -1535,7 +1535,7 @@ function App({ player, setPlayer, initialNotices }) {
                 padding: "0 14px",
                 fontWeight: 700,
                 lineHeight: 1,
-                fontSize: 13,
+                fontSize: 15,
               }}
             >
               ¿Cómo funciona?
@@ -1603,7 +1603,7 @@ function App({ player, setPlayer, initialNotices }) {
                         className="text-xs uppercase"
                         style={{
                           letterSpacing: 2,
-                          color: "#7a83a0",
+                          color: "#8a93ad",
                           marginTop: 16,
                           marginBottom: 2,
                           paddingTop: 12,
@@ -1645,7 +1645,7 @@ function App({ player, setPlayer, initialNotices }) {
                             transition: "transform .2s",
                           }}
                         >
-                          <IconoFlecha size={16} color="#7a83a0" />
+                          <IconoFlecha size={16} color="#8a93ad" />
                         </span>
                       </button>
                       {sdcAb ? (
@@ -1684,7 +1684,7 @@ function App({ player, setPlayer, initialNotices }) {
               más puntos.
             </div>
             {dominion.shields > 0 && (
-              <div className="text-xs mb-2" style={{ color: "#7c5cff" }}>
+              <div className="text-xs mb-2" style={{ color: "#9278ff" }}>
                 Escudos de Racha disponibles: {dominion.shields}
               </div>
             )}
@@ -1764,7 +1764,7 @@ function App({ player, setPlayer, initialNotices }) {
               id: "exploration",
               label: "Explorar",
               icon: IconoPasos,
-              color: "#7c5cff",
+              color: "#9278ff",
               on: sistemaActivo(player, "exploration"),
             },
             {
@@ -2060,7 +2060,13 @@ function App({ player, setPlayer, initialNotices }) {
               target="_blank"
               rel="noopener"
               className="text-xs underline"
-              style={{ color: "#7a83a0", marginLeft: 14 }}
+              style={{
+                color: "#8a93ad",
+                marginLeft: 14,
+                display: "inline-flex",
+                alignItems: "center",
+                minHeight: 44,
+              }}
             >
               Privacidad
             </a>

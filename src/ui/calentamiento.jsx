@@ -334,7 +334,7 @@ function PasoGuiado({
             style={{
               fontFamily: "Chakra Petch, sans-serif",
               fontSize: 34,
-              color: pausado ? "#7a83a0" : color,
+              color: pausado ? "#8a93ad" : color,
               marginTop: 6,
             }}
           >
@@ -346,10 +346,10 @@ function PasoGuiado({
         <BarraXp
           value={preparando ? (actual.prep || sdcEstPrep) - paso.prep : actual.seconds - paso.left}
           max={preparando ? actual.prep || sdcEstPrep : actual.seconds}
-          color={pausado ? "#5a6178" : color}
+          color={pausado ? "#8a93ad" : color}
         />
       )}
-      <div className="text-xs mt-2 text-center" style={{ color: "#7a83a0" }}>
+      <div className="text-xs mt-2 text-center" style={{ color: "#8a93ad" }}>
         {siguiente
           ? siguiente.name === actual.name
             ? "Ahora el otro lado"
@@ -645,7 +645,7 @@ function Calentamiento({ player, mod, metas, aplicar, onModo, sinSeries }) {
             Pulso, movilidad, activación y un ensayo suave de tus ejercicios de hoy
           </div>
         </button>
-        <div className="text-xs mt-2" style={{ color: "#7a83a0" }}>
+        <div className="text-xs mt-2" style={{ color: "#8a93ad" }}>
           Da 10 XP una vez por día.
         </div>
       </div>

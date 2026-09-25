@@ -110,8 +110,13 @@ explícitamente cuál rompe y por qué.
 8. **Cada tarjeta cuesta píxeles.** La densidad se mide. La rutina del día tiene que estar en la
    primera pantalla; lo que es útil el primer día y molesto todos los demás se abre solo la primera
    vez (por ejemplo, "¿Cómo se hace?" en un ejercicio nuevo).
-9. **Legible para cualquiera, no solo para gente de 25.** Botones de al menos 44–48 px, párrafos a
-   14–15 px con interlineado amplio, contraste AA.
+9. **Legible de los 13 a los más de 70 años.** Ninguna letra por debajo de 14 px; el texto
+   principal va a 16. Todo lo tocable mide al menos 44 px de alto y de ancho (los cuadrados de la
+   grilla de Constancia, 40 de alto). Contraste de al menos 4,5:1 también en lo bloqueado: un logro
+   o un movimiento que todavía no tenés tiene que poder leerse, porque dice qué te falta. Un botón
+   deshabilitado se ve más apagado pero se lee. Los textos que se ven siempre son de una o dos
+   oraciones; lo largo va en la guía. Una prueba automática mide todo esto en cada pestaña, en un
+   teléfono de 375 px y en uno de 320.
 10. **En todo lo guiado hay tiempo para acomodarse.** Antes de cada paso cronometrado hay una cuenta
     de preparación: 10 s antes del primero (dejar el teléfono), 8 s si cambia la posición del
     cuerpo (pared, piso, boca arriba, plancha) y 5 s si no cambia (cambio de lado). **La primera vez
@@ -164,6 +169,12 @@ flow           Gateo · Apoyo · Giro · Enlace · Inversión · Quietud · Vuel
 - **Metrónomo** opcional que marca bajada, pausa y subida con tres sonidos distintos: un tono que cae
   al bajar, un doble tic seco en la pausa (el momento de frenar y cambiar de dirección) y un tono que
   sube al subir. La prueba de aptitud usa los mismos tres.
+- **Reloj de sostén** en los ejercicios que se miden en segundos (plancha, hollow, colgarse): debajo
+  de las series aparece "Sostener 12 s" con los segundos de la serie pendiente, que el jugador
+  ajusta con el − / + de esa serie. Da 10 s para ponerse en posición ("Ya estoy →" los salta),
+  suena 3-2-1 antes de arrancar y antes de terminar, tiene Pausa, y al terminar marca la serie sola
+  y arranca el descanso. "Terminé antes" anota lo que realmente sostuvo (2 reps de 3 s si aguantó 7
+  s). Mientras corre, el metrónomo se calla.
 - En gimnasio: un campo de kilos por serie, "La última vez: 30 · 32,5 · 35 kg" y una sugerencia
   ("Hoy probá 65 kg →" o "Repetí 70 kg y cerralo →") que solo sube si cerraste todas las reps.
   Tu peso corporal se anota en Perfil → Tus números (aparece si entrenás en el gimnasio) y lo usan
@@ -295,10 +306,9 @@ No hace falta saber programar, pero sí qué es posible:
   cambie la arquitectura.
 - **No hay red.** Nada de videos, fuentes externas, mapas en línea ni analíticas. Si algún día se
   agrega algo que toque internet, la política de privacidad deja de ser cierta y hay que cambiarla.
-- **El código es un único archivo ya compilado, sin el código fuente.** Cada cambio es una cirugía
-  sobre JavaScript minificado. Consecuencia práctica: **las funciones chicas y contenidas son
-  baratas y seguras; rediseñar el núcleo (cómo se calcula la XP, cómo se registra una rutina) es
-  caro y riesgoso.** Una buena propuesta se apoya en lo que ya existe.
+- **Rediseñar el núcleo (cómo se calcula la XP, cómo se registra una rutina) es caro y riesgoso**,
+  porque de eso depende la partida de cada jugador. Las funciones chicas y contenidas son baratas y
+  seguras. Una buena propuesta se apoya en lo que ya existe.
 - **Las partidas viejas tienen que seguir funcionando.** Todo dato nuevo necesita un valor por
   defecto razonable para quien ya viene jugando.
 - La app tarda unos segundos en abrir en teléfonos medios (hay una pantalla de carga). No conviene
@@ -316,7 +326,6 @@ No hace falta saber programar, pero sí qué es posible:
 - El calibre de las pruebas nuevas se escala con un factor de 0,6 que es una **estimación**. Hay
   que confirmarlo con datos reales: alguien que tenga una prueba vieja y una nueva del mismo
   ejercicio.
-- Un solo metrónomo sirve a los cuatro ejercicios aunque uno sea un sostén.
 - La meta del día se puede bajar con el − de cada ejercicio, pero vuelve al valor original al día
   siguiente. Si alguien no llega nunca a una meta, la app le propone repetir la prueba cuando tres
   veces seguidas marca que la rutina le quedó "mucha"; no ajusta sola el volumen.

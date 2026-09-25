@@ -66,7 +66,7 @@ export function TarjetaCuerpo({
           </button>
         ))}
       </div>
-      <div className="text-xs mb-2" style={{ color: "#7a83a0" }}>
+      <div className="text-xs mb-2" style={{ color: "#8a93ad" }}>
         {modoMapa === "desarrollo"
           ? "Cuánto construiste en cada patrón desde que empezaste. No se reinicia nunca."
           : modoMapa === "semana"
@@ -80,7 +80,7 @@ export function TarjetaCuerpo({
             className="px-2 py-1 text-xs"
             style={{
               background: vistaCuerpo === "front" ? "rgba(255,255,255,0.1)" : "transparent",
-              color: vistaCuerpo === "front" ? "#e8ecf7" : "#5a6178",
+              color: vistaCuerpo === "front" ? "#e8ecf7" : "#8a93ad",
               border: "1px solid rgba(255,255,255,0.12)",
             }}
           >
@@ -91,7 +91,7 @@ export function TarjetaCuerpo({
             className="px-2 py-1 text-xs"
             style={{
               background: vistaCuerpo === "back" ? "rgba(255,255,255,0.1)" : "transparent",
-              color: vistaCuerpo === "back" ? "#e8ecf7" : "#5a6178",
+              color: vistaCuerpo === "back" ? "#e8ecf7" : "#8a93ad",
               border: "1px solid rgba(255,255,255,0.12)",
             }}
           >

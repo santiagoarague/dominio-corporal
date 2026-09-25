@@ -118,7 +118,7 @@ export function PestanaCombate({
                 style={{
                   background: usado ? "rgba(255,255,255,0.03)" : "rgba(255,92,122,0.1)",
                   border: "1px solid " + (usado ? "rgba(255,255,255,0.1)" : "#ff5c7a"),
-                  color: usado ? "#5a6178" : "#ff5c7a",
+                  color: usado ? "#8a93ad" : "#ff5c7a",
                 }}
               >
                 {nombresTren[tren]}

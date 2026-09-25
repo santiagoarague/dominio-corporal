@@ -153,13 +153,13 @@ function Reaccion({ onDone }) {
             style={{
               fontFamily: "Chakra Petch, sans-serif",
               fontSize: 22,
-              color: "#7a83a0",
+              color: "#8a93ad",
             }}
           >
             · · ·
           </div>
         )}
-        <div className="text-xs mt-3" style={{ color: fase === "signal" ? "#0a0e1a" : "#5a6178" }}>
+        <div className="text-xs mt-3" style={{ color: fase === "signal" ? "#0a0e1a" : "#8a93ad" }}>
           {cuenta} / {senalesPorPrueba}
         </div>
       </div>

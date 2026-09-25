@@ -43,7 +43,7 @@ export function TarjetaConstancia({
     >
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
-          <IconoLlama size={18} color={sesionesSemana >= metaSemana ? "#ff5c7a" : "#5a6178"} />
+          <IconoLlama size={18} color={sesionesSemana >= metaSemana ? "#ff5c7a" : "#8a93ad"} />
           <div>
             <div className="text-sm" style={{ color: "#e8ecf7", fontWeight: 600 }}>
               {sesionesSemana} de {metaSemana} sesiones
@@ -189,7 +189,7 @@ export function TarjetaConstancia({
                     }}
                   />
                 </div>
-                <div className="text-xs mt-1" style={{ color: "#7a83a0" }}>
+                <div className="text-xs mt-1" style={{ color: "#8a93ad" }}>
                   {"Recompensa: +" + mision.xp + " XP y +" + mision.pd + " PD"}
                 </div>
               </div>

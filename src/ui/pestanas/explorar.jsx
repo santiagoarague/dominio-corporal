@@ -49,7 +49,7 @@ export function PestanaExplorar({
       <Tarjeta accent="#7c5cff" style={{ marginBottom: 16 }}>
         <div className="flex items-center justify-between mb-2">
           <div>
-            <div className="text-xs uppercase" style={{ letterSpacing: 2, color: "#7c5cff" }}>
+            <div className="text-xs uppercase" style={{ letterSpacing: 2, color: "#9278ff" }}>
               Sector {sector + 1}
             </div>
             <div
@@ -76,7 +76,7 @@ export function PestanaExplorar({
           {kmTotales.toFixed(1)} km totales · {rangoCaminante.name}
         </div>
         {nodoSiguiente && (
-          <div className="text-xs mt-1" style={{ color: "#7a83a0" }}>
+          <div className="text-xs mt-1" style={{ color: "#8a93ad" }}>
             Próximo nodo: {nodoSiguiente.name} a {nodoSiguiente.km} km (faltan{" "}
             {(nodoSiguiente.km - kmTotales).toFixed(1)})
           </div>
@@ -94,8 +94,7 @@ export function PestanaExplorar({
           Expedición en curso
         </div>
         <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
-          Registrá tramos a lo largo del día. Los kilómetros se consolidan al concluir la
-          expedición.
+          Anotá tramos durante el día. Se suman al concluir la expedición.
         </div>
         {(function () {
           var salida = (player.exploration && player.exploration.walkStart) || 0,
@@ -121,8 +120,7 @@ export function PestanaExplorar({
                 Salir a caminar
               </div>
               <div className="text-xs mb-2" style={{ color: "#9aa4bd" }}>
-                La app cuenta el tiempo y estima los kilómetros a tu ritmo. Al terminar los podés
-                corregir.
+                Cuenta el tiempo y estima los km a tu ritmo. Después los podés corregir.
               </div>
               <div className="grid grid-cols-2 gap-1 mb-2">
                 {sdcRitmos.map(function (ritmo) {
@@ -151,7 +149,7 @@ export function PestanaExplorar({
                 className="w-full py-2 text-xs"
                 style={{
                   minHeight: 44,
-                  background: "#7c5cff",
+                  background: "#9278ff",
                   color: "#0a0e1a",
                   fontWeight: 700,
                 }}
@@ -171,6 +169,7 @@ export function PestanaExplorar({
             className="px-3 py-2 text-sm"
             style={{
               flex: 1,
+              minWidth: 0,
               background: "rgba(255,255,255,0.05)",
               border: "1px solid rgba(255,255,255,0.15)",
               color: "#e8ecf7",
@@ -200,6 +199,7 @@ export function PestanaExplorar({
             className="px-3 py-2 text-sm"
             style={{
               flex: 1,
+              minWidth: 0,
               background: "rgba(255,255,255,0.05)",
               border: "1px solid rgba(255,255,255,0.15)",
               color: "#e8ecf7",
@@ -220,7 +220,7 @@ export function PestanaExplorar({
           </button>
         </div>
         {pasosTexto && parseInt(pasosTexto, 10) > 0 && (
-          <div className="text-xs mb-2" style={{ color: "#7a83a0" }}>
+          <div className="text-xs mb-2" style={{ color: "#8a93ad" }}>
             {parseInt(pasosTexto, 10).toLocaleString("es")} pasos ≈{" "}
             {((parseInt(pasosTexto, 10) * metrosPorPaso) / 1e3).toFixed(2)} km
           </div>
@@ -249,7 +249,7 @@ export function PestanaExplorar({
           onClick={consolidarKmHoy}
           disabled={!(exploration.pendingKm > 0)}
           className="w-full py-3 text-sm disabled:opacity-40"
-          style={{ background: "#7c5cff", color: "#0a0e1a", fontWeight: 700 }}
+          style={{ background: "#9278ff", color: "#0a0e1a", fontWeight: 700 }}
         >
           Concluir Expedición
         </button>
@@ -267,7 +267,7 @@ export function PestanaExplorar({
             Descartar tramos
           </button>
         )}
-        <div className="text-xs mt-2 text-center" style={{ color: "#7a83a0" }}>
+        <div className="text-xs mt-2 text-center" style={{ color: "#8a93ad" }}>
           Hoy llevás {(exploration.today.date === fechaHoy() ? exploration.today.km : 0).toFixed(1)}{" "}
           km consolidados
         </div>
@@ -308,18 +308,18 @@ export function PestanaExplorar({
               {abierto ? (
                 <IconoUbicacion size={16} color="#7c5cff" />
               ) : (
-                <IconoCandado size={16} color="#7a83a0" />
+                <IconoCandado size={16} color="#8a93ad" />
               )}
               <div>
                 <div
                   className="text-sm"
                   style={{
-                    color: abierto ? "#e8ecf7" : "#5a6178",
+                    color: abierto ? "#e8ecf7" : "#8a93ad",
                     fontWeight: abierto ? 600 : 400,
                   }}
                 >
                   {nodo.name}{" "}
-                  <span className="text-xs" style={{ color: "#7a83a0" }}>
+                  <span className="text-xs" style={{ color: "#8a93ad" }}>
                     · {nodo.km} km
                   </span>
                 </div>
@@ -328,7 +328,7 @@ export function PestanaExplorar({
                     {nodo.text}
                   </div>
                 ) : (
-                  <div className="text-xs" style={{ color: "#7a83a0" }}>
+                  <div className="text-xs" style={{ color: "#8a93ad" }}>
                     Bloqueado — faltan {faltan.toFixed(1)} km
                   </div>
                 )}
@@ -347,7 +347,7 @@ export function PestanaExplorar({
         right={`${(exploration.relics || []).length} / ${nodosExplorar.length} · +${Math.round((exploration.relics || []).length * bonoReliquia * 100)}% XP`}
       >
         {(exploration.relics || []).length === 0 ? (
-          <div className="text-xs" style={{ color: "#7a83a0" }}>
+          <div className="text-xs" style={{ color: "#8a93ad" }}>
             Aún no hallaste ninguna reliquia. Caminá y concluí expediciones para llenar el Códice.
           </div>
         ) : (
@@ -368,7 +368,7 @@ export function PestanaExplorar({
                 <div className="text-xs mt-1" style={{ color: "#9aa4bd" }}>
                   {nodo.lore}
                 </div>
-                <div className="text-xs mt-1" style={{ color: "#7a83a0" }}>
+                <div className="text-xs mt-1" style={{ color: "#8a93ad" }}>
                   Hallada en {nodo.name} · {nodo.km} km
                 </div>
               </div>

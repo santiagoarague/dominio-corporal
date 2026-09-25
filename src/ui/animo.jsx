@@ -58,9 +58,9 @@ function sdcAnimoOtra(alTocar) {
       onClick={alTocar}
       className="text-xs"
       style={{
-        color: "#7a83a0",
-        minHeight: 40,
-        padding: "0 4px",
+        color: "#8a93ad",
+        minHeight: 44,
+        padding: "0 8px",
         marginLeft: "auto",
         flexShrink: 0,
         background: "transparent",
@@ -205,7 +205,7 @@ function Caras({ sel, onPick }) {
             <Cara n={cara.n} size={26} color={color} />
             <span
               style={{
-                fontSize: 11,
+                fontSize: 14,
                 lineHeight: 1.2,
                 textAlign: "center",
                 minHeight: 27,
@@ -233,9 +233,9 @@ function AnimoAntes({ player, aplicar, mod, onModo, descLibre, onDescanso }) {
         }}
         className="text-xs"
         style={{
-          color: "#7a83a0",
-          minHeight: 40,
-          padding: "0 4px",
+          color: "#8a93ad",
+          minHeight: 44,
+          padding: "0 8px",
           background: "transparent",
           border: "none",
           textDecoration: "underline",
@@ -253,9 +253,9 @@ function AnimoAntes({ player, aplicar, mod, onModo, descLibre, onDescanso }) {
             onClick={() => aplicar((partida) => sdcAnimoSet(partida, { no: 1 }))}
             className="text-xs"
             style={{
-              color: "#7a83a0",
-              minHeight: 40,
-              padding: "0 4px",
+              color: "#8a93ad",
+              minHeight: 44,
+              padding: "0 8px",
               background: "transparent",
               border: "none",
             }}

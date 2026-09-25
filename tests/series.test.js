@@ -36,6 +36,30 @@ describe("series", () => {
   });
 });
 
+describe("reloj del sostén", () => {
+  const ini = 1_000_000;
+  const en = (s, pausa = 0) => J.sdcSostenEstado(ini, pausa, 10, 12, ini + s * 1000);
+
+  it("primero 10 s para ponerse en posición, sin contar sostén", () => {
+    expect(J.sdcSostenPrep).toBe(10);
+    expect(en(0)).toEqual({ fase: "prep", quedan: 10, hecho: 0 });
+    expect(en(7.2)).toEqual({ fase: "prep", quedan: 3, hecho: 0 });
+  });
+
+  it("después cuenta el sostén hasta el total y termina", () => {
+    expect(en(10)).toEqual({ fase: "sosten", quedan: 12, hecho: 0 });
+    expect(en(17.5)).toEqual({ fase: "sosten", quedan: 5, hecho: 7 });
+    expect(en(22)).toEqual({ fase: "fin", quedan: 0, hecho: 12 });
+    expect(en(300)).toEqual({ fase: "fin", quedan: 0, hecho: 12 });
+  });
+
+  it("en pausa se congela: cuenta hasta el momento en que se pausó", () => {
+    const pausa = ini + 15_000;
+    expect(en(15, pausa)).toEqual(en(60, pausa));
+    expect(en(60, pausa)).toEqual({ fase: "sosten", quedan: 7, hecho: 5 });
+  });
+});
+
 describe("metronomo segun el modificador del dia", () => {
   const normal = { b: 2, p: 1, s: 2 };
   const buscar = (mod, n) => J.sdcMods[mod].find((m) => m.n === n);

@@ -210,8 +210,7 @@ export function PestanaPrimal({
                   <IconoRayo size={24} color="#ff6b4a" />
                 </div>
                 <div className="text-xs mb-2" style={{ color: "#9aa4bd" }}>
-                  La pantalla da el estímulo, tu cuerpo responde. Reflejos, memoria de movimiento y
-                  coordinación. Alimenta tu atributo Control.
+                  Reflejos, memoria de movimiento y coordinación. Suma a tu atributo Control.
                 </div>
                 <div
                   className="text-xs p-2"
@@ -221,8 +220,7 @@ export function PestanaPrimal({
                     border: "1px solid rgba(255,255,255,0.12)",
                   }}
                 >
-                  Tus marcas sirven para compararte con vos mismo. Esto entrena atención y control
-                  motor, no tu inteligencia general.
+                  Entrena atención y control motor, no la inteligencia.
                 </div>
               </Tarjeta>
               {pruebas.map((prueba) => {
@@ -249,7 +247,7 @@ export function PestanaPrimal({
                             <div className="text-sm" style={{ color: "#e8ecf7", fontWeight: 600 }}>
                               {prueba.name}
                             </div>
-                            <div className="text-xs" style={{ color: "#7a83a0" }}>
+                            <div className="text-xs" style={{ color: "#8a93ad" }}>
                               {prueba.desc}
                             </div>
                           </div>
@@ -338,8 +336,8 @@ export function PestanaPrimal({
                   <IconoCorazon size={24} color="#4f9dff" />
                 </div>
                 <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
-                  Trabajo preventivo y de mantenimiento para las articulaciones que más sufren
-                  entrenando. Da XP y no tiene penalización: úsalo los días que lo necesites.
+                  Protocolos para las articulaciones que más sufren entrenando. Da XP; úsalo cuando
+                  lo necesites.
                 </div>
                 <div
                   className="text-xs p-2 mb-2"
@@ -415,7 +413,7 @@ export function PestanaPrimal({
                             <div className="text-sm" style={{ color: "#e8ecf7", fontWeight: 600 }}>
                               {protocolo.zone}
                             </div>
-                            <div className="text-xs" style={{ color: "#7a83a0" }}>
+                            <div className="text-xs" style={{ color: "#8a93ad" }}>
                               {protocolo.common}
                             </div>
                           </div>
@@ -451,7 +449,7 @@ export function PestanaPrimal({
                             <div className="text-xs mt-1" style={{ color: "#9aa4bd" }}>
                               {ejercicio.how}
                             </div>
-                            <div className="text-xs mt-1" style={{ color: "#7a83a0" }}>
+                            <div className="text-xs mt-1" style={{ color: "#8a93ad" }}>
                               Para qué: {ejercicio.why}
                             </div>
                           </div>
@@ -500,8 +498,7 @@ export function PestanaPrimal({
               <IconoDestello size={24} color="#b084f5" />
             </div>
             <div className="text-xs" style={{ color: "#9aa4bd" }}>
-              Movimientos raros que se aprenden sin reloj. Marcá cada paso cuando lo domines de
-              verdad: no hay prisa ni penalización por tardar semanas.
+              Movimientos que se aprenden sin reloj. Marcá cada paso cuando lo domines.
             </div>
           </Tarjeta>
           {habilidades.map((habilidad) => {
@@ -535,7 +532,7 @@ export function PestanaPrimal({
                         <div className="text-sm" style={{ color: "#e8ecf7", fontWeight: 600 }}>
                           {habilidad.name}
                         </div>
-                        <div className="text-xs" style={{ color: "#7a83a0" }}>
+                        <div className="text-xs" style={{ color: "#8a93ad" }}>
                           {habilidad.family} · {habilidad.level}
                         </div>
                       </div>
@@ -757,7 +754,7 @@ export function PestanaPrimal({
                       fontSize: 48,
                       textAlign: "center",
                       color: primalPausa
-                        ? "#5a6178"
+                        ? "#8a93ad"
                         : primalFase === "active"
                           ? "#3ecf8e"
                           : "#ffb84f",
@@ -775,7 +772,7 @@ export function PestanaPrimal({
                           : descansoPrimal
                     }
                     color={
-                      primalPausa ? "#5a6178" : primalFase === "active" ? "#3ecf8e" : "#ffb84f"
+                      primalPausa ? "#8a93ad" : primalFase === "active" ? "#3ecf8e" : "#ffb84f"
                     }
                   />
                   {primalPausa ? (
@@ -850,7 +847,9 @@ export function PestanaPrimal({
                     key={mov.name}
                     onClick={() => !bloqueado && primalElegir(i)}
                     disabled={bloqueado}
-                    className="w-full text-left py-2 px-3 mb-2 disabled:opacity-40"
+                    className={
+                      "w-full text-left py-2 px-3 mb-2" + (abierto ? " disabled:opacity-40" : "")
+                    }
                     style={{
                       background: abierto ? "rgba(62,207,142,0.08)" : "rgba(255,255,255,0.03)",
                       border: "1px solid " + (abierto ? "#3ecf8e55" : "rgba(255,255,255,0.1)"),
@@ -860,12 +859,12 @@ export function PestanaPrimal({
                       {abierto ? (
                         <IconoPata size={16} color="#3ecf8e" />
                       ) : (
-                        <IconoCandado size={16} color="#7a83a0" />
+                        <IconoCandado size={16} color="#8a93ad" />
                       )}
                       <div
                         className="text-sm"
                         style={{
-                          color: abierto ? "#e8ecf7" : "#5a6178",
+                          color: abierto ? "#e8ecf7" : "#8a93ad",
                           fontWeight: abierto ? 600 : 400,
                         }}
                       >

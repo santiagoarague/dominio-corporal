@@ -90,7 +90,7 @@ var guia = [
     {
       g: "LO DEMÁS",
       title: "El metrónomo",
-      text: "Marca el ritmo de cada repetición con tres sonidos distintos: un tono que cae mientras bajás, un doble tic seco en la pausa de abajo y un tono que sube mientras subís. El doble tic es el momento de frenar y cambiar de dirección. Está para que no aceleres, y es el mismo ritmo de la prueba de aptitud. Si el modificador del día pide otro ritmo, el metrónomo se ajusta solo. No cuenta repeticiones ni sabe cuándo terminaste: eso lo marcás vos tocando cada serie. En los ejercicios de sostén, como la plancha, no aplica: ahí lo que importa son los segundos, no el sube y baja.",
+      text: "Marca el ritmo de cada repetición con tres sonidos distintos: un tono que cae mientras bajás, un doble tic seco en la pausa de abajo y un tono que sube mientras subís. El doble tic es el momento de frenar y cambiar de dirección. Está para que no aceleres, y es el mismo ritmo de la prueba de aptitud. Si el modificador del día pide otro ritmo, el metrónomo se ajusta solo. No cuenta repeticiones ni sabe cuándo terminaste: eso lo marcás vos tocando cada serie. En los ejercicios de sostén, como la plancha, se calla: cada serie tiene su propio reloj. Tocás «Sostener», tenés 10 segundos para ponerte en posición y, al terminar, la serie se marca sola. Si no llegás, «Terminé antes» anota lo que sostuviste.",
     },
     {
       g: "LO DEMÁS",

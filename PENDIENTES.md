@@ -21,8 +21,8 @@ ni la dirección del sitio.
 - **Revisor automático (ESLint)**: marca variables que no existen, código que nadie usa, hooks de
   React dentro de un `if` y una variable que tapa a otra del mismo nombre. Corre antes de publicar, igual que las pruebas. En la primera pasada
   encontró que el campo del peso corporal se había perdido y una docena de valores muertos.
-- **Pruebas**: 119 automáticas (curva de XP, Umbral, buffos, deshacer, sonidos…) y 9 de punta a
-  punta en Edge. **Si alguna falla, o el revisor encuentra un error, no se publica nada**: el deploy lo hace GitHub Actions y las
+- **Pruebas**: 122 automáticas (curva de XP, Umbral, buffos, deshacer, sonidos…) y 13 de punta a
+  punta en Edge, una de ellas mide la legibilidad de cada pestaña. **Si alguna falla, o el revisor encuentra un error, no se publica nada**: el deploy lo hace GitHub Actions y las
   corre antes.
 - **App partida**: cada pestaña en su archivo (`src/ui/pestanas/`) y Entreno en tarjetas. Entreno
   recibe un paquete de datos por tarjeta: 28 cosas en vez de 95.
@@ -412,8 +412,14 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
 
 ## C · Decisiones de diseño que quedaron abiertas
 
-- **Tamaño de texto ajustable**: quedó explícitamente fuera de alcance, no descartado. (Apagar
-  sistemas ya existe: Perfil → Sistemas del juego.)
+- ~~Letra chica, botones chicos y grises que no se leían~~ — resuelto (25/09/2026), pensado para
+  jugadores de 13 a más de 70 años. Medido antes: el 61,5% del texto estaba a 12 px, 107 botones
+  medían menos de 44 px y lo bloqueado se leía a 3,1:1. Ahora ninguna letra baja de 14 px (el
+  texto principal va a 16), todo lo tocable mide al menos 44 px, lo bloqueado se lee a 5,8:1 y
+  los textos que se ven siempre son de una o dos oraciones (se acortaron 11). Una prueba lo mide en
+  cada pestaña a 375 y a 320 px de ancho.
+- **Tamaño de texto ajustable**: sigue fuera de alcance, no descartado. Con la base a 14–16 px
+  hace menos falta. (Apagar sistemas ya existe: Perfil → Sistemas del juego.)
 - ~~El botón manual de Primeras veces usaba `window.prompt()`~~ — resuelto: ahora es un campo
   dentro de la tarjeta.
 - La fuente "medida" de Primeras veces (récord propio superado) se dejó afuera a propósito:
@@ -428,7 +434,9 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
 - ~~**Movilidad & Primal Flow** (la modalidad) se parecía mucho a **Instinto Primal** (el sistema)~~ —
   resuelto: la modalidad se llama **Flow** y su descripción dice lo que trae (capoeira, breaking,
   pino y colgarse de la barra).
-- Un solo metrónomo para los cuatro ejercicios, aunque uno sea un sostén.
+- ~~Un solo metrónomo para los cuatro ejercicios, aunque uno sea un sostén~~ — resuelto
+  (25/09/2026): los ejercicios de sostén tienen su propio reloj ("Sostener 12 s"), con 10 s para
+  ponerse en posición, 3-2-1, pausa y "Terminé antes"; marca la serie solo y calla el metrónomo.
 - El reloj del **combate** sigue restando de a un segundo, a propósito: su tiempo es un
   desafío, y con la hora real salir un momento de la app costaría un corazón.
 

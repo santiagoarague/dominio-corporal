@@ -46,8 +46,7 @@ export function TarjetaUmbral({ ascension, cruzarUmbral, modalidad, player, prof
           );
         })()}
         <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
-          Hacela de verdad y después confirmala acá. Si no te salen, todavía no cruces: seguí
-          entrenando en este rango.
+          Hacela de verdad y confirmala acá. Si no te sale, seguí en este rango.
         </div>
         <div
           className="text-xs mb-3"

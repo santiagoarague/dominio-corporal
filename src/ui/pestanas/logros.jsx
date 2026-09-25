@@ -69,19 +69,19 @@ export function PestanaLogros({ achievements, alternarPlegable, player, plegado,
                         {hecho ? (
                           <IconoTrofeo size={16} color="#ffb84f" />
                         ) : (
-                          <IconoCandado size={16} color="#7a83a0" />
+                          <IconoCandado size={16} color="#8a93ad" />
                         )}
                         <div>
                           <div
                             className="text-sm"
                             style={{
-                              color: hecho ? "#e8ecf7" : "#5a6178",
+                              color: hecho ? "#e8ecf7" : "#8a93ad",
                               fontWeight: hecho ? 600 : 400,
                             }}
                           >
                             {logro.name}
                           </div>
-                          <div className="text-xs" style={{ color: hecho ? "#8a93ad" : "#5a6178" }}>
+                          <div className="text-xs" style={{ color: hecho ? "#8a93ad" : "#8a93ad" }}>
                             {logro.desc}
                           </div>
                         </div>

@@ -53,8 +53,7 @@ export function TarjetaEstiramiento({
       right={`${week.stretchCount}/2 esta semana`}
     >
       <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
-        Es lo que más rápido cambia de todo lo que hacés acá: en pocas semanas llegás más lejos y lo
-        notás en el cuerpo. Dos veces por semana te dan +10% de XP la semana siguiente.
+        Es lo que más rápido mejora. Dos veces por semana dan +10% de XP la semana siguiente.
       </div>
       {(() => {
         let flex = sdcFlex(player);
@@ -219,11 +218,9 @@ export function TarjetaEstiramiento({
               </button>
             );
           })}
-          <div className="text-xs" style={{ color: "#7a83a0" }}>
-            Antes de cada posición tenés unos segundos para acomodarte, con el nombre de la que
-            viene ya en pantalla. La primera vez que te toca una, el reloj espera a que toques
-            Listo. Un sonido grave avisa que te prepares y uno agudo que empieces, y la pantalla no
-            se apaga.
+          <div className="text-xs" style={{ color: "#8a93ad" }}>
+            Antes de cada posición tenés unos segundos para acomodarte. Sonido grave: preparate.
+            Agudo: empezá.
           </div>
         </>
       )}

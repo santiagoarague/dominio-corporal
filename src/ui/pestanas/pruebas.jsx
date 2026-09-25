@@ -137,7 +137,7 @@ export function PanelPruebas({
         style={{
           background: "rgba(124,92,255,0.1)",
           border: "1px solid #7c5cff",
-          color: "#7c5cff",
+          color: "#9278ff",
         }}
       >
         Exploración: añadir 5 km de golpe

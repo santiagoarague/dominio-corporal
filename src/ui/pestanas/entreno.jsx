@@ -157,7 +157,7 @@ export function PestanaEntreno({
         </Tarjeta>
       )}
       {sistemaActivo(player, "dungeon") && !dungeon.available && (
-        <div className="text-xs text-center mb-4" style={{ color: "#7a83a0" }}>
+        <div className="text-xs text-center mb-4" style={{ color: "#8a93ad" }}>
           Hoy no hay travesía. Volvé mañana.
         </div>
       )}
@@ -189,8 +189,7 @@ export function PestanaEntreno({
               {"¿Alguna vez hiciste " + pend + "?"}
             </div>
             <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
-              Te lo pregunto una sola vez. Si nunca pudiste, el día que lo hagas queda anotado como
-              una primera vez.
+              Si nunca pudiste, el día que lo logres queda anotado.
             </div>
             <div className="grid grid-cols-2 gap-2">
               <button

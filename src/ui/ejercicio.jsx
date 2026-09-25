@@ -1,8 +1,17 @@
 // Fila de un ejercicio de la rutina.
 import { useState, useEffect } from "react";
-import { IconoMas, IconoCheck, IconoMenos, IconoFlecha } from "./iconos.jsx";
+import { IconoMas, IconoCheck, IconoMenos, IconoFlecha, IconoReloj } from "./iconos.jsx";
 import { sdcKgTxt } from "../logica/extras.js";
-import { sdcNSets, sdcSegs, sdcSplit } from "../logica/series.js";
+import {
+  sdcNSets,
+  sdcSegs,
+  sdcSplit,
+  sdcSostenEstado,
+  sdcSostenPrep,
+  sdcPrimalSon,
+} from "../logica/series.js";
+import { BarraXp } from "./base.jsx";
+import { usePantallaSi } from "./pantalla.js";
 
 function sdcGuiaLin(titulo, texto) {
   return texto ? (
@@ -11,6 +20,64 @@ function sdcGuiaLin(titulo, texto) {
       {texto}
     </div>
   ) : null;
+}
+// El reloj de un sostén en marcha: la preparación, los segundos que quedan y sus botones.
+function PanelSosten({ estado, total, pausado, onYa, onCancelar, onPausa, onTerminar }) {
+  let preparando = estado.fase === "prep",
+    tono = pausado ? "#8a93ad" : preparando ? "#ffb84f" : "#4f9dff",
+    boton = {
+      minHeight: 48,
+      background: "rgba(255,255,255,0.06)",
+      border: "1px solid rgba(255,255,255,0.28)",
+      color: "#e8ecf7",
+      fontWeight: 600,
+    };
+  return (
+    <div
+      className="mt-2 p-3 text-center"
+      style={{ border: "1px solid " + tono, background: "rgba(255,255,255,0.03)" }}
+    >
+      <div className="text-xs uppercase" style={{ letterSpacing: 2, fontWeight: 700, color: tono }}>
+        {pausado ? "En pausa" : preparando ? "Ponete en posición" : "Sostené"}
+      </div>
+      <div
+        style={{
+          fontFamily: "Chakra Petch, sans-serif",
+          fontSize: 48,
+          lineHeight: 1.1,
+          color: tono,
+        }}
+      >
+        {estado.quedan}
+      </div>
+      {!preparando && (
+        <div className="mt-1">
+          <BarraXp value={estado.hecho} max={total} color="#4f9dff" />
+        </div>
+      )}
+      <div className="grid grid-cols-2 gap-2 mt-3">
+        {preparando ? (
+          <>
+            <button onClick={onYa} className="text-sm" style={boton}>
+              Ya estoy →
+            </button>
+            <button onClick={onCancelar} className="text-sm" style={boton}>
+              Cancelar
+            </button>
+          </>
+        ) : (
+          <>
+            <button onClick={onPausa} className="text-sm" style={boton}>
+              {pausado ? "Seguir →" : "Pausa"}
+            </button>
+            <button onClick={onTerminar} className="text-sm" style={boton}>
+              Terminé antes
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  );
 }
 function FilaEjercicio({
   label,
@@ -31,6 +98,8 @@ function FilaEjercicio({
   sug,
   guia,
   abrir,
+  sostenLibre,
+  onSosten,
 }) {
   let paso = Math.max(1, Math.round(base * 0.1)),
     [guiaTocada, setGuiaTocada] = useState(null),
@@ -47,13 +116,99 @@ function FilaEjercicio({
     completa = (done || 0) >= nSeries && value > 0,
     segs = sdcSegs(tip),
     [sdcAbre, sdcSetAbre] = useState(!1),
-    [sdcCierra, sdcSetCierra] = useState(() => !!(completa && onSet));
+    [sdcCierra, sdcSetCierra] = useState(() => !!(completa && onSet)),
+    // El reloj de un sostén: { ini, pz, prep, total, serie } mientras corre.
+    [reloj, setReloj] = useState(null),
+    [, setTic] = useState(0),
+    [marcarLuego, setMarcarLuego] = useState(null),
+    estadoReloj = reloj
+      ? sdcSostenEstado(reloj.ini, reloj.pz, reloj.prep, reloj.total, Date.now())
+      : null,
+    serieActual = done || 0,
+    segsPendiente =
+      segs > 0 && serieActual < nSeries ? repsSerie(serieActual, series[serieActual]) * segs : 0,
+    marcaReloj = estadoReloj && !reloj.pz ? estadoReloj.fase + estadoReloj.quedan : "";
   useEffect(
     function () {
-      (setGuiaTocada(null), sdcSetAbre(!1));
+      (setGuiaTocada(null), sdcSetAbre(!1), reloj && cancelarSosten());
     },
     [label],
   );
+  usePantallaSi(!!reloj);
+  useEffect(
+    function () {
+      if (!reloj || reloj.pz) return;
+      var cada = setInterval(function () {
+        setTic((previo) => previo + 1);
+      }, 250);
+      return function () {
+        clearInterval(cada);
+      };
+    },
+    [reloj],
+  );
+  // Un sonido por cambio: 3-2-1 antes de arrancar y antes de terminar, otro al arrancar.
+  useEffect(
+    function () {
+      if (!marcaReloj) return;
+      if (estadoReloj.fase === "fin") return terminarSosten(reloj.total);
+      if (estadoReloj.fase === "sosten" && estadoReloj.quedan === reloj.total)
+        sdcPrimalSon("arranca");
+      else if (estadoReloj.quedan <= 3) sdcPrimalSon("tic");
+    },
+    [marcaReloj],
+  );
+  // Si la serie se marca a mano mientras el reloj corre, el reloj se va.
+  useEffect(
+    function () {
+      reloj && serieActual !== reloj.serie && cancelarSosten();
+    },
+    [serieActual],
+  );
+  // Terminé antes: primero se corrigen las reps de la serie y, ya con ese valor, se
+  // marca. Marcarla en el mismo toque guardaria el ajuste viejo.
+  useEffect(
+    function () {
+      if (!marcarLuego) return;
+      if (repsSerie(marcarLuego.serie, series[marcarLuego.serie]) !== marcarLuego.reps) return;
+      (setMarcarLuego(null), onSet(marcarLuego.serie + 1));
+    },
+    [marcarLuego, ajustes],
+  );
+  function empezarSosten() {
+    (setReloj({
+      ini: Date.now(),
+      pz: 0,
+      prep: sdcSostenPrep,
+      total: segsPendiente,
+      serie: serieActual,
+    }),
+      onSosten && onSosten(!0));
+  }
+  function cancelarSosten() {
+    (setReloj(null), onSosten && onSosten(!1));
+  }
+  function pausarSosten() {
+    setReloj(
+      reloj.pz
+        ? { ...reloj, ini: reloj.ini + (Date.now() - reloj.pz), pz: 0 }
+        : { ...reloj, pz: Date.now() },
+    );
+  }
+  function yaEstoy() {
+    setReloj({ ...reloj, ini: Date.now() - reloj.prep * 1e3, pz: 0 });
+  }
+  function terminarSosten(segundos) {
+    var serie = reloj.serie,
+      meta = repsSerie(serie, series[serie]),
+      reps = Math.min(meta, Math.floor(segundos / segs));
+    cancelarSosten();
+    if (reps < 1) return;
+    sdcPrimalSon("fin");
+    reps < meta && onAj
+      ? (onAj(serie, reps), setMarcarLuego({ serie: serie, reps: reps }))
+      : onSet(serie + 1);
+  }
   useEffect(
     function () {
       if (completa && onSet) {
@@ -92,7 +247,7 @@ function FilaEjercicio({
           style={{ color: "#3ecf8e", whiteSpace: "nowrap" }}
         >
           {segs > 0 ? hechas * segs + " s" : hechas + " reps"}
-          <IconoFlecha size={12} color="#5a6178" />
+          <IconoFlecha size={12} color="#8a93ad" />
         </span>
       </button>
     );
@@ -104,20 +259,23 @@ function FilaEjercicio({
             sdcSetAbre(!1);
           }}
           className="w-full flex items-center gap-2 text-xs mb-1 text-left"
-          style={{ minHeight: 36, background: "transparent", border: "none", color: "#3ecf8e" }}
+          style={{ minHeight: 44, background: "transparent", border: "none", color: "#3ecf8e" }}
         >
           <IconoCheck size={12} color="#3ecf8e" />
           Hecho · ocultar
         </button>
       ) : null}
-      <div className="flex items-center justify-between gap-3">
-        <div>
+      <div className="flex items-center justify-between gap-3" style={{ flexWrap: "wrap" }}>
+        <div style={{ flex: "1 1 130px", minWidth: 0 }}>
           <div className="flex items-center gap-1">
             <span className="text-sm" style={{ color: "#e8ecf7" }}>
               {label}
             </span>
           </div>
-          <div className="flex items-center gap-2 text-xs" style={{ color: "#9aa4bd" }}>
+          <div
+            className="flex items-center text-xs"
+            style={{ color: "#9aa4bd", flexWrap: "wrap", columnGap: 8 }}
+          >
             <span>
               Meta: {value} reps{segs > 0 ? " · " + value * segs + "s de sostén" : ""}
             </span>
@@ -138,7 +296,7 @@ function FilaEjercicio({
             )}
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2" style={{ marginLeft: "auto" }}>
           <button
             onClick={() => onChange(Math.max(min, value - paso))}
             className="flex items-center justify-center"
@@ -188,7 +346,7 @@ function FilaEjercicio({
                 segs > 0 ? (
                   <div>
                     <div>{hecha ? "✓ " + efectivas : efectivas}</div>
-                    <div style={{ fontSize: 11, fontWeight: 400, opacity: 0.8 }}>
+                    <div style={{ fontSize: 14, fontWeight: 400, opacity: 0.85 }}>
                       {efectivas * segs}s
                     </div>
                   </div>
@@ -271,6 +429,34 @@ function FilaEjercicio({
           })}
         </div>
       )}
+      {onSet && segsPendiente > 0 && !reloj && (
+        <button
+          onClick={empezarSosten}
+          disabled={sostenLibre === !1}
+          className="w-full mt-2 flex items-center justify-center gap-2 text-sm disabled:opacity-40"
+          style={{
+            minHeight: 48,
+            background: "rgba(79,157,255,0.1)",
+            border: "1px solid #4f9dff",
+            color: "#4f9dff",
+            fontWeight: 700,
+          }}
+        >
+          <IconoReloj size={16} color="#4f9dff" />
+          Sostener {segsPendiente} s
+        </button>
+      )}
+      {reloj && estadoReloj && (
+        <PanelSosten
+          estado={estadoReloj}
+          total={reloj.total}
+          pausado={!!reloj.pz}
+          onYa={yaEstoy}
+          onCancelar={cancelarSosten}
+          onPausa={pausarSosten}
+          onTerminar={() => terminarSosten(estadoReloj.hecho)}
+        />
+      )}
       {onWeight && (
         <>
           <div className="flex gap-2 mt-2">
@@ -297,7 +483,7 @@ function FilaEjercicio({
               );
             })}
           </div>
-          <div className="text-xs mt-1" style={{ color: "#7a83a0" }}>
+          <div className="text-xs mt-1" style={{ color: "#8a93ad" }}>
             {kgPrev && kgPrev.length ? (
               <>La última vez: {kgPrev.map(sdcKgTxt).join(" · ")} kg</>
             ) : (
@@ -326,7 +512,7 @@ function FilaEjercicio({
         </>
       )}
       {onSet && (
-        <div className="text-xs mt-1" style={{ color: completa ? "#3ecf8e" : "#5a6178" }}>
+        <div className="text-xs mt-1" style={{ color: completa ? "#3ecf8e" : "#8a93ad" }}>
           {completa
             ? "✓ Series hechas · " +
               hechas +
