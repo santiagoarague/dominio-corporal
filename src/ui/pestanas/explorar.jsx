@@ -1,4 +1,4 @@
-// La pestana Explorar: lo que antes era un bloque de App.
+// Pestana Explorar: kilometros, tramos, caminata cronometrada y el mapa de nodos.
 import { s2, sectores, i2, nodosExplorar, Ny } from "../../logica/explorar.js";
 import { vd } from "../../datos/rangos.js";
 import { fechaHoy } from "../../logica/rutina.js";

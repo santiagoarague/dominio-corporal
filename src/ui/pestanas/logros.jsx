@@ -1,4 +1,4 @@
-// La pestana Logros: lo que antes era un bloque de App.
+// Pestana Logros: los logros por categoria y dificultad.
 import { logros, categoriasLogros, ordenDificultad, sdcDific } from "../../datos/logros.js";
 import { sdcCatAbierta } from "../../logica/series.js";
 import { colorRango } from "../../datos/rangos.js";

@@ -1,4 +1,4 @@
-// La pestana Combate: lo que antes era un bloque de App.
+// Pestana Combate: elegir patron, preparacion, ventana de ataque y resultado.
 import {
   za,
   golpesNecesarios,
