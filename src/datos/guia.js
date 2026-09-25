@@ -80,7 +80,7 @@ var guia = [
     {
       g: "LO DEMÁS",
       title: "Las tres modalidades",
-      text: "Son las tres formas de entrenar que entiende la app: peso corporal (solo con tu cuerpo), gimnasio (con pesas y máquinas) y flow (movimiento en el suelo, movilidad y control). Podés tener varias activas y elegir cada día con cuál entrenás. Si una modalidad no cubre alguno de los cuatro patrones, para ese patrón se usa la versión de peso corporal.",
+      text: "Son las tres formas de entrenar que entiende la app: peso corporal (solo con tu cuerpo), gimnasio (con pesas y máquinas) y flow (capoeira, breaking, pino y colgarse de la barra). Podés tener varias activas y elegir cada día con cuál entrenás.",
     },
     {
       g: "LO DEMÁS",

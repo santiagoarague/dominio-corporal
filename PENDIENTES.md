@@ -412,7 +412,9 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
   - La prueba del Umbral: 3 rondas al 60% de la meta del rango siguiente. Puede ser exigente.
   - El nombre **Calistenia** para la modalidad de peso corporal.
   - **0,6** como factor para comparar pruebas viejas y nuevas del calibre: es una estimación.
-- **Movilidad & Primal Flow** (la modalidad) se parece mucho a **Instinto Primal** (el sistema).
+- ~~**Movilidad & Primal Flow** (la modalidad) se parecía mucho a **Instinto Primal** (el sistema)~~ —
+  resuelto: la modalidad se llama **Flow** y su descripción dice lo que trae (capoeira, breaking,
+  pino y colgarse de la barra).
 - Un solo metrónomo para los cuatro ejercicios, aunque uno sea un sostén.
 - El reloj del **combate** sigue restando de a un segundo, a propósito: su tiempo es un
   desafío, y con la hora real salir un momento de la app costaría un corazón.

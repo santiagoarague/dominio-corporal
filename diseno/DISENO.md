@@ -133,7 +133,7 @@ explícitamente cuál rompe y por qué.
 ### Modalidades
 Tres formas de entrenar, se pueden tener varias y elegir cada día:
 - **Peso corporal**, **Gimnasio** y **Flow** (breaking, capoeira, locomoción animal, pino). En la
-  rutina y al elegirlas se llaman **Calistenia**, **Fuerza de Acero** y **Movilidad & Primal Flow**.
+  rutina y al elegirlas se llaman **Calistenia**, **Fuerza de Acero** y **Flow**.
   Peso corporal se llamaba *Dominio Corporal*, igual que el juego, y se cambió por eso.
 - Cada una tiene su propio juego de nombres de rango:
 

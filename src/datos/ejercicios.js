@@ -761,8 +761,8 @@ var factorRango = { E: 0.6, D: 0.8, C: 1, B: 1.25, A: 1.5, S: 2, Z: 2 },
     },
     {
       id: "flow",
-      name: "Movilidad & Primal Flow",
-      desc: "Patrones primal, animal flow y control articular.",
+      name: "Flow",
+      desc: "Capoeira, breaking, pino y colgarse de la barra.",
     },
   ],
   ejerciciosGym = {

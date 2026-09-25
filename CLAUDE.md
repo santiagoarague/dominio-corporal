@@ -198,7 +198,7 @@ Both functions stay untouched; the fix wraps them like the other hooks. `registr
 
 ### Exercise selection
 
-Rank (`rangos` = EâZ) picks the exercise **variant**; the fitness test picks the **volume**. Tables: `ejerciciosPeso` (bodyweight), `ejerciciosGym` (gym), `ejerciciosFlow` (flow â only `squat` and `abs`; push and pull fall back to `ejerciciosPeso`), resolved by `ejercicioDe(group, rank, modality)`. Every entry has an `alt` string, surfaced by the "ð¡ alternativa" button, which must name a real equipment-free substitute rather than a technique tip. Targets come from `metaDelDia(state)`; the four groups are always `squat`, `pushup`, `back`, `abs`
+Rank (`rangos` = EâZ) picks the exercise **variant**; the fitness test picks the **volume**. Tables: `ejerciciosPeso` (bodyweight), `ejerciciosGym` (gym), `ejerciciosFlow` (flow), resolved by `ejercicioDe(group, rank, modality)`, which falls back to `ejerciciosPeso` for a group a table lacks — none does any more: all three cover the four patterns at every rank. Every entry has an `alt` string, surfaced by the "ð¡ alternativa" button, which must name a real equipment-free substitute rather than a technique tip. Targets come from `metaDelDia(state)`; the four groups are always `squat`, `pushup`, `back`, `abs`
 
 **A rung can hold one exercise or several.** `ejercicioDe(group, rank, modality, date)` returns a plain entry unchanged, and picks from an array with `hashDia(date|group|rank|modality, n)` — the same hash `sdcModDia` uses. Mixed shapes coexist on purpose, so a table can be widened one modality at a time without touching the other two.
 
@@ -702,7 +702,7 @@ Rank names no longer appear as letters anywhere in prose. Anything that said "Ra
 
 ## Rank titles: three sets, one per modality
 
-The modalities' own display names live in `modalidades`: **Calistenia** · Fuerza de Acero · Movilidad & Primal Flow. Bodyweight used to be called *Dominio Corporal*, the product's own name, so the routine card read "Rutina de hoy / Dominio Corporal"; it was renamed for that reason. The short chips in Perfil and the achievement texts still say *peso corporal*, which is a description, not a name.
+The modalities' own display names live in `modalidades`: **Calistenia** · Fuerza de Acero · **Flow**. Flow used to be *Movilidad & Primal Flow*, described as "Patrones primal, animal flow y control articular": it shared a word with the Instinto Primal system (animal locomotion — Oso, Pato, Cangrejo) and described neither what its tables hold nor what that system is. Its exercises are capoeira, breaking footwork and freezes, handstands and hanging, which is what the description says now. Bodyweight used to be called *Dominio Corporal*, the product's own name, so the routine card read "Rutina de hoy / Dominio Corporal"; it was renamed for that reason. The short chips in Perfil and the achievement texts still say *peso corporal*, which is a description, not a name.
 
 The rank already *was* modality-specific (`ejercicioDe(group, rank, modality)` resolves `ejerciciosPeso`, `ejerciciosGym` or `ejerciciosFlow`), but `descRango` had one set of descriptors written in bodyweight terms, so a gym player was being lied to.
 
