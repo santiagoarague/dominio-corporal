@@ -13,12 +13,13 @@ La app dejó de ser un solo archivo de 643 KB sin código fuente. La copia de an
 etiqueta `v1-html` y en `dominio-corporal-v1-html.zip`. Nada de esto cambió la partida guardada
 ni la dirección del sitio.
 
-- **Código fuente de verdad**: Vite + React 19, en módulos por tema, con nombres reales en vez
-  de los del minificador (todos los del primer nivel; las variables de adentro de cada función
-  siguen cortas), y en JSX. Cada paso se comprobó comparando el resultado con la versión
-  publicada, pantalla por pantalla.
-- **Revisor automático (ESLint)**: marca variables que no existen, código que nadie usa y hooks de
-  React dentro de un `if`. Corre antes de publicar, igual que las pruebas. En la primera pasada
+- **Código fuente de verdad**: Vite + React 19, en módulos por tema, en JSX y con nombres reales
+  en vez de los del minificador: todos, desde las funciones hasta la última variable de adentro
+  (de 1.217 nombres de una o dos letras que tenía la interfaz quedan 67, y son `i`, `id`, `kg`,
+  `xp` y parecidos). Cada paso se comprobó comparando el resultado con la versión publicada,
+  pantalla por pantalla y con la partida guardada después de cada una.
+- **Revisor automático (ESLint)**: marca variables que no existen, código que nadie usa, hooks de
+  React dentro de un `if` y una variable que tapa a otra del mismo nombre. Corre antes de publicar, igual que las pruebas. En la primera pasada
   encontró que el campo del peso corporal se había perdido y una docena de valores muertos.
 - **Pruebas**: 119 automáticas (curva de XP, Umbral, buffos, deshacer, sonidos…) y 9 de punta a
   punta en Edge. **Si alguna falla, o el revisor encuentra un error, no se publica nada**: el deploy lo hace GitHub Actions y las
