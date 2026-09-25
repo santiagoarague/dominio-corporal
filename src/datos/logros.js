@@ -39,8 +39,12 @@ var categoriasLogros = [
       category: "Rutina del Día",
       name: "Primer Día",
       desc: "Completá tu primera rutina",
-      check: (e) =>
-        e.lifetimeReps.squat + e.lifetimeReps.pushup + e.lifetimeReps.back + e.lifetimeReps.abs > 0,
+      check: (partida) =>
+        partida.lifetimeReps.squat +
+          partida.lifetimeReps.pushup +
+          partida.lifetimeReps.back +
+          partida.lifetimeReps.abs >
+        0,
     },
     {
       id: "e_full",
@@ -48,7 +52,7 @@ var categoriasLogros = [
       category: "Rutina del Día",
       name: "Cuatro Patrones",
       desc: "Completá los 4 patrones en un mismo día",
-      check: (e) => (e.week.fullDays || 0) >= 1 || e.lastFullDate != null,
+      check: (partida) => (partida.week.fullDays || 0) >= 1 || partida.lastFullDate != null,
     },
     {
       id: "e_stretch",
@@ -56,7 +60,7 @@ var categoriasLogros = [
       category: "Persistencia",
       name: "Primer Respiro",
       desc: "Completá tu primera rutina de estiramiento",
-      check: (e) => (e.lifetimeStretch || 0) >= 1,
+      check: (partida) => (partida.lifetimeStretch || 0) >= 1,
     },
     {
       id: "e_primal",
@@ -64,7 +68,7 @@ var categoriasLogros = [
       category: "Modo Primal",
       name: "Instinto Despierto",
       desc: "Completá tu primera sesión Primal",
-      check: (e) => (e.lifetimePrimal || 0) >= 1,
+      check: (partida) => (partida.lifetimePrimal || 0) >= 1,
     },
     {
       id: "e_step",
@@ -72,7 +76,7 @@ var categoriasLogros = [
       category: "Exploración",
       name: "Primera Expedición",
       desc: "Concluí tu primera expedición",
-      check: (e) => (e.exploration.lifetimeKm || 0) > 0,
+      check: (partida) => (partida.exploration.lifetimeKm || 0) > 0,
     },
     {
       id: "e_combat",
@@ -80,7 +84,7 @@ var categoriasLogros = [
       category: "Combate",
       name: "Primer Contacto",
       desc: "Recuperá tu primer terreno",
-      check: (e) => (e.combat.villainsDefeated || 0) >= 1,
+      check: (partida) => (partida.combat.villainsDefeated || 0) >= 1,
     },
     {
       id: "d_streak3",
@@ -88,7 +92,7 @@ var categoriasLogros = [
       category: "Persistencia",
       name: "Tres Días",
       desc: "Alcanzá una racha de 3 días",
-      check: (e) => e.streak.current >= 3,
+      check: (partida) => partida.streak.current >= 3,
     },
     {
       id: "d_km5",
@@ -96,7 +100,7 @@ var categoriasLogros = [
       category: "Exploración",
       name: "Cinco Kilómetros",
       desc: "Acumulá 5 km recorridos",
-      check: (e) => (e.exploration.lifetimeKm || 0) >= 5,
+      check: (partida) => (partida.exploration.lifetimeKm || 0) >= 5,
     },
     {
       id: "d_place1",
@@ -104,7 +108,7 @@ var categoriasLogros = [
       category: "Exploración",
       name: "Primer Sector",
       desc: "Descubrí tu primer lugar",
-      check: (e) => e.exploration.unlockedIndex >= 0,
+      check: (partida) => partida.exploration.unlockedIndex >= 0,
     },
     {
       id: "d_vol100",
@@ -112,8 +116,11 @@ var categoriasLogros = [
       category: "Rutina del Día",
       name: "Cien Repeticiones",
       desc: "100 reps totales de por vida",
-      check: (e) =>
-        e.lifetimeReps.squat + e.lifetimeReps.pushup + e.lifetimeReps.back + e.lifetimeReps.abs >=
+      check: (partida) =>
+        partida.lifetimeReps.squat +
+          partida.lifetimeReps.pushup +
+          partida.lifetimeReps.back +
+          partida.lifetimeReps.abs >=
         100,
     },
     {
@@ -122,7 +129,7 @@ var categoriasLogros = [
       category: "Combate",
       name: "Primera Travesía",
       desc: "Completá tu primera travesía",
-      check: (e) => (e.dungeonsCleared || 0) >= 1,
+      check: (partida) => (partida.dungeonsCleared || 0) >= 1,
     },
     {
       id: "d_primal3",
@@ -130,7 +137,7 @@ var categoriasLogros = [
       category: "Modo Primal",
       name: "Tres Patrones",
       desc: "Descubrí 3 movimientos Primal",
-      check: (e) => e.primal.unlockedCount >= 3,
+      check: (partida) => partida.primal.unlockedCount >= 3,
     },
     {
       id: "d_rank",
@@ -138,7 +145,7 @@ var categoriasLogros = [
       category: "Rutina del Día",
       name: "Primer Umbral",
       desc: "Cruzá tu primer umbral",
-      check: (e) => rangos.indexOf(e.progress.rank) >= rangos.indexOf("D"),
+      check: (partida) => rangos.indexOf(partida.progress.rank) >= rangos.indexOf("D"),
     },
     {
       id: "c_streak7",
@@ -146,7 +153,7 @@ var categoriasLogros = [
       category: "Persistencia",
       name: "Semana de Hierro",
       desc: "Alcanzá una racha de 7 días",
-      check: (e) => e.streak.current >= 7,
+      check: (partida) => partida.streak.current >= 7,
     },
     {
       id: "c_vol500",
@@ -154,8 +161,11 @@ var categoriasLogros = [
       category: "Rutina del Día",
       name: "Quinientas",
       desc: "500 reps totales de por vida",
-      check: (e) =>
-        e.lifetimeReps.squat + e.lifetimeReps.pushup + e.lifetimeReps.back + e.lifetimeReps.abs >=
+      check: (partida) =>
+        partida.lifetimeReps.squat +
+          partida.lifetimeReps.pushup +
+          partida.lifetimeReps.back +
+          partida.lifetimeReps.abs >=
         500,
     },
     {
@@ -164,7 +174,7 @@ var categoriasLogros = [
       category: "Rutina del Día",
       name: "Base de Piernas",
       desc: "250 reps de piernas",
-      check: (e) => e.lifetimeReps.squat >= 250,
+      check: (partida) => partida.lifetimeReps.squat >= 250,
     },
     {
       id: "c_push150",
@@ -172,7 +182,7 @@ var categoriasLogros = [
       category: "Rutina del Día",
       name: "Base de Empuje",
       desc: "150 reps de empuje",
-      check: (e) => e.lifetimeReps.pushup >= 150,
+      check: (partida) => partida.lifetimeReps.pushup >= 150,
     },
     {
       id: "c_combat5",
@@ -180,7 +190,7 @@ var categoriasLogros = [
       category: "Combate",
       name: "Terreno Ganado",
       desc: "Recuperá 3 terrenos",
-      check: (e) => (e.combat.villainsDefeated || 0) >= 3,
+      check: (partida) => (partida.combat.villainsDefeated || 0) >= 3,
     },
     {
       id: "c_boss1",
@@ -188,7 +198,7 @@ var categoriasLogros = [
       category: "Combate",
       name: "Primer Bloqueo Roto",
       desc: "Superá tu primer Jefe",
-      check: (e) => (e.combat.villainsDefeated || 0) >= 5,
+      check: (partida) => (partida.combat.villainsDefeated || 0) >= 5,
     },
     {
       id: "c_km20",
@@ -196,7 +206,7 @@ var categoriasLogros = [
       category: "Exploración",
       name: "Piernas Hechas",
       desc: "Acumulá 20 km recorridos",
-      check: (e) => (e.exploration.lifetimeKm || 0) >= 20,
+      check: (partida) => (partida.exploration.lifetimeKm || 0) >= 20,
     },
     {
       id: "c_primal6",
@@ -204,7 +214,7 @@ var categoriasLogros = [
       category: "Modo Primal",
       name: "Repertorio Motriz",
       desc: "Descubrí 6 movimientos Primal",
-      check: (e) => e.primal.unlockedCount >= 6,
+      check: (partida) => partida.primal.unlockedCount >= 6,
     },
     {
       id: "c_stretch10",
@@ -212,7 +222,7 @@ var categoriasLogros = [
       category: "Persistencia",
       name: "Tejido Flexible",
       desc: "10 rutinas de estiramiento",
-      check: (e) => (e.lifetimeStretch || 0) >= 10,
+      check: (partida) => (partida.lifetimeStretch || 0) >= 10,
     },
     {
       id: "c_rank",
@@ -220,7 +230,7 @@ var categoriasLogros = [
       category: "Rutina del Día",
       name: "Segundo Umbral",
       desc: "Cruzá tu segundo umbral",
-      check: (e) => rangos.indexOf(e.progress.rank) >= rangos.indexOf("C"),
+      check: (partida) => rangos.indexOf(partida.progress.rank) >= rangos.indexOf("C"),
     },
     {
       id: "b_streak14",
@@ -228,7 +238,7 @@ var categoriasLogros = [
       category: "Persistencia",
       name: "Catorce Sin Fallar",
       desc: "Alcanzá una racha de 14 días",
-      check: (e) => e.streak.current >= 14,
+      check: (partida) => partida.streak.current >= 14,
     },
     {
       id: "b_vol1500",
@@ -236,8 +246,11 @@ var categoriasLogros = [
       category: "Rutina del Día",
       name: "Mil Quinientas",
       desc: "1500 reps totales de por vida",
-      check: (e) =>
-        e.lifetimeReps.squat + e.lifetimeReps.pushup + e.lifetimeReps.back + e.lifetimeReps.abs >=
+      check: (partida) =>
+        partida.lifetimeReps.squat +
+          partida.lifetimeReps.pushup +
+          partida.lifetimeReps.back +
+          partida.lifetimeReps.abs >=
         1500,
     },
     {
@@ -246,7 +259,7 @@ var categoriasLogros = [
       category: "Rutina del Día",
       name: "Espalda de Roble",
       desc: "500 reps de tracción",
-      check: (e) => e.lifetimeReps.back >= 500,
+      check: (partida) => partida.lifetimeReps.back >= 500,
     },
     {
       id: "b_abs750",
@@ -254,7 +267,7 @@ var categoriasLogros = [
       category: "Rutina del Día",
       name: "Núcleo Firme",
       desc: "750 reps de core",
-      check: (e) => e.lifetimeReps.abs >= 750,
+      check: (partida) => partida.lifetimeReps.abs >= 750,
     },
     {
       id: "b_combat15",
@@ -262,7 +275,7 @@ var categoriasLogros = [
       category: "Combate",
       name: "Terreno Firme",
       desc: "Recuperá 15 terrenos",
-      check: (e) => (e.combat.villainsDefeated || 0) >= 15,
+      check: (partida) => (partida.combat.villainsDefeated || 0) >= 15,
     },
     {
       id: "b_dungeon10",
@@ -270,7 +283,7 @@ var categoriasLogros = [
       category: "Combate",
       name: "Fondo",
       desc: "Completá 10 travesías",
-      check: (e) => (e.dungeonsCleared || 0) >= 10,
+      check: (partida) => (partida.dungeonsCleared || 0) >= 10,
     },
     {
       id: "b_km50",
@@ -278,7 +291,7 @@ var categoriasLogros = [
       category: "Exploración",
       name: "Kilometrero",
       desc: "Acumulá 50 km recorridos",
-      check: (e) => (e.exploration.lifetimeKm || 0) >= 50,
+      check: (partida) => (partida.exploration.lifetimeKm || 0) >= 50,
     },
     {
       id: "b_place6",
@@ -286,7 +299,7 @@ var categoriasLogros = [
       category: "Exploración",
       name: "Medio Mapa",
       desc: "Descubrí 6 sectores",
-      check: (e) => e.exploration.unlockedIndex >= 5,
+      check: (partida) => partida.exploration.unlockedIndex >= 5,
     },
     {
       id: "b_primal12",
@@ -294,7 +307,7 @@ var categoriasLogros = [
       category: "Modo Primal",
       name: "Flujo Intermedio",
       desc: "Descubrí 12 movimientos Primal",
-      check: (e) => e.primal.unlockedCount >= 12,
+      check: (partida) => partida.primal.unlockedCount >= 12,
     },
     {
       id: "b_primal50",
@@ -302,7 +315,7 @@ var categoriasLogros = [
       category: "Modo Primal",
       name: "Cincuenta Sesiones",
       desc: "50 sesiones Primal completadas",
-      check: (e) => (e.lifetimePrimal || 0) >= 50,
+      check: (partida) => (partida.lifetimePrimal || 0) >= 50,
     },
     {
       id: "b_rank",
@@ -310,7 +323,7 @@ var categoriasLogros = [
       category: "Rutina del Día",
       name: "Tercer Umbral",
       desc: "Cruzá tu tercer umbral",
-      check: (e) => rangos.indexOf(e.progress.rank) >= rangos.indexOf("B"),
+      check: (partida) => rangos.indexOf(partida.progress.rank) >= rangos.indexOf("B"),
     },
     {
       id: "a_wstreak4",
@@ -318,7 +331,7 @@ var categoriasLogros = [
       category: "Persistencia",
       name: "Mes Cumplido",
       desc: "4 semanas seguidas alcanzando tu meta",
-      check: (e) => (e.weeklyStreak || 0) >= 4,
+      check: (partida) => (partida.weeklyStreak || 0) >= 4,
     },
     {
       id: "a_vol5000",
@@ -326,8 +339,11 @@ var categoriasLogros = [
       category: "Rutina del Día",
       name: "Cinco Mil",
       desc: "5000 reps totales de por vida",
-      check: (e) =>
-        e.lifetimeReps.squat + e.lifetimeReps.pushup + e.lifetimeReps.back + e.lifetimeReps.abs >=
+      check: (partida) =>
+        partida.lifetimeReps.squat +
+          partida.lifetimeReps.pushup +
+          partida.lifetimeReps.back +
+          partida.lifetimeReps.abs >=
         5e3,
     },
     {
@@ -336,7 +352,7 @@ var categoriasLogros = [
       category: "Rutina del Día",
       name: "Piernas de Acero",
       desc: "2000 reps de piernas",
-      check: (e) => e.lifetimeReps.squat >= 2e3,
+      check: (partida) => partida.lifetimeReps.squat >= 2e3,
     },
     {
       id: "a_push1500",
@@ -344,7 +360,7 @@ var categoriasLogros = [
       category: "Rutina del Día",
       name: "Empuje de Titán",
       desc: "1500 reps de empuje",
-      check: (e) => e.lifetimeReps.pushup >= 1500,
+      check: (partida) => partida.lifetimeReps.pushup >= 1500,
     },
     {
       id: "a_unilateral",
@@ -352,7 +368,7 @@ var categoriasLogros = [
       category: "Rutina del Día",
       name: "Dominio Unilateral",
       desc: "Llegá al quinto rango",
-      check: (e) => rangos.indexOf(e.progress.rank) >= rangos.indexOf("A"),
+      check: (partida) => rangos.indexOf(partida.progress.rank) >= rangos.indexOf("A"),
     },
     {
       id: "a_combat40",
@@ -360,7 +376,7 @@ var categoriasLogros = [
       category: "Combate",
       name: "Territorio Propio",
       desc: "Recuperá 40 terrenos",
-      check: (e) => (e.combat.villainsDefeated || 0) >= 40,
+      check: (partida) => (partida.combat.villainsDefeated || 0) >= 40,
     },
     {
       id: "a_dungeon30",
@@ -368,7 +384,7 @@ var categoriasLogros = [
       category: "Combate",
       name: "Aguante",
       desc: "Completá 30 travesías",
-      check: (e) => (e.dungeonsCleared || 0) >= 30,
+      check: (partida) => (partida.dungeonsCleared || 0) >= 30,
     },
     {
       id: "a_km100",
@@ -376,7 +392,7 @@ var categoriasLogros = [
       category: "Exploración",
       name: "Fondista",
       desc: "Acumulá 100 km recorridos",
-      check: (e) => (e.exploration.lifetimeKm || 0) >= 100,
+      check: (partida) => (partida.exploration.lifetimeKm || 0) >= 100,
     },
     {
       id: "a_primal18",
@@ -384,7 +400,7 @@ var categoriasLogros = [
       category: "Modo Primal",
       name: "Flujo Avanzado",
       desc: "Descubrí 18 movimientos Primal",
-      check: (e) => e.primal.unlockedCount >= 18,
+      check: (partida) => partida.primal.unlockedCount >= 18,
     },
     {
       id: "a_attr10",
@@ -392,7 +408,8 @@ var categoriasLogros = [
       category: "Persistencia",
       name: "Atributo Consolidado",
       desc: "Llevá un atributo a Nivel 10",
-      check: (e) => listaAtributos.some((a) => nivelAtributo(valorAtributo(e, a)) >= 10),
+      check: (partida) =>
+        listaAtributos.some((atr) => nivelAtributo(valorAtributo(partida, atr)) >= 10),
     },
     {
       id: "s_wstreak12",
@@ -400,7 +417,7 @@ var categoriasLogros = [
       category: "Persistencia",
       name: "Trimestre de Hierro",
       desc: "12 semanas seguidas alcanzando tu meta",
-      check: (e) => (e.weeklyStreak || 0) >= 12,
+      check: (partida) => (partida.weeklyStreak || 0) >= 12,
     },
     {
       id: "s_vol15000",
@@ -408,8 +425,11 @@ var categoriasLogros = [
       category: "Rutina del Día",
       name: "Quince Mil",
       desc: "15000 reps totales de por vida",
-      check: (e) =>
-        e.lifetimeReps.squat + e.lifetimeReps.pushup + e.lifetimeReps.back + e.lifetimeReps.abs >=
+      check: (partida) =>
+        partida.lifetimeReps.squat +
+          partida.lifetimeReps.pushup +
+          partida.lifetimeReps.back +
+          partida.lifetimeReps.abs >=
         15e3,
     },
     {
@@ -418,7 +438,7 @@ var categoriasLogros = [
       category: "Rutina del Día",
       name: "Élite Confirmada",
       desc: "Llegá al sexto rango",
-      check: (e) => rangos.indexOf(e.progress.rank) >= rangos.indexOf("S"),
+      check: (partida) => rangos.indexOf(partida.progress.rank) >= rangos.indexOf("S"),
     },
     {
       id: "s_combat100",
@@ -426,7 +446,7 @@ var categoriasLogros = [
       category: "Combate",
       name: "Centenar Recuperado",
       desc: "Recuperá 100 terrenos",
-      check: (e) => (e.combat.villainsDefeated || 0) >= 100,
+      check: (partida) => (partida.combat.villainsDefeated || 0) >= 100,
     },
     {
       id: "s_dungeon75",
@@ -434,7 +454,7 @@ var categoriasLogros = [
       category: "Combate",
       name: "Segundo Viento",
       desc: "Completá 75 travesías",
-      check: (e) => (e.dungeonsCleared || 0) >= 75,
+      check: (partida) => (partida.dungeonsCleared || 0) >= 75,
     },
     {
       id: "s_place_all",
@@ -442,7 +462,7 @@ var categoriasLogros = [
       category: "Exploración",
       name: "Fin del Mapa",
       desc: "Descubrí todos los sectores conocidos",
-      check: (e) => e.exploration.unlockedIndex >= nodosExplorar.length - 1,
+      check: (partida) => partida.exploration.unlockedIndex >= nodosExplorar.length - 1,
     },
     {
       id: "s_km200",
@@ -450,7 +470,7 @@ var categoriasLogros = [
       category: "Exploración",
       name: "Paso Largo",
       desc: "Acumulá 200 km recorridos",
-      check: (e) => (e.exploration.lifetimeKm || 0) >= 200,
+      check: (partida) => (partida.exploration.lifetimeKm || 0) >= 200,
     },
     {
       id: "s_primal_all",
@@ -458,7 +478,7 @@ var categoriasLogros = [
       category: "Modo Primal",
       name: "Maestro Ancestral",
       desc: "Descubrí todos los movimientos Primal",
-      check: (e) => e.primal.unlockedCount >= movimientosPrimal.length,
+      check: (partida) => partida.primal.unlockedCount >= movimientosPrimal.length,
     },
     {
       id: "s_primal200",
@@ -466,7 +486,7 @@ var categoriasLogros = [
       category: "Modo Primal",
       name: "Doscientas Sesiones",
       desc: "200 sesiones Primal completadas",
-      check: (e) => (e.lifetimePrimal || 0) >= 200,
+      check: (partida) => (partida.lifetimePrimal || 0) >= 200,
     },
     {
       id: "s_attr20",
@@ -474,7 +494,8 @@ var categoriasLogros = [
       category: "Persistencia",
       name: "Atributo Élite",
       desc: "Llevá un atributo a Nivel 20",
-      check: (e) => listaAtributos.some((a) => nivelAtributo(valorAtributo(e, a)) >= 20),
+      check: (partida) =>
+        listaAtributos.some((atr) => nivelAtributo(valorAtributo(partida, atr)) >= 20),
     },
     {
       id: "z_rank",
@@ -482,7 +503,7 @@ var categoriasLogros = [
       category: "Rutina del Día",
       name: "Trascendencia",
       desc: "Llegá al último rango",
-      check: (e) => rangos.indexOf(e.progress.rank) >= rangos.indexOf("Z"),
+      check: (partida) => rangos.indexOf(partida.progress.rank) >= rangos.indexOf("Z"),
     },
     {
       id: "z_pr_squat",
@@ -490,7 +511,7 @@ var categoriasLogros = [
       category: "Rutina del Día",
       name: "PR de Piernas",
       desc: "Récord personal de 60+ reps de piernas en una sesión",
-      check: (e) => e.records && e.records.squat >= 60,
+      check: (partida) => partida.records && partida.records.squat >= 60,
     },
     {
       id: "z_pr_push",
@@ -498,7 +519,7 @@ var categoriasLogros = [
       category: "Rutina del Día",
       name: "PR de Empuje",
       desc: "Récord personal de 40+ reps de empuje en una sesión",
-      check: (e) => e.records && e.records.pushup >= 40,
+      check: (partida) => partida.records && partida.records.pushup >= 40,
     },
     {
       id: "z_pr_back",
@@ -506,7 +527,7 @@ var categoriasLogros = [
       category: "Rutina del Día",
       name: "PR de Tracción",
       desc: "Récord personal de 30+ reps de tracción en una sesión",
-      check: (e) => e.records && e.records.back >= 30,
+      check: (partida) => partida.records && partida.records.back >= 30,
     },
     {
       id: "z_pr_abs",
@@ -514,7 +535,7 @@ var categoriasLogros = [
       category: "Rutina del Día",
       name: "PR de Core",
       desc: "Récord personal de 60+ reps de core en una sesión",
-      check: (e) => e.records && e.records.abs >= 60,
+      check: (partida) => partida.records && partida.records.abs >= 60,
     },
     {
       id: "z_wstreak26",
@@ -522,7 +543,7 @@ var categoriasLogros = [
       category: "Persistencia",
       name: "Medio Año Intacto",
       desc: "26 semanas seguidas alcanzando tu meta",
-      check: (e) => (e.weeklyStreak || 0) >= 26,
+      check: (partida) => (partida.weeklyStreak || 0) >= 26,
     },
     {
       id: "z_wstreak52",
@@ -530,7 +551,7 @@ var categoriasLogros = [
       category: "Persistencia",
       name: "Constancia Absoluta",
       desc: "Un año entero alcanzando tu meta semanal",
-      check: (e) => (e.weeklyStreak || 0) >= 52,
+      check: (partida) => (partida.weeklyStreak || 0) >= 52,
     },
     {
       id: "z_combat250",
@@ -538,7 +559,7 @@ var categoriasLogros = [
       category: "Combate",
       name: "Nada Sin Relevar",
       desc: "Recuperá 250 terrenos",
-      check: (e) => (e.combat.villainsDefeated || 0) >= 250,
+      check: (partida) => (partida.combat.villainsDefeated || 0) >= 250,
     },
     {
       id: "z_attr30",
@@ -546,7 +567,8 @@ var categoriasLogros = [
       category: "Persistencia",
       name: "Atributo Trascendente",
       desc: "Llevá un atributo a Nivel 30",
-      check: (e) => listaAtributos.some((a) => nivelAtributo(valorAtributo(e, a)) >= 30),
+      check: (partida) =>
+        listaAtributos.some((atr) => nivelAtributo(valorAtributo(partida, atr)) >= 30),
     },
     {
       id: "z_hybrid",
@@ -554,7 +576,7 @@ var categoriasLogros = [
       category: "Rutina del Día",
       name: "Atleta Híbrido",
       desc: "Entrená con los tres métodos el mismo día",
-      check: (e) => ((e.today && e.today.doneModalities) || []).length >= 3,
+      check: (partida) => ((partida.today && partida.today.doneModalities) || []).length >= 3,
     },
     {
       id: "neuro_1",
@@ -562,7 +584,7 @@ var categoriasLogros = [
       category: "Neuromotor",
       name: "Primer Reflejo",
       desc: "Completá tu primera sesión neuromotora",
-      check: (e) => ((e.neuro && e.neuro.sessions) || 0) >= 1,
+      check: (partida) => ((partida.neuro && partida.neuro.sessions) || 0) >= 1,
     },
     {
       id: "neuro_react",
@@ -570,7 +592,7 @@ var categoriasLogros = [
       category: "Neuromotor",
       name: "Reacción Afilada",
       desc: "Completá un drill de reacción a ritmo Rápido",
-      check: (e) => ((e.neuro && e.neuro.bestSpeedLevel) || 0) >= 3,
+      check: (partida) => ((partida.neuro && partida.neuro.bestSpeedLevel) || 0) >= 3,
     },
     {
       id: "neuro_seq6",
@@ -578,7 +600,7 @@ var categoriasLogros = [
       category: "Neuromotor",
       name: "Memoria Motriz",
       desc: "Recordá una secuencia de 6 movimientos",
-      check: (e) => ((e.neuro && e.neuro.bestSequence) || 0) >= 6,
+      check: (partida) => ((partida.neuro && partida.neuro.bestSequence) || 0) >= 6,
     },
     {
       id: "neuro_dual120",
@@ -586,7 +608,7 @@ var categoriasLogros = [
       category: "Neuromotor",
       name: "Mente y Cuerpo",
       desc: "2 minutos de doble tarea sin romper",
-      check: (e) => ((e.neuro && e.neuro.bestDualSec) || 0) >= 120,
+      check: (partida) => ((partida.neuro && partida.neuro.bestDualSec) || 0) >= 120,
     },
     {
       id: "neuro_seq9",
@@ -594,7 +616,7 @@ var categoriasLogros = [
       category: "Neuromotor",
       name: "Cadena Larga",
       desc: "Recordá una secuencia de 9 movimientos",
-      check: (e) => ((e.neuro && e.neuro.bestSequence) || 0) >= 9,
+      check: (partida) => ((partida.neuro && partida.neuro.bestSequence) || 0) >= 9,
     },
     {
       id: "neuro_bpm",
@@ -602,7 +624,7 @@ var categoriasLogros = [
       category: "Neuromotor",
       name: "Ritmo Cruzado",
       desc: "Coordinación contralateral a 120 bpm",
-      check: (e) => ((e.neuro && e.neuro.bestBpm) || 0) >= 120,
+      check: (partida) => ((partida.neuro && partida.neuro.bestBpm) || 0) >= 120,
     },
     {
       id: "neuro_50",
@@ -610,7 +632,7 @@ var categoriasLogros = [
       category: "Neuromotor",
       name: "Sistema Nervioso Entrenado",
       desc: "50 sesiones neuromotoras",
-      check: (e) => ((e.neuro && e.neuro.sessions) || 0) >= 50,
+      check: (partida) => ((partida.neuro && partida.neuro.sessions) || 0) >= 50,
     },
     {
       id: "care_1",
@@ -618,7 +640,7 @@ var categoriasLogros = [
       category: "Persistencia",
       name: "Mantenimiento",
       desc: "Completá tu primer protocolo articular",
-      check: (e) => ((e.care && e.care.lifetime) || 0) >= 1,
+      check: (partida) => ((partida.care && partida.care.lifetime) || 0) >= 1,
     },
     {
       id: "care_20",
@@ -626,7 +648,7 @@ var categoriasLogros = [
       category: "Persistencia",
       name: "Articulaciones Sanas",
       desc: "20 protocolos articulares completados",
-      check: (e) => ((e.care && e.care.lifetime) || 0) >= 20,
+      check: (partida) => ((partida.care && partida.care.lifetime) || 0) >= 20,
     },
     {
       id: "care_100",
@@ -634,7 +656,7 @@ var categoriasLogros = [
       category: "Persistencia",
       name: "Cuerpo a Prueba",
       desc: "100 protocolos articulares completados",
-      check: (e) => ((e.care && e.care.lifetime) || 0) >= 100,
+      check: (partida) => ((partida.care && partida.care.lifetime) || 0) >= 100,
     },
     {
       id: "skill_step1",
@@ -642,7 +664,7 @@ var categoriasLogros = [
       category: "Skills",
       name: "Primer Paso Técnico",
       desc: "Dominá el primer paso de cualquier skill",
-      check: (e) => habilidades.some((a) => pasosHabilidad(e, a.id).some(Boolean)),
+      check: (partida) => habilidades.some((hab) => pasosHabilidad(partida, hab.id).some(Boolean)),
     },
     {
       id: "skill_1",
@@ -650,7 +672,7 @@ var categoriasLogros = [
       category: "Skills",
       name: "Movimiento Raro",
       desc: "Aprendé tu primera skill completa",
-      check: (e) => habilidadesCompletas(e) >= 1,
+      check: (partida) => habilidadesCompletas(partida) >= 1,
     },
     {
       id: "skill_3",
@@ -658,7 +680,7 @@ var categoriasLogros = [
       category: "Skills",
       name: "Repertorio Extraño",
       desc: "Aprendé 3 skills completas",
-      check: (e) => habilidadesCompletas(e) >= 3,
+      check: (partida) => habilidadesCompletas(partida) >= 3,
     },
     {
       id: "skill_6",
@@ -666,7 +688,7 @@ var categoriasLogros = [
       category: "Skills",
       name: "Coleccionista de Movimiento",
       desc: "Aprendé 6 skills completas",
-      check: (e) => habilidadesCompletas(e) >= 6,
+      check: (partida) => habilidadesCompletas(partida) >= 6,
     },
     {
       id: "skill_all",
@@ -674,7 +696,7 @@ var categoriasLogros = [
       category: "Skills",
       name: "Maestro del Movimiento",
       desc: "Aprendé todas las skills",
-      check: (e) => habilidadesCompletas(e) >= habilidades.length,
+      check: (partida) => habilidadesCompletas(partida) >= habilidades.length,
     },
     {
       id: "gym_10k",
@@ -682,7 +704,7 @@ var categoriasLogros = [
       category: "Gimnasio",
       name: "Diez Toneladas",
       desc: "10.000 kg sumando todas tus series",
-      check: (e) => (e.lifetimeVolumeKg || 0) >= 1e4,
+      check: (partida) => (partida.lifetimeVolumeKg || 0) >= 1e4,
     },
     {
       id: "gym_100k",
@@ -690,7 +712,7 @@ var categoriasLogros = [
       category: "Gimnasio",
       name: "Cincuenta Toneladas",
       desc: "50.000 kg sumando todas tus series",
-      check: (e) => (e.lifetimeVolumeKg || 0) >= 5e4,
+      check: (partida) => (partida.lifetimeVolumeKg || 0) >= 5e4,
     },
     {
       id: "gym_bw1",
@@ -698,9 +720,9 @@ var categoriasLogros = [
       category: "Gimnasio",
       name: "Tu Propio Peso",
       desc: "Levantá tu peso corporal en un ejercicio",
-      check: (e) =>
-        e.profile.bodyWeight > 0 &&
-        Math.max(...Object.values(e.bestLiftKg || { 0: 0 })) >= e.profile.bodyWeight,
+      check: (partida) =>
+        partida.profile.bodyWeight > 0 &&
+        Math.max(...Object.values(partida.bestLiftKg || { 0: 0 })) >= partida.profile.bodyWeight,
     },
     {
       id: "gym_bw15",
@@ -708,9 +730,10 @@ var categoriasLogros = [
       category: "Gimnasio",
       name: "Uno y Medio",
       desc: "Levantá 1,5× tu peso corporal",
-      check: (e) =>
-        e.profile.bodyWeight > 0 &&
-        Math.max(...Object.values(e.bestLiftKg || { 0: 0 })) >= e.profile.bodyWeight * 1.5,
+      check: (partida) =>
+        partida.profile.bodyWeight > 0 &&
+        Math.max(...Object.values(partida.bestLiftKg || { 0: 0 })) >=
+          partida.profile.bodyWeight * 1.5,
     },
     {
       id: "gym_bw2",
@@ -718,9 +741,10 @@ var categoriasLogros = [
       category: "Gimnasio",
       name: "Doble Cuerpo",
       desc: "Levantá 2× tu peso corporal",
-      check: (e) =>
-        e.profile.bodyWeight > 0 &&
-        Math.max(...Object.values(e.bestLiftKg || { 0: 0 })) >= e.profile.bodyWeight * 2,
+      check: (partida) =>
+        partida.profile.bodyWeight > 0 &&
+        Math.max(...Object.values(partida.bestLiftKg || { 0: 0 })) >=
+          partida.profile.bodyWeight * 2,
     },
     {
       id: "resilience_3",
@@ -728,7 +752,7 @@ var categoriasLogros = [
       category: "Persistencia",
       name: "El Regreso",
       desc: "Volvé a entrenar tras fallar 3+ días seguidos",
-      check: (e) => e.maxComebackStreak >= 3,
+      check: (partida) => partida.maxComebackStreak >= 3,
     },
     {
       id: "resilience_7",
@@ -736,7 +760,7 @@ var categoriasLogros = [
       category: "Persistencia",
       name: "Fénix",
       desc: "Volvé a entrenar tras fallar 7+ días seguidos",
-      check: (e) => e.maxComebackStreak >= 7,
+      check: (partida) => partida.maxComebackStreak >= 7,
     },
     {
       id: "rep_squat_100",
@@ -744,7 +768,7 @@ var categoriasLogros = [
       category: "Repeticiones",
       name: "Cimiento",
       desc: "100 reps de piernas de por vida",
-      check: (e) => e.lifetimeReps.squat >= 100,
+      check: (partida) => partida.lifetimeReps.squat >= 100,
     },
     {
       id: "rep_squat_500",
@@ -752,7 +776,7 @@ var categoriasLogros = [
       category: "Repeticiones",
       name: "Pilar",
       desc: "500 reps de piernas de por vida",
-      check: (e) => e.lifetimeReps.squat >= 500,
+      check: (partida) => partida.lifetimeReps.squat >= 500,
     },
     {
       id: "rep_squat_1000",
@@ -760,7 +784,7 @@ var categoriasLogros = [
       category: "Repeticiones",
       name: "Columna",
       desc: "1000 reps de piernas de por vida",
-      check: (e) => e.lifetimeReps.squat >= 1000,
+      check: (partida) => partida.lifetimeReps.squat >= 1000,
     },
     {
       id: "rep_squat_2500",
@@ -768,7 +792,7 @@ var categoriasLogros = [
       category: "Repeticiones",
       name: "Titán de Piernas",
       desc: "2500 reps de piernas de por vida",
-      check: (e) => e.lifetimeReps.squat >= 2500,
+      check: (partida) => partida.lifetimeReps.squat >= 2500,
     },
     {
       id: "rep_squat_5000",
@@ -776,7 +800,7 @@ var categoriasLogros = [
       category: "Repeticiones",
       name: "Montaña",
       desc: "5000 reps de piernas de por vida",
-      check: (e) => e.lifetimeReps.squat >= 5000,
+      check: (partida) => partida.lifetimeReps.squat >= 5000,
     },
     {
       id: "rep_squat_10000",
@@ -784,7 +808,7 @@ var categoriasLogros = [
       category: "Repeticiones",
       name: "Coloso",
       desc: "10000 reps de piernas de por vida",
-      check: (e) => e.lifetimeReps.squat >= 10000,
+      check: (partida) => partida.lifetimeReps.squat >= 10000,
     },
     {
       id: "rep_squat_25000",
@@ -792,7 +816,7 @@ var categoriasLogros = [
       category: "Repeticiones",
       name: "Atlas",
       desc: "25000 reps de piernas de por vida",
-      check: (e) => e.lifetimeReps.squat >= 25000,
+      check: (partida) => partida.lifetimeReps.squat >= 25000,
     },
     {
       id: "rep_pushup_100",
@@ -800,7 +824,7 @@ var categoriasLogros = [
       category: "Repeticiones",
       name: "Primer Empuje",
       desc: "100 reps de empuje de por vida",
-      check: (e) => e.lifetimeReps.pushup >= 100,
+      check: (partida) => partida.lifetimeReps.pushup >= 100,
     },
     {
       id: "rep_pushup_250",
@@ -808,7 +832,7 @@ var categoriasLogros = [
       category: "Repeticiones",
       name: "Muro",
       desc: "250 reps de empuje de por vida",
-      check: (e) => e.lifetimeReps.pushup >= 250,
+      check: (partida) => partida.lifetimeReps.pushup >= 250,
     },
     {
       id: "rep_pushup_500",
@@ -816,7 +840,7 @@ var categoriasLogros = [
       category: "Repeticiones",
       name: "Ariete",
       desc: "500 reps de empuje de por vida",
-      check: (e) => e.lifetimeReps.pushup >= 500,
+      check: (partida) => partida.lifetimeReps.pushup >= 500,
     },
     {
       id: "rep_pushup_1000",
@@ -824,7 +848,7 @@ var categoriasLogros = [
       category: "Repeticiones",
       name: "Yunque",
       desc: "1000 reps de empuje de por vida",
-      check: (e) => e.lifetimeReps.pushup >= 1000,
+      check: (partida) => partida.lifetimeReps.pushup >= 1000,
     },
     {
       id: "rep_pushup_2500",
@@ -832,7 +856,7 @@ var categoriasLogros = [
       category: "Repeticiones",
       name: "Martillo",
       desc: "2500 reps de empuje de por vida",
-      check: (e) => e.lifetimeReps.pushup >= 2500,
+      check: (partida) => partida.lifetimeReps.pushup >= 2500,
     },
     {
       id: "rep_pushup_5000",
@@ -840,7 +864,7 @@ var categoriasLogros = [
       category: "Repeticiones",
       name: "Fuerza Bruta",
       desc: "5000 reps de empuje de por vida",
-      check: (e) => e.lifetimeReps.pushup >= 5000,
+      check: (partida) => partida.lifetimeReps.pushup >= 5000,
     },
     {
       id: "rep_pushup_10000",
@@ -848,7 +872,7 @@ var categoriasLogros = [
       category: "Repeticiones",
       name: "Prensa",
       desc: "10000 reps de empuje de por vida",
-      check: (e) => e.lifetimeReps.pushup >= 10000,
+      check: (partida) => partida.lifetimeReps.pushup >= 10000,
     },
     {
       id: "rep_pushup_25000",
@@ -856,7 +880,7 @@ var categoriasLogros = [
       category: "Repeticiones",
       name: "Titán de Empuje",
       desc: "25000 reps de empuje de por vida",
-      check: (e) => e.lifetimeReps.pushup >= 25000,
+      check: (partida) => partida.lifetimeReps.pushup >= 25000,
     },
     {
       id: "rep_back_100",
@@ -864,7 +888,7 @@ var categoriasLogros = [
       category: "Repeticiones",
       name: "Primer Tirón",
       desc: "100 reps de tracción de por vida",
-      check: (e) => e.lifetimeReps.back >= 100,
+      check: (partida) => partida.lifetimeReps.back >= 100,
     },
     {
       id: "rep_back_250",
@@ -872,7 +896,7 @@ var categoriasLogros = [
       category: "Repeticiones",
       name: "Garra",
       desc: "250 reps de tracción de por vida",
-      check: (e) => e.lifetimeReps.back >= 250,
+      check: (partida) => partida.lifetimeReps.back >= 250,
     },
     {
       id: "rep_back_1000",
@@ -880,7 +904,7 @@ var categoriasLogros = [
       category: "Repeticiones",
       name: "Cadena",
       desc: "1000 reps de tracción de por vida",
-      check: (e) => e.lifetimeReps.back >= 1000,
+      check: (partida) => partida.lifetimeReps.back >= 1000,
     },
     {
       id: "rep_back_2500",
@@ -888,7 +912,7 @@ var categoriasLogros = [
       category: "Repeticiones",
       name: "Ancla",
       desc: "2500 reps de tracción de por vida",
-      check: (e) => e.lifetimeReps.back >= 2500,
+      check: (partida) => partida.lifetimeReps.back >= 2500,
     },
     {
       id: "rep_back_5000",
@@ -896,7 +920,7 @@ var categoriasLogros = [
       category: "Repeticiones",
       name: "Polea",
       desc: "5000 reps de tracción de por vida",
-      check: (e) => e.lifetimeReps.back >= 5000,
+      check: (partida) => partida.lifetimeReps.back >= 5000,
     },
     {
       id: "rep_back_10000",
@@ -904,7 +928,7 @@ var categoriasLogros = [
       category: "Repeticiones",
       name: "Grúa",
       desc: "10000 reps de tracción de por vida",
-      check: (e) => e.lifetimeReps.back >= 10000,
+      check: (partida) => partida.lifetimeReps.back >= 10000,
     },
     {
       id: "rep_back_25000",
@@ -912,7 +936,7 @@ var categoriasLogros = [
       category: "Repeticiones",
       name: "Torre",
       desc: "25000 reps de tracción de por vida",
-      check: (e) => e.lifetimeReps.back >= 25000,
+      check: (partida) => partida.lifetimeReps.back >= 25000,
     },
     {
       id: "rep_abs_100",
@@ -920,7 +944,7 @@ var categoriasLogros = [
       category: "Repeticiones",
       name: "Núcleo Vivo",
       desc: "100 reps de core de por vida",
-      check: (e) => e.lifetimeReps.abs >= 100,
+      check: (partida) => partida.lifetimeReps.abs >= 100,
     },
     {
       id: "rep_abs_250",
@@ -928,7 +952,7 @@ var categoriasLogros = [
       category: "Repeticiones",
       name: "Coraza",
       desc: "250 reps de core de por vida",
-      check: (e) => e.lifetimeReps.abs >= 250,
+      check: (partida) => partida.lifetimeReps.abs >= 250,
     },
     {
       id: "rep_abs_500",
@@ -936,7 +960,7 @@ var categoriasLogros = [
       category: "Repeticiones",
       name: "Blindaje",
       desc: "500 reps de core de por vida",
-      check: (e) => e.lifetimeReps.abs >= 500,
+      check: (partida) => partida.lifetimeReps.abs >= 500,
     },
     {
       id: "rep_abs_1000",
@@ -944,7 +968,7 @@ var categoriasLogros = [
       category: "Repeticiones",
       name: "Fortaleza",
       desc: "1000 reps de core de por vida",
-      check: (e) => e.lifetimeReps.abs >= 1000,
+      check: (partida) => partida.lifetimeReps.abs >= 1000,
     },
     {
       id: "rep_abs_2500",
@@ -952,7 +976,7 @@ var categoriasLogros = [
       category: "Repeticiones",
       name: "Acero Central",
       desc: "2500 reps de core de por vida",
-      check: (e) => e.lifetimeReps.abs >= 2500,
+      check: (partida) => partida.lifetimeReps.abs >= 2500,
     },
     {
       id: "rep_abs_5000",
@@ -960,7 +984,7 @@ var categoriasLogros = [
       category: "Repeticiones",
       name: "Bastión",
       desc: "5000 reps de core de por vida",
-      check: (e) => e.lifetimeReps.abs >= 5000,
+      check: (partida) => partida.lifetimeReps.abs >= 5000,
     },
     {
       id: "rep_abs_10000",
@@ -968,7 +992,7 @@ var categoriasLogros = [
       category: "Repeticiones",
       name: "Fuste",
       desc: "10000 reps de core de por vida",
-      check: (e) => e.lifetimeReps.abs >= 10000,
+      check: (partida) => partida.lifetimeReps.abs >= 10000,
     },
     {
       id: "rep_abs_25000",
@@ -976,7 +1000,7 @@ var categoriasLogros = [
       category: "Repeticiones",
       name: "Eje",
       desc: "25000 reps de core de por vida",
-      check: (e) => e.lifetimeReps.abs >= 25000,
+      check: (partida) => partida.lifetimeReps.abs >= 25000,
     },
     {
       id: "pr_squat_25",
@@ -984,7 +1008,7 @@ var categoriasLogros = [
       category: "Marcas personales",
       name: "Piernas de Hierro",
       desc: "25 reps de piernas en una sola sesión",
-      check: (e) => e.records && e.records.squat >= 25,
+      check: (partida) => partida.records && partida.records.squat >= 25,
     },
     {
       id: "pr_squat_40",
@@ -992,7 +1016,7 @@ var categoriasLogros = [
       category: "Marcas personales",
       name: "Piernas Indomables",
       desc: "40 reps de piernas en una sola sesión",
-      check: (e) => e.records && e.records.squat >= 40,
+      check: (partida) => partida.records && partida.records.squat >= 40,
     },
     {
       id: "pr_pushup_15",
@@ -1000,7 +1024,7 @@ var categoriasLogros = [
       category: "Marcas personales",
       name: "Empuje Firme",
       desc: "15 reps de empuje en una sola sesión",
-      check: (e) => e.records && e.records.pushup >= 15,
+      check: (partida) => partida.records && partida.records.pushup >= 15,
     },
     {
       id: "pr_pushup_25",
@@ -1008,7 +1032,7 @@ var categoriasLogros = [
       category: "Marcas personales",
       name: "Empuje Imparable",
       desc: "25 reps de empuje en una sola sesión",
-      check: (e) => e.records && e.records.pushup >= 25,
+      check: (partida) => partida.records && partida.records.pushup >= 25,
     },
     {
       id: "pr_back_8",
@@ -1016,7 +1040,7 @@ var categoriasLogros = [
       category: "Marcas personales",
       name: "Tracción Real",
       desc: "8 reps de tracción en una sola sesión",
-      check: (e) => e.records && e.records.back >= 8,
+      check: (partida) => partida.records && partida.records.back >= 8,
     },
     {
       id: "pr_back_18",
@@ -1024,7 +1048,7 @@ var categoriasLogros = [
       category: "Marcas personales",
       name: "Espalda de Acero",
       desc: "18 reps de tracción en una sola sesión",
-      check: (e) => e.records && e.records.back >= 18,
+      check: (partida) => partida.records && partida.records.back >= 18,
     },
     {
       id: "pr_abs_25",
@@ -1032,7 +1056,7 @@ var categoriasLogros = [
       category: "Marcas personales",
       name: "Core Encendido",
       desc: "25 reps de core en una sola sesión",
-      check: (e) => e.records && e.records.abs >= 25,
+      check: (partida) => partida.records && partida.records.abs >= 25,
     },
     {
       id: "pr_abs_40",
@@ -1040,7 +1064,7 @@ var categoriasLogros = [
       category: "Marcas personales",
       name: "Core Inquebrantable",
       desc: "40 reps de core en una sola sesión",
-      check: (e) => e.records && e.records.abs >= 40,
+      check: (partida) => partida.records && partida.records.abs >= 40,
     },
     {
       id: "gymv_500",
@@ -1048,7 +1072,7 @@ var categoriasLogros = [
       category: "Gimnasio",
       name: "Primeros Kilos",
       desc: "500 kg sumando todas tus series",
-      check: (e) => (e.lifetimeVolumeKg || 0) >= 500,
+      check: (partida) => (partida.lifetimeVolumeKg || 0) >= 500,
     },
     {
       id: "gymv_2500",
@@ -1056,7 +1080,7 @@ var categoriasLogros = [
       category: "Gimnasio",
       name: "Carga Ligera",
       desc: "2.500 kg sumando todas tus series",
-      check: (e) => (e.lifetimeVolumeKg || 0) >= 2500,
+      check: (partida) => (partida.lifetimeVolumeKg || 0) >= 2500,
     },
     {
       id: "gymv_250000",
@@ -1064,7 +1088,7 @@ var categoriasLogros = [
       category: "Gimnasio",
       name: "Ciento Cincuenta Toneladas",
       desc: "150.000 kg sumando todas tus series",
-      check: (e) => (e.lifetimeVolumeKg || 0) >= 15e4,
+      check: (partida) => (partida.lifetimeVolumeKg || 0) >= 15e4,
     },
     {
       id: "gymk_20",
@@ -1072,7 +1096,7 @@ var categoriasLogros = [
       category: "Gimnasio",
       name: "Primera Barra",
       desc: "Levantá 20 kg en cualquier ejercicio",
-      check: (e) => Math.max(0, ...Object.values(e.bestLiftKg || {})) >= 20,
+      check: (partida) => Math.max(0, ...Object.values(partida.bestLiftKg || {})) >= 20,
     },
     {
       id: "gymk_40",
@@ -1080,7 +1104,7 @@ var categoriasLogros = [
       category: "Gimnasio",
       name: "Carga Real",
       desc: "Levantá 40 kg en cualquier ejercicio",
-      check: (e) => Math.max(0, ...Object.values(e.bestLiftKg || {})) >= 40,
+      check: (partida) => Math.max(0, ...Object.values(partida.bestLiftKg || {})) >= 40,
     },
     {
       id: "gymk_60",
@@ -1088,7 +1112,7 @@ var categoriasLogros = [
       category: "Gimnasio",
       name: "Peso Serio",
       desc: "Levantá 60 kg en cualquier ejercicio",
-      check: (e) => Math.max(0, ...Object.values(e.bestLiftKg || {})) >= 60,
+      check: (partida) => Math.max(0, ...Object.values(partida.bestLiftKg || {})) >= 60,
     },
     {
       id: "gymk_100",
@@ -1096,7 +1120,7 @@ var categoriasLogros = [
       category: "Gimnasio",
       name: "Tres Dígitos",
       desc: "Levantá 100 kg en cualquier ejercicio",
-      check: (e) => Math.max(0, ...Object.values(e.bestLiftKg || {})) >= 100,
+      check: (partida) => Math.max(0, ...Object.values(partida.bestLiftKg || {})) >= 100,
     },
     {
       id: "mod_bodyweight_10",
@@ -1104,7 +1128,7 @@ var categoriasLogros = [
       category: "Modalidades",
       name: "Constante en el Cuerpo",
       desc: "10 sesiones de peso corporal",
-      check: (e) => ((e.lifetimeModalities || {}).bodyweight || 0) >= 10,
+      check: (partida) => ((partida.lifetimeModalities || {}).bodyweight || 0) >= 10,
     },
     {
       id: "mod_bodyweight_50",
@@ -1112,7 +1136,7 @@ var categoriasLogros = [
       category: "Modalidades",
       name: "Cincuenta a Pulso",
       desc: "50 sesiones de peso corporal",
-      check: (e) => ((e.lifetimeModalities || {}).bodyweight || 0) >= 50,
+      check: (partida) => ((partida.lifetimeModalities || {}).bodyweight || 0) >= 50,
     },
     {
       id: "mod_bodyweight_200",
@@ -1120,7 +1144,7 @@ var categoriasLogros = [
       category: "Modalidades",
       name: "Doscientas sin Hierro",
       desc: "200 sesiones de peso corporal",
-      check: (e) => ((e.lifetimeModalities || {}).bodyweight || 0) >= 200,
+      check: (partida) => ((partida.lifetimeModalities || {}).bodyweight || 0) >= 200,
     },
     {
       id: "mod_gym_10",
@@ -1128,7 +1152,7 @@ var categoriasLogros = [
       category: "Modalidades",
       name: "Primer Ciclo de Hierro",
       desc: "10 sesiones de gimnasio",
-      check: (e) => ((e.lifetimeModalities || {}).gym || 0) >= 10,
+      check: (partida) => ((partida.lifetimeModalities || {}).gym || 0) >= 10,
     },
     {
       id: "mod_gym_50",
@@ -1136,7 +1160,7 @@ var categoriasLogros = [
       category: "Modalidades",
       name: "Cincuenta bajo la Barra",
       desc: "50 sesiones de gimnasio",
-      check: (e) => ((e.lifetimeModalities || {}).gym || 0) >= 50,
+      check: (partida) => ((partida.lifetimeModalities || {}).gym || 0) >= 50,
     },
     {
       id: "mod_gym_200",
@@ -1144,7 +1168,7 @@ var categoriasLogros = [
       category: "Modalidades",
       name: "Doscientas de Hierro",
       desc: "200 sesiones de gimnasio",
-      check: (e) => ((e.lifetimeModalities || {}).gym || 0) >= 200,
+      check: (partida) => ((partida.lifetimeModalities || {}).gym || 0) >= 200,
     },
     {
       id: "mod_flow_10",
@@ -1152,7 +1176,7 @@ var categoriasLogros = [
       category: "Modalidades",
       name: "Primeros Flujos",
       desc: "10 sesiones de flow",
-      check: (e) => ((e.lifetimeModalities || {}).flow || 0) >= 10,
+      check: (partida) => ((partida.lifetimeModalities || {}).flow || 0) >= 10,
     },
     {
       id: "mod_flow_50",
@@ -1160,7 +1184,7 @@ var categoriasLogros = [
       category: "Modalidades",
       name: "Cincuenta Fluidas",
       desc: "50 sesiones de flow",
-      check: (e) => ((e.lifetimeModalities || {}).flow || 0) >= 50,
+      check: (partida) => ((partida.lifetimeModalities || {}).flow || 0) >= 50,
     },
     {
       id: "mod_flow_200",
@@ -1168,7 +1192,7 @@ var categoriasLogros = [
       category: "Modalidades",
       name: "Doscientas en Movimiento",
       desc: "200 sesiones de flow",
-      check: (e) => ((e.lifetimeModalities || {}).flow || 0) >= 200,
+      check: (partida) => ((partida.lifetimeModalities || {}).flow || 0) >= 200,
     },
     {
       id: "animo_vino",
@@ -1176,7 +1200,7 @@ var categoriasLogros = [
       category: "Días que no querías",
       name: "Viniste igual",
       desc: "Entrená un día que llegaste sin ganas o con pocas ganas",
-      check: (e) => sdcAnimoCuenta(e).vino >= 1,
+      check: (partida) => sdcAnimoCuenta(partida).vino >= 1,
     },
     {
       id: "animo_envion",
@@ -1184,7 +1208,7 @@ var categoriasLogros = [
       category: "Días que no querías",
       name: "El envión",
       desc: "Llegá sin ganas o con pocas ganas y terminá con ganas o a full",
-      check: (e) => sdcAnimoCuenta(e).envion >= 1,
+      check: (partida) => sdcAnimoCuenta(partida).envion >= 1,
     },
     {
       id: "animo_vino5",
@@ -1192,7 +1216,7 @@ var categoriasLogros = [
       category: "Días que no querías",
       name: "Cinco días que no querías",
       desc: "Entrená 5 días que llegaste sin ganas o con pocas ganas",
-      check: (e) => sdcAnimoCuenta(e).vino >= 5,
+      check: (partida) => sdcAnimoCuenta(partida).vino >= 5,
     },
     {
       id: "animo_mejor10",
@@ -1200,7 +1224,7 @@ var categoriasLogros = [
       category: "Días que no querías",
       name: "Te cambió el día",
       desc: "Terminá mejor de lo que llegaste 10 veces",
-      check: (e) => sdcAnimoCuenta(e).mejor >= 10,
+      check: (partida) => sdcAnimoCuenta(partida).mejor >= 10,
     },
     {
       id: "animo_vino20",
@@ -1208,7 +1232,7 @@ var categoriasLogros = [
       category: "Días que no querías",
       name: "Veinte días que no querías",
       desc: "Entrená 20 días que llegaste sin ganas o con pocas ganas",
-      check: (e) => sdcAnimoCuenta(e).vino >= 20,
+      check: (partida) => sdcAnimoCuenta(partida).vino >= 20,
     },
     {
       id: "animo_mejor50",
@@ -1216,7 +1240,7 @@ var categoriasLogros = [
       category: "Días que no querías",
       name: "Entrenar te cambia el día",
       desc: "Terminá mejor de lo que llegaste 50 veces",
-      check: (e) => sdcAnimoCuenta(e).mejor >= 50,
+      check: (partida) => sdcAnimoCuenta(partida).mejor >= 50,
     },
     {
       id: "animo_vino50",
@@ -1224,7 +1248,7 @@ var categoriasLogros = [
       category: "Días que no querías",
       name: "Cincuenta días que no querías",
       desc: "Entrená 50 días que llegaste sin ganas o con pocas ganas",
-      check: (e) => sdcAnimoCuenta(e).vino >= 50,
+      check: (partida) => sdcAnimoCuenta(partida).vino >= 50,
     },
   ];
 function sdcAnimo(partida) {

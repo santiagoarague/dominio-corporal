@@ -7,38 +7,44 @@ var listaAtributos = [
     name: "Fuerza",
     color: "#ff5c7a",
     zones: ["pushup", "back"],
-    calc: (e) =>
-      e.lifetimeReps.pushup * 2 + e.lifetimeReps.back * 2.5 + (e.combat.villainsDefeated || 0) * 10,
+    calc: (partida) =>
+      partida.lifetimeReps.pushup * 2 +
+      partida.lifetimeReps.back * 2.5 +
+      (partida.combat.villainsDefeated || 0) * 10,
   },
   {
     key: "resistencia",
     name: "Resistencia",
     color: "#4f9dff",
     zones: ["squat"],
-    calc: (e) =>
-      e.lifetimeReps.squat + (e.exploration.lifetimeKm || 0) * 20 + (e.dungeonsCleared || 0) * 30,
+    calc: (partida) =>
+      partida.lifetimeReps.squat +
+      (partida.exploration.lifetimeKm || 0) * 20 +
+      (partida.dungeonsCleared || 0) * 30,
   },
   {
     key: "movilidad",
     name: "Movilidad",
     color: "#3ecf8e",
     zones: [],
-    calc: (e) =>
-      (e.lifetimePrimal || 0) * 25 +
-      (e.lifetimeStretch || 0) * 20 +
-      (e.primal.unlockedCount || 1) * 15,
+    calc: (partida) =>
+      (partida.lifetimePrimal || 0) * 25 +
+      (partida.lifetimeStretch || 0) * 20 +
+      (partida.primal.unlockedCount || 1) * 15,
   },
   {
     key: "control",
     name: "Control",
     color: "#b084f5",
     zones: ["abs"],
-    calc: (e) =>
-      e.lifetimeReps.abs * 1.5 +
-      (e.streak.best || 0) * 20 +
-      (e.records ? Object.values(e.records).reduce((a, l) => a + l, 0) * 2 : 0) +
-      ((e.neuro && e.neuro.sessions) || 0) * 20 +
-      ((e.neuro && e.neuro.bestSequence) || 0) * 15,
+    calc: (partida) =>
+      partida.lifetimeReps.abs * 1.5 +
+      (partida.streak.best || 0) * 20 +
+      (partida.records
+        ? Object.values(partida.records).reduce((suma, record) => suma + record, 0) * 2
+        : 0) +
+      ((partida.neuro && partida.neuro.sessions) || 0) * 20 +
+      ((partida.neuro && partida.neuro.bestSequence) || 0) * 15,
   },
 ];
 function valorAtributo(partida, atributo) {
