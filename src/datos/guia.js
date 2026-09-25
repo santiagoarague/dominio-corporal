@@ -105,15 +105,15 @@ var guia = [
       family: "Calistenia",
       level: "Intermedio",
       what: "Sostenerte invertido sobre las manos con el cuerpo alineado.",
-      why: "Construye fuerza de hombros, control escapular y una conciencia corporal que se transfiere a todo lo demás.",
+      why: "Construye fuerza de hombros, control de los omóplatos y un equilibrio que sirve para todo lo demás.",
       steps: [
         {
           name: "Plancha de hombros en pared",
-          how: "De espaldas a la pared, manos en el suelo, pies apoyados en la pared a la altura de la cadera. Aguanta manteniendo el core apretado.",
+          how: "De espaldas a la pared, manos en el suelo, pies apoyados en la pared a la altura de la cadera. Aguanta con el abdomen apretado.",
           cue: "Costillas hacia dentro, sin arquear la lumbar.",
         },
         {
-          name: "Wall walk",
+          name: "Caminar por la pared",
           how: "Desde plancha, camina los pies por la pared mientras acercas las manos, hasta quedar casi vertical de cara a la pared. Baja con control.",
           cue: "Mira entre las manos, no al suelo.",
         },
@@ -135,7 +135,8 @@ var guia = [
       ],
       regression:
         "Si te duelen las muñecas, trabaja primero en puños o paraletas y haz movilidad de muñeca antes.",
-      mistake: "Arquear la lumbar en banana. Es la causa número uno de perder el equilibrio.",
+      mistake:
+        "Arquear la espalda baja como una banana. Es la causa número uno de perder el equilibrio.",
     },
     {
       id: "pistol",
@@ -143,7 +144,7 @@ var guia = [
       family: "Calistenia",
       level: "Intermedio",
       what: "Sentadilla completa a una sola pierna con la otra extendida al frente.",
-      why: "Fuerza unilateral real, movilidad de tobillo y control de rodilla. Delata cualquier desequilibrio entre piernas.",
+      why: "Fuerza de cada pierna por separado, movilidad de tobillo y control de rodilla. Muestra si una pierna es más fuerte que la otra.",
       steps: [
         {
           name: "Sentadilla a caja alta",
@@ -171,7 +172,8 @@ var guia = [
           cue: "Brazos al frente como contrapeso.",
         },
       ],
-      regression: "Sin movilidad de tobillo, eleva el talón sobre un disco fino mientras la ganas.",
+      regression:
+        "Si el tobillo no te deja bajar, apoya el talón sobre un libro fino mientras ganas movilidad.",
       mistake: "Dejar caer la rodilla hacia dentro. Mantenla alineada con el pie.",
     },
     {
@@ -180,7 +182,7 @@ var guia = [
       family: "Calistenia",
       level: "Intermedio",
       what: "Sostenerte con las manos y las piernas extendidas al frente formando una L.",
-      why: "Core comprimido, triceps y flexores de cadera. Base para V-sit y manna.",
+      why: "Abdomen, brazos y la parte de adelante de la cadera. Es la base de posiciones más difíciles.",
       steps: [
         {
           name: "Soporte con piernas flexionadas",
@@ -200,7 +202,7 @@ var guia = [
         {
           name: "L-sit en el suelo",
           how: "Mismo gesto con las manos planas en el suelo.",
-          cue: "Requiere más compresión: aguanta menos tiempo pero limpio.",
+          cue: "Exige más abdomen: aguanta menos tiempo pero limpio.",
         },
         {
           name: "L-sit sostenido 20 s",
@@ -208,9 +210,8 @@ var guia = [
           cue: "Respira. No aguantes el aire.",
         },
       ],
-      regression:
-        "Trabaja compresión sentado: piernas estiradas en el suelo, intenta despegar los talones.",
-      mistake: "Encoger los hombros. Deprime las escápulas antes de despegar.",
+      regression: "Sentado con las piernas estiradas en el suelo, intenta despegar los talones.",
+      mistake: "Encoger los hombros. Bájalos, lejos de las orejas, antes de despegar.",
     },
     {
       id: "muscleup",
@@ -222,7 +223,7 @@ var guia = [
       steps: [
         {
           name: "Dominadas al pecho",
-          how: "Domina llevando el esternón a la barra, no solo la barbilla.",
+          how: "Haz la dominada llevando el pecho a la barra, no solo la barbilla.",
           cue: "Codos hacia atrás y abajo.",
         },
         {
@@ -242,8 +243,8 @@ var guia = [
         },
         {
           name: "Muscle-up estricto",
-          how: "Sin balanceo, desde colgado muerto.",
-          cue: "Agarre falso ayuda mucho en la transición.",
+          how: "Sin balanceo, empezando colgado y quieto.",
+          cue: "Agarrar con las muñecas por encima de la barra ayuda mucho en la transición.",
         },
       ],
       regression:
@@ -252,24 +253,24 @@ var guia = [
     },
     {
       id: "frontlever",
-      name: "Front Lever",
+      name: "Palanca frontal",
       family: "Calistenia",
       level: "Avanzado",
       what: "Colgado de la barra, cuerpo horizontal y rígido mirando arriba.",
-      why: "Máxima tensión de dorsal y core en cadena posterior. Un estático de referencia.",
+      why: "Exige al máximo la espalda y el abdomen en una posición quieta. Es una referencia de fuerza en la barra.",
       steps: [
         {
-          name: "Dominada con escápulas",
+          name: "Bajar los hombros colgado",
           how: "Colgado, baja los hombros sin doblar los codos. Sostén 5 segundos.",
           cue: "Ese es el punto de partida de toda la progresión.",
         },
         {
-          name: "Tuck lever",
+          name: "Palanca agrupada",
           how: "Sube las rodillas al pecho y deja el torso horizontal.",
           cue: "Espalda redonda, cadera a la altura de los hombros.",
         },
         {
-          name: "Advanced tuck",
+          name: "Palanca agrupada abierta",
           how: "Abre el ángulo de cadera manteniendo rodillas flexionadas.",
           cue: "Lumbar plana, no arqueada.",
         },
@@ -279,13 +280,14 @@ var guia = [
           cue: "Aprieta el glúteo de la pierna extendida.",
         },
         {
-          name: "Front lever completo",
+          name: "Palanca completa",
           how: "Ambas piernas extendidas, cuerpo en línea.",
           cue: "Tira de la barra hacia tus pies, no hacia abajo.",
         },
       ],
-      regression: "Trabaja remos invertidos horizontales pesados si el tuck ya te cuesta.",
-      mistake: "Saltar de tuck a completo. Cada etapa necesita semanas, no días.",
+      regression:
+        "Si la palanca agrupada ya te cuesta, trabaja remos invertidos con el cuerpo horizontal.",
+      mistake: "Saltar de la palanca agrupada a la completa. Cada etapa necesita semanas, no días.",
     },
     {
       id: "dragonflag",
@@ -293,10 +295,10 @@ var guia = [
       family: "Calistenia",
       level: "Avanzado",
       what: "Tumbado, elevar todo el cuerpo rígido apoyando solo los hombros.",
-      why: "El ejercicio de core anti-extensión más brutal sin equipo.",
+      why: "El ejercicio de abdomen más exigente que existe sin equipo.",
       steps: [
         {
-          name: "Hollow hold",
+          name: "Sostén boca arriba",
           how: "Tumbado, lumbar pegada al suelo, brazos y piernas despegados. Sostén.",
           cue: "Si la lumbar se despega, acerca rodillas.",
         },
@@ -321,7 +323,8 @@ var guia = [
           cue: "El movimiento sale de la cadera, no del impulso.",
         },
       ],
-      regression: "Si la lumbar se arquea, vuelve al hollow hold hasta sostener 45 segundos.",
+      regression:
+        "Si la lumbar se arquea, vuelve al sostén boca arriba hasta aguantar 45 segundos.",
       mistake: "Usar impulso para subir. Anula todo el trabajo.",
     },
     {
@@ -330,7 +333,7 @@ var guia = [
       family: "Movilidad",
       level: "Intermedio",
       what: "Arco completo apoyando manos y pies, pecho abierto.",
-      why: "Extensión de columna, apertura de hombros y cadera. Antídoto para estar sentado todo el día.",
+      why: "Abre la espalda, los hombros y la cadera. Compensa estar sentado todo el día.",
       steps: [
         {
           name: "Puente de glúteos",
@@ -359,14 +362,14 @@ var guia = [
         },
       ],
       regression: "Trabaja movilidad de hombros con un palo antes de intentar el puente alto.",
-      mistake: "Forzar solo desde la lumbar. Si te pellizca, falta apertura de hombro.",
+      mistake: "Forzar solo desde la espalda baja. Si te pellizca, te falta abrir los hombros.",
     },
     {
       id: "crow",
       name: "Postura del Cuervo",
       family: "Animal Flow",
       level: "Principiante",
-      what: "Equilibrio sobre las manos apoyando las rodillas en los triceps.",
+      what: "Equilibrio sobre las manos apoyando las rodillas en la parte de atrás de los brazos.",
       why: "Primera toma de contacto con el equilibrio sobre manos. Menos intimidante que el pino.",
       steps: [
         {
@@ -381,7 +384,7 @@ var guia = [
         },
         {
           name: "Un pie arriba",
-          how: "Despega un pie apoyando la rodilla en el triceps.",
+          how: "Despega un pie apoyando la rodilla en la parte de atrás del brazo.",
           cue: "Mira un punto medio metro delante de las manos.",
         },
         {
@@ -404,7 +407,7 @@ var guia = [
       family: "Calistenia",
       level: "Intermedio",
       what: "Sentadilla a una pierna con la otra flexionada atrás, sujeta con la mano.",
-      why: "Alternativa a la pistol con menos exigencia de tobillo y más de cuádriceps.",
+      why: "Alternativa a la pistol con menos exigencia de tobillo y más de muslo.",
       steps: [
         {
           name: "Zancada inversa profunda",
@@ -437,30 +440,30 @@ var guia = [
     },
     {
       id: "beastflow",
-      name: "Transición Beast-Crab",
+      name: "Transición bestia-cangrejo",
       family: "Animal Flow",
       level: "Principiante",
       what: "Pasar fluido de la posición de bestia a la de cangrejo y volver, sin pausas.",
       why: "Coordinación, rotación de columna y control en el suelo. La base de todo el flow.",
       steps: [
         {
-          name: "Beast hold",
-          how: "Cuadrupedia con rodillas a un centímetro del suelo. Sostén 20 segundos.",
+          name: "Bestia quieta",
+          how: "A cuatro patas con las rodillas a un centímetro del suelo. Sostén 20 segundos.",
           cue: "Espalda plana como una mesa.",
         },
         {
-          name: "Crab hold",
+          name: "Cangrejo quieto",
           how: "Sentado, manos detrás, eleva la cadera. Sostén 20 segundos.",
           cue: "Dedos de las manos hacia los pies o hacia fuera, lo que respete tu hombro.",
         },
         {
           name: "Underswitch lento",
-          how: "Desde beast, pasa una pierna por debajo y gira hasta crab. Para y vuelve.",
+          how: "Desde la bestia, pasa una pierna por debajo y gira hasta el cangrejo. Para y vuelve.",
           cue: "La cadera no toca el suelo en ningún momento.",
         },
         {
           name: "Transición completa",
-          how: "Encadena beast → crab → beast sin detenerte.",
+          how: "Encadena bestia → cangrejo → bestia sin detenerte.",
           cue: "Respira en el punto medio.",
         },
         {

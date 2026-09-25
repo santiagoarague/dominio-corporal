@@ -418,7 +418,7 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
   agrega (qué usar sin el elemento, cuántos segundos vale cada rep, contar por lado). En 45 quedó
   vacía. Y cinco palabras pasaron a lenguaje común: omóplatos, ritmo, recorrido, la parte de atrás
   del muslo y el hollow hold explicado. Los nombres no se tocaron: la app guarda tu historial con
-  ellos. Quedan para otra pasada *dorsal*, *trapecio*, *deltoides* y *esternón*.
+  ellos. Una segunda pasada cambió también *dorsal*, *trapecio*, *deltoides*, *esternón*, *cuadrupedia* y la jerga de los Skills, y **"lever" pasó a ser "palanca"** (el Skill es "Palanca frontal").
 - ~~Letra chica, botones chicos y grises que no se leían~~ — resuelto (25/09/2026), pensado para
   jugadores de 13 a más de 70 años. Medido antes: el 61,5% del texto estaba a 12 px, 107 botones
   medían menos de 44 px y lo bloqueado se leía a 3,1:1. Ahora ninguna letra baja de 14 px (el
