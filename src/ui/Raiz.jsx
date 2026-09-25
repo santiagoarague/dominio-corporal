@@ -13,21 +13,27 @@ function Raiz() {
       let r = await leerPartida();
       if (r) {
         let { state: p, notices: v } = cargarPartida(r);
-        (n(p), s(v || []), guardarPartida(p));
+        (n(p), s(v || []));
       }
       a(!1);
     })();
   }, []);
+  // La partida se guarda en un solo lugar: cada vez que cambia. App, Inicio y la
+  // carga de un respaldo solo la reemplazan con n(...), asi que ningun cambio
+  // puede quedar sin guardar. Reiniciar todo la deja en null y no guarda nada.
+  useEffect(() => {
+    l && guardarPartida(l);
+  }, [l]);
   function u(r) {
     let p = crearPartida(r);
-    (n(p), guardarPartida(p));
+    n(p);
   }
   function c(r) {
     try {
       let p = JSON.parse(r.trim());
       if (!p || !p.profile || !p.progress) return !1;
       let { state: v, notices: x } = cargarPartida(p);
-      return (n(v), s(x || []), guardarPartida(v), !0);
+      return (n(v), s(x || []), !0);
     } catch (p) {
       return !1;
     }

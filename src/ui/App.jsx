@@ -62,7 +62,6 @@ import {
 } from "../logica/rutina.js";
 import {
   subirNiveles,
-  guardarPartida,
   clonar,
   registrarEstiramiento,
   cargarPartida,
@@ -534,7 +533,7 @@ function App({ player, setPlayer, initialNotices }) {
       let f = JSON.parse(respaldoTexto.trim());
       if (!f || !f.profile || !f.progress) throw new Error("formato inválido");
       let { state: d } = cargarPartida(f);
-      (setPlayer(d), guardarPartida(d), avisar(["¡Progreso restaurado desde el respaldo!"]));
+      (setPlayer(d), avisar(["¡Progreso restaurado desde el respaldo!"]));
     } catch (f) {
       avisar((d) => [
         ...d,
@@ -546,7 +545,7 @@ function App({ player, setPlayer, initialNotices }) {
   function aplicar(f) {
     setPlayer((d) => {
       let { state: m, notices: N } = f(d);
-      return (N && N.length && avisar((_) => [..._, ...N]), guardarPartida(m), m);
+      return (N && N.length && avisar((_) => [..._, ...N]), m);
     });
   }
   function combElegir(f) {
@@ -615,7 +614,7 @@ function App({ player, setPlayer, initialNotices }) {
         var pv = _.today.marcas[kk] || {};
         _.today.marcas[kk] = { ser: ser, aj: aj, mok: !!mok, kg: pv.kg };
       }
-      return (guardarPartida(_), _);
+      return _;
     });
   }
   function sdcSerie(g, k) {
@@ -727,7 +726,7 @@ function App({ player, setPlayer, initialNotices }) {
           _.today.marcas[kk].kg[g] || (_.today.marcas[kk].kg[g] = {}),
           (_.today.marcas[kk].kg[g][k] = val));
       }
-      return (guardarPartida(_), _);
+      return _;
     });
   }
   function sdcEjNom(g) {
@@ -786,19 +785,19 @@ function App({ player, setPlayer, initialNotices }) {
   function tomarDescanso() {
     setPlayer((f) => {
       let { state: d, notices: m } = usarDescanso(f);
-      return (m && m.length && avisar((N) => [...N, ...m]), guardarPartida(d), d);
+      return (m && m.length && avisar((N) => [...N, ...m]), d);
     });
   }
   function cruzarUmbral() {
     setPlayer((f) => {
       let { state: d, notices: m } = sdcCruzar(f);
-      return (m && m.length && avisar((N) => [...N, ...m]), guardarPartida(d), d);
+      return (m && m.length && avisar((N) => [...N, ...m]), d);
     });
   }
   function elegirModalidad(f) {
     setPlayer((d) => {
       let m = clonar(d);
-      return ((m.today.modality = f), guardarPartida(m), m);
+      return ((m.today.modality = f), m);
     });
   }
   function irTienda() {
@@ -807,7 +806,6 @@ function App({ player, setPlayer, initialNotices }) {
       return (
         m.ui || (m.ui = { collapsed: {} }),
         (m.ui.collapsed.tienda = !m.ui.collapsed.tienda),
-        guardarPartida(m),
         m
       );
     });
@@ -822,7 +820,6 @@ function App({ player, setPlayer, initialNotices }) {
         (m.today.fullCompletion = !1),
         (m.today.reps = { squat: 0, pushup: 0, back: 0, abs: 0 }),
         delete m.undoSnapshot,
-        guardarPartida(m),
         m
       );
     }),
@@ -834,36 +831,31 @@ function App({ player, setPlayer, initialNotices }) {
   function sdcPonerJuego(f) {
     setPlayer((d) => {
       let m = clonar(d);
-      return ((m.profile.tituloSet = f), guardarPartida(m), m);
+      return ((m.profile.tituloSet = f), m);
     });
   }
   function sdcCamRitmo(v) {
     setPlayer((d) => {
       let m = clonar(d);
-      return ((m.profile.ritmoKmH = v), guardarPartida(m), m);
+      return ((m.profile.ritmoKmH = v), m);
     });
   }
   function sdcCamEmpezar() {
     setPlayer((d) => {
       let m = clonar(d);
-      return (
-        (m.exploration = m.exploration || {}),
-        (m.exploration.walkStart = Date.now()),
-        guardarPartida(m),
-        m
-      );
+      return ((m.exploration = m.exploration || {}), (m.exploration.walkStart = Date.now()), m);
     });
   }
   function sdcCamCancelar() {
     setPlayer((d) => {
       let m = clonar(d);
-      return (m.exploration && (m.exploration.walkStart = 0), guardarPartida(m), m);
+      return (m.exploration && (m.exploration.walkStart = 0), m);
     });
   }
   function sdcCamListo(km) {
     (setPlayer((d) => {
       let m = clonar(d);
-      return (m.exploration && (m.exploration.walkStart = 0), guardarPartida(m), m);
+      return (m.exploration && (m.exploration.walkStart = 0), m);
     }),
       setKmTexto(String(km).replace(".", ",")),
       avisar((d) => [
@@ -876,18 +868,13 @@ function App({ player, setPlayer, initialNotices }) {
   function sdcTravEmpezar() {
     setPlayer((d) => {
       let m = clonar(d);
-      return (
-        (m.dungeon = m.dungeon || {}),
-        (m.dungeon.startedAt = Date.now() + 1e4),
-        guardarPartida(m),
-        m
-      );
+      return ((m.dungeon = m.dungeon || {}), (m.dungeon.startedAt = Date.now() + 1e4), m);
     });
   }
   function sdcTravCancelar() {
     setPlayer((d) => {
       let m = clonar(d);
-      return (m.dungeon && (m.dungeon.startedAt = 0), guardarPartida(m), m);
+      return (m.dungeon && (m.dungeon.startedAt = 0), m);
     });
   }
   function sdcPrimeraManual() {
@@ -899,7 +886,7 @@ function App({ player, setPlayer, initialNotices }) {
     var tx = String(t).trim().slice(0, 120);
     (setPlayer((d) => {
       let m = clonar(d);
-      return (sdcPrimeraAdd(m, tx, "escrita"), guardarPartida(m), m);
+      return (sdcPrimeraAdd(m, tx, "escrita"), m);
     }),
       avisar((d) => [...d, "Primera vez: " + tx + ". Queda anotado."]));
   }
@@ -910,13 +897,13 @@ function App({ player, setPlayer, initialNotices }) {
         k,
         src = sdcPodia(m);
       for (k in src) o2[k] = src[k];
-      return ((o2[nm] = v), (m.podia = o2), guardarPartida(m), m);
+      return ((o2[nm] = v), (m.podia = o2), m);
     });
   }
   function ponerModalidades(f) {
     setPlayer((d) => {
       let m = clonar(d);
-      return ((m.profile.modalities = f.length ? f : ["bodyweight"]), guardarPartida(m), m);
+      return ((m.profile.modalities = f.length ? f : ["bodyweight"]), m);
     });
   }
   function alternarModalidad(f) {
@@ -938,7 +925,6 @@ function App({ player, setPlayer, initialNotices }) {
       return (
         _.gymWeights || (_.gymWeights = { squat: 0, pushup: 0, back: 0, abs: 0 }),
         (_.gymWeights[f] = m),
-        guardarPartida(_),
         _
       );
     });
@@ -947,7 +933,7 @@ function App({ player, setPlayer, initialNotices }) {
     let d = Math.max(0, parseFloat((f || "0").replace(",", ".")) || 0);
     setPlayer((m) => {
       let N = clonar(m);
-      return ((N.profile.bodyWeight = d), guardarPartida(N), N);
+      return ((N.profile.bodyWeight = d), N);
     });
   }
   function alternarDesbloqueo() {
@@ -956,7 +942,6 @@ function App({ player, setPlayer, initialNotices }) {
       return (
         (d.unlockAll = !d.unlockAll),
         d.unlockAll && (d.seenUnlocks = sistemas.map((m) => m.id)),
-        guardarPartida(d),
         d
       );
     });
@@ -969,7 +954,6 @@ function App({ player, setPlayer, initialNotices }) {
         (m.disabled = m.disabled.includes(f)
           ? m.disabled.filter((N) => N !== f)
           : [...m.disabled, f]),
-        guardarPartida(m),
         m
       );
     });
@@ -977,7 +961,7 @@ function App({ player, setPlayer, initialNotices }) {
   function ponerMetaSemanal(f) {
     (setPlayer((d) => {
       let m = clonar(d);
-      return ((m.profile.weeklyGoal = f), guardarPartida(m), m);
+      return ((m.profile.weeklyGoal = f), m);
     }),
       setCambiandoMeta(!1));
   }
@@ -1014,7 +998,6 @@ function App({ player, setPlayer, initialNotices }) {
         plegablesTodos.forEach((N) => {
           d.ui.collapsed[N] = m;
         }),
-        guardarPartida(d),
         d
       );
     });
@@ -1032,7 +1015,6 @@ function App({ player, setPlayer, initialNotices }) {
           (m.seenUnlocks = sistemas.filter((N) => sistemaAbierto(m, N.id)).map((N) => N.id)),
         m.ui || (m.ui = { collapsed: {} }),
         (m.ui.collapsed[f] = act !== void 0 ? !act : !m.ui.collapsed[f]),
-        guardarPartida(m),
         m
       );
     });
@@ -1050,7 +1032,7 @@ function App({ player, setPlayer, initialNotices }) {
   function cerrarResumenSemana() {
     setPlayer((f) => {
       let d = clonar(f);
-      return (d.lastWeekSummary && (d.lastWeekSummary.seen = !0), guardarPartida(d), d);
+      return (d.lastWeekSummary && (d.lastWeekSummary.seen = !0), d);
     });
   }
   function comprarItem(f) {
@@ -1059,7 +1041,7 @@ function App({ player, setPlayer, initialNotices }) {
   function terminarTravesia() {
     setPlayer((f) => {
       let { state: d, notices: m } = completarTravesia(f);
-      return (m && m.length && avisar((N) => [...N, ...m]), guardarPartida(d), d);
+      return (m && m.length && avisar((N) => [...N, ...m]), d);
     });
   }
   function cerrarAviso(f) {
@@ -1100,7 +1082,6 @@ function App({ player, setPlayer, initialNotices }) {
       }
       let { state: d, notices: m } = cargarPartida(f);
       (setPlayer(d),
-        guardarPartida(d),
         setCombPrep(!1),
         setCombVentana(!1),
         setPrimalFase("idle"),
@@ -1121,7 +1102,6 @@ function App({ player, setPlayer, initialNotices }) {
         (m.today.fullCompletion = !1),
         (m.today.mode = "pending"),
         (m.today.reps = { squat: 0, pushup: 0, back: 0, abs: 0 }),
-        guardarPartida(m),
         m
       );
     }),
@@ -1137,7 +1117,6 @@ function App({ player, setPlayer, initialNotices }) {
         (d.today.completed = !0),
         (d.today.fullCompletion = !0),
         (d.today.rank = d.progress.rank),
-        guardarPartida(d),
         d
       );
     }),
@@ -1151,12 +1130,7 @@ function App({ player, setPlayer, initialNotices }) {
       let m = clonar(d);
       m.progress.currentXP += f;
       let N = [];
-      return (
-        (m = subirNiveles(m, N)),
-        guardarPartida(m),
-        N.length && avisar((_) => [..._, ...N]),
-        m
-      );
+      return ((m = subirNiveles(m, N)), N.length && avisar((_) => [..._, ...N]), m);
     });
   }
   function fallarAyer() {
@@ -1165,7 +1139,7 @@ function App({ player, setPlayer, initialNotices }) {
         m = new Date(d.today.date + "T00:00:00");
       (m.setDate(m.getDate() - 1), (d.today.date = fechaLocal(m)), (d.today.completed = !1));
       let { state: N, notices: _ } = cargarPartida(d);
-      return (guardarPartida(N), _.length && avisar((X) => [...X, ..._]), N);
+      return (_.length && avisar((X) => [...X, ..._]), N);
     });
   }
   function reiniciarHoy() {
@@ -1178,7 +1152,6 @@ function App({ player, setPlayer, initialNotices }) {
         (d.today.rank = d.progress.rank),
         (d.today.reps = { squat: 0, pushup: 0, back: 0, abs: 0 }),
         (d.today.stretchDone = !1),
-        guardarPartida(d),
         d
       );
     });
@@ -1188,7 +1161,7 @@ function App({ player, setPlayer, initialNotices }) {
     f &&
       (setPlayer((d) => {
         let { state: m } = sumarTramo(d, f);
-        return (guardarPartida(m), m);
+        return m;
       }),
       setKmTexto(""));
   }
@@ -1199,37 +1172,27 @@ function App({ player, setPlayer, initialNotices }) {
     d <= 0 ||
       (setPlayer((m) => {
         let { state: N } = sumarTramo(m, d);
-        return (guardarPartida(N), N);
+        return N;
       }),
       setPasosTexto(""));
   }
   function descartarTramosHoy() {
     setPlayer((f) => {
       let { state: d, notices: m } = descartarTramos(f);
-      return (m && m.length && avisar((N) => [...N, ...m]), guardarPartida(d), d);
+      return (m && m.length && avisar((N) => [...N, ...m]), d);
     });
   }
   function consolidarKmHoy() {
     setPlayer((f) => {
       let { state: d, notices: m, found: N } = consolidarKm(f);
-      return (
-        m && m.length && avisar((_) => [..._, ...m]),
-        N && N.length && setHallazgos(N),
-        guardarPartida(d),
-        d
-      );
+      return (m && m.length && avisar((_) => [..._, ...m]), N && N.length && setHallazgos(N), d);
     });
   }
   function sumarKmDePrueba(f) {
     setPlayer((d) => {
       let m = sumarTramo(d, f),
         { state: N, notices: _, found: X } = consolidarKm(m.state);
-      return (
-        _ && _.length && avisar((de) => [...de, ..._]),
-        X && X.length && setHallazgos(X),
-        guardarPartida(N),
-        N
-      );
+      return (_ && _.length && avisar((de) => [...de, ..._]), X && X.length && setHallazgos(X), N);
     });
   }
   function forzarTravesia() {
@@ -1246,7 +1209,6 @@ function App({ player, setPlayer, initialNotices }) {
             challengeText: sdcPortales[0].c,
             rewardXP: Ed[d.progress.rank],
           }),
-        guardarPartida(d),
         d
       );
     }),
@@ -1257,17 +1219,13 @@ function App({ player, setPlayer, initialNotices }) {
       let m = clonar(d);
       ((m.streak.current = f), (m.streak.best = Math.max(m.streak.best || 0, f)));
       let N = revisarLogros(m);
-      return (
-        N.notices.length && avisar((_) => [..._, ...N.notices]),
-        guardarPartida(N.state),
-        N.state
-      );
+      return (N.notices.length && avisar((_) => [..._, ...N.notices]), N.state);
     });
   }
   function desbloquearLogros() {
     (setPlayer((f) => {
       let d = clonar(f);
-      return ((d.achievements = logros.map((m) => m.id)), guardarPartida(d), d);
+      return ((d.achievements = logros.map((m) => m.id)), d);
     }),
       avisar((f) => [...f, "[Prueba] Todos los logros desbloqueados."]));
   }
@@ -1285,7 +1243,6 @@ function App({ player, setPlayer, initialNotices }) {
         (d.combat.villainCurrentHP = golpesNecesarios(za(4))),
         (d.combat.phase = "resting"),
         (d.combat.roundId = (d.combat.roundId || 0) + 1),
-        guardarPartida(d),
         d
       );
     }),
@@ -1296,7 +1253,7 @@ function App({ player, setPlayer, initialNotices }) {
   function reiniciarCombate() {
     (setPlayer((f) => {
       let d = clonar(f);
-      return ((d.combat = Ad()), guardarPartida(d), d);
+      return ((d.combat = Ad()), d);
     }),
       setCombPrep(!1),
       setCombVentana(!1),
@@ -1308,18 +1265,14 @@ function App({ player, setPlayer, initialNotices }) {
       d.primal.unlockedCount < movimientosPrimal.length &&
         ((d.primal.unlockedCount += 1), (d.primal.masteryProgress = 0));
       let m = revisarLogros(d);
-      return (
-        m.notices.length && avisar((N) => [...N, ...m.notices]),
-        guardarPartida(m.state),
-        m.state
-      );
+      return (m.notices.length && avisar((N) => [...N, ...m.notices]), m.state);
     }),
       avisar((f) => [...f, "[Prueba] Desbloqueado el siguiente movimiento de Instinto Primal."]));
   }
   function reiniciarContadorPrimal() {
     (setPlayer((f) => {
       let d = clonar(f);
-      return ((d.primal.today = { date: fechaHoy(), count: 0 }), guardarPartida(d), d);
+      return ((d.primal.today = { date: fechaHoy(), count: 0 }), d);
     }),
       avisar((f) => [...f, "[Prueba] Contador diario de Instinto Primal reiniciado."]));
   }
@@ -1335,7 +1288,6 @@ function App({ player, setPlayer, initialNotices }) {
               ...N,
               '[Prueba] Ya se mostró el aviso hoy, usa "reiniciar contador diario" primero.',
             ]),
-        guardarPartida(m.state),
         m.state
       );
     });

@@ -160,7 +160,7 @@ If the app seems frozen on an old version, unregister the worker and delete cach
 
 ### State and persistence
 
-One plain object holds everything, deep-cloned with `clonar(e)` before mutation and saved with `guardarPartida(e)`. Key branches: `profile` (name, modalities, classification, focusProfile, weeklyGoal), `progress` (rank, level, currentXP), `today`, `week`, `month`, `streak`, `dominion`, `missions`, `lifetimeReps`, `lastTrained`, `history`, `dayLog`, `ui`.
+One plain object holds everything, deep-cloned with `clonar(e)` before mutation and saved with `guardarPartida(e)`. **The save happens in one place:** an effect in `Raiz` calls `guardarPartida(player)` every time the player object changes, and nothing else calls it. App, the onboarding and a restored backup only hand `Raiz` a new object; restarting sets it to `null`, which is never written. It used to be 50 calls scattered through `App` and `Raiz`, each inside the updater passed to `setPlayer` — a side effect React is allowed to run twice, and one more line every new handler had to remember. Before they were removed a script checked that every one of them saved exactly the object its updater returned, and that the only `setPlayer` without one was the restart; then the same route was played on the published build and the new one and the stored save compared after every step (40 screens, identical), plus restoring a backup, restarting and starting again. **The consequence to keep in mind: a change is saved only if it produces a new object.** Return `clonar(d)` from the updater, as every handler does; mutating the current object in place would neither re-render nor save. Key branches: `profile` (name, modalities, classification, focusProfile, weeklyGoal), `progress` (rank, level, currentXP), `today`, `week`, `month`, `streak`, `dominion`, `missions`, `lifetimeReps`, `lastTrained`, `history`, `dayLog`, `ui`.
 
 `cargarPartida(state)` is the load/migration path: it backfills missing fields, rolls the day and week over, and ends by calling `misRevisar` then `subirNiveles`. **Any new state field needs a default here**, or old saves crash. Existing saves in the wild predate every field added recently.
 
@@ -430,7 +430,7 @@ The collapsed cards themselves were never the problem — they are 54–55 px ea
 
 ### Notices are added in a microtask
 
-`App`'s `avisar(x)` is not the state setter: it is `queueMicrotask(() => sdcSetAvisos(x))`. `aplicar` and a dozen handlers call `avisar(...)` from inside `setPlayer(updater)` (Raiz's player setter), and React runs an updater while it renders `Raiz`, so updating `App` there logged *Cannot update a component (App) while rendering a different component (Raiz)* in `npm run dev`. The original bundle shipped production React, which does not print it, so it went unseen until the build step. Deferring the one setter fixed every call site at once. Updaters still write `localStorage` (`guardarPartida`) as a side effect — harmless without StrictMode, and the next thing to move out now that `App` is split (not done: it touches the save, so it goes in its own change).
+`App`'s `avisar(x)` is not the state setter: it is `queueMicrotask(() => sdcSetAvisos(x))`. `aplicar` and a dozen handlers call `avisar(...)` from inside `setPlayer(updater)` (Raiz's player setter), and React runs an updater while it renders `Raiz`, so updating `App` there logged *Cannot update a component (App) while rendering a different component (Raiz)* in `npm run dev`. The original bundle shipped production React, which does not print it, so it went unseen until the build step. Deferring the one setter fixed every call site at once. The updaters no longer write `localStorage` either: see **The save happens in one place** under *State and persistence*.
 
 ### Feedback
 
@@ -554,7 +554,7 @@ Two beeps instead of one: a low 520 Hz when the lead-in starts and the usual 760
 
 State lives in `state.flex` and uses the **no-migration pattern** — `sdcFlex(e)` returns `{}` — so `cargarPartida` is untouched.
 
-> The bug that cost a test run: `sdcFlexSet` first returned the bare state instead of `{state, notices}`. `aplicar` destructures `{state:m}`, got `undefined`, and `guardarPartida(undefined)` wrote the literal string `"undefined"` into `dominio-corporal:player/state`, wiping the save. **Anything passed to `aplicar` must return `{state, notices}`**, and a save that comes back as the string `"undefined"` is this mistake.
+> The bug that cost a test run: `sdcFlexSet` first returned the bare state instead of `{state, notices}`. `aplicar` destructures `{state:m}`, got `undefined`, and `guardarPartida(undefined)` wrote the literal string `"undefined"` into `dominio-corporal:player/state`, wiping the save. Since the save moved into `Raiz`, an `undefined` player is no longer written — the stored save survives and a reload brings it back — but the screen still falls to the onboarding, and finishing it there would overwrite everything. **Anything passed to `aplicar` must still return `{state, notices}`.**
 
 ### Warm-up (Calentamiento)
 
