@@ -424,7 +424,8 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
 
 ## D · Deuda menor
 
-- El sitio viejo de Netlify sigue online sirviendo código viejo. Conviene borrarlo.
+- ~~El sitio viejo de Netlify seguía online sirviendo código viejo~~ — resuelto (25/09/2026): borrado
+  junto con su equipo.
 - ~~El wake lock no cubría la sesión entera~~ — resuelto: la pantalla queda encendida desde la
   primera serie hasta registrar, y el fin de un descanso ya no la apaga.
 - La notificación diaria no es trivial en una PWA: sin servidor no hay push, y las APIs que lo

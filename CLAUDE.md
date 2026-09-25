@@ -131,7 +131,7 @@ Three things that a distracted person feels and a developer never does, all meas
 
 Only `dist/` is published now, so `CLAUDE.md`, `PENDIENTES.md` and `diseno/` are no longer served to the world as they were under the old setup. The flip side: a future `.well-known/assetlinks.json` has to go in `public/`, and check that it actually reaches the site, because the Pages artifact may leave dotfiles out.
 
-Netlify was dropped: it silently stopped deploying and sat five commits behind while every push reported success. `netlify.toml` has been deleted. The repo had to be made **public**, because Pages on a private repo requires a paid plan. The old Netlify site is still online serving stale code and should be deleted by hand.
+Netlify was dropped: it silently stopped deploying and sat five commits behind while every push reported success. `netlify.toml` has been deleted. The repo had to be made **public**, because Pages on a private repo requires a paid plan. The old Netlify site (`glittering-snickerdoodle-2b7928.netlify.app`) was deleted by hand on 2026-09-25, with its team; the address now answers Netlify's "site not found".
 
 Always confirm the change actually reached production rather than trusting the push:
 
