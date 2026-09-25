@@ -23,7 +23,8 @@ ni la dirección del sitio.
 - **Pruebas**: 114 automáticas (curva de XP, Umbral, buffos, deshacer, sonidos…) y 9 de punta a
   punta en Edge. **Si alguna falla, o el revisor encuentra un error, no se publica nada**: el deploy lo hace GitHub Actions y las
   corre antes.
-- **App partida**: cada pestaña en su archivo (`src/ui/pestanas/`) y Entreno en tarjetas.
+- **App partida**: cada pestaña en su archivo (`src/ui/pestanas/`) y Entreno en tarjetas. Entreno
+  recibe un paquete de datos por tarjeta: 28 cosas en vez de 95.
 - **La partida se guarda en un solo lugar**, cada vez que cambia: ningún cambio puede quedar sin
   guardar por olvido.
 - **Umbral**: además del nivel pide rutinas completas en el rango (24 en el primero, 12 más en

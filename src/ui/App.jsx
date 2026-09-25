@@ -1739,101 +1739,106 @@ function App({ player, setPlayer, initialNotices }) {
         })()}
         {pestana === "training" && (
           <PestanaEntreno
+            propsRutina={{
+              colorDelRango,
+              confirmarDeshacer,
+              descansando,
+              descansoBase,
+              deshacerRegistro,
+              elegirModalidad,
+              metaDia,
+              metronomoOn,
+              mmNueva,
+              modo,
+              registrar,
+              sdcAjustar,
+              sdcAjuste,
+              sdcConfDesc,
+              sdcDesc,
+              sdcDescIni,
+              sdcEjNom,
+              sdcKgSet,
+              sdcKgUsar,
+              sdcKgVer,
+              sdcMarcaOk,
+              sdcMarcarTodo,
+              sdcModOk,
+              sdcSer,
+              sdcSerie,
+              sdcSetConfDesc,
+              sdcSetModOk,
+              sdcTotalMeta,
+              setConfirmarDeshacer,
+              setDescansando,
+              setMetaSesion,
+              setMetronomoOn,
+              setPestana,
+            }}
+            propsCuerpo={{
+              atributos,
+              coloresMapa,
+              grupos,
+              lastTrained,
+              metaSemanaGrupo,
+              modoMapa,
+              rangoDeHoy,
+              ratiosHoy,
+              repsHoy,
+              sdcMt,
+              setModoMapa,
+              setVistaCuerpo,
+              setZonaElegida,
+              vistaCuerpo,
+              zonaElegida,
+            }}
+            propsEstiramiento={{
+              estirando,
+              estSegundos,
+              sdcEstOk,
+              sdcEstPasos,
+              sdcEstPz,
+              sdcSetEstIdx,
+              sdcSetEstIni,
+              sdcSetEstOk,
+              sdcSetEstPasos,
+              sdcSetEstPz,
+              setEstirando,
+              setEstSegundos,
+            }}
+            propsConstancia={{
+              cambiandoMeta,
+              diaElegido,
+              diasGrilla,
+              ponerMetaSemanal,
+              sesionesSemana,
+              setCambiandoMeta,
+              setDiaElegido,
+              streak,
+            }}
+            propsTravesia={{ sdcTravCancelar, sdcTravEmpezar, terminarTravesia }}
+            propsUmbral={{ ascension, cruzarUmbral }}
             alternarPlegable={alternarPlegable}
             aplicar={aplicar}
-            ascension={ascension}
-            atributos={atributos}
             avisar={avisar}
             bkDescargar={bkDescargar}
-            cambiandoMeta={cambiandoMeta}
             cerrarResumenSemana={cerrarResumenSemana}
-            colorDelRango={colorDelRango}
-            coloresMapa={coloresMapa}
-            confirmarDeshacer={confirmarDeshacer}
-            cruzarUmbral={cruzarUmbral}
-            descansando={descansando}
-            descansoBase={descansoBase}
-            deshacerRegistro={deshacerRegistro}
-            diaElegido={diaElegido}
-            diasGrilla={diasGrilla}
             dungeon={dungeon}
-            elegirModalidad={elegirModalidad}
-            estirando={estirando}
-            estSegundos={estSegundos}
-            grupos={grupos}
-            lastTrained={lastTrained}
             lastWeekSummary={lastWeekSummary}
             lifetimeReps={lifetimeReps}
-            metaDia={metaDia}
             metaSemana={metaSemana}
-            metaSemanaGrupo={metaSemanaGrupo}
             metaSesion={metaSesion}
-            metronomoOn={metronomoOn}
-            mmNueva={mmNueva}
             modalidad={modalidad}
-            modo={modo}
-            modoMapa={modoMapa}
             player={player}
             plegado={plegado}
-            ponerMetaSemanal={ponerMetaSemanal}
             profile={profile}
             progress={progress}
-            rangoDeHoy={rangoDeHoy}
-            ratiosHoy={ratiosHoy}
-            registrar={registrar}
-            repsHoy={repsHoy}
-            sdcAjustar={sdcAjustar}
-            sdcAjuste={sdcAjuste}
-            sdcConfDesc={sdcConfDesc}
-            sdcDesc={sdcDesc}
-            sdcDescIni={sdcDescIni}
-            sdcEjNom={sdcEjNom}
-            sdcEstOk={sdcEstOk}
-            sdcEstPasos={sdcEstPasos}
-            sdcEstPz={sdcEstPz}
-            sdcKgSet={sdcKgSet}
-            sdcKgUsar={sdcKgUsar}
-            sdcKgVer={sdcKgVer}
-            sdcMarcaOk={sdcMarcaOk}
-            sdcMarcarTodo={sdcMarcarTodo}
-            sdcModOk={sdcModOk}
-            sdcMt={sdcMt}
             sdcResponderPodia={sdcResponderPodia}
-            sdcSer={sdcSer}
-            sdcSerie={sdcSerie}
-            sdcSetConfDesc={sdcSetConfDesc}
-            sdcSetEstIdx={sdcSetEstIdx}
-            sdcSetEstIni={sdcSetEstIni}
-            sdcSetEstOk={sdcSetEstOk}
-            sdcSetEstPasos={sdcSetEstPasos}
-            sdcSetEstPz={sdcSetEstPz}
-            sdcSetModOk={sdcSetModOk}
             sdcTotalHechas={sdcTotalHechas}
-            sdcTotalMeta={sdcTotalMeta}
-            sdcTravCancelar={sdcTravCancelar}
-            sdcTravEmpezar={sdcTravEmpezar}
-            sesionesSemana={sesionesSemana}
-            setCambiandoMeta={setCambiandoMeta}
-            setConfirmarDeshacer={setConfirmarDeshacer}
-            setDescansando={setDescansando}
-            setDiaElegido={setDiaElegido}
-            setEstirando={setEstirando}
-            setEstSegundos={setEstSegundos}
-            setMetaSesion={setMetaSesion}
-            setMetronomoOn={setMetronomoOn}
             setModo={setModo}
-            setModoMapa={setModoMapa}
-            setPestana={setPestana}
-            setVistaCuerpo={setVistaCuerpo}
-            setZonaElegida={setZonaElegida}
-            streak={streak}
-            terminarTravesia={terminarTravesia}
             today={today}
             tomarDescanso={tomarDescanso}
             ui={ui}
-            vistaCuerpo={vistaCuerpo}
             week={week}
-            zonaElegida={zonaElegida}
           />
         )}
         {pestana === "combat" && (

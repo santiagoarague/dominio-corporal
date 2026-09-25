@@ -19,99 +19,32 @@ import { TarjetaUmbral } from "./entreno/umbral.jsx";
 export function PestanaEntreno({
   alternarPlegable,
   aplicar,
-  ascension,
-  atributos,
   avisar,
   bkDescargar,
-  cambiandoMeta,
   cerrarResumenSemana,
-  colorDelRango,
-  coloresMapa,
-  confirmarDeshacer,
-  cruzarUmbral,
-  descansando,
-  descansoBase,
-  deshacerRegistro,
-  diaElegido,
-  diasGrilla,
   dungeon,
-  elegirModalidad,
-  estirando,
-  estSegundos,
-  grupos,
-  lastTrained,
   lastWeekSummary,
   lifetimeReps,
-  metaDia,
   metaSemana,
-  metaSemanaGrupo,
   metaSesion,
-  metronomoOn,
-  mmNueva,
   modalidad,
-  modo,
-  modoMapa,
   player,
   plegado,
-  ponerMetaSemanal,
   profile,
   progress,
-  rangoDeHoy,
-  ratiosHoy,
-  registrar,
-  repsHoy,
-  sdcAjustar,
-  sdcAjuste,
-  sdcConfDesc,
-  sdcDesc,
-  sdcDescIni,
-  sdcEjNom,
-  sdcEstOk,
-  sdcEstPasos,
-  sdcEstPz,
-  sdcKgSet,
-  sdcKgUsar,
-  sdcKgVer,
-  sdcMarcaOk,
-  sdcMarcarTodo,
-  sdcModOk,
-  sdcMt,
   sdcResponderPodia,
-  sdcSer,
-  sdcSerie,
-  sdcSetConfDesc,
-  sdcSetEstIdx,
-  sdcSetEstIni,
-  sdcSetEstOk,
-  sdcSetEstPasos,
-  sdcSetEstPz,
-  sdcSetModOk,
   sdcTotalHechas,
-  sdcTotalMeta,
-  sdcTravCancelar,
-  sdcTravEmpezar,
-  sesionesSemana,
-  setCambiandoMeta,
-  setConfirmarDeshacer,
-  setDescansando,
-  setDiaElegido,
-  setEstirando,
-  setEstSegundos,
-  setMetaSesion,
-  setMetronomoOn,
   setModo,
-  setModoMapa,
-  setPestana,
-  setVistaCuerpo,
-  setZonaElegida,
-  streak,
-  terminarTravesia,
   today,
   tomarDescanso,
   ui,
-  vistaCuerpo,
   week,
-  zonaElegida,
+  propsRutina,
+  propsCuerpo,
+  propsEstiramiento,
+  propsConstancia,
+  propsTravesia,
+  propsUmbral,
 }) {
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
@@ -203,29 +136,16 @@ export function PestanaEntreno({
         </Tarjeta>
       )}
       <TarjetaConstancia
+        {...propsConstancia}
         alternarPlegable={alternarPlegable}
         aplicar={aplicar}
-        cambiandoMeta={cambiandoMeta}
-        diaElegido={diaElegido}
-        diasGrilla={diasGrilla}
         metaSemana={metaSemana}
         player={player}
         plegado={plegado}
-        ponerMetaSemanal={ponerMetaSemanal}
-        sesionesSemana={sesionesSemana}
-        setCambiandoMeta={setCambiandoMeta}
-        setDiaElegido={setDiaElegido}
-        streak={streak}
         today={today}
         ui={ui}
       />
-      <TarjetaTravesia
-        dungeon={dungeon}
-        player={player}
-        sdcTravCancelar={sdcTravCancelar}
-        sdcTravEmpezar={sdcTravEmpezar}
-        terminarTravesia={terminarTravesia}
-      />
+      <TarjetaTravesia {...propsTravesia} dungeon={dungeon} player={player} />
       {sistemaActivo(player, "dungeon") && dungeon.available && dungeon.completed && (
         <Tarjeta accent="#ff5c7a" style={{ marginBottom: 16 }}>
           <div className="flex items-center gap-2 text-sm" style={{ color: "#ff5c7a" }}>
@@ -239,8 +159,7 @@ export function PestanaEntreno({
         </div>
       )}
       <TarjetaUmbral
-        ascension={ascension}
-        cruzarUmbral={cruzarUmbral}
+        {...propsUmbral}
         modalidad={modalidad}
         player={player}
         profile={profile}
@@ -305,30 +224,16 @@ export function PestanaEntreno({
         );
       })()}
       <TarjetaCuerpo
+        {...propsCuerpo}
         alternarPlegable={alternarPlegable}
-        atributos={atributos}
-        coloresMapa={coloresMapa}
-        grupos={grupos}
-        lastTrained={lastTrained}
         lifetimeReps={lifetimeReps}
         metaSemana={metaSemana}
-        metaSemanaGrupo={metaSemanaGrupo}
         modalidad={modalidad}
-        modoMapa={modoMapa}
         plegado={plegado}
         profile={profile}
-        rangoDeHoy={rangoDeHoy}
-        ratiosHoy={ratiosHoy}
-        repsHoy={repsHoy}
-        sdcMt={sdcMt}
-        setModoMapa={setModoMapa}
-        setVistaCuerpo={setVistaCuerpo}
-        setZonaElegida={setZonaElegida}
         today={today}
         ui={ui}
-        vistaCuerpo={vistaCuerpo}
         week={week}
-        zonaElegida={zonaElegida}
       />
       {sdcAnimoOn(player) &&
         !today.completed &&
@@ -375,71 +280,28 @@ export function PestanaEntreno({
         </Plegable>
       )}
       <TarjetaRutina
+        {...propsRutina}
         alternarPlegable={alternarPlegable}
         aplicar={aplicar}
-        colorDelRango={colorDelRango}
-        confirmarDeshacer={confirmarDeshacer}
-        descansando={descansando}
-        descansoBase={descansoBase}
-        deshacerRegistro={deshacerRegistro}
-        elegirModalidad={elegirModalidad}
         lifetimeReps={lifetimeReps}
-        metaDia={metaDia}
         metaSesion={metaSesion}
-        metronomoOn={metronomoOn}
-        mmNueva={mmNueva}
         modalidad={modalidad}
-        modo={modo}
         player={player}
         plegado={plegado}
         profile={profile}
         progress={progress}
-        registrar={registrar}
-        sdcAjustar={sdcAjustar}
-        sdcAjuste={sdcAjuste}
-        sdcConfDesc={sdcConfDesc}
-        sdcDesc={sdcDesc}
-        sdcDescIni={sdcDescIni}
-        sdcEjNom={sdcEjNom}
-        sdcKgSet={sdcKgSet}
-        sdcKgUsar={sdcKgUsar}
-        sdcKgVer={sdcKgVer}
-        sdcMarcaOk={sdcMarcaOk}
-        sdcMarcarTodo={sdcMarcarTodo}
-        sdcModOk={sdcModOk}
-        sdcSer={sdcSer}
-        sdcSerie={sdcSerie}
-        sdcSetConfDesc={sdcSetConfDesc}
-        sdcSetModOk={sdcSetModOk}
         sdcTotalHechas={sdcTotalHechas}
-        sdcTotalMeta={sdcTotalMeta}
-        setConfirmarDeshacer={setConfirmarDeshacer}
-        setDescansando={setDescansando}
-        setMetaSesion={setMetaSesion}
-        setMetronomoOn={setMetronomoOn}
         setModo={setModo}
-        setPestana={setPestana}
         today={today}
         tomarDescanso={tomarDescanso}
         week={week}
       />
       <TarjetaEstiramiento
+        {...propsEstiramiento}
         alternarPlegable={alternarPlegable}
         aplicar={aplicar}
-        estirando={estirando}
-        estSegundos={estSegundos}
         player={player}
         plegado={plegado}
-        sdcEstOk={sdcEstOk}
-        sdcEstPasos={sdcEstPasos}
-        sdcEstPz={sdcEstPz}
-        sdcSetEstIdx={sdcSetEstIdx}
-        sdcSetEstIni={sdcSetEstIni}
-        sdcSetEstOk={sdcSetEstOk}
-        sdcSetEstPasos={sdcSetEstPasos}
-        sdcSetEstPz={sdcSetEstPz}
-        setEstirando={setEstirando}
-        setEstSegundos={setEstSegundos}
         today={today}
         week={week}
       />
