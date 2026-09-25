@@ -60,7 +60,11 @@ test("la respuesta de Cómo llegás se puede cambiar", async ({ page }) => {
   await expect(page.getByText("Hoy alcanza con empezar")).toBeVisible();
 
   const hoy = (await partida(page)).today.date;
-  expect((await partida(page)).animo[hoy]).toMatchObject({ antes: 2, cuerpo: "cargado", modo: "recovery" });
+  expect((await partida(page)).animo[hoy]).toMatchObject({
+    antes: 2,
+    cuerpo: "cargado",
+    modo: "recovery",
+  });
 });
 
 test("funciona sin conexión después de la primera visita", async ({ page, context }) => {
@@ -68,7 +72,9 @@ test("funciona sin conexión después de la primera visita", async ({ page, cont
   await page.evaluate(async () => {
     await navigator.serviceWorker.ready;
     if (!navigator.serviceWorker.controller) {
-      await new Promise((r) => navigator.serviceWorker.addEventListener("controllerchange", r, { once: true }));
+      await new Promise((r) =>
+        navigator.serviceWorker.addEventListener("controllerchange", r, { once: true }),
+      );
     }
   });
   // Lo que el service worker guardo tiene que incluir el bundle con hash.
@@ -87,4 +93,44 @@ test("funciona sin conexión después de la primera visita", async ({ page, cont
   await context.route("**/*", (route) => route.abort("internetdisconnected"));
   await page.reload();
   await expect(page.getByText("Rutina de hoy")).toBeVisible();
+});
+
+test("Primeras veces: se anota a mano desde la tarjeta, sin cuadro del navegador", async ({
+  page,
+}) => {
+  const errores = [];
+  page.on("pageerror", (e) => errores.push(e.message));
+  // Si la app volviera a usar window.prompt, la prueba lo detecta.
+  page.on("dialog", (d) => {
+    errores.push("abrio un cuadro del navegador: " + d.message());
+    d.dismiss();
+  });
+
+  await empezarConValoresPorDefecto(page);
+  await boton(page, "Perfil").click();
+  await page.getByRole("button", { name: /Primeras veces/ }).click();
+
+  // Cancelar no anota nada.
+  await boton(page, "Hoy pude algo que antes no podía").click();
+  await page.getByLabel("Qué pudiste hacer hoy que antes no podías").fill("algo");
+  await boton(page, "Cancelar").click();
+  expect((await partida(page)).primeras || []).toEqual([]);
+
+  // Vacio no se puede anotar; con texto, si, y el campo se cierra.
+  await boton(page, "Hoy pude algo que antes no podía").click();
+  await expect(boton(page, "Anotar")).toBeDisabled();
+  await page
+    .getByLabel("Qué pudiste hacer hoy que antes no podías")
+    .fill("  Colgarme 20 segundos de la barra  ");
+  await page.getByLabel("Qué pudiste hacer hoy que antes no podías").press("Enter");
+  await expect(
+    page.getByText("Primera vez: Colgarme 20 segundos de la barra. Queda anotado."),
+  ).toBeVisible();
+  await expect(boton(page, "Hoy pude algo que antes no podía")).toBeVisible();
+
+  await expect.poll(async () => ((await partida(page)).primeras || []).length).toBe(1);
+  const [p] = (await partida(page)).primeras;
+  expect(p.texto).toBe("Colgarme 20 segundos de la barra");
+  expect(p.origen).toBe("escrita");
+  expect(errores).toEqual([]);
 });

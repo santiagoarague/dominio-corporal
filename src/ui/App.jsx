@@ -465,12 +465,15 @@ function App({ player, setPlayer, initialNotices }) {
       }, 250);
       return () => clearInterval(f);
     }, [primalFase, primalFin, primalPausa]),
+    // La pantalla no se apaga mientras corre algo con reloj, ni en medio de la
+    // rutina: desde la primera serie marcada hasta registrarla, en Entreno.
     sdcWakeSi(
       !!combPrep ||
         !!combVentana ||
         !!estirando ||
         primalFase === "active" ||
-        primalFase === "resting",
+        primalFase === "resting" ||
+        (pestana === "training" && !today.completed && sdcTotalHechas() > 0),
     ));
   function primalElegir(f) {
     (setPrimalMov(f), setPrimalRonda(0), setPrimalFase("listo"));
@@ -899,11 +902,7 @@ function App({ player, setPlayer, initialNotices }) {
       return (m.dungeon && (m.dungeon.startedAt = 0), m);
     });
   }
-  function sdcPrimeraManual() {
-    var t = null;
-    try {
-      t = window.prompt("¿Qué pudiste hacer hoy que antes no podías?");
-    } catch (x) {}
+  function sdcPrimeraManual(t) {
     if (!t || !String(t).trim()) return;
     var tx = String(t).trim().slice(0, 120);
     (setPlayer((d) => {

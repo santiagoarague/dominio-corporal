@@ -1,4 +1,5 @@
 // Pestana Perfil: prueba de aptitud, metodos, sistemas, numeros, primeras veces y respaldo.
+import { useState } from "react";
 import {
   fechaHoy,
   xpTotal,
@@ -23,6 +24,79 @@ import { BarraXp, Tarjeta } from "../base.jsx";
 import { Plegable } from "../tarjetas.jsx";
 import { IconoPersona, IconoCandado } from "../iconos.jsx";
 import { PruebaAptitud } from "../prueba.jsx";
+
+// "Hoy pude algo que antes no podía": un campo dentro de la tarjeta, en vez del
+// cuadro del navegador (window.prompt). Se abre al tocar el boton y se cierra al anotar.
+function AnotarPrimera({ onAnotar }) {
+  let [abierto, setAbierto] = useState(false),
+    [texto, setTexto] = useState(""),
+    listo = texto.trim().length > 0,
+    cerrar = () => (setTexto(""), setAbierto(false)),
+    anotar = () => listo && (onAnotar(texto), cerrar()),
+    secundario = {
+      minHeight: 44,
+      background: "rgba(255,255,255,0.08)",
+      border: "1px solid rgba(255,255,255,0.28)",
+      color: "#e8ecf7",
+      fontWeight: 600,
+    };
+  if (!abierto)
+    return (
+      <button
+        onClick={() => setAbierto(true)}
+        className="w-full py-2 text-xs mb-3"
+        style={{
+          minHeight: 44,
+          background: "rgba(176,132,245,0.12)",
+          border: "1px solid #b084f5",
+          color: "#e8ecf7",
+          fontWeight: 600,
+        }}
+      >
+        Hoy pude algo que antes no podía
+      </button>
+    );
+  return (
+    <div className="mb-3">
+      <input
+        type="text"
+        value={texto}
+        autoFocus
+        maxLength={120}
+        onChange={(e) => setTexto(e.target.value)}
+        onKeyDown={(e) => e.key === "Enter" && anotar()}
+        placeholder="¿Qué pudiste hacer hoy que antes no podías?"
+        aria-label="Qué pudiste hacer hoy que antes no podías"
+        className="w-full px-3 py-2 text-sm"
+        style={{
+          minHeight: 44,
+          background: "rgba(255,255,255,0.05)",
+          border: "1px solid #b084f5",
+          color: "#e8ecf7",
+        }}
+      />
+      <div className="grid grid-cols-2 gap-2 mt-2">
+        <button
+          onClick={anotar}
+          disabled={!listo}
+          className="py-2 text-sm disabled:opacity-40"
+          style={{
+            minHeight: 44,
+            background: "#b084f5",
+            border: "1px solid #b084f5",
+            color: "#0a0e1a",
+            fontWeight: 700,
+          }}
+        >
+          Anotar
+        </button>
+        <button onClick={cerrar} className="py-2 text-sm" style={secundario}>
+          Cancelar
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export function PestanaPerfil({
   achievements,
@@ -615,19 +689,7 @@ export function PestanaPerfil({
         <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
           El día que hacés algo que antes no podías, queda acá. No se borra nunca.
         </div>
-        <button
-          onClick={sdcPrimeraManual}
-          className="w-full py-2 text-xs mb-3"
-          style={{
-            minHeight: 44,
-            background: "rgba(176,132,245,0.12)",
-            border: "1px solid #b084f5",
-            color: "#e8ecf7",
-            fontWeight: 600,
-          }}
-        >
-          Hoy pude algo que antes no podía
-        </button>
+        <AnotarPrimera onAnotar={sdcPrimeraManual} />
         {sdcPrimeras(player).length === 0 ? (
           <div className="text-xs" style={{ color: "#7a83a0" }}>
             Todavía no hay ninguna. Van a aparecer solas.

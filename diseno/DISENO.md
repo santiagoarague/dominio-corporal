@@ -118,7 +118,8 @@ explícitamente cuál rompe y por qué.
     que te toca un movimiento, el reloj espera a que toques "Listo"**: alguien que no lo conoce
     necesita leerlo, y el tiempo no puede correr mientras lee. Siempre hay **Pausa**. Nada
     cronometrado arranca solo al tocar algo: primero se ve qué viene y después se toca Empezar. La
-    pantalla no se apaga y el reloj se calcula desde una marca de tiempo, así que bloquear el
+    pantalla no se apaga —tampoco en medio de la rutina, desde la primera serie marcada hasta
+    registrarla— y el reloj se calcula desde una marca de tiempo, así que bloquear el
     teléfono no lo congela. **Cada cambio se oye**, con el teléfono lejos: cuenta 3-2-1 antes de
     arrancar y antes de terminar, y un sonido distinto para "arranca" y para "terminó". Los avisos
     van por encima de ~700 Hz, porque el parlante de un teléfono casi no da tonos graves.

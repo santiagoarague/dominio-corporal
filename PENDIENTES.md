@@ -1,9 +1,40 @@
 # Pendientes — Dominio Corporal
 
-Estado al 21/09/2026. Producción: https://santiagoarague.github.io/dominio-corporal/
+Estado al 24/09/2026. Producción: https://santiagoarague.github.io/dominio-corporal/
 
 > Todo lo que figura como "hecho" más abajo ya está en `main` y en producción.
 > `git push` a `main` *es* el deploy.
+
+---
+
+## Modernización (septiembre 2026)
+
+La app dejó de ser un solo archivo de 643 KB sin código fuente. La copia de antes quedó en la
+etiqueta `v1-html` y en `dominio-corporal-v1-html.zip`. Nada de esto cambió la partida guardada
+ni la dirección del sitio.
+
+- **Código fuente de verdad**: Vite + React 19, en módulos por tema, con nombres reales en vez
+  de los del minificador, y en JSX. Cada paso se comprobó comparando el resultado con la versión
+  publicada, pantalla por pantalla.
+- **Pruebas**: 103 automáticas (curva de XP, Umbral, buffos, deshacer, sonidos…) y 8 de punta a
+  punta en Edge. **Si alguna falla, no se publica nada**: el deploy lo hace GitHub Actions y las
+  corre antes.
+- **App partida**: cada pestaña en su archivo (`src/ui/pestanas/`) y Entreno en tarjetas.
+- **La partida se guarda en un solo lugar**, cada vez que cambia: ningún cambio puede quedar sin
+  guardar por olvido.
+- **Umbral**: además del nivel pide 24 rutinas completas en el rango y la prueba usa los
+  ejercicios del rango siguiente. El bono de +30 ya no se multiplica por el enfoque (fuerza
+  cobraba ~20% de más) y resistencia cobra 0,72×: los tres enfoques pagan dentro de un 3,4%.
+- **Deshacer** ahora deshace todo: reps del mes, contadores de modalidad y logros.
+- **Cómo llegás**: toda respuesta se puede cambiar. **Peso corporal** se llama **Calistenia**.
+- **Metrónomo**: la pausa suena distinto (doble tic) de la bajada (tono que cae) y la subida
+  (tono que sube).
+- **Instinto Primal**: cuenta 3-2-1 y sonido propio al arrancar y al terminar cada ronda, los
+  últimos 5 s del descanso anunciados como PREPARATE, **Pausa**, y un reloj que no se atrasa.
+- **Primeras veces**: se anota a mano en un campo de la tarjeta, sin el cuadro del navegador.
+- **Pantalla encendida** durante toda la rutina, desde la primera serie hasta registrarla.
+- **Medido y descartado**: bajar las pestañas aparte para abrir más rápido. Pesaban 70 KB de
+  620 y la app abría en el mismo tiempo (1,10 s contra 1,12 s).
 
 ---
 
@@ -370,21 +401,31 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
 
 ## C · Decisiones de diseño que quedaron abiertas
 
-- **Tamaño de texto ajustable** y **poder apagar sistemas**: quedaron explícitamente fuera de
-  alcance, no descartados.
-- El botón manual de Primeras veces usa `window.prompt()`. Funciona en todos lados, pero merece
-  una UI propia. Requiere agregar un hook al componente grande.
+- **Tamaño de texto ajustable**: quedó explícitamente fuera de alcance, no descartado. (Apagar
+  sistemas ya existe: Perfil → Sistemas del juego.)
+- ~~El botón manual de Primeras veces usaba `window.prompt()`~~ — resuelto: ahora es un campo
+  dentro de la tarjeta.
 - La fuente "medida" de Primeras veces (récord propio superado) se dejó afuera a propósito:
   al principio casi toda sesión bate un récord y la lista se llenaría de ruido.
+- **Elegidas por Claude en la modernización, fáciles de cambiar si no te convencen:**
+  - Las **24 rutinas completas** que pide el Umbral.
+  - La prueba del Umbral: 3 rondas al 60% de la meta del rango siguiente. Puede ser exigente.
+  - El nombre **Calistenia** para la modalidad de peso corporal.
+  - **0,6** como factor para comparar pruebas viejas y nuevas del calibre: es una estimación.
+- **Movilidad & Primal Flow** (la modalidad) se parece mucho a **Instinto Primal** (el sistema).
+- Un solo metrónomo para los cuatro ejercicios, aunque uno sea un sostén.
+- El reloj del **combate** sigue restando de a un segundo, a propósito: su tiempo es un
+  desafío, y con la hora real salir un momento de la app costaría un corazón.
 
 ## D · Deuda menor
 
 - El sitio viejo de Netlify sigue online sirviendo código viejo. Conviene borrarlo.
-- El wake lock cubre descanso, prueba de aptitud, combate e Instinto Primal. No cubre la sesión
-  entera.
+- ~~El wake lock no cubría la sesión entera~~ — resuelto: la pantalla queda encendida desde la
+  primera serie hasta registrar, y el fin de un descanso ya no la apaga.
 - La notificación diaria no es trivial en una PWA: sin servidor no hay push, y las APIs que lo
   permitirían o no existen o son solo de Chrome y poco fiables.
-- `zl` y `J2` quedaron como respaldo detrás de `sdcRango`/`sdcDescRango`. No molestan, pero si
+- `nombresRango` y `descRango` (antes `zl` y `J2`) quedaron como respaldo detrás de
+  `sdcRango`/`sdcDescRango`. No molestan, pero si
   alguna vez se confirma que nunca se leen, se pueden borrar.
 
 ## E · Resuelto en pasadas anteriores
