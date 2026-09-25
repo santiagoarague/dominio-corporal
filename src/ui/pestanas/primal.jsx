@@ -1,7 +1,7 @@
 // Pestana Primal: movimientos de Instinto Primal, skills, cuidado articular y neuromotor.
 import { sistemaActivo } from "../../logica/sistemas.js";
 import { Wo, habilidades, Td, marcarPasoHabilidad } from "../../datos/guia.js";
-import { movimientosPrimal, cy, xd } from "../../logica/primal.js";
+import { movimientosPrimal, cy, xd, sdcPrimalEtapa } from "../../logica/primal.js";
 import { dd, Ws } from "../../logica/combate.js";
 import { kd, Reaccion, Secuencia, TareaDual, Ritmo } from "../neuromotor.jsx";
 import { Ps, reglaDolor, alarmas, cuidadoArticular, Ty, Y2 } from "../../datos/salud.js";
@@ -657,23 +657,28 @@ export function PestanaPrimal({
                 </>
               ) : (
                 <>
-                  <div
-                    className="text-center text-xs mb-1"
-                    style={
-                      primalRonda === 0
-                        ? { color: "#ffb84f", fontWeight: 700, letterSpacing: 2 }
-                        : { color: "#9aa4bd" }
-                    }
-                  >
-                    {primalRonda === 0
-                      ? "PONETE EN POSICIÓN"
-                      : "Ronda " +
-                        primalRonda +
-                        "/" +
-                        dd +
-                        " · " +
-                        (primalFase === "active" ? "En marcha" : "Descanso")}
-                  </div>
+                  {(() => {
+                    let et = sdcPrimalEtapa(primalFase, primalRonda, primalSegundos),
+                      aviso = et === "posicion" || et === "prepara";
+                    return (
+                      <div
+                        className="text-center text-xs mb-1"
+                        style={
+                          aviso
+                            ? { color: "#ffb84f", fontWeight: 700, letterSpacing: 2 }
+                            : { color: "#9aa4bd" }
+                        }
+                      >
+                        {et === "posicion"
+                          ? "PONETE EN POSICIÓN"
+                          : et === "prepara"
+                            ? "PREPARATE · RONDA " + (primalRonda + 1) + "/" + dd
+                            : et === "descanso"
+                              ? "Ronda " + primalRonda + "/" + dd + " terminada · Descanso"
+                              : "Ronda " + primalRonda + "/" + dd + " · En marcha"}
+                      </div>
+                    );
+                  })()}
                   <div
                     style={{
                       fontFamily: "Chakra Petch, sans-serif",

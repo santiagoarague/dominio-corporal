@@ -44,10 +44,25 @@ function sdcSuma(t, n, k) {
   for (let j = 0; j < k && j < a.length; j++) s += a[j];
   return s;
 }
-function sdcBeep(hz, ms) {
+function sdcBeep(hz, ms, hasta, tipo) {
   try {
-    pitido(hz, ms);
+    pitido(hz, ms, hasta, tipo);
   } catch (e) {}
+}
+// Los sonidos del Instinto Primal, agudos y largos para oirse en el suelo, con el
+// telefono lejos: tic de cuenta, aviso de preparacion, arranque de ronda, fin de
+// ronda (dos notas que bajan) y fin de la sesion (tres que suben).
+function sdcPrimalSon(t) {
+  if (t === "tic") return (sdcBeep(1047, 90), sdcVib(15));
+  if (t === "prepara")
+    return (sdcBeep(880, 160), setTimeout(() => sdcBeep(880, 160), 220), sdcVib(40));
+  if (t === "arranca") return (sdcBeep(1319, 340), sdcVib(80));
+  if (t === "fin")
+    return (sdcBeep(1175, 240), setTimeout(() => sdcBeep(784, 360), 260), sdcVib([150, 80, 150]));
+  (sdcBeep(1047, 160),
+    setTimeout(() => sdcBeep(1319, 160), 180),
+    setTimeout(() => sdcBeep(1568, 380), 360),
+    sdcVib([40, 60, 140]));
 }
 function sdcVib(p) {
   try {
@@ -56,6 +71,7 @@ function sdcVib(p) {
 }
 
 export {
+  sdcPrimalSon,
   sdcSegs,
   sdcCatMod,
   sdcCatSis,

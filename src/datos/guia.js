@@ -55,7 +55,7 @@ var guia = [
     {
       g: "LOS SISTEMAS",
       title: "Instinto Primal",
-      text: "Movimientos de control y coordinación en el suelo, en tres rondas cronometradas. El reloj arranca cuando tocás Empezar, con diez segundos para ubicarte. Hasta cinco sesiones por día. Si practicás dos veces el movimiento más nuevo que tengas, se te abre el siguiente.",
+      text: "Movimientos de control y coordinación en el suelo, en tres rondas cronometradas. El reloj arranca cuando tocás Empezar, con diez segundos para ubicarte. Cada ronda suena al arrancar y al terminar, con una cuenta 3-2-1 antes de cada cosa. Entre rondas descansás 15 segundos, y en los últimos 5 la app te avisa que te prepares para la siguiente. Hasta cinco sesiones por día. Si practicás dos veces el movimiento más nuevo que tengas, se te abre el siguiente.",
     },
     {
       g: "LOS SISTEMAS",
@@ -90,7 +90,7 @@ var guia = [
     {
       g: "LO DEMÁS",
       title: "El metrónomo",
-      text: "Es el pitido que marca el ritmo de cada repetición: bajás, pausás abajo y subís. Está para que no aceleres, y es el mismo ritmo de la prueba de aptitud. Si el modificador del día pide otro ritmo, el metrónomo se ajusta solo. No cuenta repeticiones ni sabe cuándo terminaste: eso lo marcás vos tocando cada serie. En los ejercicios de sostén, como la plancha, no aplica: ahí lo que importa son los segundos, no el sube y baja.",
+      text: "Marca el ritmo de cada repetición con tres sonidos distintos: un tono que cae mientras bajás, un doble tic seco en la pausa de abajo y un tono que sube mientras subís. El doble tic es el momento de frenar y cambiar de dirección. Está para que no aceleres, y es el mismo ritmo de la prueba de aptitud. Si el modificador del día pide otro ritmo, el metrónomo se ajusta solo. No cuenta repeticiones ni sabe cuándo terminaste: eso lo marcás vos tocando cada serie. En los ejercicios de sostén, como la plancha, no aplica: ahí lo que importa son los segundos, no el sube y baja.",
     },
     {
       g: "LO DEMÁS",

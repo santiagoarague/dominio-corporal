@@ -194,4 +194,36 @@ function zy(e, a, l) {
   return e[hashDia(a, e.length)].replace("{name}", l || "Tu compañero");
 }
 
-export { cy, k2, xd, z2, movimientosPrimal, ky, E2, ou, regresiones, hashDia, A2, D2, T2, zy };
+// Que muestra la sesion en cada segundo. El descanso entre rondas (cy) termina
+// con sdcPrimalPrep segundos de preparacion: la ronda que viene se anuncia antes
+// de arrancar, como en todo lo guiado. La ronda 0 es la cuenta antes de la primera.
+var sdcPrimalPrep = 5;
+function sdcPrimalEtapa(fase, ronda, seg) {
+  if (fase === "resting")
+    return ronda === 0 ? "posicion" : seg <= sdcPrimalPrep ? "prepara" : "descanso";
+  return fase === "active" ? "ronda" : fase;
+}
+// La cuenta 3-2-1 suena antes de que arranque una ronda y antes de que termine.
+function sdcPrimalTic(fase, seg) {
+  return (fase === "resting" || fase === "active") && seg >= 1 && seg <= 3;
+}
+
+export {
+  cy,
+  k2,
+  xd,
+  z2,
+  movimientosPrimal,
+  ky,
+  E2,
+  ou,
+  regresiones,
+  hashDia,
+  A2,
+  D2,
+  T2,
+  zy,
+  sdcPrimalPrep,
+  sdcPrimalEtapa,
+  sdcPrimalTic,
+};

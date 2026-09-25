@@ -119,7 +119,9 @@ explícitamente cuál rompe y por qué.
     necesita leerlo, y el tiempo no puede correr mientras lee. Siempre hay **Pausa**. Nada
     cronometrado arranca solo al tocar algo: primero se ve qué viene y después se toca Empezar. La
     pantalla no se apaga y el reloj se calcula desde una marca de tiempo, así que bloquear el
-    teléfono no lo congela.
+    teléfono no lo congela. **Cada cambio se oye**, con el teléfono lejos: cuenta 3-2-1 antes de
+    arrancar y antes de terminar, y un sonido distinto para "arranca" y para "terminó". Los avisos
+    van por encima de ~700 Hz, porque el parlante de un teléfono casi no da tonos graves.
 11. **Números honestos.** Se sacó "450 kg movidos" de al lado de cada ejercicio: 20 kg × 30 reps le
     gana a 60 kg × 8 y eso no significa nada. Un número en pantalla tiene que decir lo que parece.
 12. **Privacidad total.** Cero peticiones de red, sin cuenta, sin analíticas. La guía avisa que el
@@ -158,7 +160,9 @@ flow           Gateo · Apoyo · Giro · Enlace · Inversión · Quietud · Vuel
   ("✓ nombre · 12 reps") para que un toque sin querer no la desmarque; se abre tocándola.
 - **Modificador del día**: uno de seis por modalidad (Tempo, Densidad, Drop set, Sostén largo…).
   Da +20–30% de XP solo si el jugador lo reclama.
-- **Metrónomo** opcional que marca bajada, pausa y subida.
+- **Metrónomo** opcional que marca bajada, pausa y subida con tres sonidos distintos: un tono que cae
+  al bajar, un doble tic seco en la pausa (el momento de frenar y cambiar de dirección) y un tono que
+  sube al subir. La prueba de aptitud usa los mismos tres.
 - En gimnasio: un campo de kilos por serie, "La última vez: 30 · 32,5 · 35 kg" y una sugerencia
   ("Hoy probá 65 kg →" o "Repetí 70 kg y cerralo →") que solo sube si cerraste todas las reps.
 - **Modo Recuperación**: la mitad de las reps, cuenta como entrenar.
@@ -255,7 +259,7 @@ flow           Primeras posiciones · Piso firme · Aguante continuo · Tránsit
 | 3 | Explorar | kilómetros caminados o corridos; revelan lugares y reliquias |
 | 8 | Articulaciones | protocolos de cuidado por zona (registro médico, neutro) |
 | 10 | Misiones | un objetivo semanal y uno mensual según lo que descuidás. **No hay misiones diarias**, a propósito |
-| 12 | Instinto Primal | movimientos de suelo en tres rondas cronometradas, hasta 5 por día |
+| 12 | Instinto Primal | movimientos de suelo en tres rondas cronometradas, hasta 5 por día. Cuenta 3-2-1 y sonido propio al arrancar y al terminar cada ronda; 15 s de descanso entre rondas, los últimos 5 anunciados como PREPARATE |
 | 15 | Combate | recuperar "terrenos": elegís patrón, tenés un tiempo, marcás las series y golpeás. 3 corazones; cada 5 terrenos un jefe con dos patrones |
 | 20 | Travesías | sesión larga de cardio (60% de los días), cronometrada, con intervalos |
 | 25 | Skills | movimientos que se aprenden paso a paso, sin reloj |

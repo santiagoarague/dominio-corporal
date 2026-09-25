@@ -31,7 +31,15 @@ import {
   perderVida,
   za,
 } from "../logica/combate.js";
-import { A2, E2, movimientosPrimal, cy, ou } from "../logica/primal.js";
+import {
+  A2,
+  E2,
+  movimientosPrimal,
+  cy,
+  ou,
+  sdcPrimalPrep,
+  sdcPrimalTic,
+} from "../logica/primal.js";
 import { tienda, comprar, sesionesPrimalHoy } from "../logica/tienda.js";
 import { sdcEstPaso, sdcEstTotal } from "../logica/estiramiento.js";
 import { O2 } from "../logica/atributos.js";
@@ -88,7 +96,7 @@ import {
   sdcTier,
 } from "../logica/extras.js";
 import { Avisos } from "./avisos.jsx";
-import { sdcBeep, sdcNSets, sdcSplit, sdcVib } from "../logica/series.js";
+import { sdcBeep, sdcNSets, sdcSplit, sdcVib, sdcPrimalSon } from "../logica/series.js";
 import { colorProgreso } from "./cuerpo.jsx";
 import { diasConstancia } from "./constancia.jsx";
 import { DibujoMascota, Plegable, k5 } from "./tarjetas.jsx";
@@ -414,27 +422,34 @@ function App({ player, setPlayer, initialNotices }) {
     useEffect(() => {
       if (primalFase !== "active") return;
       if (primalSegundos <= 0) {
-        (sdcBeep(520, 160), sdcVib(18));
-        if (primalRonda < dd) (setPrimalFase("resting"), setPrimalSegundos(cy));
+        if (primalRonda < dd)
+          (sdcPrimalSon("fin"), setPrimalFase("resting"), setPrimalSegundos(cy));
         else {
           let d = primalMov;
-          (setPrimalFase("idle"), setPrimalMov(null), setPrimalRonda(1), aplicar((m) => E2(m, d)));
+          (sdcPrimalSon("listo"),
+            setPrimalFase("idle"),
+            setPrimalMov(null),
+            setPrimalRonda(1),
+            aplicar((m) => E2(m, d)));
         }
         return;
       }
+      sdcPrimalTic(primalFase, primalSegundos) && sdcPrimalSon("tic");
       let f = setTimeout(() => setPrimalSegundos((d) => d - 1), 1e3);
       return () => clearTimeout(f);
     }, [primalFase, primalSegundos]),
     useEffect(() => {
       if (primalFase !== "resting") return;
       if (primalSegundos <= 0) {
-        (sdcBeep(760, 160),
-          sdcVib(22),
+        (sdcPrimalSon("arranca"),
           setPrimalRonda((d) => d + 1),
           setPrimalFase("active"),
           setPrimalSegundos(Ws(progress.rank)));
         return;
       }
+      primalRonda > 0 && primalSegundos === sdcPrimalPrep
+        ? sdcPrimalSon("prepara")
+        : sdcPrimalTic(primalFase, primalSegundos) && sdcPrimalSon("tic");
       let f = setTimeout(() => setPrimalSegundos((d) => d - 1), 1e3);
       return () => clearTimeout(f);
     }, [primalFase, primalSegundos]),

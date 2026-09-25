@@ -1,6 +1,6 @@
 // Metronomo.
 import { useState, useEffect } from "react";
-import { pitido } from "./prueba.jsx";
+import { sdcSonidoFase } from "./prueba.jsx";
 
 function sdcTempoMod(mo) {
   var b = 2,
@@ -19,7 +19,7 @@ function Metronomo({ active: e, tempo: tm }) {
     (useEffect(() => {
       if (!e) return;
       let s = (a === "down" ? t.b : a === "hold" ? t.p : t.s) * 1e3;
-      pitido(a === "down" ? 440 : a === "hold" ? 560 : 660, 120);
+      sdcSonidoFase(a);
       let u = setTimeout(() => l((c) => (c === "down" ? "hold" : c === "hold" ? "up" : "down")), s);
       return () => clearTimeout(u);
     }, [e, a, t.b, t.p, t.s]),

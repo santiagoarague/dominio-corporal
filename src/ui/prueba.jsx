@@ -5,7 +5,9 @@ import { sdcWakeUse } from "./pantalla.js";
 
 var E5 = 2e3,
   A5 = 1e3;
-function pitido(e, a) {
+// pitido(hz, ms) suena un tono que se apaga solo. Con hasta, el tono se desliza
+// de hz a hasta; con tipo, cambia el timbre ("triangle" suena mas seco que "sine").
+function pitido(e, a, hasta, tipo) {
   try {
     let l = window.AudioContext || window.webkitAudioContext;
     if (!l) return;
@@ -14,8 +16,9 @@ function pitido(e, a) {
     n.state === "suspended" && n.resume();
     let o = n.createOscillator(),
       s = n.createGain();
-    ((o.frequency.value = e),
-      (o.type = "sine"),
+    (o.frequency.setValueAtTime(e, n.currentTime),
+      hasta && o.frequency.exponentialRampToValueAtTime(hasta, n.currentTime + a / 1e3),
+      (o.type = tipo || "sine"),
       s.gain.setValueAtTime(0.18, n.currentTime),
       s.gain.exponentialRampToValueAtTime(0.001, n.currentTime + a / 1e3),
       o.connect(s),
@@ -23,6 +26,15 @@ function pitido(e, a) {
       o.start(),
       o.stop(n.currentTime + a / 1e3));
   } catch (l) {}
+}
+// Los tres sonidos del ciclo baja-pausa-sube, compartidos por el metronomo y la
+// prueba de aptitud. Baja: un tono que cae. Sube: uno que sube. Pausa: un doble
+// tic seco, mas agudo y con otro timbre, para que no se confunda con los otros dos.
+// Todos por encima de 690 Hz: el parlante de un telefono casi no da tonos graves.
+function sdcSonidoFase(f) {
+  if (f === "down") return pitido(1047, 220, 698);
+  if (f === "up") return pitido(698, 220, 1047);
+  (pitido(1568, 45, 0, "triangle"), setTimeout(() => pitido(1568, 45, 0, "triangle"), 110));
 }
 function PruebaAptitud({ exercise: e, onFinish: a }) {
   let [l, n] = useState("idle"),
@@ -43,16 +55,16 @@ function PruebaAptitud({ exercise: e, onFinish: a }) {
     useEffect(() => {
       if (l !== "running") return;
       if (u === "down") {
-        pitido(440, 140);
+        sdcSonidoFase("down");
         let y = setTimeout(() => c("hold"), 2e3);
         return () => clearTimeout(y);
       }
       if (u === "hold") {
-        pitido(560, 120);
+        sdcSonidoFase("hold");
         let y = setTimeout(() => c("up"), 1e3);
         return () => clearTimeout(y);
       }
-      pitido(660, 140);
+      sdcSonidoFase("up");
       let x = setTimeout(() => {
         (p((y) => y + 1), c("down"));
       }, 2e3);
@@ -141,4 +153,4 @@ function PruebaAptitud({ exercise: e, onFinish: a }) {
   );
 }
 
-export { E5, A5, pitido, PruebaAptitud };
+export { E5, A5, pitido, sdcSonidoFase, PruebaAptitud };
