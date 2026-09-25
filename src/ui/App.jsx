@@ -722,7 +722,14 @@ function App({ player, setPlayer, initialNotices }) {
     );
   }
   function sdcMarcarTodo() {
-    let todas = (grupo) => new Array(sdcNSets(metaSesion[grupo] || 0)).fill(!0),
+    let ganadas = 0,
+      todas = (grupo) => {
+        let n = sdcNSets(metaSesion[grupo] || 0),
+          antes = sdcMarcadas(sdcSer[grupo], n);
+        for (let serie = 0; serie < n; serie++)
+          antes[serie] || (ganadas += sdcRepsSerie(grupo, serie));
+        return new Array(n).fill(!0);
+      },
       tod = {
         squat: todas("squat"),
         pushup: todas("pushup"),
@@ -732,7 +739,7 @@ function App({ player, setPlayer, initialNotices }) {
     (sdcSetSer(tod),
       sdcMarcaOk(tod, sdcAjuste, sdcModOk),
       sdcCelebra(),
-      sdcSetFlota({ n: sdcTotalMeta() - sdcTotalHechas(), id: Date.now() }));
+      sdcSetFlota({ n: ganadas, id: Date.now() }));
   }
   function sdcDesmarcarTodo() {
     let ninguna = { squat: [], pushup: [], back: [], abs: [] };

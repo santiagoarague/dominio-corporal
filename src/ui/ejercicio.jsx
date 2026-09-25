@@ -123,6 +123,8 @@ function FilaEjercicio({
     [reloj, setReloj] = useState(null),
     [, setTic] = useState(0),
     [marcarLuego, setMarcarLuego] = useState(null),
+    // Ajustar series: un + y un − en cada serie, para armar el plan antes de hacerlo.
+    [editando, setEditando] = useState(!1),
     estadoReloj = reloj
       ? sdcSostenEstado(reloj.ini, reloj.pz, reloj.prep, reloj.total, Date.now())
       : null,
@@ -133,7 +135,7 @@ function FilaEjercicio({
     marcaReloj = estadoReloj && !reloj.pz ? estadoReloj.fase + estadoReloj.quedan : "";
   useEffect(
     function () {
-      (setGuiaTocada(null), sdcSetAbre(!1), reloj && cancelarSosten());
+      (setGuiaTocada(null), sdcSetAbre(!1), setEditando(!1), reloj && cancelarSosten());
     },
     [label],
   );
@@ -358,6 +360,62 @@ function FilaEjercicio({
                 ) : (
                   efectivas
                 );
+            var ficha = (
+              <button
+                key={editando ? void 0 : i}
+                onClick={function () {
+                  onSerie(i, !hecha);
+                }}
+                className="sdc-chip flex-1 py-3"
+                aria-label={
+                  "Serie " + (i + 1) + " de " + nSeries + (hecha ? ", hecha" : ", pendiente")
+                }
+                style={{
+                  background: hecha ? color : "rgba(255,255,255,0.04)",
+                  border: "1px solid " + (hecha ? color : "rgba(255,255,255,0.18)"),
+                  color: hecha ? "#0a0e1a" : "#8a93ad",
+                  fontFamily: "Chakra Petch, sans-serif",
+                  fontSize: 16,
+                  fontWeight: 700,
+                  minHeight: 48,
+                }}
+              >
+                {contenido}
+              </button>
+            );
+            if (editando) {
+              var botonPaso = {
+                minHeight: 44,
+                background: "rgba(255,255,255,0.06)",
+                border: "1px solid rgba(255,255,255,0.15)",
+                color: "#e8ecf7",
+                fontSize: 20,
+                fontWeight: 700,
+              };
+              return (
+                <div key={i} className="flex-1 flex flex-col gap-1" style={{ minWidth: 0 }}>
+                  <button
+                    onClick={function () {
+                      onAj(i, efectivas + 1);
+                    }}
+                    style={botonPaso}
+                    aria-label={"Una repetición más en la serie " + (i + 1)}
+                  >
+                    +
+                  </button>
+                  {ficha}
+                  <button
+                    onClick={function () {
+                      onAj(i, Math.max(0, efectivas - 1));
+                    }}
+                    style={botonPaso}
+                    aria-label={"Una repetición menos en la serie " + (i + 1)}
+                  >
+                    −
+                  </button>
+                </div>
+              );
+            }
             if (ajustable)
               return (
                 <div
@@ -406,29 +464,7 @@ function FilaEjercicio({
                   </button>
                 </div>
               );
-            return (
-              <button
-                key={i}
-                onClick={function () {
-                  onSerie(i, !hecha);
-                }}
-                className="sdc-chip flex-1 py-3"
-                aria-label={
-                  "Serie " + (i + 1) + " de " + nSeries + (hecha ? ", hecha" : ", pendiente")
-                }
-                style={{
-                  background: hecha ? color : "rgba(255,255,255,0.04)",
-                  border: "1px solid " + (hecha ? color : "rgba(255,255,255,0.18)"),
-                  color: hecha ? "#0a0e1a" : "#8a93ad",
-                  fontFamily: "Chakra Petch, sans-serif",
-                  fontSize: 16,
-                  fontWeight: 700,
-                  minHeight: 48,
-                }}
-              >
-                {contenido}
-              </button>
-            );
+            return ficha;
           })}
         </div>
       )}
@@ -515,18 +551,36 @@ function FilaEjercicio({
         </>
       )}
       {onSerie && (
-        <div className="text-xs mt-1" style={{ color: completa ? "#3ecf8e" : "#8a93ad" }}>
-          {completa
-            ? "✓ Series hechas · " +
-              hechas +
-              " reps" +
-              (segs > 0 ? " (" + hechas * segs + "s)" : "")
-            : "Llevás " +
-              hechas +
-              " de " +
-              value +
-              " reps" +
-              (segs > 0 ? " (" + hechas * segs + "s)" : "")}
+        <div className="flex items-center justify-between gap-2 text-xs">
+          <span style={{ color: completa ? "#3ecf8e" : "#8a93ad" }}>
+            {completa
+              ? "✓ Series hechas · " +
+                hechas +
+                " reps" +
+                (segs > 0 ? " (" + hechas * segs + "s)" : "")
+              : "Llevás " +
+                hechas +
+                " de " +
+                value +
+                " reps" +
+                (segs > 0 ? " (" + hechas * segs + "s)" : "")}
+          </span>
+          {onAj && (
+            <button
+              onClick={function () {
+                setEditando(!editando);
+              }}
+              className="text-xs"
+              style={{
+                color: "#ffb84f",
+                fontWeight: 600,
+                padding: "0 4px",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {editando ? "Listo" : "Ajustar series"}
+            </button>
+          )}
         </div>
       )}
       {guiaAbierta && (tip || guia) && (

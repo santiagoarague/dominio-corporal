@@ -163,7 +163,8 @@ flow           Gateo · Apoyo · Giro · Enlace · Inversión · Quietud · Vuel
   la más cara. Cada serie es un botón: se toca al terminarla. Suena, vibra, suma XP y arranca el
   descanso, que queda fijo abajo de la pantalla con su cuenta y un botón para saltarlo. Tocar una
   serie marcada la desmarca a ella sola; "MARCAR TODAS" y "DESMARCAR TODAS" están juntos, arriba de
-  los ejercicios.
+  los ejercicios. "Ajustar series", al lado de "Llevás X de Y reps", pone un + arriba y un − abajo
+  de cada serie para armar el plan antes de hacerlo (15-15-12, 8-12-8); la meta del día no cambia.
 - Cuando se completan todas las series de un ejercicio, **la fila se pliega** a una línea
   ("✓ nombre · 12 reps") para que un toque sin querer no la desmarque; se abre tocándola.
 - **Modificador del día**: uno de seis por modalidad (Tempo, Densidad, Drop set, Sostén largo…).

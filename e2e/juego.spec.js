@@ -199,3 +199,47 @@ test("cada serie se desmarca sola, y Desmarcar todas limpia todo", async ({ page
   expect(Object.values(marcas).flat().filter(Boolean)).toEqual([]);
   expect(errores).toEqual([]);
 });
+
+test("Ajustar series: cada serie con su + y su −, y Marcar todas suma el plan", async ({
+  page,
+}) => {
+  const errores = [];
+  page.on("pageerror", (e) => errores.push(e.message));
+  await page.clock.install({ time: new Date("2026-09-24T10:00:00-03:00") });
+  await page.clock.pauseAt(new Date("2026-09-24T10:00:01-03:00"));
+  await page.goto("/");
+  await page.clock.runFor(60_000);
+  await boton(page, "Continuar").click();
+  await boton(page, "Saltar y empezar con valores por defecto").click();
+  await expect(page.getByText("Rutina de hoy")).toBeVisible();
+  await boton(page, "Hoy no").click();
+
+  // Ese jueves la primera fila son 12 reps en 5, 4 y 3. Plan: 7, 7 y 2.
+  const fila = page
+    .locator("div.py-2")
+    .filter({ has: page.locator(".sdc-chip") })
+    .first();
+  const fichas = fila.locator(".sdc-chip");
+  await expect(fichas).toHaveText(["−5+", "4", "3"]);
+  await fila.getByRole("button", { name: "Ajustar series" }).click();
+  const tocar = async (nombre, veces) => {
+    for (let k = 0; k < veces; k++) await fila.getByRole("button", { name: nombre }).click();
+  };
+  await tocar("Una repetición más en la serie 1", 2);
+  await tocar("Una repetición más en la serie 2", 3);
+  await tocar("Una repetición menos en la serie 3", 1);
+  await expect(fichas).toHaveText(["7", "7", "2"]);
+  await fila.getByRole("button", { name: "Listo" }).click();
+  await expect(fichas).toHaveText(["−7+", "7", "2"]);
+
+  // La meta no cambia; lo marcado suma lo que planeaste.
+  await boton(page, "MARCAR TODAS").click();
+  await expect(page.getByText("+39 XP", { exact: true })).toBeVisible();
+  const marca = (await partida(page)).today.marcas["bodyweight|normal"];
+  expect(marca.aj.squat).toEqual({ 0: 7, 1: 7, 2: 2 });
+  expect(marca.ser.squat).toEqual([true, true, true]);
+  await expect(
+    page.getByRole("button", { name: /^Completar rutina · 39\/35 reps$/ }),
+  ).toBeVisible();
+  expect(errores).toEqual([]);
+});
