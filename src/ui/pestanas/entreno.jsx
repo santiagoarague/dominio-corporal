@@ -249,8 +249,8 @@ export function PestanaEntreno({
         })(sdcAnimoHoy(player)) && (
           <Tarjeta accent="#4f9dff" style={{ marginBottom: 16, order: -6 }}>
             <AnimoAntes
-              st={player}
-              Ne={aplicar}
+              player={player}
+              aplicar={aplicar}
               mod={modalidad}
               onModo={setModo}
               descLibre={!week.restDayUsed}
@@ -273,10 +273,10 @@ export function PestanaEntreno({
           right={sdcCalorDer(player, modalidad, metaSesion)}
         >
           <Calentamiento
-            st={player}
+            player={player}
             mod={modalidad}
             metas={metaSesion}
-            Ne={aplicar}
+            aplicar={aplicar}
             onModo={setModo}
             sinSeries={sdcTotalHechas() === 0}
           />

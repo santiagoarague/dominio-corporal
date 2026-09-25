@@ -129,16 +129,16 @@ export function TarjetaEstiramiento({
               sdcPasoEspera(pasos, paso.index, sdcPasosV(player));
           return (
             <PasoGuiado
-              ls={pasos}
-              p={paso}
-              cab={
+              lista={pasos}
+              paso={paso}
+              cabecera={
                 <div className="text-xs text-center mb-1" style={{ color: "#9aa4bd" }}>
                   Paso {paso.index + 1} de {pasos.length}
                 </div>
               }
-              col="#3ecf8e"
-              esp={esp}
-              pz={!!sdcEstPz && !esp}
+              acento="#3ecf8e"
+              esperando={esp}
+              pausado={!!sdcEstPz && !esp}
               fin="Último estiramiento"
               resto={" · queda " + sdcEstMMSS(total - estSegundos)}
               onListo={() => {

@@ -221,7 +221,7 @@ function Caras({ sel, onPick }) {
     </div>
   );
 }
-function AnimoAntes({ st: player, Ne: aplicar, mod, onModo, descLibre, onDescanso }) {
+function AnimoAntes({ player, aplicar, mod, onModo, descLibre, onDescanso }) {
   let [confirmando, setConfirmando] = useState(!1),
     animo = sdcAnimoHoy(player),
     cambiar = (
@@ -407,7 +407,7 @@ function AnimoAntes({ st: player, Ne: aplicar, mod, onModo, descLibre, onDescans
     </div>
   );
 }
-function AnimoAhora({ st: player, Ne: aplicar, onModo, sinSeries }) {
+function AnimoAhora({ player, aplicar, onModo, sinSeries }) {
   let animo = sdcAnimoHoy(player),
     caja = { border: "1px solid rgba(79,157,255,0.35)", background: "rgba(79,157,255,0.06)" };
   if (
@@ -468,7 +468,7 @@ function AnimoAhora({ st: player, Ne: aplicar, onModo, sinSeries }) {
     </div>
   );
 }
-function AnimoDespues({ st: player, Ne: aplicar, onPrueba }) {
+function AnimoDespues({ player, aplicar, onPrueba }) {
   let animo = sdcAnimoHoy(player),
     bloque = {
       marginBottom: 12,

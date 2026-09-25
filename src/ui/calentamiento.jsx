@@ -250,12 +250,12 @@ function sdcPasosHook(resultado, lista, hasta) {
   return resultado;
 }
 function PasoGuiado({
-  ls: lista,
-  p: paso,
-  cab: cab,
-  col: col,
-  esp: esp,
-  pz: pausado,
+  lista,
+  paso,
+  cabecera,
+  acento,
+  esperando,
+  pausado,
   fin,
   resto,
   onListo,
@@ -267,7 +267,7 @@ function PasoGuiado({
   let actual = lista[paso.index],
     siguiente = lista[paso.index + 1],
     preparando = paso.prep > 0,
-    color = esp || preparando ? "#ffb84f" : col,
+    color = esperando || preparando ? "#ffb84f" : acento,
     bSec = {
       minHeight: 44,
       background: "rgba(255,255,255,0.08)",
@@ -277,12 +277,12 @@ function PasoGuiado({
     },
     bPri = {
       minHeight: 48,
-      background: col,
-      border: "1px solid " + col,
+      background: acento,
+      border: "1px solid " + acento,
       color: "#0a0e1a",
       fontWeight: 700,
     },
-    etiqueta = esp
+    etiqueta = esperando
       ? "LEÉ Y PONETE EN POSICIÓN"
       : pausado
         ? "EN PAUSA"
@@ -293,14 +293,14 @@ function PasoGuiado({
           : null;
   return (
     <div>
-      {cab}
+      {cabecera}
       <div className="text-center">
         {etiqueta ? (
           <div
             className="text-xs uppercase"
             style={{
               letterSpacing: 2,
-              color: pausado && !esp ? "#9aa4bd" : "#ffb84f",
+              color: pausado && !esperando ? "#9aa4bd" : "#ffb84f",
               fontWeight: 700,
               marginTop: 2,
             }}
@@ -325,11 +325,11 @@ function PasoGuiado({
         ) : null}
         <div
           className="mt-1"
-          style={{ fontSize: esp ? 15 : 14, lineHeight: 1.5, color: "#c8d0e4" }}
+          style={{ fontSize: esperando ? 15 : 14, lineHeight: 1.5, color: "#c8d0e4" }}
         >
           {actual.desc}
         </div>
-        {esp ? null : (
+        {esperando ? null : (
           <div
             style={{
               fontFamily: "Chakra Petch, sans-serif",
@@ -342,7 +342,7 @@ function PasoGuiado({
           </div>
         )}
       </div>
-      {esp ? null : (
+      {esperando ? null : (
         <BarraXp
           value={preparando ? (actual.prep || sdcEstPrep) - paso.prep : actual.seconds - paso.left}
           max={preparando ? actual.prep || sdcEstPrep : actual.seconds}
@@ -357,7 +357,7 @@ function PasoGuiado({
           : fin}
         {resto}
       </div>
-      {esp ? (
+      {esperando ? (
         <button onClick={onListo} className="w-full mt-3 py-3 text-sm" style={bPri}>
           Listo, empezar →
         </button>
@@ -380,7 +380,7 @@ function PasoGuiado({
           Ya estoy →
         </button>
       ) : null}
-      {esp || pausado ? (
+      {esperando || pausado ? (
         <button onClick={onTerminar} className="w-full mt-2 py-2 text-sm" style={bSec}>
           Terminar acá
         </button>
@@ -512,7 +512,7 @@ function sdcCalorDer(partida, mod, metas) {
     " min"
   );
 }
-function Calentamiento({ st: player, mod, metas, Ne: aplicar, onModo, sinSeries }) {
+function Calentamiento({ player, mod, metas, aplicar, onModo, sinSeries }) {
   let [, setTic] = useState(0),
     [ultimaFase, setUltimaFase] = useState(-1),
     estado = sdcCalor(player),
@@ -598,8 +598,8 @@ function Calentamiento({ st: player, mod, metas, Ne: aplicar, onModo, sinSeries 
             <IconoCheck size={16} /> Calentaste hoy
           </div>
           <AnimoAhora
-            st={player}
-            Ne={aplicar}
+            player={player}
+            aplicar={aplicar}
             onModo={onModo || function () {}}
             sinSeries={sinSeries}
           />
@@ -654,12 +654,12 @@ function Calentamiento({ st: player, mod, metas, Ne: aplicar, onModo, sinSeries 
   if (!enE)
     return (
       <PasoGuiado
-        ls={lista}
-        p={paso}
-        cab={cab(lista[paso.index].f, paso.index + 1)}
-        col={acento}
-        esp={esp}
-        pz={!!estado.pz && !esp}
+        lista={lista}
+        paso={paso}
+        cabecera={cab(lista[paso.index].f, paso.index + 1)}
+        acento={acento}
+        esperando={esp}
+        pausado={!!estado.pz && !esp}
         fin={ensayo.length ? "Sigue: el ensayo de tus ejercicios" : "Último paso"}
         resto={
           ensayo.length

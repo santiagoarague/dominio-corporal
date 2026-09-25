@@ -28,6 +28,10 @@ export default [
     plugins: { "react-hooks": reactHooks },
     rules: {
       "react-hooks/rules-of-hooks": "error",
+      // Una variable interna con el mismo nombre que una de afuera la tapa: un
+      // `d` nuevo adentro de App leia otro `d` que no era el que uno creia. Hoy
+      // no hay ninguna, y asi sigue.
+      "no-shadow": "error",
       // Apagadas a proposito. exhaustive-deps pide que cada efecto se repita
       // cuando cambia cualquier cosa que lee, y aca muchos relojes se arman
       // solo cuando cambia la fase: con todo en la lista se reiniciarian con

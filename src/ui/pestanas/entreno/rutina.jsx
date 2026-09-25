@@ -70,8 +70,8 @@ export function TarjetaRutina({
     <Tarjeta accent={colorDelRango} style={{ marginBottom: 16, order: -1 }}>
       {sdcAnimoOn(player) && today.mode !== "rest" && (
         <AnimoDespues
-          st={player}
-          Ne={aplicar}
+          player={player}
+          aplicar={aplicar}
           onPrueba={() => {
             (setPestana("profile"), aplicar((partida) => sdcAbrirCard(partida, "aptitud")));
           }}

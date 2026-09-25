@@ -1,7 +1,7 @@
 // La app: el estado de la partida, los efectos y los manejadores, y lo que rodea a las
 // pestanas (cabecera, avisos, tienda, guia, barra de pestanas). Cada pestana esta en pestanas/
 // y recibe como props las variables de App que usa.
-import { useState, useEffect, createElement } from "react";
+import { useState, useEffect } from "react";
 import {
   IconoPasos,
   IconoDestello,
@@ -1794,7 +1794,7 @@ function App({ player, setPlayer, initialNotices }) {
                       fontWeight: 600,
                     }}
                   >
-                    {createElement(IconoTab, { size: 13 })} {tab.label}
+                    <IconoTab size={13} /> {tab.label}
                   </button>
                 );
               })}
