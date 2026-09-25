@@ -122,3 +122,37 @@ test("Instinto Primal: fin de ronda, preparacion de 5 s y arranque se oyen y se 
 
   expect(errores).toEqual([]);
 });
+
+test("Instinto Primal: la pausa congela el reloj y el reloj no se atrasa", async ({ page }) => {
+  const errores = [];
+  page.on("pageerror", (e) => errores.push(e.message));
+  await empezar(page);
+  await boton(page, "Perfil").click();
+  await page.getByRole("button", { name: /Sistemas del juego/ }).click();
+  await boton(page, "Desbloquear todo ahora").click();
+  await boton(page, "Primal").click();
+  await boton(page, "Movimientos").click();
+  await page.getByRole("button", { name: /^Oso/ }).first().click();
+  await boton(page, "Empezar").click();
+  const quedan = (s) => expect(page.getByText(s + "s", { exact: true })).toBeVisible();
+
+  // 10 s de cuenta y 5 de ronda: quedan 25 de los 30.
+  await pasar(page, 15_500);
+  await quedan(25);
+
+  // En pausa no corre, por mucho que pase.
+  await boton(page, "Pausa").click();
+  await expect(page.getByText("EN PAUSA")).toBeVisible();
+  await pasar(page, 20_000);
+  await quedan(25);
+  await boton(page, "Seguir →").click();
+  await pasar(page, 5_000);
+  await quedan(20);
+
+  // Un telefono que frena los temporizadores: 12 s de golpe, sin dibujar en el
+  // medio. Restando de a un segundo, el reloj avanzaba uno; ahora avanza los 12.
+  await page.clock.runFor(12_000);
+  await pasar(page, 300);
+  await quedan(8);
+  expect(errores).toEqual([]);
+});

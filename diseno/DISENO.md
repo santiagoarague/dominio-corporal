@@ -259,7 +259,7 @@ flow           Primeras posiciones · Piso firme · Aguante continuo · Tránsit
 | 3 | Explorar | kilómetros caminados o corridos; revelan lugares y reliquias |
 | 8 | Articulaciones | protocolos de cuidado por zona (registro médico, neutro) |
 | 10 | Misiones | un objetivo semanal y uno mensual según lo que descuidás. **No hay misiones diarias**, a propósito |
-| 12 | Instinto Primal | movimientos de suelo en tres rondas cronometradas, hasta 5 por día. Cuenta 3-2-1 y sonido propio al arrancar y al terminar cada ronda; 15 s de descanso entre rondas, los últimos 5 anunciados como PREPARATE |
+| 12 | Instinto Primal | movimientos de suelo en tres rondas cronometradas, hasta 5 por día. Cuenta 3-2-1 y sonido propio al arrancar y al terminar cada ronda; 15 s de descanso entre rondas, los últimos 5 anunciados como PREPARATE; con Pausa |
 | 15 | Combate | recuperar "terrenos": elegís patrón, tenés un tiempo, marcás las series y golpeás. 3 corazones; cada 5 terrenos un jefe con dos patrones |
 | 20 | Travesías | sesión larga de cardio (60% de los días), cronometrada, con intervalos |
 | 25 | Skills | movimientos que se aprenden paso a paso, sin reloj |

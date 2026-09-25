@@ -55,7 +55,7 @@ var guia = [
     {
       g: "LOS SISTEMAS",
       title: "Instinto Primal",
-      text: "Movimientos de control y coordinación en el suelo, en tres rondas cronometradas. El reloj arranca cuando tocás Empezar, con diez segundos para ubicarte. Cada ronda suena al arrancar y al terminar, con una cuenta 3-2-1 antes de cada cosa. Entre rondas descansás 15 segundos, y en los últimos 5 la app te avisa que te prepares para la siguiente. Hasta cinco sesiones por día. Si practicás dos veces el movimiento más nuevo que tengas, se te abre el siguiente.",
+      text: "Movimientos de control y coordinación en el suelo, en tres rondas cronometradas. El reloj arranca cuando tocás Empezar, con diez segundos para ubicarte. Cada ronda suena al arrancar y al terminar, con una cuenta 3-2-1 antes de cada cosa. Entre rondas descansás 15 segundos, y en los últimos 5 la app te avisa que te prepares para la siguiente. Podés pausar en cualquier momento. Hasta cinco sesiones por día. Si practicás dos veces el movimiento más nuevo que tengas, se te abre el siguiente.",
     },
     {
       g: "LOS SISTEMAS",

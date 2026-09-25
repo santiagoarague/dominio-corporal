@@ -37,6 +37,9 @@ export function PestanaPrimal({
   primalSesionesHoy,
   progress,
   sdcPrimalYa,
+  primalPausa,
+  primalPausar,
+  primalSeguir,
   seccionPrimal,
   setCuidadoAbierto,
   setHabilidadAbierta,
@@ -664,18 +667,22 @@ export function PestanaPrimal({
                       <div
                         className="text-center text-xs mb-1"
                         style={
-                          aviso
-                            ? { color: "#ffb84f", fontWeight: 700, letterSpacing: 2 }
-                            : { color: "#9aa4bd" }
+                          primalPausa
+                            ? { color: "#9aa4bd", fontWeight: 700, letterSpacing: 2 }
+                            : aviso
+                              ? { color: "#ffb84f", fontWeight: 700, letterSpacing: 2 }
+                              : { color: "#9aa4bd" }
                         }
                       >
-                        {et === "posicion"
-                          ? "PONETE EN POSICIÓN"
-                          : et === "prepara"
-                            ? "PREPARATE · RONDA " + (primalRonda + 1) + "/" + dd
-                            : et === "descanso"
-                              ? "Ronda " + primalRonda + "/" + dd + " terminada · Descanso"
-                              : "Ronda " + primalRonda + "/" + dd + " · En marcha"}
+                        {primalPausa
+                          ? "EN PAUSA"
+                          : et === "posicion"
+                            ? "PONETE EN POSICIÓN"
+                            : et === "prepara"
+                              ? "PREPARATE · RONDA " + (primalRonda + 1) + "/" + dd
+                              : et === "descanso"
+                                ? "Ronda " + primalRonda + "/" + dd + " terminada · Descanso"
+                                : "Ronda " + primalRonda + "/" + dd + " · En marcha"}
                       </div>
                     );
                   })()}
@@ -684,7 +691,11 @@ export function PestanaPrimal({
                       fontFamily: "Chakra Petch, sans-serif",
                       fontSize: 48,
                       textAlign: "center",
-                      color: primalFase === "active" ? "#3ecf8e" : "#ffb84f",
+                      color: primalPausa
+                        ? "#5a6178"
+                        : primalFase === "active"
+                          ? "#3ecf8e"
+                          : "#ffb84f",
                     }}
                   >
                     {primalSegundos}s
@@ -692,8 +703,39 @@ export function PestanaPrimal({
                   <BarraXp
                     value={primalSegundos}
                     max={primalFase === "active" ? Ws(progress.rank) : primalRonda === 0 ? 10 : cy}
-                    color={primalFase === "active" ? "#3ecf8e" : "#ffb84f"}
+                    color={
+                      primalPausa ? "#5a6178" : primalFase === "active" ? "#3ecf8e" : "#ffb84f"
+                    }
                   />
+                  {primalPausa ? (
+                    <button
+                      onClick={primalSeguir}
+                      className="w-full mt-4 py-3 text-sm"
+                      style={{
+                        minHeight: 48,
+                        background: "#3ecf8e",
+                        border: "1px solid #3ecf8e",
+                        color: "#0a0e1a",
+                        fontWeight: 700,
+                      }}
+                    >
+                      Seguir →
+                    </button>
+                  ) : (
+                    <button
+                      onClick={primalPausar}
+                      className="w-full mt-4 py-2 text-sm"
+                      style={{
+                        minHeight: 44,
+                        background: "rgba(255,255,255,0.08)",
+                        border: "1px solid rgba(255,255,255,0.28)",
+                        color: "#e8ecf7",
+                        fontWeight: 600,
+                      }}
+                    >
+                      Pausa
+                    </button>
+                  )}
                 </>
               )}
               <button

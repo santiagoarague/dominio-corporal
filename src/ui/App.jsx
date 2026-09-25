@@ -200,6 +200,8 @@ function App({ player, setPlayer, initialNotices }) {
     [primalRonda, setPrimalRonda] = useState(1),
     [primalFase, setPrimalFase] = useState("idle"),
     [primalSegundos, setPrimalSegundos] = useState(0),
+    [primalFin, setPrimalFin] = useState(0),
+    [primalPausa, setPrimalPausa] = useState(0),
     [repruebaAbierta, setRepruebaAbierta] = useState(!1),
     [repruebaPaso, setRepruebaPaso] = useState(0),
     repruebaEjercicios = [
@@ -422,7 +424,10 @@ function App({ player, setPlayer, initialNotices }) {
       if (primalFase !== "active") return;
       if (primalSegundos <= 0) {
         if (primalRonda < dd)
-          (sdcPrimalSon("fin"), setPrimalFase("resting"), setPrimalSegundos(cy));
+          (sdcPrimalSon("fin"),
+            setPrimalFase("resting"),
+            setPrimalSegundos(cy),
+            setPrimalFin(Date.now() + cy * 1e3));
         else {
           let d = primalMov;
           (sdcPrimalSon("listo"),
@@ -434,8 +439,6 @@ function App({ player, setPlayer, initialNotices }) {
         return;
       }
       sdcPrimalTic(primalFase, primalSegundos) && sdcPrimalSon("tic");
-      let f = setTimeout(() => setPrimalSegundos((d) => d - 1), 1e3);
-      return () => clearTimeout(f);
     }, [primalFase, primalSegundos]),
     useEffect(() => {
       if (primalFase !== "resting") return;
@@ -443,15 +446,25 @@ function App({ player, setPlayer, initialNotices }) {
         (sdcPrimalSon("arranca"),
           setPrimalRonda((d) => d + 1),
           setPrimalFase("active"),
-          setPrimalSegundos(Ws(progress.rank)));
+          setPrimalSegundos(Ws(progress.rank)),
+          setPrimalFin(Date.now() + Ws(progress.rank) * 1e3));
         return;
       }
       primalRonda > 0 && primalSegundos === sdcPrimalPrep
         ? sdcPrimalSon("prepara")
         : sdcPrimalTic(primalFase, primalSegundos) && sdcPrimalSon("tic");
-      let f = setTimeout(() => setPrimalSegundos((d) => d - 1), 1e3);
-      return () => clearTimeout(f);
     }, [primalFase, primalSegundos]),
+    // El reloj del Primal sale de una marca de tiempo (primalFin), no de restar un
+    // segundo por vez: si el telefono frena los temporizadores, no se atrasa. En
+    // pausa no corre; al seguir, primalFin se corre lo que duro la pausa.
+    useEffect(() => {
+      if ((primalFase !== "active" && primalFase !== "resting") || primalPausa) return;
+      let f = setInterval(() => {
+        let s = Math.max(0, Math.ceil((primalFin - Date.now()) / 1e3));
+        setPrimalSegundos((d) => (d === s ? d : s));
+      }, 250);
+      return () => clearInterval(f);
+    }, [primalFase, primalFin, primalPausa]),
     sdcWakeSi(
       !!combPrep ||
         !!combVentana ||
@@ -467,10 +480,19 @@ function App({ player, setPlayer, initialNotices }) {
       sdcVib(22),
       setPrimalRonda(0),
       setPrimalSegundos(10),
+      setPrimalFin(Date.now() + 1e4),
+      setPrimalPausa(0),
       setPrimalFase("resting"));
   }
   function primalCancelar() {
-    (setPrimalFase("idle"), setPrimalMov(null), setPrimalRonda(1));
+    (setPrimalFase("idle"), setPrimalMov(null), setPrimalRonda(1), setPrimalPausa(0));
+  }
+  function primalPausar() {
+    setPrimalPausa(Date.now());
+  }
+  function primalSeguir() {
+    let p = primalPausa;
+    (setPrimalFin((f) => f + (Date.now() - p)), setPrimalPausa(0));
   }
   function guardarReprueba() {
     let f = Math.max(0, parseInt(repSentadillas || "0", 10)),
@@ -1875,6 +1897,9 @@ function App({ player, setPlayer, initialNotices }) {
             primalSesionesHoy={primalSesionesHoy}
             progress={progress}
             sdcPrimalYa={sdcPrimalYa}
+            primalPausa={primalPausa}
+            primalPausar={primalPausar}
+            primalSeguir={primalSeguir}
             seccionPrimal={seccionPrimal}
             setCuidadoAbierto={setCuidadoAbierto}
             setHabilidadAbierta={setHabilidadAbierta}
