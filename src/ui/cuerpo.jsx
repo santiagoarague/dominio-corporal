@@ -1,6 +1,6 @@
 // El cuerpo: figura y panel de zonas.
 import { IconoCerrar } from "./iconos.jsx";
-import { ry } from "../logica/atributos.js";
+import { atributosDeZona } from "../logica/atributos.js";
 import { nombreEjercicio } from "../logica/rutina.js";
 import { BarraXp } from "./base.jsx";
 
@@ -19,16 +19,16 @@ var gruposCuerpo = {
   squat: { label: "Piernas y glúteos", muscles: "Cuádriceps, isquios, glúteo" },
   abs: { label: "Core", muscles: "Recto abdominal, oblicuos, transverso" },
 };
-function Bd(e) {
+function nivelZona(e) {
   return Math.floor(Math.sqrt((e || 0) / 25)) + 1;
 }
-function y5(e) {
-  let a = Bd(e),
+function progresoZona(e) {
+  let a = nivelZona(e),
     l = Math.pow(a - 1, 2) * 25,
     n = Math.pow(a, 2) * 25;
   return { cur: (e || 0) - l, need: n - l, next: n };
 }
-function wd(e, a) {
+function diasEntre(e, a) {
   return e ? Math.round((new Date(a + "T00:00:00") - new Date(e + "T00:00:00")) / 864e5) : null;
 }
 function FiguraCuerpo({ view: e, colors: a, glow: l, ratios: n, selected: o, onSelect: s }) {
@@ -120,9 +120,9 @@ function PanelZonas({
   onClose: p,
 }) {
   let v = gruposCuerpo[e],
-    x = Bd(n),
-    y = y5(n),
-    S = wd(u, c);
+    x = nivelZona(n),
+    y = progresoZona(n),
+    S = diasEntre(u, c);
   return (
     <div
       className="mt-3 p-3"
@@ -139,9 +139,9 @@ function PanelZonas({
       <div className="text-xs mb-1" style={{ color: "#9aa4bd" }}>
         {v.muscles}
       </div>
-      {ry(e) && (
+      {atributosDeZona(e) && (
         <div className="text-xs mb-2" style={{ color: "#b084f5" }}>
-          Alimenta: {ry(e)}
+          Alimenta: {atributosDeZona(e)}
         </div>
       )}
       <div className="text-xs mb-1" style={{ color: "#e8ecf7" }}>
@@ -176,4 +176,12 @@ function PanelZonas({
   );
 }
 
-export { colorProgreso, gruposCuerpo, Bd, y5, wd, FiguraCuerpo, PanelZonas };
+export {
+  colorProgreso,
+  gruposCuerpo,
+  nivelZona,
+  progresoZona,
+  diasEntre,
+  FiguraCuerpo,
+  PanelZonas,
+};

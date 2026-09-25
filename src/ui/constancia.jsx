@@ -25,7 +25,7 @@ function LeyendaConstancia({ items: e }) {
     </div>
   );
 }
-var bt = {
+var coloresEstado = {
   full: "#3ecf8e",
   partial: "#ffb84f",
   rest: "#4f9dff",
@@ -60,7 +60,7 @@ function GrillaConstancia({ days: e, onPick: a, selected: l }) {
           style={{
             height: 18,
             padding: 0,
-            background: bt[n.status] || bt.empty,
+            background: coloresEstado[n.status] || coloresEstado.empty,
             border:
               l === n.date
                 ? "2px solid #ffffff"
@@ -73,7 +73,7 @@ function GrillaConstancia({ days: e, onPick: a, selected: l }) {
     </div>
   );
 }
-var N5 = {
+var nombresEstado = {
   full: "Rutina completa",
   partial: "Sesión parcial",
   rest: "Día de descanso",
@@ -98,8 +98,8 @@ function DetalleDia({ date: e, status: a, log: l, onClose: n, onLog: sol, animo:
           <IconoCerrar size={14} color="#9aa4bd" />
         </button>
       </div>
-      <div className="text-xs mb-2" style={{ color: bt[a] || "#8a93ad" }}>
-        {N5[a] || "Sin registro"}
+      <div className="text-xs mb-2" style={{ color: coloresEstado[a] || "#8a93ad" }}>
+        {nombresEstado[a] || "Sin registro"}
       </div>
       {l && l.acts && l.acts.length > 0 ? (
         <>
@@ -182,4 +182,11 @@ function DetalleDia({ date: e, status: a, log: l, onClose: n, onLog: sol, animo:
   );
 }
 
-export { LeyendaConstancia, bt, diasConstancia, GrillaConstancia, N5, DetalleDia };
+export {
+  LeyendaConstancia,
+  coloresEstado,
+  diasConstancia,
+  GrillaConstancia,
+  nombresEstado,
+  DetalleDia,
+};

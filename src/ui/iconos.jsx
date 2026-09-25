@@ -38,13 +38,6 @@ function IconoTrofeo({ size: e = 16, color: a = "currentColor" }) {
     </Icono>
   );
 }
-function IconoLuna({ size: e = 16, color: a = "currentColor" }) {
-  return (
-    <Icono size={e}>
-      <path d="M20 14 A8 8 0 1 1 10 4 A6 6 0 0 0 20 14 Z" fill={a} />
-    </Icono>
-  );
-}
 function IconoDestello({ size: e = 16, color: a = "currentColor" }) {
   return (
     <Icono size={e}>
@@ -184,18 +177,6 @@ function IconoCorazon({ size: e = 16, color: a = "currentColor", fill: l = "none
     </Icono>
   );
 }
-function IconoCalavera({ size: e = 16, color: a = "currentColor" }) {
-  return (
-    <Icono size={e}>
-      <circle cx="12" cy="10" r="8" fill={a} />
-      <circle cx="9" cy="10" r="1.5" fill="#0a0e1a" />
-      <circle cx="15" cy="10" r="1.5" fill="#0a0e1a" />
-      <rect x="9" y="15" width="6" height="4" fill={a} />
-      <rect x="9.5" y="19" width="1.2" height="2" fill={a} />
-      <rect x="13.3" y="19" width="1.2" height="2" fill={a} />
-    </Icono>
-  );
-}
 function IconoPata({ size: e = 16, color: a = "currentColor" }) {
   return (
     <Icono size={e}>
@@ -220,7 +201,6 @@ export {
   Icono,
   IconoLlama,
   IconoTrofeo,
-  IconoLuna,
   IconoDestello,
   IconoPesa,
   IconoMas,
@@ -235,7 +215,6 @@ export {
   IconoPasos,
   IconoEspadas,
   IconoCorazon,
-  IconoCalavera,
   IconoPata,
   IconoPersona,
 };

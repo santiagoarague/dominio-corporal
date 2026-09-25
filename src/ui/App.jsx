@@ -12,39 +12,45 @@ import {
   IconoFlecha,
   IconoPersona,
 } from "./iconos.jsx";
-import { colorRango, nivelUmbral, vd, rangos } from "../datos/rangos.js";
-import { Ed, travesiaDelDia, l2, nodosExplorar, sdcPortales } from "../logica/explorar.js";
+import { colorRango, nivelUmbral, metrosPorPaso, rangos } from "../datos/rangos.js";
 import {
-  $o,
-  Ad,
-  N2,
-  S2,
-  Ws,
-  b2,
-  dd,
-  h2,
+  xpTravesia,
+  travesiaDelDia,
+  caminanteDe,
+  nodosExplorar,
+  sdcPortales,
+} from "../logica/explorar.js";
+import {
+  trenesJefe,
+  combateInicial,
+  reintentarSinVidas,
+  siguienteTerreno,
+  segundosRondaPrimal,
+  elegirTren,
+  rondasPrimal,
+  golpear,
   repsCombate,
-  m2,
-  p2,
+  segundosVentana,
+  segundosVentanaJefe,
   golpesNecesarios,
   repsCombateSuave,
   perderVida,
-  za,
+  terreno,
 } from "../logica/combate.js";
 import {
-  A2,
-  E2,
+  consejoDelDia,
+  registrarPrimal,
   movimientosPrimal,
-  cy,
-  ou,
+  descansoPrimal,
+  consejos,
   sdcPrimalPrep,
   sdcPrimalTic,
 } from "../logica/primal.js";
 import { tienda, comprar, sesionesPrimalHoy } from "../logica/tienda.js";
 import { sdcEstPaso, sdcEstTotal } from "../logica/estiramiento.js";
-import { O2 } from "../logica/atributos.js";
+import { nivelesZonas } from "../logica/atributos.js";
 import { guia } from "../datos/guia.js";
-import { Al } from "../datos/salud.js";
+import { neuroInicial } from "../datos/salud.js";
 import { sistemas, sistemaActivo, sistemaAbierto } from "../logica/sistemas.js";
 import { logros, revisarLogros, avisoCarga, categoriasLogros } from "../datos/logros.js";
 import { modalidades } from "../datos/ejercicios.js";
@@ -68,11 +74,11 @@ import {
   descartarTramos,
   consolidarKm,
   registrarRutina,
-  m5,
+  escribirPuntoRetorno,
   completarTravesia,
   sdcCruzar,
   usarDescanso,
-  xy,
+  leerPuntoRetorno,
   sumarTramo,
 } from "../logica/partida.js";
 import { Tarjeta, BarraXp } from "./base.jsx";
@@ -98,7 +104,7 @@ import { Avisos } from "./avisos.jsx";
 import { sdcBeep, sdcNSets, sdcSplit, sdcVib, sdcPrimalSon } from "../logica/series.js";
 import { colorProgreso } from "./cuerpo.jsx";
 import { diasConstancia } from "./constancia.jsx";
-import { DibujoMascota, Plegable, k5 } from "./tarjetas.jsx";
+import { DibujoMascota, Plegable, colorDeRango } from "./tarjetas.jsx";
 import { sdcRespaldoOk } from "../logica/respaldo.js";
 import { usePantallaSi } from "./pantalla.js";
 import { sdcEstDesde, sdcPasoEspera, sdcPasosHook, sdcPasosV } from "./calentamiento.jsx";
@@ -221,7 +227,7 @@ function App({ player, setPlayer, initialNotices }) {
     [repFlexiones, setRepFlexiones] = useState(""),
     [repAbdominales, setRepAbdominales] = useState(""),
     [sdcRbk, sdcSetRbk] = useState(""),
-    [fraseMascota, setFraseMascota] = useState(() => A2(fechaHoy())),
+    [fraseMascota, setFraseMascota] = useState(() => consejoDelDia(fechaHoy())),
     [respaldoTexto, setRespaldoTexto] = useState(""),
     [confirmarRestaurar, setConfirmarRestaurar] = useState(!1),
     [metronomoOn, setMetronomoOn] = useState(!1),
@@ -238,7 +244,7 @@ function App({ player, setPlayer, initialNotices }) {
       abs: (repsHoy.abs || 0) / (sdcMt.abs || 1),
     },
     grupos = ["squat", "pushup", "back", "abs"],
-    atributos = O2(player),
+    atributos = nivelesZonas(player),
     nivelMaxAtributo = Math.max(10, ...grupos.map((f) => atributos.levels[f])),
     metaSemanaGrupo = (f) => Math.max(1, (metaDia[f] || 1) * metaSemana),
     ratioMapa = (f) =>
@@ -254,7 +260,7 @@ function App({ player, setPlayer, initialNotices }) {
       abs: colorProgreso(ratioMapa("abs")),
     },
     kmTotales = exploration.lifetimeKm || 0,
-    rangoCaminante = l2(kmTotales),
+    rangoCaminante = caminanteDe(kmTotales),
     nodoSiguiente = nodosExplorar[exploration.unlockedIndex + 1] || null,
     primalHechasHoy = primal.today.date === fechaHoy() ? primal.today.count : 0,
     primalSesionesHoy = sesionesPrimalHoy(player),
@@ -367,7 +373,7 @@ function App({ player, setPlayer, initialNotices }) {
         return;
       }
       if (combat.phase === "resting") {
-        let d = za(combat.villainIndex).isBoss ? 20 : 12;
+        let d = terreno(combat.villainIndex).isBoss ? 20 : 12;
         (setCombSegundosMax(d), setCombSegundos(d), setCombPrep(!1), setCombVentana(!1));
       }
     }, [combat.roundId, pestana]),
@@ -375,13 +381,13 @@ function App({ player, setPlayer, initialNotices }) {
       if (!combPrep) return;
       if (combSegundos <= 0) {
         setCombPrep(!1);
-        let d = za(combat.villainIndex),
+        let d = terreno(combat.villainIndex),
           m = d.isBoss
             ? repsCombateSuave(
                 progress.rank,
                 profile.classification,
                 profile.focusProfile,
-                (combat.bossCats || $o(combat.lastExercise))[0],
+                (combat.bossCats || trenesJefe(combat.lastExercise))[0],
                 modalidad,
                 profile.testResults,
               )
@@ -398,7 +404,7 @@ function App({ player, setPlayer, initialNotices }) {
                   ) * (combat.loadFactor || 1),
                 ),
               ),
-          N = d.isBoss ? p2() : m2(m);
+          N = d.isBoss ? segundosVentanaJefe() : segundosVentana(m);
         (setCombSegundosMax(N), setCombSegundos(N), setCombVentana(!0));
         return;
       }
@@ -417,18 +423,18 @@ function App({ player, setPlayer, initialNotices }) {
     useEffect(() => {
       if (primalFase !== "active") return;
       if (primalSegundos <= 0) {
-        if (primalRonda < dd)
+        if (primalRonda < rondasPrimal)
           (sdcPrimalSon("fin"),
             setPrimalFase("resting"),
-            setPrimalSegundos(cy),
-            setPrimalFin(Date.now() + cy * 1e3));
+            setPrimalSegundos(descansoPrimal),
+            setPrimalFin(Date.now() + descansoPrimal * 1e3));
         else {
           let d = primalMov;
           (sdcPrimalSon("listo"),
             setPrimalFase("idle"),
             setPrimalMov(null),
             setPrimalRonda(1),
-            aplicar((m) => E2(m, d)));
+            aplicar((m) => registrarPrimal(m, d)));
         }
         return;
       }
@@ -440,8 +446,8 @@ function App({ player, setPlayer, initialNotices }) {
         (sdcPrimalSon("arranca"),
           setPrimalRonda((d) => d + 1),
           setPrimalFase("active"),
-          setPrimalSegundos(Ws(progress.rank)),
-          setPrimalFin(Date.now() + Ws(progress.rank) * 1e3));
+          setPrimalSegundos(segundosRondaPrimal(progress.rank)),
+          setPrimalFin(Date.now() + segundosRondaPrimal(progress.rank) * 1e3));
         return;
       }
       primalRonda > 0 && primalSegundos === sdcPrimalPrep
@@ -568,18 +574,18 @@ function App({ player, setPlayer, initialNotices }) {
     });
   }
   function combElegir(f) {
-    aplicar((d) => b2(d, f));
+    aplicar((d) => elegirTren(d, f));
   }
   function combCancelar() {
     (setCombVentana(!1), sdcSetCombSer({}));
-    let d = za(combat.villainIndex).isBoss ? 20 : 12;
+    let d = terreno(combat.villainIndex).isBoss ? 20 : 12;
     (setCombSegundosMax(d), setCombSegundos(d), setCombPrep(!1));
   }
   function combSiguiente() {
-    aplicar((f) => S2(f));
+    aplicar((f) => siguienteTerreno(f));
   }
   function combReintentar() {
-    aplicar((f) => N2(f));
+    aplicar((f) => reintentarSinVidas(f));
   }
   function sdcRepsSerie(g, k) {
     let t = metaSesion[g] || 0,
@@ -651,7 +657,7 @@ function App({ player, setPlayer, initialNotices }) {
     } else sdcVib(8);
   }
   function sdcGolpe() {
-    (setCombVentana(!1), aplicar((f) => h2(f)), sdcSetCombSer({}));
+    (setCombVentana(!1), aplicar((f) => golpear(f)), sdcSetCombSer({}));
   }
   function sdcCombTocar(fa, k) {
     let pv = sdcCombSer[fa] || 0;
@@ -987,7 +993,7 @@ function App({ player, setPlayer, initialNotices }) {
       let d = clonar(f);
       (d.skills || (d.skills = {}),
         d.care || (d.care = { today: { date: fechaHoy(), done: [] }, lifetime: 0 }),
-        d.neuro || (d.neuro = Al()),
+        d.neuro || (d.neuro = neuroInicial()),
         d.unlockAll === void 0 && (d.unlockAll = !1),
         d.disabled || (d.disabled = []),
         d.seenUnlocks ||
@@ -1008,7 +1014,7 @@ function App({ player, setPlayer, initialNotices }) {
       return (
         m.skills || (m.skills = {}),
         m.care || (m.care = { today: { date: fechaHoy(), done: [] }, lifetime: 0 }),
-        m.neuro || (m.neuro = Al()),
+        m.neuro || (m.neuro = neuroInicial()),
         m.unlockAll === void 0 && (m.unlockAll = !1),
         m.disabled || (m.disabled = []),
         m.seenUnlocks ||
@@ -1059,11 +1065,11 @@ function App({ player, setPlayer, initialNotices }) {
       setPlayer(null));
   }
   useEffect(() => {
-    (async () => setHayPuntoRetorno(!!(await xy())))();
+    (async () => setHayPuntoRetorno(!!(await leerPuntoRetorno())))();
   }, []);
   function guardarPuntoRetorno() {
     (async () => {
-      let f = await m5(player);
+      let f = await escribirPuntoRetorno(player);
       (setHayPuntoRetorno(f),
         avisar((d) => [
           ...d,
@@ -1075,7 +1081,7 @@ function App({ player, setPlayer, initialNotices }) {
   }
   function volverPuntoRetorno() {
     (async () => {
-      let f = await xy();
+      let f = await leerPuntoRetorno();
       if (!f) {
         avisar((N) => [...N, "No hay ningún punto de retorno guardado."]);
         return;
@@ -1168,7 +1174,7 @@ function App({ player, setPlayer, initialNotices }) {
   function sumarPasos() {
     let f = Math.max(0, parseInt((pasosTexto || "0").replace(/\D/g, ""), 10) || 0);
     if (!f) return;
-    let d = Math.round(((f * vd) / 1e3) * 100) / 100;
+    let d = Math.round(((f * metrosPorPaso) / 1e3) * 100) / 100;
     d <= 0 ||
       (setPlayer((m) => {
         let { state: N } = sumarTramo(m, d);
@@ -1207,7 +1213,7 @@ function App({ player, setPlayer, initialNotices }) {
             completed: !1,
             name: sdcPortales[0].n,
             challengeText: sdcPortales[0].c,
-            rewardXP: Ed[d.progress.rank],
+            rewardXP: xpTravesia[d.progress.rank],
           }),
         d
       );
@@ -1239,8 +1245,8 @@ function App({ player, setPlayer, initialNotices }) {
         (d.combat.lives = 3),
         (d.combat.loadFactor = 1),
         (d.combat.damageFactor = 1),
-        (d.combat.bossCats = $o(null)),
-        (d.combat.villainCurrentHP = golpesNecesarios(za(4))),
+        (d.combat.bossCats = trenesJefe(null)),
+        (d.combat.villainCurrentHP = golpesNecesarios(terreno(4))),
         (d.combat.phase = "resting"),
         (d.combat.roundId = (d.combat.roundId || 0) + 1),
         d
@@ -1248,12 +1254,12 @@ function App({ player, setPlayer, initialNotices }) {
     }),
       setCombPrep(!1),
       setCombVentana(!1),
-      avisar((f) => [...f, `[Prueba] Saltaste al primer Jefe (${za(4).name}).`]));
+      avisar((f) => [...f, `[Prueba] Saltaste al primer Jefe (${terreno(4).name}).`]));
   }
   function reiniciarCombate() {
     (setPlayer((f) => {
       let d = clonar(f);
-      return ((d.combat = Ad()), d);
+      return ((d.combat = combateInicial()), d);
     }),
       setCombPrep(!1),
       setCombVentana(!1),
@@ -1477,7 +1483,7 @@ function App({ player, setPlayer, initialNotices }) {
             <DibujoMascota
               type={profile.pet ? profile.pet.type : "dog"}
               size={48}
-              color={k5(progress.rank)}
+              color={colorDeRango(progress.rank)}
               rank={progress.rank}
             />
             <div>
@@ -1496,7 +1502,7 @@ function App({ player, setPlayer, initialNotices }) {
             </div>
           </div>
           <button
-            onClick={() => setFraseMascota(ou[Math.floor(Math.random() * ou.length)])}
+            onClick={() => setFraseMascota(consejos[Math.floor(Math.random() * consejos.length)])}
             className="text-xs underline"
             style={{
               color: "#ffb84f",

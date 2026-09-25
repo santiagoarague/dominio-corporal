@@ -1,17 +1,24 @@
 // Ejercicios neuromotores.
 import { useState, useEffect } from "react";
-import { Fs, bd, fy, md, my, pd } from "../datos/salud.js";
+import {
+  bpmRitmo,
+  patronesCruzados,
+  senalesReaccion,
+  sostenesDual,
+  movimientosSecuencia,
+  tareasMentales,
+} from "../datos/salud.js";
 import { pitido } from "./prueba.jsx";
 
-var kd = [
+var velocidadesReaccion = [
     { id: "lento", name: "Lento", min: 3500, max: 7e3, level: 1 },
     { id: "medio", name: "Medio", min: 2e3, max: 4500, level: 2 },
     { id: "rapido", name: "Rápido", min: 1200, max: 2800, level: 3 },
   ],
-  eu = 15;
+  senalesPorPrueba = 15;
 function Reaccion({ onDone: e }) {
   let [a, l] = useState("idle"),
-    [n, o] = useState(kd[1]),
+    [n, o] = useState(velocidadesReaccion[1]),
     [s, u] = useState(null),
     [c, r] = useState(0),
     [p, v] = useState(3);
@@ -30,7 +37,9 @@ function Reaccion({ onDone: e }) {
       if (a !== "gap") return;
       let x = n.min + Math.random() * (n.max - n.min),
         y = setTimeout(() => {
-          (u(fy[Math.floor(Math.random() * fy.length)]), pitido(900, 130), l("signal"));
+          (u(senalesReaccion[Math.floor(Math.random() * senalesReaccion.length)]),
+            pitido(900, 130),
+            l("signal"));
         }, x);
       return () => clearTimeout(y);
     }, [a, c]),
@@ -38,21 +47,23 @@ function Reaccion({ onDone: e }) {
       if (a !== "signal") return;
       let x = setTimeout(() => {
         let y = c + 1;
-        (r(y), u(null), y >= eu ? (pitido(1100, 250), l("done"), e(n.level)) : l("gap"));
+        (r(y),
+          u(null),
+          y >= senalesPorPrueba ? (pitido(1100, 250), l("done"), e(n.level)) : l("gap"));
       }, 2200);
       return () => clearTimeout(x);
     }, [a]),
     a === "idle" ? (
       <>
         <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
-          {eu} señales con huecos impredecibles. No tenés que tocar nada: dejá el teléfono apoyado,
-          atendé a la pantalla y al sonido, y ejecutá cada orden con el cuerpo.
+          {senalesPorPrueba} señales con huecos impredecibles. No tenés que tocar nada: dejá el
+          teléfono apoyado, atendé a la pantalla y al sonido, y ejecutá cada orden con el cuerpo.
         </div>
         <div className="text-xs mb-1" style={{ color: "#9aa4bd" }}>
           Ritmo
         </div>
         <div className="grid grid-cols-3 gap-1 mb-3">
-          {kd.map((x) => (
+          {velocidadesReaccion.map((x) => (
             <button
               key={x.id}
               onClick={() => o(x)}
@@ -93,7 +104,7 @@ function Reaccion({ onDone: e }) {
           Drill completado
         </div>
         <div className="text-xs mt-1" style={{ color: "#9aa4bd" }}>
-          {eu} señales a ritmo {n.name}
+          {senalesPorPrueba} señales a ritmo {n.name}
         </div>
         <button
           onClick={() => l("idle")}
@@ -146,7 +157,7 @@ function Reaccion({ onDone: e }) {
           </div>
         )}
         <div className="text-xs mt-3" style={{ color: a === "signal" ? "#0a0e1a" : "#5a6178" }}>
-          {c} / {eu}
+          {c} / {senalesPorPrueba}
         </div>
       </div>
     )
@@ -159,7 +170,8 @@ function Secuencia({ onDone: e }) {
     [c, r] = useState(3),
     p = (x) => {
       let y = [];
-      for (let S = 0; S < x; S++) y.push(my[Math.floor(Math.random() * my.length)]);
+      for (let S = 0; S < x; S++)
+        y.push(movimientosSecuencia[Math.floor(Math.random() * movimientosSecuencia.length)]);
       return y;
     };
   useEffect(() => {
@@ -294,8 +306,8 @@ function Secuencia({ onDone: e }) {
 function TareaDual({ onDone: e }) {
   let [a, l] = useState("idle"),
     [n, o] = useState(0),
-    [s, u] = useState(md[0]),
-    [c, r] = useState(pd[0]);
+    [s, u] = useState(sostenesDual[0]),
+    [c, r] = useState(tareasMentales[0]);
   return (
     useEffect(() => {
       if (a !== "run") return;
@@ -310,8 +322,8 @@ function TareaDual({ onDone: e }) {
         </div>
         <button
           onClick={() => {
-            (u(md[Math.floor(Math.random() * md.length)]),
-              r(pd[Math.floor(Math.random() * pd.length)]),
+            (u(sostenesDual[Math.floor(Math.random() * sostenesDual.length)]),
+              r(tareasMentales[Math.floor(Math.random() * tareasMentales.length)]),
               o(0),
               l("run"));
           }}
@@ -362,9 +374,9 @@ function Ritmo({ onDone: e }) {
   let [a, l] = useState("idle"),
     [n, o] = useState(0),
     [s, u] = useState(30),
-    [c, r] = useState(bd[0]),
+    [c, r] = useState(patronesCruzados[0]),
     [p, v] = useState(!1),
-    x = Fs[n];
+    x = bpmRitmo[n];
   return (
     useEffect(() => {
       if (a !== "run") return;
@@ -391,7 +403,9 @@ function Ritmo({ onDone: e }) {
         </div>
         <button
           onClick={() => {
-            (r(bd[Math.floor(Math.random() * bd.length)]), u(30), l("run"));
+            (r(patronesCruzados[Math.floor(Math.random() * patronesCruzados.length)]),
+              u(30),
+              l("run"));
           }}
           className="w-full py-3 text-sm"
           style={{ background: "#ffb84f", color: "#0a0e1a", fontWeight: 700 }}
@@ -430,7 +444,7 @@ function Ritmo({ onDone: e }) {
         </div>
         <button
           onClick={() => {
-            (l("idle"), e(n > 0 ? Fs[n - 1] : 0));
+            (l("idle"), e(n > 0 ? bpmRitmo[n - 1] : 0));
           }}
           className="w-full py-2 text-xs mt-2"
           style={{
@@ -463,7 +477,7 @@ function Ritmo({ onDone: e }) {
           >
             Salir
           </button>
-          {n < Fs.length - 1 && (
+          {n < bpmRitmo.length - 1 && (
             <button
               onClick={() => {
                 (o(n + 1), u(30), l("run"));
@@ -471,7 +485,7 @@ function Ritmo({ onDone: e }) {
               className="flex-1 py-2 text-xs"
               style={{ background: "#ffb84f", color: "#0a0e1a", fontWeight: 700 }}
             >
-              Subir a {Fs[n + 1]} bpm
+              Subir a {bpmRitmo[n + 1]} bpm
             </button>
           )}
         </div>
@@ -480,4 +494,4 @@ function Ritmo({ onDone: e }) {
   );
 }
 
-export { kd, eu, Reaccion, Secuencia, TareaDual, Ritmo };
+export { velocidadesReaccion, senalesPorPrueba, Reaccion, Secuencia, TareaDual, Ritmo };

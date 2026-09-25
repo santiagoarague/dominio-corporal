@@ -3,8 +3,8 @@ import { rangos } from "./rangos.js";
 import { nodosExplorar } from "../logica/explorar.js";
 import { movimientosPrimal } from "../logica/primal.js";
 import { dominioInicial } from "../logica/tienda.js";
-import { Io, Ro, tu } from "../logica/atributos.js";
-import { habilidades, Td, Wo } from "./guia.js";
+import { listaAtributos, nivelAtributo, valorAtributo } from "../logica/atributos.js";
+import { habilidades, pasosHabilidad, habilidadesCompletas } from "./guia.js";
 import { fechaLocal, fechaHoy } from "../logica/rutina.js";
 import { clonar } from "../logica/partida.js";
 
@@ -392,7 +392,7 @@ var categoriasLogros = [
       category: "Persistencia",
       name: "Atributo Consolidado",
       desc: "Llevá un atributo a Nivel 10",
-      check: (e) => Io.some((a) => Ro(tu(e, a)) >= 10),
+      check: (e) => listaAtributos.some((a) => nivelAtributo(valorAtributo(e, a)) >= 10),
     },
     {
       id: "s_wstreak12",
@@ -474,7 +474,7 @@ var categoriasLogros = [
       category: "Persistencia",
       name: "Atributo Élite",
       desc: "Llevá un atributo a Nivel 20",
-      check: (e) => Io.some((a) => Ro(tu(e, a)) >= 20),
+      check: (e) => listaAtributos.some((a) => nivelAtributo(valorAtributo(e, a)) >= 20),
     },
     {
       id: "z_rank",
@@ -546,7 +546,7 @@ var categoriasLogros = [
       category: "Persistencia",
       name: "Atributo Trascendente",
       desc: "Llevá un atributo a Nivel 30",
-      check: (e) => Io.some((a) => Ro(tu(e, a)) >= 30),
+      check: (e) => listaAtributos.some((a) => nivelAtributo(valorAtributo(e, a)) >= 30),
     },
     {
       id: "z_hybrid",
@@ -642,7 +642,7 @@ var categoriasLogros = [
       category: "Skills",
       name: "Primer Paso Técnico",
       desc: "Dominá el primer paso de cualquier skill",
-      check: (e) => habilidades.some((a) => Td(e, a.id).some(Boolean)),
+      check: (e) => habilidades.some((a) => pasosHabilidad(e, a.id).some(Boolean)),
     },
     {
       id: "skill_1",
@@ -650,7 +650,7 @@ var categoriasLogros = [
       category: "Skills",
       name: "Movimiento Raro",
       desc: "Aprendé tu primera skill completa",
-      check: (e) => Wo(e) >= 1,
+      check: (e) => habilidadesCompletas(e) >= 1,
     },
     {
       id: "skill_3",
@@ -658,7 +658,7 @@ var categoriasLogros = [
       category: "Skills",
       name: "Repertorio Extraño",
       desc: "Aprendé 3 skills completas",
-      check: (e) => Wo(e) >= 3,
+      check: (e) => habilidadesCompletas(e) >= 3,
     },
     {
       id: "skill_6",
@@ -666,7 +666,7 @@ var categoriasLogros = [
       category: "Skills",
       name: "Coleccionista de Movimiento",
       desc: "Aprendé 6 skills completas",
-      check: (e) => Wo(e) >= 6,
+      check: (e) => habilidadesCompletas(e) >= 6,
     },
     {
       id: "skill_all",
@@ -674,7 +674,7 @@ var categoriasLogros = [
       category: "Skills",
       name: "Maestro del Movimiento",
       desc: "Aprendé todas las skills",
-      check: (e) => Wo(e) >= habilidades.length,
+      check: (e) => habilidadesCompletas(e) >= habilidades.length,
     },
     {
       id: "gym_10k",

@@ -1,6 +1,6 @@
 // Tienda de PD, modificadores del dia, mascota y multiplicadores de XP.
-import { Ed, travesiaDelDia, sdcPortales } from "./explorar.js";
-import { hashDia, k2 } from "./primal.js";
+import { xpTravesia, travesiaDelDia, sdcPortales } from "./explorar.js";
+import { hashDia, sesionesPrimalBase } from "./primal.js";
 import { fechaHoy } from "./rutina.js";
 import { clonar } from "./partida.js";
 
@@ -142,7 +142,7 @@ function multImpulso(e) {
 function sesionesPrimalHoy(e) {
   let a = e.dominion && e.dominion.extraPrimal,
     l = a && a.date === fechaHoy() ? a.count : 0;
-  return k2 + l;
+  return sesionesPrimalBase + l;
 }
 function comprar(e, a) {
   let l = clonar(e),
@@ -162,7 +162,7 @@ function comprar(e, a) {
           completed: !1,
           name: sdcPortales[0].n,
           challengeText: sdcPortales[0].c,
-          rewardXP: Ed[l.progress.rank],
+          rewardXP: xpTravesia[l.progress.rank],
         }),
       n.push(`Nueva travesía: ${l.dungeon.name}.`));
   } else if (a === "primal")

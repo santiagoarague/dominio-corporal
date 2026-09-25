@@ -1,16 +1,16 @@
 // Pestana Combate: elegir patron, preparacion, ventana de ataque y resultado.
 import {
-  za,
+  terreno,
   golpesNecesarios,
-  $o,
+  trenesJefe,
   repsCombate,
-  sy,
-  iy,
-  y2,
-  g2,
-  v2,
-  p2,
-  m2,
+  ejercicioDeTren,
+  nombresTren,
+  reintentarRonda,
+  ajustarCarga,
+  cambiarTren,
+  segundosVentanaJefe,
+  segundosVentana,
   repsCombateSuave,
 } from "../../logica/combate.js";
 import { sdcNSets } from "../../logica/series.js";
@@ -38,7 +38,7 @@ export function PestanaCombate({
   setCombSegundos,
   setCombSegundosMax,
 }) {
-  let f = za(combat.villainIndex),
+  let f = terreno(combat.villainIndex),
     d = golpesNecesarios(f);
   return (
     <>
@@ -119,7 +119,7 @@ export function PestanaCombate({
                   color: N ? "#5a6178" : "#ff5c7a",
                 }}
               >
-                {iy[m]}
+                {nombresTren[m]}
               </button>
             );
           })}
@@ -141,7 +141,7 @@ export function PestanaCombate({
             Perdiste un corazón. Te quedan {combat.lives}. ¿Cómo seguís?
           </div>
           <button
-            onClick={() => aplicar((m) => y2(m))}
+            onClick={() => aplicar((m) => reintentarRonda(m))}
             className="w-full text-left px-3 py-2 mb-2"
             style={{ background: "rgba(255,92,122,0.08)", border: "1px solid #ff5c7a" }}
           >
@@ -153,7 +153,7 @@ export function PestanaCombate({
             </div>
           </button>
           <button
-            onClick={() => aplicar((m) => g2(m))}
+            onClick={() => aplicar((m) => ajustarCarga(m))}
             className="w-full text-left px-3 py-2 mb-2"
             style={{ background: "rgba(255,184,79,0.08)", border: "1px solid #ffb84f" }}
           >
@@ -173,7 +173,7 @@ export function PestanaCombate({
                 m === combat.lastExercise || m === combat.exercise ? null : (
                   <button
                     key={m}
-                    onClick={() => aplicar((_) => v2(_, m))}
+                    onClick={() => aplicar((_) => cambiarTren(_, m))}
                     className="w-full py-2 text-sm mb-2"
                     style={{
                       background: "rgba(124,92,255,0.1)",
@@ -181,7 +181,7 @@ export function PestanaCombate({
                       color: "#b9a5ff",
                     }}
                   >
-                    {iy[m]}
+                    {nombresTren[m]}
                   </button>
                 ),
               )}
@@ -208,7 +208,7 @@ export function PestanaCombate({
                     ) * (combat.loadFactor || 1),
                   ),
                 ),
-            sdcCs = f.isBoss ? p2() : m2(sdcCr);
+            sdcCs = f.isBoss ? segundosVentanaJefe() : segundosVentana(sdcCr);
           return (
             <Tarjeta accent="#ff5c7a" style={{ marginBottom: 16 }}>
               <div
@@ -226,7 +226,7 @@ export function PestanaCombate({
                   <div style={{ color: "#ffb84f", fontWeight: 700 }}>
                     Superserie enlazada · sin descanso
                   </div>
-                  {(combat.bossCats || $o(combat.lastExercise)).map((m, N) => (
+                  {(combat.bossCats || trenesJefe(combat.lastExercise)).map((m, N) => (
                     <div key={m} className="mt-1">
                       Fase {N + 1}:{" "}
                       {repsCombateSuave(
@@ -237,13 +237,19 @@ export function PestanaCombate({
                         modalidad,
                         profile.testResults,
                       )}{" "}
-                      × {sy(progress.rank, profile.classification, m, modalidad)}
+                      × {ejercicioDeTren(progress.rank, profile.classification, m, modalidad)}
                     </div>
                   ))}
                 </div>
               ) : (
                 <div className="text-sm" style={{ color: "#e8ecf7" }}>
-                  {sdcCr} × {sy(progress.rank, profile.classification, combat.exercise, modalidad)}
+                  {sdcCr} ×{" "}
+                  {ejercicioDeTren(
+                    progress.rank,
+                    profile.classification,
+                    combat.exercise,
+                    modalidad,
+                  )}
                   {(combat.loadFactor || 1) < 1 && (
                     <div className="text-xs mt-1" style={{ color: "#ffb84f" }}>
                       Carga recalibrada · daño reducido
@@ -302,7 +308,7 @@ export function PestanaCombate({
                   <div style={{ color: "#ffb84f", fontWeight: 700 }}>
                     Superserie enlazada · sin descanso
                   </div>
-                  {(combat.bossCats || $o(combat.lastExercise)).map((m, N) => (
+                  {(combat.bossCats || trenesJefe(combat.lastExercise)).map((m, N) => (
                     <div key={m} className="mt-1">
                       Fase {N + 1}:{" "}
                       {repsCombateSuave(
@@ -313,7 +319,7 @@ export function PestanaCombate({
                         modalidad,
                         profile.testResults,
                       )}{" "}
-                      × {sy(progress.rank, profile.classification, m, modalidad)}
+                      × {ejercicioDeTren(progress.rank, profile.classification, m, modalidad)}
                     </div>
                   ))}
                 </>
@@ -332,7 +338,13 @@ export function PestanaCombate({
                       ) * (combat.loadFactor || 1),
                     ),
                   )}{" "}
-                  × {sy(progress.rank, profile.classification, combat.exercise, modalidad)}
+                  ×{" "}
+                  {ejercicioDeTren(
+                    progress.rank,
+                    profile.classification,
+                    combat.exercise,
+                    modalidad,
+                  )}
                   {(combat.loadFactor || 1) < 1 && (
                     <div className="text-xs mt-1" style={{ color: "#ffb84f" }}>
                       Carga recalibrada · daño reducido
@@ -355,7 +367,7 @@ export function PestanaCombate({
           <BarraXp value={combSegundos} max={combSegundosMax} color="#ff5c7a" />
           {(() => {
             let fs = f.isBoss
-                ? (combat.bossCats || $o(combat.lastExercise)).map((m) =>
+                ? (combat.bossCats || trenesJefe(combat.lastExercise)).map((m) =>
                     repsCombateSuave(
                       progress.rank,
                       profile.classification,

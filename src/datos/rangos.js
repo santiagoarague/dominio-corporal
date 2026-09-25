@@ -70,7 +70,7 @@ var rangos = ["E", "D", "C", "B", "A", "S", "Z"],
       Z: "Secuencias propias — las metas salen de tus récords",
     },
   },
-  vd = 0.75,
+  metrosPorPaso = 0.75,
   escalaCaminante = [
     { name: "Primeros Pasos", minKm: 0 },
     { name: "Caminante", minKm: 5 },
@@ -81,4 +81,13 @@ var rangos = ["E", "D", "C", "B", "A", "S", "Z"],
     { name: "Sin Distancia", minKm: 350 },
   ];
 
-export { rangos, nivelUmbral, colorRango, nombresRango, sdcTitulos, sdcDescs, vd, escalaCaminante };
+export {
+  rangos,
+  nivelUmbral,
+  colorRango,
+  nombresRango,
+  sdcTitulos,
+  sdcDescs,
+  metrosPorPaso,
+  escalaCaminante,
+};

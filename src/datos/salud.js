@@ -281,14 +281,14 @@ var alarmas = [
       ],
     },
   ],
-  Ty = 20;
-function Y2(e, a) {
+  xpCuidado = 20;
+function registrarCuidado(e, a) {
   let l = clonar(e),
     n = [],
     o = fechaHoy();
   if (
     (l.care || (l.care = { today: { date: o, done: [] }, lifetime: 0 }),
-    l.neuro || (l.neuro = Al()),
+    l.neuro || (l.neuro = neuroInicial()),
     l.unlockAll === void 0 && (l.unlockAll = !1),
     l.disabled || (l.disabled = []),
     l.seenUnlocks ||
@@ -298,7 +298,7 @@ function Y2(e, a) {
   )
     return { state: l, notices: ["Ya registraste este protocolo hoy."] };
   (l.care.today.done.push(a), (l.care.lifetime = (l.care.lifetime || 0) + 1));
-  let s = Math.round(Ty * multImpulso(l));
+  let s = Math.round(xpCuidado * multImpulso(l));
   (l.streak.flexBuff && (s = Math.round(s * 1.1)),
     (l.progress.currentXP += s),
     (l.today.xpEarned = (l.today.xpEarned || 0) + s));
@@ -307,14 +307,14 @@ function Y2(e, a) {
   let c = revisarLogros(l);
   return { state: c.state, notices: [...n, ...c.notices] };
 }
-var fy = [
+var senalesReaccion = [
     { label: "IZQUIERDA", action: "Desplázate un paso lateral a tu izquierda", color: "#4f9dff" },
     { label: "DERECHA", action: "Desplázate un paso lateral a tu derecha", color: "#3ecf8e" },
     { label: "ABAJO", action: "Bajá a posición de bestia y volvé", color: "#ffb84f" },
     { label: "SALTA", action: "Salto vertical con recepción suave", color: "#ff5c7a" },
     { label: "GIRA", action: "Media vuelta sobre vos mismo", color: "#b084f5" },
   ],
-  my = [
+  movimientosSecuencia = [
     "Bestia",
     "Cangrejo",
     "Escorpión",
@@ -324,23 +324,29 @@ var fy = [
     "Plancha",
     "Salto",
   ],
-  md = ["Plancha frontal", "Sentadilla en pared", "Beast hold", "Plancha lateral", "Hollow hold"],
-  pd = [
+  sostenesDual = [
+    "Plancha frontal",
+    "Sentadilla en pared",
+    "Beast hold",
+    "Plancha lateral",
+    "Hollow hold",
+  ],
+  tareasMentales = [
     "Cuenta hacia atrás de 7 en 7 desde 300, en voz alta",
     "Di nombres de animales sin repetir, uno por segundo",
     "Recita el alfabeto al revés",
     "Di los meses del año en orden inverso",
     "Nombra ciudades por cada letra del abecedario",
   ],
-  bd = [
+  patronesCruzados = [
     "Mano derecha toca rodilla izquierda, luego mano izquierda toca rodilla derecha",
     "Codo derecho a rodilla izquierda, alternando, sin parar",
     "Mano derecha toca talón izquierdo por detrás, alternando",
     "Rodilla al pecho alternando + palmada por debajo del muslo",
   ],
-  G2 = 15,
-  Fs = [60, 72, 84, 96, 108, 120];
-function Al() {
+  xpNeuromotor = 15,
+  bpmRitmo = [60, 72, 84, 96, 108, 120];
+function neuroInicial() {
   return {
     bestSpeedLevel: 0,
     reactionDrills: 0,
@@ -350,10 +356,10 @@ function Al() {
     sessions: 0,
   };
 }
-function Ps(e, a, l, n) {
+function registrarNeuromotor(e, a, l, n) {
   let o = clonar(e),
     s = [];
-  (o.neuro || (o.neuro = Al()),
+  (o.neuro || (o.neuro = neuroInicial()),
     o.unlockAll === void 0 && (o.unlockAll = !1),
     o.disabled || (o.disabled = []),
     o.seenUnlocks ||
@@ -368,7 +374,7 @@ function Ps(e, a, l, n) {
         ? l > o.neuro.bestDualSec && ((o.neuro.bestDualSec = l), (u = !0))
         : a === "coord" && l > o.neuro.bestBpm && ((o.neuro.bestBpm = l), (u = !0)),
     (o.neuro.sessions = (o.neuro.sessions || 0) + 1));
-  let c = Math.round(G2 * multImpulso(o));
+  let c = Math.round(xpNeuromotor * multImpulso(o));
   ((o.progress.currentXP += c),
     (o.today.xpEarned = (o.today.xpEarned || 0) + c),
     s.push(u ? `¡Nueva marca personal! +${c} XP.` : `Sesión neuromotora registrada. +${c} XP.`),
@@ -378,4 +384,19 @@ function Ps(e, a, l, n) {
   return { state: r.state, notices: [...s, ...r.notices] };
 }
 
-export { alarmas, reglaDolor, cuidadoArticular, Ty, Y2, fy, my, md, pd, bd, G2, Fs, Al, Ps };
+export {
+  alarmas,
+  reglaDolor,
+  cuidadoArticular,
+  xpCuidado,
+  registrarCuidado,
+  senalesReaccion,
+  movimientosSecuencia,
+  sostenesDual,
+  tareasMentales,
+  patronesCruzados,
+  xpNeuromotor,
+  bpmRitmo,
+  neuroInicial,
+  registrarNeuromotor,
+};

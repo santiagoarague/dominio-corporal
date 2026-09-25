@@ -1,10 +1,8 @@
-// Prueba de aptitud y el pitido (Ie).
+// Prueba de aptitud y el pitido.
 import { useState, useEffect } from "react";
 import { Tarjeta } from "./base.jsx";
 import { usePantallaEncendida } from "./pantalla.js";
 
-var E5 = 2e3,
-  A5 = 1e3;
 // pitido(hz, ms) suena un tono que se apaga solo. Con hasta, el tono se desliza
 // de hz a hasta; con tipo, cambia el timbre ("triangle" suena mas seco que "sine").
 function pitido(e, a, hasta, tipo) {
@@ -153,4 +151,4 @@ function PruebaAptitud({ exercise: e, onFinish: a }) {
   );
 }
 
-export { E5, A5, pitido, sdcSonidoFase, PruebaAptitud };
+export { pitido, sdcSonidoFase, PruebaAptitud };

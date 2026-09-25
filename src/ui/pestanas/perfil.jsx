@@ -14,7 +14,12 @@ import {
 } from "../../logica/rutina.js";
 import { sistemas, sistemaActivo, sistemaAbierto } from "../../logica/sistemas.js";
 import { modalidades } from "../../datos/ejercicios.js";
-import { Io, tu, q2, Ro } from "../../logica/atributos.js";
+import {
+  listaAtributos,
+  valorAtributo,
+  progresoAtributo,
+  nivelAtributo,
+} from "../../logica/atributos.js";
 import { movimientosPrimal } from "../../logica/primal.js";
 import { logros, sdcAnimoCuenta } from "../../datos/logros.js";
 import { sdcPrimeras, sdcJuego, sdcCalF, sdcCalT, sdcKgTxt } from "../../logica/extras.js";
@@ -409,14 +414,14 @@ export function PestanaPerfil({
         <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
           No se compran: suben solos con lo que entrenás.
         </div>
-        {Io.map((m) => {
-          let N = tu(player, m),
-            _ = q2(N);
+        {listaAtributos.map((m) => {
+          let N = valorAtributo(player, m),
+            _ = progresoAtributo(N);
           return (
             <div key={m.key} className="mb-3">
               <div className="flex justify-between text-sm mb-1">
                 <span style={{ color: m.color, fontWeight: 600 }}>{m.name}</span>
-                <span style={{ color: "#e8ecf7" }}>Nv. {Ro(N)}</span>
+                <span style={{ color: "#e8ecf7" }}>Nv. {nivelAtributo(N)}</span>
               </div>
               <BarraXp value={_.cur} max={_.need} color={m.color} />
             </div>

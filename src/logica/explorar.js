@@ -1,15 +1,15 @@
 // Explorar (km y terrenos) y las travesias del dia.
 import { escalaCaminante } from "../datos/rangos.js";
 
-function l2(e) {
+function caminanteDe(e) {
   let a = escalaCaminante[0];
   for (let l of escalaCaminante) e >= l.minKm && (a = l);
   return a;
 }
-var n2 = 8,
-  Ny = 0.03;
-function o2(e) {
-  return 1 + (e.exploration.relics || []).length * Ny;
+var xpPorKm = 8,
+  bonoReliquia = 0.03;
+function multReliquias(e) {
+  return 1 + (e.exploration.relics || []).length * bonoReliquia;
 }
 var sectores = [
   { name: "La Manzana", endKm: 10 },
@@ -20,10 +20,10 @@ var sectores = [
   { name: "La Distancia", endKm: 250 },
   { name: "Tu Propio Mapa", endKm: 400 },
 ];
-function i2(e) {
+function inicioSector(e) {
   return e === 0 ? 0 : sectores[e - 1].endKm;
 }
-function s2(e) {
+function sectorDeKm(e) {
   for (let a = 0; a < sectores.length; a++) if (e < sectores[a].endKm) return a;
   return sectores.length - 1;
 }
@@ -245,8 +245,8 @@ var nodosExplorar = [
       lore: "Escribís tu nombre. Es la primera entrada del Códice que escribís vos.",
     },
   ],
-  u2 = 0.6,
-  Ed = { E: 40, D: 50, C: 65, B: 80, A: 100, S: 125, Z: 150 };
+  probTravesia = 0.6,
+  xpTravesia = { E: 40, D: 50, C: 65, B: 80, A: 100, S: 125, Z: 150 };
 var sdcPortales = [
   { n: "La Guardia", c: "30 minutos de boxeo sombra", on: 180, off: 60 },
   { n: "El Rebote", c: "20 minutos de salto a la cuerda" },
@@ -260,10 +260,23 @@ var sdcPortales = [
   { n: "La Ráfaga", c: "20 minutos de sprints cortos con pausa", on: 20, off: 40 },
 ];
 function travesiaDelDia(e) {
-  if (Math.random() > u2)
+  if (Math.random() > probTravesia)
     return { available: !1, completed: !1, name: null, challengeText: null, rewardXP: null };
   let p = sdcPortales[Math.floor(Math.random() * sdcPortales.length)];
-  return { available: !0, completed: !1, name: p.n, challengeText: p.c, rewardXP: Ed[e] };
+  return { available: !0, completed: !1, name: p.n, challengeText: p.c, rewardXP: xpTravesia[e] };
 }
 
-export { l2, n2, Ny, o2, sectores, i2, s2, nodosExplorar, u2, Ed, sdcPortales, travesiaDelDia };
+export {
+  caminanteDe,
+  xpPorKm,
+  bonoReliquia,
+  multReliquias,
+  sectores,
+  inicioSector,
+  sectorDeKm,
+  nodosExplorar,
+  probTravesia,
+  xpTravesia,
+  sdcPortales,
+  travesiaDelDia,
+};

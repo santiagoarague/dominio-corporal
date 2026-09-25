@@ -3,7 +3,12 @@ import { diasRestantesSemana, fechaHoy } from "../../../logica/rutina.js";
 import { sdcAnimo } from "../../../datos/logros.js";
 import { sistemaActivo } from "../../../logica/sistemas.js";
 import { sdcDiaPasado } from "../../../logica/extras.js";
-import { bt, GrillaConstancia, DetalleDia, LeyendaConstancia } from "../../constancia.jsx";
+import {
+  coloresEstado,
+  GrillaConstancia,
+  DetalleDia,
+  LeyendaConstancia,
+} from "../../constancia.jsx";
 import { misProgreso, misTexto } from "../../../logica/partida.js";
 import { Plegable } from "../../tarjetas.jsx";
 import { IconoLlama } from "../../iconos.jsx";
@@ -122,21 +127,21 @@ export function TarjetaConstancia({
         )}
         {(() => {
           let sdcLeg = [
-            { label: "Completo", color: bt.full, k: "full" },
-            { label: "Parcial", color: bt.partial, k: "partial" },
-            { label: "Descanso", color: bt.rest, k: "rest" },
-            { label: "Sin entrenar", color: bt.skipped, k: "skipped" },
-            { label: "Escudo", color: bt.shield, k: "shield" },
-            { label: "Fuera de meta", color: bt.missed, k: "missed" },
+            { label: "Completo", color: coloresEstado.full, k: "full" },
+            { label: "Parcial", color: coloresEstado.partial, k: "partial" },
+            { label: "Descanso", color: coloresEstado.rest, k: "rest" },
+            { label: "Sin entrenar", color: coloresEstado.skipped, k: "skipped" },
+            { label: "Escudo", color: coloresEstado.shield, k: "shield" },
+            { label: "Fuera de meta", color: coloresEstado.missed, k: "missed" },
             {
               label: "Hoy",
-              color: bt.pending,
+              color: coloresEstado.pending,
               k: "pending",
               borde: "1px dashed rgba(255,255,255,0.3)",
             },
             {
               label: "Sin registro",
-              color: bt.empty,
+              color: coloresEstado.empty,
               k: "empty",
               borde: "1px solid rgba(255,255,255,0.12)",
             },

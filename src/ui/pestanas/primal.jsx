@@ -1,10 +1,27 @@
 // Pestana Primal: movimientos de Instinto Primal, skills, cuidado articular y neuromotor.
 import { sistemaActivo } from "../../logica/sistemas.js";
-import { Wo, habilidades, Td, marcarPasoHabilidad } from "../../datos/guia.js";
-import { movimientosPrimal, cy, xd, sdcPrimalEtapa } from "../../logica/primal.js";
-import { dd, Ws } from "../../logica/combate.js";
-import { kd, Reaccion, Secuencia, TareaDual, Ritmo } from "../neuromotor.jsx";
-import { Ps, reglaDolor, alarmas, cuidadoArticular, Ty, Y2 } from "../../datos/salud.js";
+import {
+  habilidadesCompletas,
+  habilidades,
+  pasosHabilidad,
+  marcarPasoHabilidad,
+} from "../../datos/guia.js";
+import {
+  movimientosPrimal,
+  descansoPrimal,
+  vecesParaDominar,
+  sdcPrimalEtapa,
+} from "../../logica/primal.js";
+import { rondasPrimal, segundosRondaPrimal } from "../../logica/combate.js";
+import { velocidadesReaccion, Reaccion, Secuencia, TareaDual, Ritmo } from "../neuromotor.jsx";
+import {
+  registrarNeuromotor,
+  reglaDolor,
+  alarmas,
+  cuidadoArticular,
+  xpCuidado,
+  registrarCuidado,
+} from "../../datos/salud.js";
 import { fechaHoy } from "../../logica/rutina.js";
 import { BarraXp, Tarjeta } from "../base.jsx";
 import {
@@ -134,7 +151,7 @@ export function PestanaPrimal({
                 name: "Reacción",
                 accent: "#4f9dff",
                 best: d.bestSpeedLevel
-                  ? (kd.find((N) => N.level === d.bestSpeedLevel) || {}).name
+                  ? (velocidadesReaccion.find((N) => N.level === d.bestSpeedLevel) || {}).name
                   : "—",
                 desc: "Señales impredecibles sin tocar la pantalla. Solo atención y cuerpo.",
               },
@@ -241,16 +258,30 @@ export function PestanaPrimal({
                     {_ && (
                       <div className="mt-3">
                         {N.id === "reaction" && (
-                          <Reaccion onDone={(X) => aplicar((de) => Ps(de, "reaction", X, !1))} />
+                          <Reaccion
+                            onDone={(X) =>
+                              aplicar((de) => registrarNeuromotor(de, "reaction", X, !1))
+                            }
+                          />
                         )}
                         {N.id === "sequence" && (
-                          <Secuencia onDone={(X) => aplicar((de) => Ps(de, "sequence", X, !1))} />
+                          <Secuencia
+                            onDone={(X) =>
+                              aplicar((de) => registrarNeuromotor(de, "sequence", X, !1))
+                            }
+                          />
                         )}
                         {N.id === "dual" && (
-                          <TareaDual onDone={(X) => aplicar((de) => Ps(de, "dual", X, X >= 45))} />
+                          <TareaDual
+                            onDone={(X) =>
+                              aplicar((de) => registrarNeuromotor(de, "dual", X, X >= 45))
+                            }
+                          />
                         )}
                         {N.id === "coord" && (
-                          <Ritmo onDone={(X) => aplicar((de) => Ps(de, "coord", X, !1))} />
+                          <Ritmo
+                            onDone={(X) => aplicar((de) => registrarNeuromotor(de, "coord", X, !1))}
+                          />
                         )}
                       </div>
                     )}
@@ -409,7 +440,7 @@ export function PestanaPrimal({
                           </div>
                         ))}
                         <button
-                          onClick={() => aplicar((X) => Y2(X, m.id))}
+                          onClick={() => aplicar((X) => registrarCuidado(X, m.id))}
                           disabled={_}
                           className="w-full py-3 text-sm mt-3 disabled:opacity-40"
                           style={{
@@ -418,7 +449,7 @@ export function PestanaPrimal({
                             fontWeight: 700,
                           }}
                         >
-                          {_ ? "Registrado hoy" : "Registrar protocolo (+" + Ty + " XP)"}
+                          {_ ? "Registrado hoy" : "Registrar protocolo (+" + xpCuidado + " XP)"}
                         </button>
                       </div>
                     )}
@@ -444,7 +475,7 @@ export function PestanaPrimal({
                     fontWeight: 700,
                   }}
                 >
-                  {Wo(player)} / {habilidades.length} aprendidas
+                  {habilidadesCompletas(player)} / {habilidades.length} aprendidas
                 </div>
               </div>
               <IconoDestello size={24} color="#b084f5" />
@@ -455,7 +486,7 @@ export function PestanaPrimal({
             </div>
           </Tarjeta>
           {habilidades.map((d) => {
-            let m = Td(player, d.id),
+            let m = pasosHabilidad(player, d.id),
               N = m.filter(Boolean).length,
               _ = N >= d.steps.length,
               X = habilidadAbierta === d.id;
@@ -642,7 +673,7 @@ export function PestanaPrimal({
               {primalFase === "listo" ? (
                 <>
                   <div className="text-center text-xs mb-3" style={{ color: "#9aa4bd" }}>
-                    {dd} rondas de {Ws(progress.rank)} segundos.
+                    {rondasPrimal} rondas de {segundosRondaPrimal(progress.rank)} segundos.
                   </div>
                   <button
                     onClick={sdcPrimalYa}
@@ -679,10 +710,14 @@ export function PestanaPrimal({
                           : et === "posicion"
                             ? "PONETE EN POSICIÓN"
                             : et === "prepara"
-                              ? "PREPARATE · RONDA " + (primalRonda + 1) + "/" + dd
+                              ? "PREPARATE · RONDA " + (primalRonda + 1) + "/" + rondasPrimal
                               : et === "descanso"
-                                ? "Ronda " + primalRonda + "/" + dd + " terminada · Descanso"
-                                : "Ronda " + primalRonda + "/" + dd + " · En marcha"}
+                                ? "Ronda " +
+                                  primalRonda +
+                                  "/" +
+                                  rondasPrimal +
+                                  " terminada · Descanso"
+                                : "Ronda " + primalRonda + "/" + rondasPrimal + " · En marcha"}
                       </div>
                     );
                   })()}
@@ -702,7 +737,13 @@ export function PestanaPrimal({
                   </div>
                   <BarraXp
                     value={primalSegundos}
-                    max={primalFase === "active" ? Ws(progress.rank) : primalRonda === 0 ? 10 : cy}
+                    max={
+                      primalFase === "active"
+                        ? segundosRondaPrimal(progress.rank)
+                        : primalRonda === 0
+                          ? 10
+                          : descansoPrimal
+                    }
                     color={
                       primalPausa ? "#5a6178" : primalFase === "active" ? "#3ecf8e" : "#ffb84f"
                     }
@@ -762,8 +803,8 @@ export function PestanaPrimal({
               right={`${primal.unlockedCount}/${movimientosPrimal.length}`}
             >
               <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
-                {dd} rondas de {Ws(progress.rank)} segundos. Dominá el más nuevo {xd} veces para
-                descubrir el siguiente.
+                {rondasPrimal} rondas de {segundosRondaPrimal(progress.rank)} segundos. Dominá el
+                más nuevo {vecesParaDominar} veces para descubrir el siguiente.
               </div>
               {primalHechasHoy >= primalSesionesHoy && (
                 <div className="text-xs mb-3" style={{ color: "#ffb84f" }}>
@@ -802,7 +843,7 @@ export function PestanaPrimal({
                       </div>
                       {_ && (
                         <span className="text-xs ml-auto" style={{ color: "#ffb84f" }}>
-                          {primal.masteryProgress}/{xd}
+                          {primal.masteryProgress}/{vecesParaDominar}
                         </span>
                       )}
                     </div>

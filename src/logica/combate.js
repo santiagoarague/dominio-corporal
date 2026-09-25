@@ -4,34 +4,34 @@ import { revisarLogros, avisoCarga } from "../datos/logros.js";
 import { anotarDia, volumen, nombreEjercicio, fechaHoy } from "./rutina.js";
 import { subirNiveles, clonar } from "./partida.js";
 
-var ty = ["Zona Dormida", "Tramo Rígido", "Lado Corto"],
-  ly = ["Bisagra Trabada", "Eslabón Flojo"],
-  ny = ["El Techo", "El Punto Muerto", "La Inercia"],
-  oy = ["", " persistente", " de años", " de siempre", " de raíz"],
-  iy = {
+var terrenosComunes = ["Zona Dormida", "Tramo Rígido", "Lado Corto"],
+  terrenosDificiles = ["Bisagra Trabada", "Eslabón Flojo"],
+  terrenosJefe = ["El Techo", "El Punto Muerto", "La Inercia"],
+  sufijosTerreno = ["", " persistente", " de años", " de siempre", " de raíz"],
+  nombresTren = {
     upper_front: "Tren Superior Anterior",
     upper_back: "Tren Superior Posterior",
     lower: "Tren Inferior",
   },
-  Cy = { upper_front: "pushup", upper_back: "back", lower: "squat" },
-  c2 = 15,
-  r2 = 3,
-  d2 = 5;
-function za(e) {
+  grupoDeTren = { upper_front: "pushup", upper_back: "back", lower: "squat" },
+  xpTerrenoBase = 15,
+  multXpJefe = 3,
+  victoriasConXp = 5;
+function terreno(e) {
   let a = (e + 1) % 5 === 0,
     l = Math.floor(e / 15),
-    n = oy[Math.min(l, oy.length - 1)],
+    n = sufijosTerreno[Math.min(l, sufijosTerreno.length - 1)],
     o;
   return (
     a
-      ? (o = ny[Math.floor(e / 5) % ny.length])
+      ? (o = terrenosJefe[Math.floor(e / 5) % terrenosJefe.length])
       : e < 10
-        ? (o = ty[e % ty.length])
-        : (o = ly[e % ly.length]),
+        ? (o = terrenosComunes[e % terrenosComunes.length])
+        : (o = terrenosDificiles[e % terrenosDificiles.length]),
     { name: o + n, isBoss: a, tier: l, index: e }
   );
 }
-function $o(e) {
+function trenesJefe(e) {
   return ["upper_front", "upper_back", "lower"].filter((n) => n !== e).slice(0, 2);
 }
 function golpesNecesarios(e) {
@@ -39,28 +39,28 @@ function golpesNecesarios(e) {
     ? Math.min(8, 4 + Math.floor(e.index / 10))
     : Math.min(5, 2 + Math.floor(e.index / 6));
 }
-function f2(e) {
-  let a = c2 + e.index * 3;
-  return e.isBoss ? Math.round(a * r2) : a;
+function xpTerreno(e) {
+  let a = xpTerrenoBase + e.index * 3;
+  return e.isBoss ? Math.round(a * multXpJefe) : a;
 }
 function repsCombate(e, a, l, n, o, tr) {
-  let s = Cy[l];
+  let s = grupoDeTren[l];
   return volumen(e, a, n, o, tr)[s];
 }
-function sy(e, a, l, n) {
-  let o = Cy[l];
+function ejercicioDeTren(e, a, l, n) {
+  let o = grupoDeTren[l];
   return nombreEjercicio(e, a, o, n);
 }
-function m2(e) {
+function segundosVentana(e) {
   return e * 3 + 15;
 }
 function repsCombateSuave(e, a, l, n, o, tr) {
   return Math.max(3, Math.round(repsCombate(e, a, n, l, o, tr) * 0.8));
 }
-function p2() {
+function segundosVentanaJefe() {
   return 150;
 }
-function Ad() {
+function combateInicial() {
   return {
     villainIndex: 0,
     villainCurrentHP: null,
@@ -76,11 +76,11 @@ function Ad() {
     bossCats: null,
   };
 }
-function b2(e, a) {
+function elegirTren(e, a) {
   let l = clonar(e),
     n = l.combat;
   if (a === n.lastExercise) return { state: l, notices: [] };
-  let o = za(n.villainIndex);
+  let o = terreno(n.villainIndex);
   return (
     (n.exercise = a),
     (n.villainCurrentHP = golpesNecesarios(o)),
@@ -92,7 +92,7 @@ function b2(e, a) {
     { state: l, notices: [] }
   );
 }
-function y2(e) {
+function reintentarRonda(e) {
   let a = clonar(e);
   return (
     (a.combat.phase = "resting"),
@@ -100,7 +100,7 @@ function y2(e) {
     { state: a, notices: [] }
   );
 }
-function g2(e) {
+function ajustarCarga(e) {
   let a = clonar(e),
     l = a.combat;
   return (
@@ -116,10 +116,10 @@ function g2(e) {
     }
   );
 }
-function v2(e, a) {
+function cambiarTren(e, a) {
   let l = clonar(e),
     n = l.combat,
-    o = za(n.villainIndex);
+    o = terreno(n.villainIndex);
   if (a === n.lastExercise || a === n.exercise) return { state: l, notices: [] };
   let s = golpesNecesarios(o),
     u = s * 0.15;
@@ -133,11 +133,11 @@ function v2(e, a) {
     { state: l, notices: ["Retirada táctica: perdiste un 15% del terreno ganado."] }
   );
 }
-function h2(e) {
+function golpear(e) {
   let a = clonar(e),
     l = [],
     n = a.combat,
-    o = za(n.villainIndex);
+    o = terreno(n.villainIndex);
   if (((n.villainCurrentHP -= n.damageFactor || 1), n.villainCurrentHP <= 0.001)) {
     ((n.phase = "victory"), (n.villainsDefeated = (n.villainsDefeated || 0) + 1));
     let r = fechaHoy();
@@ -145,9 +145,9 @@ function h2(e) {
       ((!n.todayDefeated || n.todayDefeated.date !== r) &&
         (n.todayDefeated = { date: r, count: 0 }),
       (n.todayDefeated.count += 1),
-      n.todayDefeated.count <= d2)
+      n.todayDefeated.count <= victoriasConXp)
     ) {
-      let p = f2(o);
+      let p = xpTerreno(o);
       ((a.progress.currentXP += Math.round((a.streak.flexBuff ? p * 1.1 : p) * multImpulso(a))),
         (a.today.xpEarned = (a.today.xpEarned || 0) + p),
         l.push(`¡Recuperaste ${o.name}! +${p} XP.`),
@@ -172,20 +172,20 @@ function perderVida(e) {
     { state: a, notices: [] }
   );
 }
-function S2(e) {
+function siguienteTerreno(e) {
   let a = clonar(e),
     l = a.combat,
-    n = za(l.villainIndex);
+    n = terreno(l.villainIndex);
   ((l.lastExercise = n.isBoss ? null : l.exercise),
     (l.exercise = null),
     (l.villainIndex += 1),
     (l.villainCurrentHP = null),
     (l.loadFactor = 1),
     (l.damageFactor = 1));
-  let o = za(l.villainIndex);
+  let o = terreno(l.villainIndex);
   return (
     o.isBoss
-      ? ((l.bossCats = $o(l.lastExercise)),
+      ? ((l.bossCats = trenesJefe(l.lastExercise)),
         (l.villainCurrentHP = golpesNecesarios(o)),
         (l.lives = 3),
         (l.phase = "resting"),
@@ -194,7 +194,7 @@ function S2(e) {
     { state: a, notices: [] }
   );
 }
-function N2(e) {
+function reintentarSinVidas(e) {
   let a = clonar(e);
   return (
     (a.combat.phase = "resting"),
@@ -202,41 +202,41 @@ function N2(e) {
     { state: a, notices: [] }
   );
 }
-var dd = 3,
-  C2 = { E: 30, D: 35, C: 40, B: 45, A: 50, S: 55, Z: 60 };
-function Ws(e) {
-  return C2[e] || 40;
+var rondasPrimal = 3,
+  segundosPrimalPorRango = { E: 30, D: 35, C: 40, B: 45, A: 50, S: 55, Z: 60 };
+function segundosRondaPrimal(e) {
+  return segundosPrimalPorRango[e] || 40;
 }
 
 export {
-  ty,
-  ly,
-  ny,
-  oy,
-  iy,
-  Cy,
-  c2,
-  r2,
-  d2,
-  za,
-  $o,
+  terrenosComunes,
+  terrenosDificiles,
+  terrenosJefe,
+  sufijosTerreno,
+  nombresTren,
+  grupoDeTren,
+  xpTerrenoBase,
+  multXpJefe,
+  victoriasConXp,
+  terreno,
+  trenesJefe,
   golpesNecesarios,
-  f2,
+  xpTerreno,
   repsCombate,
-  sy,
-  m2,
+  ejercicioDeTren,
+  segundosVentana,
   repsCombateSuave,
-  p2,
-  Ad,
-  b2,
-  y2,
-  g2,
-  v2,
-  h2,
+  segundosVentanaJefe,
+  combateInicial,
+  elegirTren,
+  reintentarRonda,
+  ajustarCarga,
+  cambiarTren,
+  golpear,
   perderVida,
-  S2,
-  N2,
-  dd,
-  C2,
-  Ws,
+  siguienteTerreno,
+  reintentarSinVidas,
+  rondasPrimal,
+  segundosPrimalPorRango,
+  segundosRondaPrimal,
 };

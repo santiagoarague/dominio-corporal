@@ -14,7 +14,8 @@ etiqueta `v1-html` y en `dominio-corporal-v1-html.zip`. Nada de esto cambió la 
 ni la dirección del sitio.
 
 - **Código fuente de verdad**: Vite + React 19, en módulos por tema, con nombres reales en vez
-  de los del minificador, y en JSX. Cada paso se comprobó comparando el resultado con la versión
+  de los del minificador (todos los del primer nivel; las variables de adentro de cada función
+  siguen cortas), y en JSX. Cada paso se comprobó comparando el resultado con la versión
   publicada, pantalla por pantalla.
 - **Revisor automático (ESLint)**: marca variables que no existen, código que nadie usa y hooks de
   React dentro de un `if`. Corre antes de publicar, igual que las pruebas. En la primera pasada

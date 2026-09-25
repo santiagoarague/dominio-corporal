@@ -4,10 +4,10 @@ import { revisarLogros, avisoCarga } from "../datos/logros.js";
 import { anotarDia, fechaHoy } from "./rutina.js";
 import { subirNiveles, clonar } from "./partida.js";
 
-var cy = 15,
-  k2 = 5,
-  xd = 2,
-  z2 = 20,
+var descansoPrimal = 15,
+  sesionesPrimalBase = 5,
+  vecesParaDominar = 2,
+  xpPrimal = 20,
   movimientosPrimal = [
     {
       name: "Oso",
@@ -106,10 +106,10 @@ var cy = 15,
       desc: "Desde bestia, patea una pierna cruzada por debajo mientras levantas la mano contraria.",
     },
   ];
-function ky() {
+function primalInicial() {
   return { unlockedCount: 1, masteryProgress: 0, today: { date: fechaHoy(), count: 0 } };
 }
-function E2(e, a) {
+function registrarPrimal(e, a) {
   let l = clonar(e),
     n = [],
     o = fechaHoy();
@@ -127,7 +127,7 @@ function E2(e, a) {
     (l.lifetimePrimal = (l.lifetimePrimal || 0) + 1),
     (l.week.primal = (l.week.primal || 0) + 1),
     (l = anotarDia(l, "Instinto Primal")));
-  let s = z2;
+  let s = xpPrimal;
   (l.streak.flexBuff && (s = Math.round(s * 1.1)),
     (s = Math.round(s * multImpulso(l))),
     (l.progress.currentXP += s),
@@ -135,7 +135,7 @@ function E2(e, a) {
     n.push(`+${s} XP por practicar ${movimientosPrimal[a].name}.`),
     a === l.primal.unlockedCount - 1 &&
       ((l.primal.masteryProgress += 1),
-      l.primal.masteryProgress >= xd &&
+      l.primal.masteryProgress >= vecesParaDominar &&
         l.primal.unlockedCount < movimientosPrimal.length &&
         ((l.primal.unlockedCount += 1),
         (l.primal.masteryProgress = 0),
@@ -148,7 +148,7 @@ function E2(e, a) {
     r = avisoCarga(c.state);
   return { state: r.state, notices: [...c.notices, ...r.notices] };
 }
-var ou = [
+var consejos = [
     "No te olvides de hidratarte antes y después de entrenar.",
     "Un calentamiento de 5 minutos reduce el riesgo de lesiones.",
     "Los músculos crecen en el descanso, no solo en el esfuerzo. Tu día de descanso es parte del plan, no una excepción.",
@@ -178,19 +178,19 @@ function hashDia(e, a) {
   for (let n = 0; n < e.length; n++) l = (l * 31 + e.charCodeAt(n)) >>> 0;
   return l % a;
 }
-function A2(e) {
-  return ou[hashDia(e, ou.length)];
+function consejoDelDia(e) {
+  return consejos[hashDia(e, consejos.length)];
 }
-var D2 = [
+var frasesVolver = [
     '{name} te espera en la puerta: "Un día no define tu camino. ¿Volvemos hoy?"',
     '{name} te da un empujoncito: "Lo importante no es no fallar nunca, es volver siempre."',
     '{name} te mira con cariño: "Ayer no cuenta más que hoy. Vamos de nuevo."',
   ],
-  T2 = [
+  frasesDiaDificil = [
     '{name} te anima: "Cualquier esfuerzo cuenta más que quedarte quieto. Mañana con más fuerza."',
     '{name} asiente: "Hoy fue un día difícil, y está bien. Lo que importa es que apareciste."',
   ];
-function zy(e, a, l) {
+function fraseMascota(e, a, l) {
   return e[hashDia(a, e.length)].replace("{name}", l || "Tu compañero");
 }
 
@@ -209,20 +209,20 @@ function sdcPrimalTic(fase, seg) {
 }
 
 export {
-  cy,
-  k2,
-  xd,
-  z2,
+  descansoPrimal,
+  sesionesPrimalBase,
+  vecesParaDominar,
+  xpPrimal,
   movimientosPrimal,
-  ky,
-  E2,
-  ou,
+  primalInicial,
+  registrarPrimal,
+  consejos,
   regresiones,
   hashDia,
-  A2,
-  D2,
-  T2,
-  zy,
+  consejoDelDia,
+  frasesVolver,
+  frasesDiaDificil,
+  fraseMascota,
   sdcPrimalPrep,
   sdcPrimalEtapa,
   sdcPrimalTic,

@@ -115,14 +115,16 @@ describe("Instinto Primal: cada ronda avisa cuando arranca y cuando termina", ()
     tramo("resting", 0, 10);
     for (let r = 1; r <= 3; r++) {
       tramo("active", r, 30);
-      if (r < 3) tramo("resting", r, J.cy);
+      if (r < 3) tramo("resting", r, J.descansoPrimal);
     }
     const de = (fase, ronda) => linea.filter((x) => x.fase === fase && x.ronda === ronda);
 
     expect(de("resting", 0).every((x) => x.etapa === "posicion")).toBe(true);
     for (const r of [1, 2]) {
       const d = de("resting", r);
-      expect(d.filter((x) => x.etapa === "descanso")).toHaveLength(J.cy - J.sdcPrimalPrep);
+      expect(d.filter((x) => x.etapa === "descanso")).toHaveLength(
+        J.descansoPrimal - J.sdcPrimalPrep,
+      );
       expect(d.filter((x) => x.etapa === "prepara").map((x) => x.s)).toEqual([5, 4, 3, 2, 1]);
     }
     for (const [fase, ronda] of [

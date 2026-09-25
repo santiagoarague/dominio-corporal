@@ -1,5 +1,5 @@
 // Tu cuerpo: la figura coloreada por avance (desarrollo, hoy o semana) y el panel de cada zona.
-import { gruposCuerpo, wd, FiguraCuerpo, PanelZonas } from "../../cuerpo.jsx";
+import { gruposCuerpo, diasEntre, FiguraCuerpo, PanelZonas } from "../../cuerpo.jsx";
 import { IconoDestello } from "../../iconos.jsx";
 import { Plegable } from "../../tarjetas.jsx";
 
@@ -153,7 +153,7 @@ export function TarjetaCuerpo({
       )}
       {(() => {
         let f = grupos
-          .map((d) => ({ k: d, d: wd(lastTrained ? lastTrained[d] : null, today.date) }))
+          .map((d) => ({ k: d, d: diasEntre(lastTrained ? lastTrained[d] : null, today.date) }))
           .filter((d) => d.d === null || d.d >= 4);
         return !f.length || atributos.gap >= 2 ? null : (
           <div

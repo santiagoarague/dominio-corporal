@@ -1,6 +1,12 @@
 // Pestana Explorar: kilometros, tramos, caminata cronometrada y el mapa de nodos.
-import { s2, sectores, i2, nodosExplorar, Ny } from "../../logica/explorar.js";
-import { vd } from "../../datos/rangos.js";
+import {
+  sectorDeKm,
+  sectores,
+  inicioSector,
+  nodosExplorar,
+  bonoReliquia,
+} from "../../logica/explorar.js";
+import { metrosPorPaso } from "../../datos/rangos.js";
 import { fechaHoy } from "../../logica/rutina.js";
 import { sdcRitmos, CronoCaminata } from "../caminata.jsx";
 import { BarraXp, Tarjeta } from "../base.jsx";
@@ -31,9 +37,9 @@ export function PestanaExplorar({
   ui,
   verTodoMapa,
 }) {
-  let f = s2(kmTotales),
+  let f = sectorDeKm(kmTotales),
     d = sectores[f],
-    m = i2(f),
+    m = inicioSector(f),
     N = Math.max(0, Math.min(kmTotales - m, d.endKm - m)),
     _ = d.endKm - m,
     X = Math.round((N / _) * 100),
@@ -216,7 +222,7 @@ export function PestanaExplorar({
         {pasosTexto && parseInt(pasosTexto, 10) > 0 && (
           <div className="text-xs mb-2" style={{ color: "#7a83a0" }}>
             {parseInt(pasosTexto, 10).toLocaleString("es")} pasos ≈{" "}
-            {((parseInt(pasosTexto, 10) * vd) / 1e3).toFixed(2)} km
+            {((parseInt(pasosTexto, 10) * metrosPorPaso) / 1e3).toFixed(2)} km
           </div>
         )}
         <div
@@ -338,7 +344,7 @@ export function PestanaExplorar({
         style={{ marginBottom: 16 }}
         collapsed={ui && ui.collapsed && ui.collapsed.codice !== void 0 ? plegado("codice") : !0}
         onToggle={alternarPlegable}
-        right={`${(exploration.relics || []).length} / ${nodosExplorar.length} · +${Math.round((exploration.relics || []).length * Ny * 100)}% XP`}
+        right={`${(exploration.relics || []).length} / ${nodosExplorar.length} · +${Math.round((exploration.relics || []).length * bonoReliquia * 100)}% XP`}
       >
         {(exploration.relics || []).length === 0 ? (
           <div className="text-xs" style={{ color: "#7a83a0" }}>

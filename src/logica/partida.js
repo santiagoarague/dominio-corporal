@@ -1,10 +1,10 @@
 // La partida: crear, cargar, registrar, deshacer, niveles, misiones, Umbral.
-import { nivelUmbral, vd, rangos } from "../datos/rangos.js";
-import { travesiaDelDia, n2, o2, nodosExplorar } from "./explorar.js";
-import { $o, Ad, za } from "./combate.js";
-import { D2, T2, ky, zy } from "./primal.js";
+import { nivelUmbral, metrosPorPaso, rangos } from "../datos/rangos.js";
+import { travesiaDelDia, xpPorKm, multReliquias, nodosExplorar } from "./explorar.js";
+import { trenesJefe, combateInicial, terreno } from "./combate.js";
+import { frasesVolver, frasesDiaDificil, primalInicial, fraseMascota } from "./primal.js";
 import { dominioInicial, multImpulso, sdcMascota, sdcModDia, sdcPerk, sdcRacha } from "./tienda.js";
-import { Al } from "../datos/salud.js";
+import { neuroInicial } from "../datos/salud.js";
 import { sistemas, avisarSistemasNuevos, sistemaActivo, sistemaAbierto } from "./sistemas.js";
 import { ultimos60Dias, revisarLogros, avisoCarga } from "../datos/logros.js";
 import { modalidades } from "../datos/ejercicios.js";
@@ -28,7 +28,7 @@ import {
   fechaHoy,
 } from "./rutina.js";
 import { sdcRango } from "./extras.js";
-import { wd } from "../ui/cuerpo.jsx";
+import { diasEntre } from "../ui/cuerpo.jsx";
 
 function clonar(e) {
   return JSON.parse(JSON.stringify(e));
@@ -91,13 +91,13 @@ function crearPartida(e) {
     dungeonsCleared: 0,
     maxComebackStreak: 0,
     achievements: [],
-    combat: Ad(),
-    primal: ky(),
+    combat: combateInicial(),
+    primal: primalInicial(),
     loadWarnedDate: null,
     ui: { collapsed: {} },
     skills: {},
     care: { today: { date: a, done: [] }, lifetime: 0 },
-    neuro: Al(),
+    neuro: neuroInicial(),
     unlockAll: !1,
     disabled: [],
     seenUnlocks: [],
@@ -146,7 +146,7 @@ function cargarPartida(e) {
     }),
     a.exploration.lifetimeKm === void 0 &&
       ((a.exploration.lifetimeKm =
-        Math.round((((a.exploration.lifetimeSteps || 0) * vd) / 1e3) * 100) / 100),
+        Math.round((((a.exploration.lifetimeSteps || 0) * metrosPorPaso) / 1e3) * 100) / 100),
       (a.exploration.pendingKm = 0),
       (a.exploration.today = { date: n, km: 0 }),
       (a.exploration.relics = []),
@@ -164,18 +164,18 @@ function cargarPartida(e) {
     a.dungeonsCleared === void 0 && (a.dungeonsCleared = 0),
     a.maxComebackStreak === void 0 && (a.maxComebackStreak = 0),
     a.achievements || (a.achievements = []),
-    a.combat || (a.combat = Ad()),
+    a.combat || (a.combat = combateInicial()),
     a.combat.roundId === void 0 && (a.combat.roundId = 0),
     a.combat.loadFactor === void 0 && (a.combat.loadFactor = 1),
     a.combat.damageFactor === void 0 && (a.combat.damageFactor = 1),
-    za(a.combat.villainIndex).isBoss &&
+    terreno(a.combat.villainIndex).isBoss &&
       !a.combat.bossCats &&
-      (a.combat.bossCats = $o(a.combat.lastExercise)),
-    a.primal || (a.primal = ky()),
+      (a.combat.bossCats = trenesJefe(a.combat.lastExercise)),
+    a.primal || (a.primal = primalInicial()),
     a.loadWarnedDate === void 0 && (a.loadWarnedDate = null),
     a.skills || (a.skills = {}),
     a.care || (a.care = { today: { date: n, done: [] }, lifetime: 0 }),
-    a.neuro || (a.neuro = Al()),
+    a.neuro || (a.neuro = neuroInicial()),
     a.unlockAll === void 0 && (a.unlockAll = !1),
     a.disabled || (a.disabled = []),
     a.seenUnlocks ||
@@ -284,7 +284,7 @@ function cargarPartida(e) {
         (l.push(
           `Ya no podés alcanzar tus ${s} sesiones esta semana. La racha vuelve a empezar, pero tu XP queda intacta.`,
         ),
-          l.push(zy(D2, a.today.date, a.profile.pet && a.profile.pet.name)));
+          l.push(fraseMascota(frasesVolver, a.today.date, a.profile.pet && a.profile.pet.name)));
       }
     }
     ((a.today = {
@@ -302,7 +302,7 @@ function cargarPartida(e) {
       (a.history = ultimos60Dias(a.history, n)));
   }
   if (a.progress.rank === "Z" && a.lastFullDate) {
-    let s = wd(a.lastFullDate, n);
+    let s = diasEntre(a.lastFullDate, n);
     s !== null &&
       s >= diasParaBajarZ &&
       ((a.progress.rank = "S"),
@@ -349,7 +349,7 @@ function misPeorGrupo(e) {
     dias = -1;
   for (let g of ["squat", "pushup", "back", "abs"]) {
     let lt = e.lastTrained && e.lastTrained[g],
-      d = lt ? wd(lt, hoy) : 999;
+      d = lt ? diasEntre(lt, hoy) : 999;
     if (d > dias) {
       dias = d;
       peor = g;
@@ -536,7 +536,7 @@ function registrarRutina(e, a, l, mok, gvol) {
     (s.push(
       `Sesión corta (${Math.round(p * 100)}%). Conservas tu XP, pero la racha vuelve a empezar.`,
     ),
-      s.push(zy(T2, o.today.date, o.profile.pet && o.profile.pet.name)));
+      s.push(fraseMascota(frasesDiaDificil, o.today.date, o.profile.pet && o.profile.pet.name)));
   }
   ((v = Math.round((v - sdcBono) * multEnfoque(o)) + sdcBono),
     (v = Math.round(v * sdcRacha(o))),
@@ -837,7 +837,7 @@ function consolidarKm(e) {
       a.exploration.relics.includes(r.relic) || a.exploration.relics.push(r.relic),
       s.push(r));
   });
-  let u = Math.round(n * n2 * o2(a));
+  let u = Math.round(n * xpPorKm * multReliquias(a));
   (a.streak.flexBuff && (u = Math.round(u * 1.1)),
     (u = Math.round(u * multImpulso(a))),
     (a.progress.currentXP += u),
@@ -851,7 +851,7 @@ function consolidarKm(e) {
   let c = revisarLogros(a);
   return { state: c.state, notices: [...l, ...c.notices], found: s };
 }
-async function m5(e) {
+async function escribirPuntoRetorno(e) {
   try {
     let a = await window.claude.use("db");
     return a ? (await a.doc("player/snapshot").set(e), !0) : !1;
@@ -859,7 +859,7 @@ async function m5(e) {
     return !1;
   }
 }
-async function xy() {
+async function leerPuntoRetorno() {
   try {
     let e = await window.claude.use("db");
     if (!e) return null;
@@ -920,8 +920,8 @@ export {
   sumarTramo,
   descartarTramos,
   consolidarKm,
-  m5,
-  xy,
+  escribirPuntoRetorno,
+  leerPuntoRetorno,
   leerPartida,
   guardarPartida,
 };

@@ -1,7 +1,7 @@
 // Atributos del jugador.
-import { Bd } from "../ui/cuerpo.jsx";
+import { nivelZona } from "../ui/cuerpo.jsx";
 
-var Io = [
+var listaAtributos = [
   {
     key: "fuerza",
     name: "Fuerza",
@@ -41,23 +41,23 @@ var Io = [
       ((e.neuro && e.neuro.bestSequence) || 0) * 15,
   },
 ];
-function tu(e, a) {
+function valorAtributo(e, a) {
   return Math.floor(a.calc(e));
 }
-function Ro(e) {
+function nivelAtributo(e) {
   return Math.floor(Math.sqrt(e / 60)) + 1;
 }
-function q2(e) {
-  let a = Ro(e),
+function progresoAtributo(e) {
+  let a = nivelAtributo(e),
     l = Math.pow(a - 1, 2) * 60,
     n = Math.pow(a, 2) * 60;
   return { cur: e - l, need: n - l };
 }
-function O2(e) {
+function nivelesZonas(e) {
   let a = ["squat", "pushup", "back", "abs"],
     l = {};
   a.forEach((u) => {
-    l[u] = Bd(e.lifetimeReps[u] || 0);
+    l[u] = nivelZona(e.lifetimeReps[u] || 0);
   });
   let n = a[0],
     o = a[0];
@@ -67,10 +67,18 @@ function O2(e) {
   let s = l[n] - l[o];
   return { hi: n, lo: o, gap: s, levels: l };
 }
-function ry(e) {
-  return Io.filter((a) => a.zones.includes(e))
+function atributosDeZona(e) {
+  return listaAtributos
+    .filter((a) => a.zones.includes(e))
     .map((a) => a.name)
     .join(" y ");
 }
 
-export { Io, tu, Ro, q2, O2, ry };
+export {
+  listaAtributos,
+  valorAtributo,
+  nivelAtributo,
+  progresoAtributo,
+  nivelesZonas,
+  atributosDeZona,
+};

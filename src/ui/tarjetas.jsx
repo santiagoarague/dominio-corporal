@@ -1,5 +1,4 @@
-// Tarjeta plegable y botones de sistemas.
-import { createElement } from "react";
+// Tarjeta plegable, color de rango y dibujo de la mascota.
 import { IconoFlecha } from "./iconos.jsx";
 import { colorRango } from "../datos/rangos.js";
 import { Tarjeta } from "./base.jsx";
@@ -46,26 +45,7 @@ function Plegable({
     </Tarjeta>
   );
 }
-function BotonSistema({ icon: e, label: a, status: l, done: n, onClick: o }) {
-  return (
-    <button
-      onClick={o}
-      className="w-full flex items-center justify-between py-2 px-2 mb-1 text-left"
-      style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}
-    >
-      <div className="flex items-center gap-2">
-        {createElement(e, { size: 14, color: n ? "#3ecf8e" : "#8a93ad" })}
-        <span className="text-sm" style={{ color: "#e8ecf7" }}>
-          {a}
-        </span>
-      </div>
-      <span className="text-xs" style={{ color: n ? "#3ecf8e" : "#8a93ad" }}>
-        {l}
-      </span>
-    </button>
-  );
-}
-function k5(e) {
+function colorDeRango(e) {
   return colorRango[e] || "#ffb84f";
 }
 function DibujoMascota({ type: e, size: a = 56, color: l = "#ffb84f", rank: n }) {
@@ -108,4 +88,4 @@ function DibujoMascota({ type: e, size: a = 56, color: l = "#ffb84f", rank: n })
   );
 }
 
-export { Plegable, BotonSistema, k5, DibujoMascota };
+export { Plegable, colorDeRango, DibujoMascota };
