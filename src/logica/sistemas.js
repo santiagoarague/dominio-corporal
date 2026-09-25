@@ -84,29 +84,34 @@ var sistemas = [
     tab: null,
   },
 ];
-function rangoAlcanza(e, a) {
-  return rangos.indexOf(e) >= rangos.indexOf(a);
+function rangoAlcanza(rango, minimo) {
+  return rangos.indexOf(rango) >= rangos.indexOf(minimo);
 }
-function sistemaActivo(e, a) {
-  if (e.disabled && e.disabled.includes(a)) return !1;
-  if (e.unlockAll) return !0;
-  let l = sistemas.find((n) => n.id === a);
-  return l ? e.progress.level >= l.level && rangoAlcanza(e.progress.rank, l.rank) : !0;
+function sistemaActivo(partida, id) {
+  if (partida.disabled && partida.disabled.includes(id)) return !1;
+  if (partida.unlockAll) return !0;
+  let sistema = sistemas.find((sis) => sis.id === id);
+  return sistema
+    ? partida.progress.level >= sistema.level && rangoAlcanza(partida.progress.rank, sistema.rank)
+    : !0;
 }
-function sistemaAbierto(e, a) {
-  if (e.unlockAll) return !0;
-  let l = sistemas.find((n) => n.id === a);
-  return l ? e.progress.level >= l.level && rangoAlcanza(e.progress.rank, l.rank) : !0;
+function sistemaAbierto(partida, id) {
+  if (partida.unlockAll) return !0;
+  let sistema = sistemas.find((sis) => sis.id === id);
+  return sistema
+    ? partida.progress.level >= sistema.level && rangoAlcanza(partida.progress.rank, sistema.rank)
+    : !0;
 }
-function avisarSistemasNuevos(e) {
-  let a = clonar(e),
-    l = [];
-  a.seenUnlocks || (a.seenUnlocks = []);
-  for (let n of sistemas)
-    sistemaAbierto(a, n.id) &&
-      !a.seenUnlocks.includes(n.id) &&
-      (a.seenUnlocks.push(n.id), l.push(`Nuevo sistema desbloqueado: ${n.name}. ${n.why}`));
-  return { state: a, notices: l };
+function avisarSistemasNuevos(actual) {
+  let partida = clonar(actual),
+    avisos = [];
+  partida.seenUnlocks || (partida.seenUnlocks = []);
+  for (let sistema of sistemas)
+    sistemaAbierto(partida, sistema.id) &&
+      !partida.seenUnlocks.includes(sistema.id) &&
+      (partida.seenUnlocks.push(sistema.id),
+      avisos.push(`Nuevo sistema desbloqueado: ${sistema.name}. ${sistema.why}`));
+  return { state: partida, notices: avisos };
 }
 
 export { sistemas, rangoAlcanza, sistemaActivo, sistemaAbierto, avisarSistemasNuevos };

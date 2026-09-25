@@ -476,50 +476,55 @@ var guia = [
   xpPasoHabilidad = 15,
   xpHabilidad = 80,
   pdHabilidad = 3;
-function pasosHabilidad(e, a) {
-  return ((e.skills && e.skills[a]) || { steps: [] }).steps || [];
+function pasosHabilidad(partida, id) {
+  return ((partida.skills && partida.skills[id]) || { steps: [] }).steps || [];
 }
-function habilidadCompleta(e, a) {
-  let l = habilidades.find((o) => o.id === a),
-    n = pasosHabilidad(e, a);
-  return l && n.filter(Boolean).length >= l.steps.length;
+function habilidadCompleta(partida, id) {
+  let habilidad = habilidades.find((hab) => hab.id === id),
+    pasos = pasosHabilidad(partida, id);
+  return habilidad && pasos.filter(Boolean).length >= habilidad.steps.length;
 }
-function marcarPasoHabilidad(e, a, l) {
-  let n = clonar(e),
-    o = [],
-    s = habilidades.find((v) => v.id === a);
-  if (!s) return { state: n, notices: o };
-  (n.skills || (n.skills = {}),
-    n.care || (n.care = { today: { date: fechaHoy(), done: [] }, lifetime: 0 }),
-    n.neuro || (n.neuro = neuroInicial()),
-    n.unlockAll === void 0 && (n.unlockAll = !1),
-    n.disabled || (n.disabled = []),
-    n.seenUnlocks ||
-      (n.seenUnlocks = sistemas.filter((v) => sistemaAbierto(n, v.id)).map((v) => v.id)),
-    n.skills[a] || (n.skills[a] = { steps: new Array(s.steps.length).fill(!1) }));
-  let u = n.skills[a].steps;
-  for (; u.length < s.steps.length;) u.push(!1);
-  let c = u.filter(Boolean).length >= s.steps.length;
-  if (((u[l] = !u[l]), u[l])) {
-    let v = Math.round(xpPasoHabilidad * multImpulso(n));
-    ((n.progress.currentXP += v),
-      (n.today.xpEarned = (n.today.xpEarned || 0) + v),
-      o.push(`Paso dominado: ${s.steps[l].name}. +${v} XP.`),
-      (n = subirNiveles(n, o)));
+function marcarPasoHabilidad(actual, id, paso) {
+  let partida = clonar(actual),
+    avisos = [],
+    habilidad = habilidades.find((hab) => hab.id === id);
+  if (!habilidad) return { state: partida, notices: avisos };
+  (partida.skills || (partida.skills = {}),
+    partida.care || (partida.care = { today: { date: fechaHoy(), done: [] }, lifetime: 0 }),
+    partida.neuro || (partida.neuro = neuroInicial()),
+    partida.unlockAll === void 0 && (partida.unlockAll = !1),
+    partida.disabled || (partida.disabled = []),
+    partida.seenUnlocks ||
+      (partida.seenUnlocks = sistemas
+        .filter((sis) => sistemaAbierto(partida, sis.id))
+        .map((sis) => sis.id)),
+    partida.skills[id] ||
+      (partida.skills[id] = { steps: new Array(habilidad.steps.length).fill(!1) }));
+  let pasos = partida.skills[id].steps;
+  for (; pasos.length < habilidad.steps.length;) pasos.push(!1);
+  let yaCompleta = pasos.filter(Boolean).length >= habilidad.steps.length;
+  if (((pasos[paso] = !pasos[paso]), pasos[paso])) {
+    let xp = Math.round(xpPasoHabilidad * multImpulso(partida));
+    ((partida.progress.currentXP += xp),
+      (partida.today.xpEarned = (partida.today.xpEarned || 0) + xp),
+      avisos.push(`Paso dominado: ${habilidad.steps[paso].name}. +${xp} XP.`),
+      (partida = subirNiveles(partida, avisos)));
   }
-  if (u.filter(Boolean).length >= s.steps.length && !c) {
-    let v = Math.round(xpHabilidad * multImpulso(n));
-    ((n.progress.currentXP += v),
-      (n.today.xpEarned = (n.today.xpEarned || 0) + v),
-      (n.dominion.points += pdHabilidad),
-      o.push(`¡Skill aprendida: ${s.name}! +${v} XP y +${pdHabilidad} Puntos de Dominio.`),
-      (n = subirNiveles(n, o)));
+  if (pasos.filter(Boolean).length >= habilidad.steps.length && !yaCompleta) {
+    let xp = Math.round(xpHabilidad * multImpulso(partida));
+    ((partida.progress.currentXP += xp),
+      (partida.today.xpEarned = (partida.today.xpEarned || 0) + xp),
+      (partida.dominion.points += pdHabilidad),
+      avisos.push(
+        `¡Skill aprendida: ${habilidad.name}! +${xp} XP y +${pdHabilidad} Puntos de Dominio.`,
+      ),
+      (partida = subirNiveles(partida, avisos)));
   }
-  let p = revisarLogros(n);
-  return { state: p.state, notices: [...o, ...p.notices] };
+  let conLogros = revisarLogros(partida);
+  return { state: conLogros.state, notices: [...avisos, ...conLogros.notices] };
 }
-function habilidadesCompletas(e) {
-  return habilidades.filter((a) => habilidadCompleta(e, a.id)).length;
+function habilidadesCompletas(partida) {
+  return habilidades.filter((hab) => habilidadCompleta(partida, hab.id)).length;
 }
 
 export {

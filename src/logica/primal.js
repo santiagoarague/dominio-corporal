@@ -109,44 +109,44 @@ var descansoPrimal = 15,
 function primalInicial() {
   return { unlockedCount: 1, masteryProgress: 0, today: { date: fechaHoy(), count: 0 } };
 }
-function registrarPrimal(e, a) {
-  let l = clonar(e),
-    n = [],
-    o = fechaHoy();
+function registrarPrimal(actual, indice) {
+  let partida = clonar(actual),
+    avisos = [],
+    hoy = fechaHoy();
   if (
-    (l.primal.today.date !== o && (l.primal.today = { date: o, count: 0 }),
-    l.primal.today.count >= sesionesPrimalHoy(l))
+    (partida.primal.today.date !== hoy && (partida.primal.today = { date: hoy, count: 0 }),
+    partida.primal.today.count >= sesionesPrimalHoy(partida))
   )
     return {
-      state: l,
+      state: partida,
       notices: [
-        `Ya alcanzaste tu máximo de ${sesionesPrimalHoy(l)} movimientos hoy en Instinto Primal.`,
+        `Ya alcanzaste tu máximo de ${sesionesPrimalHoy(partida)} movimientos hoy en Instinto Primal.`,
       ],
     };
-  ((l.primal.today.count += 1),
-    (l.lifetimePrimal = (l.lifetimePrimal || 0) + 1),
-    (l.week.primal = (l.week.primal || 0) + 1),
-    (l = anotarDia(l, "Instinto Primal")));
-  let s = xpPrimal;
-  (l.streak.flexBuff && (s = Math.round(s * 1.1)),
-    (s = Math.round(s * multImpulso(l))),
-    (l.progress.currentXP += s),
-    (l.today.xpEarned = (l.today.xpEarned || 0) + s),
-    n.push(`+${s} XP por practicar ${movimientosPrimal[a].name}.`),
-    a === l.primal.unlockedCount - 1 &&
-      ((l.primal.masteryProgress += 1),
-      l.primal.masteryProgress >= vecesParaDominar &&
-        l.primal.unlockedCount < movimientosPrimal.length &&
-        ((l.primal.unlockedCount += 1),
-        (l.primal.masteryProgress = 0),
-        n.push(
-          `¡Nuevo movimiento descubierto! ${movimientosPrimal[l.primal.unlockedCount - 1].name}`,
+  ((partida.primal.today.count += 1),
+    (partida.lifetimePrimal = (partida.lifetimePrimal || 0) + 1),
+    (partida.week.primal = (partida.week.primal || 0) + 1),
+    (partida = anotarDia(partida, "Instinto Primal")));
+  let xp = xpPrimal;
+  (partida.streak.flexBuff && (xp = Math.round(xp * 1.1)),
+    (xp = Math.round(xp * multImpulso(partida))),
+    (partida.progress.currentXP += xp),
+    (partida.today.xpEarned = (partida.today.xpEarned || 0) + xp),
+    avisos.push(`+${xp} XP por practicar ${movimientosPrimal[indice].name}.`),
+    indice === partida.primal.unlockedCount - 1 &&
+      ((partida.primal.masteryProgress += 1),
+      partida.primal.masteryProgress >= vecesParaDominar &&
+        partida.primal.unlockedCount < movimientosPrimal.length &&
+        ((partida.primal.unlockedCount += 1),
+        (partida.primal.masteryProgress = 0),
+        avisos.push(
+          `¡Nuevo movimiento descubierto! ${movimientosPrimal[partida.primal.unlockedCount - 1].name}`,
         ))),
-    (l = subirNiveles(l, n)));
-  let u = revisarLogros(l),
-    c = { state: u.state, notices: [...n, ...u.notices] },
-    r = avisoCarga(c.state);
-  return { state: r.state, notices: [...c.notices, ...r.notices] };
+    (partida = subirNiveles(partida, avisos)));
+  let conLogros = revisarLogros(partida),
+    conAvisos = { state: conLogros.state, notices: [...avisos, ...conLogros.notices] },
+    conCarga = avisoCarga(conAvisos.state);
+  return { state: conCarga.state, notices: [...conAvisos.notices, ...conCarga.notices] };
 }
 var consejos = [
     "No te olvides de hidratarte antes y después de entrenar.",
@@ -173,13 +173,14 @@ var consejos = [
     back: "Si te cuesta mantener la posición, reduce cuánto elevas el pecho y las piernas, o sostén por menos tiempo. La técnica limpia vale más que la altura.",
     abs: "Si sientes tensión en el cuello, cruza los brazos sobre el pecho en vez de apoyar las manos detrás de la cabeza.",
   };
-function hashDia(e, a) {
-  let l = 0;
-  for (let n = 0; n < e.length; n++) l = (l * 31 + e.charCodeAt(n)) >>> 0;
-  return l % a;
+function hashDia(texto, opciones) {
+  let hash = 0;
+  for (let indice = 0; indice < texto.length; indice++)
+    hash = (hash * 31 + texto.charCodeAt(indice)) >>> 0;
+  return hash % opciones;
 }
-function consejoDelDia(e) {
-  return consejos[hashDia(e, consejos.length)];
+function consejoDelDia(fecha) {
+  return consejos[hashDia(fecha, consejos.length)];
 }
 var frasesVolver = [
     '{name} te espera en la puerta: "Un día no define tu camino. ¿Volvemos hoy?"',
@@ -190,8 +191,8 @@ var frasesVolver = [
     '{name} te anima: "Cualquier esfuerzo cuenta más que quedarte quieto. Mañana con más fuerza."',
     '{name} asiente: "Hoy fue un día difícil, y está bien. Lo que importa es que apareciste."',
   ];
-function fraseMascota(e, a, l) {
-  return e[hashDia(a, e.length)].replace("{name}", l || "Tu compañero");
+function fraseMascota(frases, fecha, nombre) {
+  return frases[hashDia(fecha, frases.length)].replace("{name}", nombre || "Tu compañero");
 }
 
 // Que muestra la sesion en cada segundo. El descanso entre rondas (cy) termina

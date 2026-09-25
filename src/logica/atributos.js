@@ -41,36 +41,37 @@ var listaAtributos = [
       ((e.neuro && e.neuro.bestSequence) || 0) * 15,
   },
 ];
-function valorAtributo(e, a) {
-  return Math.floor(a.calc(e));
+function valorAtributo(partida, atributo) {
+  return Math.floor(atributo.calc(partida));
 }
-function nivelAtributo(e) {
-  return Math.floor(Math.sqrt(e / 60)) + 1;
+function nivelAtributo(puntos) {
+  return Math.floor(Math.sqrt(puntos / 60)) + 1;
 }
-function progresoAtributo(e) {
-  let a = nivelAtributo(e),
-    l = Math.pow(a - 1, 2) * 60,
-    n = Math.pow(a, 2) * 60;
-  return { cur: e - l, need: n - l };
+function progresoAtributo(puntos) {
+  let nivel = nivelAtributo(puntos),
+    desde = Math.pow(nivel - 1, 2) * 60,
+    hasta = Math.pow(nivel, 2) * 60;
+  return { cur: puntos - desde, need: hasta - desde };
 }
-function nivelesZonas(e) {
-  let a = ["squat", "pushup", "back", "abs"],
-    l = {};
-  a.forEach((u) => {
-    l[u] = nivelZona(e.lifetimeReps[u] || 0);
+function nivelesZonas(partida) {
+  let grupos = ["squat", "pushup", "back", "abs"],
+    niveles = {};
+  grupos.forEach((grupo) => {
+    niveles[grupo] = nivelZona(partida.lifetimeReps[grupo] || 0);
   });
-  let n = a[0],
-    o = a[0];
-  a.forEach((u) => {
-    (l[u] > l[n] && (n = u), l[u] < l[o] && (o = u));
+  let alto = grupos[0],
+    bajo = grupos[0];
+  grupos.forEach((grupo) => {
+    (niveles[grupo] > niveles[alto] && (alto = grupo),
+      niveles[grupo] < niveles[bajo] && (bajo = grupo));
   });
-  let s = l[n] - l[o];
-  return { hi: n, lo: o, gap: s, levels: l };
+  let brecha = niveles[alto] - niveles[bajo];
+  return { hi: alto, lo: bajo, gap: brecha, levels: niveles };
 }
-function atributosDeZona(e) {
+function atributosDeZona(zona) {
   return listaAtributos
-    .filter((a) => a.zones.includes(e))
-    .map((a) => a.name)
+    .filter((atr) => atr.zones.includes(zona))
+    .map((atr) => atr.name)
     .join(" y ");
 }
 

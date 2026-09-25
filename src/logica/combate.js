@@ -17,45 +17,45 @@ var terrenosComunes = ["Zona Dormida", "Tramo Rígido", "Lado Corto"],
   xpTerrenoBase = 15,
   multXpJefe = 3,
   victoriasConXp = 5;
-function terreno(e) {
-  let a = (e + 1) % 5 === 0,
-    l = Math.floor(e / 15),
-    n = sufijosTerreno[Math.min(l, sufijosTerreno.length - 1)],
-    o;
+function terreno(indice) {
+  let esJefe = (indice + 1) % 5 === 0,
+    tramo = Math.floor(indice / 15),
+    sufijo = sufijosTerreno[Math.min(tramo, sufijosTerreno.length - 1)],
+    nombre;
   return (
-    a
-      ? (o = terrenosJefe[Math.floor(e / 5) % terrenosJefe.length])
-      : e < 10
-        ? (o = terrenosComunes[e % terrenosComunes.length])
-        : (o = terrenosDificiles[e % terrenosDificiles.length]),
-    { name: o + n, isBoss: a, tier: l, index: e }
+    esJefe
+      ? (nombre = terrenosJefe[Math.floor(indice / 5) % terrenosJefe.length])
+      : indice < 10
+        ? (nombre = terrenosComunes[indice % terrenosComunes.length])
+        : (nombre = terrenosDificiles[indice % terrenosDificiles.length]),
+    { name: nombre + sufijo, isBoss: esJefe, tier: tramo, index: indice }
   );
 }
-function trenesJefe(e) {
-  return ["upper_front", "upper_back", "lower"].filter((n) => n !== e).slice(0, 2);
+function trenesJefe(ultimo) {
+  return ["upper_front", "upper_back", "lower"].filter((tren) => tren !== ultimo).slice(0, 2);
 }
-function golpesNecesarios(e) {
-  return e.isBoss
-    ? Math.min(8, 4 + Math.floor(e.index / 10))
-    : Math.min(5, 2 + Math.floor(e.index / 6));
+function golpesNecesarios(objetivo) {
+  return objetivo.isBoss
+    ? Math.min(8, 4 + Math.floor(objetivo.index / 10))
+    : Math.min(5, 2 + Math.floor(objetivo.index / 6));
 }
-function xpTerreno(e) {
-  let a = xpTerrenoBase + e.index * 3;
-  return e.isBoss ? Math.round(a * multXpJefe) : a;
+function xpTerreno(objetivo) {
+  let xp = xpTerrenoBase + objetivo.index * 3;
+  return objetivo.isBoss ? Math.round(xp * multXpJefe) : xp;
 }
-function repsCombate(e, a, l, n, o, tr) {
-  let s = grupoDeTren[l];
-  return volumen(e, a, n, o, tr)[s];
+function repsCombate(rango, clase, tren, enfoque, modalidad, prueba) {
+  let grupo = grupoDeTren[tren];
+  return volumen(rango, clase, enfoque, modalidad, prueba)[grupo];
 }
-function ejercicioDeTren(e, a, l, n) {
-  let o = grupoDeTren[l];
-  return nombreEjercicio(e, a, o, n);
+function ejercicioDeTren(rango, clase, tren, modalidad) {
+  let grupo = grupoDeTren[tren];
+  return nombreEjercicio(rango, clase, grupo, modalidad);
 }
-function segundosVentana(e) {
-  return e * 3 + 15;
+function segundosVentana(reps) {
+  return reps * 3 + 15;
 }
-function repsCombateSuave(e, a, l, n, o, tr) {
-  return Math.max(3, Math.round(repsCombate(e, a, n, l, o, tr) * 0.8));
+function repsCombateSuave(rango, clase, enfoque, tren, modalidad, prueba) {
+  return Math.max(3, Math.round(repsCombate(rango, clase, tren, enfoque, modalidad, prueba) * 0.8));
 }
 function segundosVentanaJefe() {
   return 150;
@@ -76,136 +76,138 @@ function combateInicial() {
     bossCats: null,
   };
 }
-function elegirTren(e, a) {
-  let l = clonar(e),
-    n = l.combat;
-  if (a === n.lastExercise) return { state: l, notices: [] };
-  let o = terreno(n.villainIndex);
+function elegirTren(actual, tren) {
+  let partida = clonar(actual),
+    comb = partida.combat;
+  if (tren === comb.lastExercise) return { state: partida, notices: [] };
+  let objetivo = terreno(comb.villainIndex);
   return (
-    (n.exercise = a),
-    (n.villainCurrentHP = golpesNecesarios(o)),
-    (n.lives = 3),
-    (n.loadFactor = 1),
-    (n.damageFactor = 1),
-    (n.phase = "resting"),
-    (n.roundId = (n.roundId || 0) + 1),
-    { state: l, notices: [] }
+    (comb.exercise = tren),
+    (comb.villainCurrentHP = golpesNecesarios(objetivo)),
+    (comb.lives = 3),
+    (comb.loadFactor = 1),
+    (comb.damageFactor = 1),
+    (comb.phase = "resting"),
+    (comb.roundId = (comb.roundId || 0) + 1),
+    { state: partida, notices: [] }
   );
 }
-function reintentarRonda(e) {
-  let a = clonar(e);
+function reintentarRonda(actual) {
+  let partida = clonar(actual);
   return (
-    (a.combat.phase = "resting"),
-    (a.combat.roundId = (a.combat.roundId || 0) + 1),
-    { state: a, notices: [] }
+    (partida.combat.phase = "resting"),
+    (partida.combat.roundId = (partida.combat.roundId || 0) + 1),
+    { state: partida, notices: [] }
   );
 }
-function ajustarCarga(e) {
-  let a = clonar(e),
-    l = a.combat;
+function ajustarCarga(actual) {
+  let partida = clonar(actual),
+    comb = partida.combat;
   return (
-    (l.loadFactor = Math.max(0.4, (l.loadFactor || 1) * 0.8)),
-    (l.damageFactor = Math.max(0.3, (l.damageFactor || 1) * 0.7)),
-    (l.phase = "resting"),
-    (l.roundId = (l.roundId || 0) + 1),
+    (comb.loadFactor = Math.max(0.4, (comb.loadFactor || 1) * 0.8)),
+    (comb.damageFactor = Math.max(0.3, (comb.damageFactor || 1) * 0.7)),
+    (comb.phase = "resting"),
+    (comb.roundId = (comb.roundId || 0) + 1),
     {
-      state: a,
+      state: partida,
       notices: [
         "Carga recalibrada: -20% de repeticiones, pero tus golpes harán un 30% menos de daño.",
       ],
     }
   );
 }
-function cambiarTren(e, a) {
-  let l = clonar(e),
-    n = l.combat,
-    o = terreno(n.villainIndex);
-  if (a === n.lastExercise || a === n.exercise) return { state: l, notices: [] };
-  let s = golpesNecesarios(o),
-    u = s * 0.15;
+function cambiarTren(actual, tren) {
+  let partida = clonar(actual),
+    comb = partida.combat,
+    objetivo = terreno(comb.villainIndex);
+  if (tren === comb.lastExercise || tren === comb.exercise) return { state: partida, notices: [] };
+  let golpes = golpesNecesarios(objetivo),
+    recupera = golpes * 0.15;
   return (
-    (n.villainCurrentHP = Math.min(s, n.villainCurrentHP + u)),
-    (n.exercise = a),
-    (n.loadFactor = 1),
-    (n.damageFactor = 1),
-    (n.phase = "resting"),
-    (n.roundId = (n.roundId || 0) + 1),
-    { state: l, notices: ["Retirada táctica: perdiste un 15% del terreno ganado."] }
+    (comb.villainCurrentHP = Math.min(golpes, comb.villainCurrentHP + recupera)),
+    (comb.exercise = tren),
+    (comb.loadFactor = 1),
+    (comb.damageFactor = 1),
+    (comb.phase = "resting"),
+    (comb.roundId = (comb.roundId || 0) + 1),
+    { state: partida, notices: ["Retirada táctica: perdiste un 15% del terreno ganado."] }
   );
 }
-function golpear(e) {
-  let a = clonar(e),
-    l = [],
-    n = a.combat,
-    o = terreno(n.villainIndex);
-  if (((n.villainCurrentHP -= n.damageFactor || 1), n.villainCurrentHP <= 0.001)) {
-    ((n.phase = "victory"), (n.villainsDefeated = (n.villainsDefeated || 0) + 1));
-    let r = fechaHoy();
+function golpear(actual) {
+  let partida = clonar(actual),
+    avisos = [],
+    comb = partida.combat,
+    objetivo = terreno(comb.villainIndex);
+  if (((comb.villainCurrentHP -= comb.damageFactor || 1), comb.villainCurrentHP <= 0.001)) {
+    ((comb.phase = "victory"), (comb.villainsDefeated = (comb.villainsDefeated || 0) + 1));
+    let hoy = fechaHoy();
     if (
-      ((!n.todayDefeated || n.todayDefeated.date !== r) &&
-        (n.todayDefeated = { date: r, count: 0 }),
-      (n.todayDefeated.count += 1),
-      n.todayDefeated.count <= victoriasConXp)
+      ((!comb.todayDefeated || comb.todayDefeated.date !== hoy) &&
+        (comb.todayDefeated = { date: hoy, count: 0 }),
+      (comb.todayDefeated.count += 1),
+      comb.todayDefeated.count <= victoriasConXp)
     ) {
-      let p = xpTerreno(o);
-      ((a.progress.currentXP += Math.round((a.streak.flexBuff ? p * 1.1 : p) * multImpulso(a))),
-        (a.today.xpEarned = (a.today.xpEarned || 0) + p),
-        l.push(`¡Recuperaste ${o.name}! +${p} XP.`),
-        (a = anotarDia(a, "Combate")));
+      let xp = xpTerreno(objetivo);
+      ((partida.progress.currentXP += Math.round(
+        (partida.streak.flexBuff ? xp * 1.1 : xp) * multImpulso(partida),
+      )),
+        (partida.today.xpEarned = (partida.today.xpEarned || 0) + xp),
+        avisos.push(`¡Recuperaste ${objetivo.name}! +${xp} XP.`),
+        (partida = anotarDia(partida, "Combate")));
     } else
-      l.push(
-        `¡Recuperaste ${o.name}! Ya ganaste tu XP máxima de combate hoy, pero la victoria sigue contando para tu progreso.`,
+      avisos.push(
+        `¡Recuperaste ${objetivo.name}! Ya ganaste tu XP máxima de combate hoy, pero la victoria sigue contando para tu progreso.`,
       );
-    a = subirNiveles(a, l);
-  } else ((n.phase = "resting"), (n.roundId = (n.roundId || 0) + 1));
-  let s = revisarLogros(a),
-    u = { state: s.state, notices: [...l, ...s.notices] },
-    c = avisoCarga(u.state);
-  return { state: c.state, notices: [...u.notices, ...c.notices] };
+    partida = subirNiveles(partida, avisos);
+  } else ((comb.phase = "resting"), (comb.roundId = (comb.roundId || 0) + 1));
+  let conLogros = revisarLogros(partida),
+    conAvisos = { state: conLogros.state, notices: [...avisos, ...conLogros.notices] },
+    conCarga = avisoCarga(conAvisos.state);
+  return { state: conCarga.state, notices: [...conAvisos.notices, ...conCarga.notices] };
 }
-function perderVida(e) {
-  let a = clonar(e),
-    l = a.combat;
+function perderVida(actual) {
+  let partida = clonar(actual),
+    comb = partida.combat;
   return (
-    (l.lives -= 1),
-    l.lives <= 0 ? ((l.lives = 3), (l.phase = "defeat")) : (l.phase = "decision"),
-    { state: a, notices: [] }
+    (comb.lives -= 1),
+    comb.lives <= 0 ? ((comb.lives = 3), (comb.phase = "defeat")) : (comb.phase = "decision"),
+    { state: partida, notices: [] }
   );
 }
-function siguienteTerreno(e) {
-  let a = clonar(e),
-    l = a.combat,
-    n = terreno(l.villainIndex);
-  ((l.lastExercise = n.isBoss ? null : l.exercise),
-    (l.exercise = null),
-    (l.villainIndex += 1),
-    (l.villainCurrentHP = null),
-    (l.loadFactor = 1),
-    (l.damageFactor = 1));
-  let o = terreno(l.villainIndex);
+function siguienteTerreno(actual) {
+  let partida = clonar(actual),
+    comb = partida.combat,
+    dejado = terreno(comb.villainIndex);
+  ((comb.lastExercise = dejado.isBoss ? null : comb.exercise),
+    (comb.exercise = null),
+    (comb.villainIndex += 1),
+    (comb.villainCurrentHP = null),
+    (comb.loadFactor = 1),
+    (comb.damageFactor = 1));
+  let proximo = terreno(comb.villainIndex);
   return (
-    o.isBoss
-      ? ((l.bossCats = trenesJefe(l.lastExercise)),
-        (l.villainCurrentHP = golpesNecesarios(o)),
-        (l.lives = 3),
-        (l.phase = "resting"),
-        (l.roundId = (l.roundId || 0) + 1))
-      : ((l.bossCats = null), (l.phase = "choosing")),
-    { state: a, notices: [] }
+    proximo.isBoss
+      ? ((comb.bossCats = trenesJefe(comb.lastExercise)),
+        (comb.villainCurrentHP = golpesNecesarios(proximo)),
+        (comb.lives = 3),
+        (comb.phase = "resting"),
+        (comb.roundId = (comb.roundId || 0) + 1))
+      : ((comb.bossCats = null), (comb.phase = "choosing")),
+    { state: partida, notices: [] }
   );
 }
-function reintentarSinVidas(e) {
-  let a = clonar(e);
+function reintentarSinVidas(actual) {
+  let partida = clonar(actual);
   return (
-    (a.combat.phase = "resting"),
-    (a.combat.roundId = (a.combat.roundId || 0) + 1),
-    { state: a, notices: [] }
+    (partida.combat.phase = "resting"),
+    (partida.combat.roundId = (partida.combat.roundId || 0) + 1),
+    { state: partida, notices: [] }
   );
 }
 var rondasPrimal = 3,
   segundosPrimalPorRango = { E: 30, D: 35, C: 40, B: 45, A: 50, S: 55, Z: 60 };
-function segundosRondaPrimal(e) {
-  return segundosPrimalPorRango[e] || 40;
+function segundosRondaPrimal(rango) {
+  return segundosPrimalPorRango[rango] || 40;
 }
 
 export {

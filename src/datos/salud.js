@@ -282,30 +282,33 @@ var alarmas = [
     },
   ],
   xpCuidado = 20;
-function registrarCuidado(e, a) {
-  let l = clonar(e),
-    n = [],
-    o = fechaHoy();
+function registrarCuidado(actual, id) {
+  let partida = clonar(actual),
+    avisos = [],
+    hoy = fechaHoy();
   if (
-    (l.care || (l.care = { today: { date: o, done: [] }, lifetime: 0 }),
-    l.neuro || (l.neuro = neuroInicial()),
-    l.unlockAll === void 0 && (l.unlockAll = !1),
-    l.disabled || (l.disabled = []),
-    l.seenUnlocks ||
-      (l.seenUnlocks = sistemas.filter((r) => sistemaAbierto(l, r.id)).map((r) => r.id)),
-    l.care.today.date !== o && (l.care.today = { date: o, done: [] }),
-    l.care.today.done.includes(a))
+    (partida.care || (partida.care = { today: { date: hoy, done: [] }, lifetime: 0 }),
+    partida.neuro || (partida.neuro = neuroInicial()),
+    partida.unlockAll === void 0 && (partida.unlockAll = !1),
+    partida.disabled || (partida.disabled = []),
+    partida.seenUnlocks ||
+      (partida.seenUnlocks = sistemas
+        .filter((sis) => sistemaAbierto(partida, sis.id))
+        .map((sis) => sis.id)),
+    partida.care.today.date !== hoy && (partida.care.today = { date: hoy, done: [] }),
+    partida.care.today.done.includes(id))
   )
-    return { state: l, notices: ["Ya registraste este protocolo hoy."] };
-  (l.care.today.done.push(a), (l.care.lifetime = (l.care.lifetime || 0) + 1));
-  let s = Math.round(xpCuidado * multImpulso(l));
-  (l.streak.flexBuff && (s = Math.round(s * 1.1)),
-    (l.progress.currentXP += s),
-    (l.today.xpEarned = (l.today.xpEarned || 0) + s));
-  let u = cuidadoArticular.find((r) => r.id === a);
-  (n.push(`Cuidado articular registrado: ${u ? u.zone : a}. +${s} XP.`), (l = subirNiveles(l, n)));
-  let c = revisarLogros(l);
-  return { state: c.state, notices: [...n, ...c.notices] };
+    return { state: partida, notices: ["Ya registraste este protocolo hoy."] };
+  (partida.care.today.done.push(id), (partida.care.lifetime = (partida.care.lifetime || 0) + 1));
+  let xp = Math.round(xpCuidado * multImpulso(partida));
+  (partida.streak.flexBuff && (xp = Math.round(xp * 1.1)),
+    (partida.progress.currentXP += xp),
+    (partida.today.xpEarned = (partida.today.xpEarned || 0) + xp));
+  let protocolo = cuidadoArticular.find((prot) => prot.id === id);
+  (avisos.push(`Cuidado articular registrado: ${protocolo ? protocolo.zone : id}. +${xp} XP.`),
+    (partida = subirNiveles(partida, avisos)));
+  let conLogros = revisarLogros(partida);
+  return { state: conLogros.state, notices: [...avisos, ...conLogros.notices] };
 }
 var senalesReaccion = [
     { label: "IZQUIERDA", action: "Desplázate un paso lateral a tu izquierda", color: "#4f9dff" },
@@ -356,32 +359,39 @@ function neuroInicial() {
     sessions: 0,
   };
 }
-function registrarNeuromotor(e, a, l, n) {
-  let o = clonar(e),
-    s = [];
-  (o.neuro || (o.neuro = neuroInicial()),
-    o.unlockAll === void 0 && (o.unlockAll = !1),
-    o.disabled || (o.disabled = []),
-    o.seenUnlocks ||
-      (o.seenUnlocks = sistemas.filter((p) => sistemaAbierto(o, p.id)).map((p) => p.id)));
-  let u = !1;
-  (a === "reaction"
-    ? (l > (o.neuro.bestSpeedLevel || 0) && ((o.neuro.bestSpeedLevel = l), (u = !0)),
-      (o.neuro.reactionDrills = (o.neuro.reactionDrills || 0) + 1))
-    : a === "sequence"
-      ? l > o.neuro.bestSequence && ((o.neuro.bestSequence = l), (u = !0))
-      : a === "dual"
-        ? l > o.neuro.bestDualSec && ((o.neuro.bestDualSec = l), (u = !0))
-        : a === "coord" && l > o.neuro.bestBpm && ((o.neuro.bestBpm = l), (u = !0)),
-    (o.neuro.sessions = (o.neuro.sessions || 0) + 1));
-  let c = Math.round(xpNeuromotor * multImpulso(o));
-  ((o.progress.currentXP += c),
-    (o.today.xpEarned = (o.today.xpEarned || 0) + c),
-    s.push(u ? `¡Nueva marca personal! +${c} XP.` : `Sesión neuromotora registrada. +${c} XP.`),
-    n && (o = anotarDia(o, "Neuromotor")),
-    (o = subirNiveles(o, s)));
-  let r = revisarLogros(o);
-  return { state: r.state, notices: [...s, ...r.notices] };
+function registrarNeuromotor(actual, tipo, valor, anotar) {
+  let partida = clonar(actual),
+    avisos = [];
+  (partida.neuro || (partida.neuro = neuroInicial()),
+    partida.unlockAll === void 0 && (partida.unlockAll = !1),
+    partida.disabled || (partida.disabled = []),
+    partida.seenUnlocks ||
+      (partida.seenUnlocks = sistemas
+        .filter((sis) => sistemaAbierto(partida, sis.id))
+        .map((sis) => sis.id)));
+  let marca = !1;
+  (tipo === "reaction"
+    ? (valor > (partida.neuro.bestSpeedLevel || 0) &&
+        ((partida.neuro.bestSpeedLevel = valor), (marca = !0)),
+      (partida.neuro.reactionDrills = (partida.neuro.reactionDrills || 0) + 1))
+    : tipo === "sequence"
+      ? valor > partida.neuro.bestSequence && ((partida.neuro.bestSequence = valor), (marca = !0))
+      : tipo === "dual"
+        ? valor > partida.neuro.bestDualSec && ((partida.neuro.bestDualSec = valor), (marca = !0))
+        : tipo === "coord" &&
+          valor > partida.neuro.bestBpm &&
+          ((partida.neuro.bestBpm = valor), (marca = !0)),
+    (partida.neuro.sessions = (partida.neuro.sessions || 0) + 1));
+  let xp = Math.round(xpNeuromotor * multImpulso(partida));
+  ((partida.progress.currentXP += xp),
+    (partida.today.xpEarned = (partida.today.xpEarned || 0) + xp),
+    avisos.push(
+      marca ? `¡Nueva marca personal! +${xp} XP.` : `Sesión neuromotora registrada. +${xp} XP.`,
+    ),
+    anotar && (partida = anotarDia(partida, "Neuromotor")),
+    (partida = subirNiveles(partida, avisos)));
+  let conLogros = revisarLogros(partida);
+  return { state: conLogros.state, notices: [...avisos, ...conLogros.notices] };
 }
 
 export {

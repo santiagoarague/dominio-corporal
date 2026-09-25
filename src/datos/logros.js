@@ -1227,93 +1227,94 @@ var categoriasLogros = [
       check: (e) => sdcAnimoCuenta(e).vino >= 50,
     },
   ];
-function sdcAnimo(e) {
-  return (e && e.animo) || {};
+function sdcAnimo(partida) {
+  return (partida && partida.animo) || {};
 }
-function sdcAnimoCuenta(e) {
-  var v = sdcAnimo(e),
-    h = (e && e.history) || {},
-    k,
-    x,
-    r = { no: 0, vino: 0, envion: 0, mejor: 0, ambas: 0, noResp: 0, noMejor: 0 };
-  for (k in v) {
-    x = v[k];
-    if (!x || !x.antes) continue;
-    if (x.antes <= 2) {
-      r.no++;
-      (h[k] === "full" || h[k] === "partial") && r.vino++;
-      x.despues >= 4 && r.envion++;
-      x.despues && (r.noResp++, x.despues > x.antes && r.noMejor++);
+function sdcAnimoCuenta(partida) {
+  var animo = sdcAnimo(partida),
+    historia = (partida && partida.history) || {},
+    fecha,
+    dia,
+    cuenta = { no: 0, vino: 0, envion: 0, mejor: 0, ambas: 0, noResp: 0, noMejor: 0 };
+  for (fecha in animo) {
+    dia = animo[fecha];
+    if (!dia || !dia.antes) continue;
+    if (dia.antes <= 2) {
+      cuenta.no++;
+      (historia[fecha] === "full" || historia[fecha] === "partial") && cuenta.vino++;
+      dia.despues >= 4 && cuenta.envion++;
+      dia.despues && (cuenta.noResp++, dia.despues > dia.antes && cuenta.noMejor++);
     }
-    x.despues && (r.ambas++, x.despues > x.antes && r.mejor++);
+    dia.despues && (cuenta.ambas++, dia.despues > dia.antes && cuenta.mejor++);
   }
-  return r;
+  return cuenta;
 }
-function revisarLogros(e) {
-  let a = clonar(e),
-    l = [];
-  a.achievements || (a.achievements = []);
-  a.dominion || (a.dominion = dominioInicial());
+function revisarLogros(actual) {
+  let partida = clonar(actual),
+    avisos = [];
+  partida.achievements || (partida.achievements = []);
+  partida.dominion || (partida.dominion = dominioInicial());
   let pd = { E: 1, D: 1, C: 2, B: 2, A: 3, S: 4, Z: 5 },
-    sdcN = 0,
-    sdcPd = 0;
-  for (let n of logros)
-    if (!a.achievements.includes(n.id) && n.check(a)) {
-      a.achievements.push(n.id);
-      let g = pd[n.tier] || 1;
-      ((a.dominion.points = (a.dominion.points || 0) + g),
-        (sdcN += 1),
-        (sdcPd += g),
-        l.push(`🏆 Logro desbloqueado: ${n.name} (+${g} PD)`));
+    nuevos = 0,
+    pdNuevos = 0;
+  for (let logro of logros)
+    if (!partida.achievements.includes(logro.id) && logro.check(partida)) {
+      partida.achievements.push(logro.id);
+      let pdLogro = pd[logro.tier] || 1;
+      ((partida.dominion.points = (partida.dominion.points || 0) + pdLogro),
+        (nuevos += 1),
+        (pdNuevos += pdLogro),
+        avisos.push(`🏆 Logro desbloqueado: ${logro.name} (+${pdLogro} PD)`));
     }
   return (
-    sdcN > 5 &&
-      (l = [
-        `🏆 ${sdcN} logros desbloqueados de golpe (+${sdcPd} PD). Los tenés en la pestaña Logros.`,
+    nuevos > 5 &&
+      (avisos = [
+        `🏆 ${nuevos} logros desbloqueados de golpe (+${pdNuevos} PD). Los tenés en la pestaña Logros.`,
       ]),
-    { state: a, notices: l }
+    { state: partida, notices: avisos }
   );
 }
-function cargaDelDia(e) {
-  let a = fechaHoy(),
-    l = 0;
+function cargaDelDia(partida) {
+  let hoy = fechaHoy(),
+    carga = 0;
   return (
-    e.today.date === a &&
-      e.today.completed &&
-      e.today.mode !== "rest" &&
-      (l += e.today.fullCompletion ? 2 : 1),
-    e.dungeon.date === a && e.dungeon.completed && (l += 2),
-    e.primal.today.date === a && (l += e.primal.today.count),
-    e.combat.todayDefeated &&
-      e.combat.todayDefeated.date === a &&
-      (l += e.combat.todayDefeated.count),
-    l
+    partida.today.date === hoy &&
+      partida.today.completed &&
+      partida.today.mode !== "rest" &&
+      (carga += partida.today.fullCompletion ? 2 : 1),
+    partida.dungeon.date === hoy && partida.dungeon.completed && (carga += 2),
+    partida.primal.today.date === hoy && (carga += partida.primal.today.count),
+    partida.combat.todayDefeated &&
+      partida.combat.todayDefeated.date === hoy &&
+      (carga += partida.combat.todayDefeated.count),
+    carga
   );
 }
-function nivelCarga(e) {
-  return e >= 8 ? "Muy Alto" : e >= 5 ? "Alto" : e >= 3 ? "Moderado" : "Ligero";
+function nivelCarga(carga) {
+  return carga >= 8 ? "Muy Alto" : carga >= 5 ? "Alto" : carga >= 3 ? "Moderado" : "Ligero";
 }
-function avisoCarga(e) {
-  let a = clonar(e),
-    l = [],
-    n = fechaHoy();
+function avisoCarga(actual) {
+  let partida = clonar(actual),
+    avisos = [],
+    hoy = fechaHoy();
   return (
-    nivelCarga(cargaDelDia(a)) === "Muy Alto" &&
-      a.loadWarnedDate !== n &&
-      ((a.loadWarnedDate = n),
-      l.push(
+    nivelCarga(cargaDelDia(partida)) === "Muy Alto" &&
+      partida.loadWarnedDate !== hoy &&
+      ((partida.loadWarnedDate = hoy),
+      avisos.push(
         "Hoy le diste durísimo a tu cuerpo. Considera parar por hoy y dejar que descanse — mañana el plan sigue en pie.",
       )),
-    { state: a, notices: l }
+    { state: partida, notices: avisos }
   );
 }
-function ultimos60Dias(e, a) {
-  let l = new Date(a + "T00:00:00");
-  l.setDate(l.getDate() - 60);
-  let n = fechaLocal(l),
-    o = {};
-  for (let s of Object.keys(e || {})) s >= n && (o[s] = e[s]);
-  return o;
+function ultimos60Dias(historia, hoy) {
+  let limite = new Date(hoy + "T00:00:00");
+  limite.setDate(limite.getDate() - 60);
+  let desde = fechaLocal(limite),
+    recientes = {};
+  for (let fecha of Object.keys(historia || {}))
+    fecha >= desde && (recientes[fecha] = historia[fecha]);
+  return recientes;
 }
 
 export {

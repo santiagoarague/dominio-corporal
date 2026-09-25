@@ -99,9 +99,11 @@ var sdcMods = {
     { n: "Silencio", d: "Que ningún apoyo haga ruido: cada contacto controlado.", x: 0.25 },
   ],
 };
-function sdcModDia(m, f) {
-  var l = sdcMods[m] || sdcMods.bodyweight;
-  return l[hashDia(String(f || fechaHoy()) + "|" + String(m || "bodyweight"), l.length)];
+function sdcModDia(modalidad, fecha) {
+  var lista = sdcMods[modalidad] || sdcMods.bodyweight;
+  return lista[
+    hashDia(String(fecha || fechaHoy()) + "|" + String(modalidad || "bodyweight"), lista.length)
+  ];
 }
 var sdcPetPR = [
     '{name} da vueltas sin parar: "¡Ese número no lo habías tocado nunca!"',
@@ -119,94 +121,109 @@ var sdcPetPR = [
     '{name} levanta la cabeza: "Algo es algo. Mañana vamos por más."',
     '{name} te mira de reojo: "No fue tu mejor día, pero apareciste."',
   ];
-function sdcMascota(o, p, pr) {
-  var nm = (o.profile && o.profile.pet && o.profile.pet.name) || "Tu compañero",
-    d = (o.streak && o.streak.current) || 0,
-    k = pr ? "pr" : d >= 7 ? "ra" : p >= 1 ? "fu" : "pa",
-    l = pr ? sdcPetPR : d >= 7 ? sdcPetRacha : p >= 1 ? sdcPetFull : sdcPetParcial;
-  return l[hashDia(String(o.today.date) + "|" + k, l.length)]
-    .replace("{name}", nm)
-    .replace("{d}", d);
+function sdcMascota(partida, pct, hayRecord) {
+  var nombre =
+      (partida.profile && partida.profile.pet && partida.profile.pet.name) || "Tu compañero",
+    racha = (partida.streak && partida.streak.current) || 0,
+    clave = hayRecord ? "pr" : racha >= 7 ? "ra" : pct >= 1 ? "fu" : "pa",
+    frases = hayRecord
+      ? sdcPetPR
+      : racha >= 7
+        ? sdcPetRacha
+        : pct >= 1
+          ? sdcPetFull
+          : sdcPetParcial;
+  return frases[hashDia(String(partida.today.date) + "|" + clave, frases.length)]
+    .replace("{name}", nombre)
+    .replace("{d}", racha);
 }
-function sdcRacha(e) {
-  let d = (e.streak && e.streak.current) || 0;
-  return 1 + Math.min(0.3, d * 0.02);
+function sdcRacha(partida) {
+  let racha = (partida.streak && partida.streak.current) || 0;
+  return 1 + Math.min(0.3, racha * 0.02);
 }
-function sdcPerk(e) {
-  let p = (e.dominion && e.dominion.perks) || [];
-  return p.indexOf("nucleo") >= 0 ? 1.1 : p.indexOf("memoria") >= 0 ? 1.05 : 1;
+function sdcPerk(partida) {
+  let perks = (partida.dominion && partida.dominion.perks) || [];
+  return perks.indexOf("nucleo") >= 0 ? 1.1 : perks.indexOf("memoria") >= 0 ? 1.05 : 1;
 }
-function multImpulso(e) {
-  return e.dominion && e.dominion.xpBuffDate === fechaHoy() ? e.dominion.xpBuffMult || 1.25 : 1;
+function multImpulso(partida) {
+  return partida.dominion && partida.dominion.xpBuffDate === fechaHoy()
+    ? partida.dominion.xpBuffMult || 1.25
+    : 1;
 }
-function sesionesPrimalHoy(e) {
-  let a = e.dominion && e.dominion.extraPrimal,
-    l = a && a.date === fechaHoy() ? a.count : 0;
-  return sesionesPrimalBase + l;
+function sesionesPrimalHoy(partida) {
+  let extra = partida.dominion && partida.dominion.extraPrimal,
+    extraHoy = extra && extra.date === fechaHoy() ? extra.count : 0;
+  return sesionesPrimalBase + extraHoy;
 }
-function comprar(e, a) {
-  let l = clonar(e),
-    n = [],
-    o = tienda.find((u) => u.id === a);
-  if (!o) return { state: l, notices: n };
-  if (l.dominion.points < o.cost)
-    return { state: l, notices: ["No tenés suficientes Puntos de Dominio."] };
-  let s = fechaHoy();
-  if (a === "reroll") {
-    if (l.dungeon.completed) return { state: l, notices: ["Ya completaste la travesía de hoy."] };
-    ((l.dungeon = { date: s, ...travesiaDelDia(l.progress.rank) }),
-      l.dungeon.available ||
-        (l.dungeon = {
-          date: s,
+function comprar(actual, id) {
+  let partida = clonar(actual),
+    avisos = [],
+    item = tienda.find((it) => it.id === id);
+  if (!item) return { state: partida, notices: avisos };
+  if (partida.dominion.points < item.cost)
+    return { state: partida, notices: ["No tenés suficientes Puntos de Dominio."] };
+  let hoy = fechaHoy();
+  if (id === "reroll") {
+    if (partida.dungeon.completed)
+      return { state: partida, notices: ["Ya completaste la travesía de hoy."] };
+    ((partida.dungeon = { date: hoy, ...travesiaDelDia(partida.progress.rank) }),
+      partida.dungeon.available ||
+        (partida.dungeon = {
+          date: hoy,
           available: !0,
           completed: !1,
           name: sdcPortales[0].n,
           challengeText: sdcPortales[0].c,
-          rewardXP: xpTravesia[l.progress.rank],
+          rewardXP: xpTravesia[partida.progress.rank],
         }),
-      n.push(`Nueva travesía: ${l.dungeon.name}.`));
-  } else if (a === "primal")
-    ((!l.dominion.extraPrimal || l.dominion.extraPrimal.date !== s) &&
-      (l.dominion.extraPrimal = { date: s, count: 0 }),
-      (l.dominion.extraPrimal.count += 1),
-      n.push("Sesión extra de Instinto Primal desbloqueada para hoy."));
-  else if (a === "xpbuff") {
-    if (l.dominion.xpBuffDate === s)
-      return { state: l, notices: ["Ya tenés el Impulso de XP activo hoy."] };
-    ((l.dominion.xpBuffDate = s),
-      (l.dominion.xpBuffMult = 1.25),
-      n.push("Impulso de XP activo: +25% por el resto del día."));
-  } else if (a === "rest") {
-    if (!l.week.restDayUsed)
-      return { state: l, notices: ["Todavía no gastaste tu día de descanso de esta semana."] };
-    ((l.week.restDayUsed = !1),
-      n.push("Día de descanso recuperado: podés volver a usarlo esta semana."));
-  } else if (a === "flex") {
-    if (l.streak.flexBuff)
-      return { state: l, notices: ["Ya tenés el Impulso de Constancia activo."] };
-    ((l.streak.flexBuff = !0),
-      n.push("Impulso de Constancia activo: +10% de XP el resto de la semana."));
-  } else if (a === "bigbuff") {
-    if (l.dominion.xpBuffDate === s && l.dominion.xpBuffMult === 1.5)
-      return { state: l, notices: ["Ya tenés el Impulso Mayor activo hoy."] };
-    ((l.dominion.xpBuffDate = s),
-      (l.dominion.xpBuffMult = 1.5),
-      n.push("Impulso Mayor activo: +50% de XP por el resto del día."));
-  } else if (a === "memoria" || a === "nucleo") {
-    l.dominion.perks || (l.dominion.perks = []);
-    if (l.dominion.perks.indexOf(a) >= 0) return { state: l, notices: ["Ya tenés esa mejora."] };
-    if (a === "nucleo" && l.dominion.perks.indexOf("memoria") < 0)
-      return { state: l, notices: ["Primero necesitás la Memoria."] };
-    (l.dominion.perks.push(a),
-      n.push(
-        a === "memoria"
+      avisos.push(`Nueva travesía: ${partida.dungeon.name}.`));
+  } else if (id === "primal")
+    ((!partida.dominion.extraPrimal || partida.dominion.extraPrimal.date !== hoy) &&
+      (partida.dominion.extraPrimal = { date: hoy, count: 0 }),
+      (partida.dominion.extraPrimal.count += 1),
+      avisos.push("Sesión extra de Instinto Primal desbloqueada para hoy."));
+  else if (id === "xpbuff") {
+    if (partida.dominion.xpBuffDate === hoy)
+      return { state: partida, notices: ["Ya tenés el Impulso de XP activo hoy."] };
+    ((partida.dominion.xpBuffDate = hoy),
+      (partida.dominion.xpBuffMult = 1.25),
+      avisos.push("Impulso de XP activo: +25% por el resto del día."));
+  } else if (id === "rest") {
+    if (!partida.week.restDayUsed)
+      return {
+        state: partida,
+        notices: ["Todavía no gastaste tu día de descanso de esta semana."],
+      };
+    ((partida.week.restDayUsed = !1),
+      avisos.push("Día de descanso recuperado: podés volver a usarlo esta semana."));
+  } else if (id === "flex") {
+    if (partida.streak.flexBuff)
+      return { state: partida, notices: ["Ya tenés el Impulso de Constancia activo."] };
+    ((partida.streak.flexBuff = !0),
+      avisos.push("Impulso de Constancia activo: +10% de XP el resto de la semana."));
+  } else if (id === "bigbuff") {
+    if (partida.dominion.xpBuffDate === hoy && partida.dominion.xpBuffMult === 1.5)
+      return { state: partida, notices: ["Ya tenés el Impulso Mayor activo hoy."] };
+    ((partida.dominion.xpBuffDate = hoy),
+      (partida.dominion.xpBuffMult = 1.5),
+      avisos.push("Impulso Mayor activo: +50% de XP por el resto del día."));
+  } else if (id === "memoria" || id === "nucleo") {
+    partida.dominion.perks || (partida.dominion.perks = []);
+    if (partida.dominion.perks.indexOf(id) >= 0)
+      return { state: partida, notices: ["Ya tenés esa mejora."] };
+    if (id === "nucleo" && partida.dominion.perks.indexOf("memoria") < 0)
+      return { state: partida, notices: ["Primero necesitás la Memoria."] };
+    (partida.dominion.perks.push(id),
+      avisos.push(
+        id === "memoria"
           ? "Memoria instalada: +5% de XP para siempre."
           : "Núcleo Reforzado: tu bono permanente sube a +10% de XP.",
       ));
   } else
-    a === "shield" &&
-      ((l.dominion.shields += 1), n.push(`Escudo de Racha listo (tenés ${l.dominion.shields}).`));
-  return ((l.dominion.points -= o.cost), { state: l, notices: n });
+    id === "shield" &&
+      ((partida.dominion.shields += 1),
+      avisos.push(`Escudo de Racha listo (tenés ${partida.dominion.shields}).`));
+  return ((partida.dominion.points -= item.cost), { state: partida, notices: avisos });
 }
 
 export {

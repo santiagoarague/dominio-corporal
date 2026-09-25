@@ -65,44 +65,59 @@ var estiramientos = [
   },
 ];
 function sdcEstLista(corta) {
-  var l = [],
-    k,
-    s;
-  for (k = 0; k < estiramientos.length; k++) {
-    s = estiramientos[k];
-    if (corta && !s.corta) continue;
-    if (s.lados) {
-      l.push({ name: s.name, desc: s.desc, seconds: s.seconds, lado: "lado derecho", prep: s.pr });
-      l.push({ name: s.name, desc: s.desc, seconds: s.seconds, lado: "lado izquierdo" });
-    } else l.push({ name: s.name, desc: s.desc, seconds: s.seconds, lado: null, prep: s.pr });
+  var pasos = [],
+    indice,
+    est;
+  for (indice = 0; indice < estiramientos.length; indice++) {
+    est = estiramientos[indice];
+    if (corta && !est.corta) continue;
+    if (est.lados) {
+      pasos.push({
+        name: est.name,
+        desc: est.desc,
+        seconds: est.seconds,
+        lado: "lado derecho",
+        prep: est.pr,
+      });
+      pasos.push({ name: est.name, desc: est.desc, seconds: est.seconds, lado: "lado izquierdo" });
+    } else
+      pasos.push({
+        name: est.name,
+        desc: est.desc,
+        seconds: est.seconds,
+        lado: null,
+        prep: est.pr,
+      });
   }
-  l.length && (l[0].prep = 10);
-  return l;
+  pasos.length && (pasos[0].prep = 10);
+  return pasos;
 }
 var sdcEstPrep = 5;
-function sdcEstTotal(l) {
-  var t = 0,
-    k;
-  for (k = 0; k < (l || []).length; k++) t += (l[k].prep || sdcEstPrep) + l[k].seconds;
-  return t;
+function sdcEstTotal(pasos) {
+  var total = 0,
+    indice;
+  for (indice = 0; indice < (pasos || []).length; indice++)
+    total += (pasos[indice].prep || sdcEstPrep) + pasos[indice].seconds;
+  return total;
 }
-function sdcEstPaso(l, e) {
-  var a = 0,
-    k,
-    pr,
-    fn;
-  for (k = 0; k < l.length; k++) {
-    pr = a + (l[k].prep || sdcEstPrep);
-    fn = pr + l[k].seconds;
-    if (e < pr) return { index: k, left: l[k].seconds, prep: pr - e };
-    if (e < fn) return { index: k, left: fn - e, prep: 0 };
-    a = fn;
+function sdcEstPaso(pasos, transcurrido) {
+  var inicio = 0,
+    indice,
+    finPrep,
+    fin;
+  for (indice = 0; indice < pasos.length; indice++) {
+    finPrep = inicio + (pasos[indice].prep || sdcEstPrep);
+    fin = finPrep + pasos[indice].seconds;
+    if (transcurrido < finPrep)
+      return { index: indice, left: pasos[indice].seconds, prep: finPrep - transcurrido };
+    if (transcurrido < fin) return { index: indice, left: fin - transcurrido, prep: 0 };
+    inicio = fin;
   }
-  return { index: l.length - 1, left: 0, prep: 0 };
+  return { index: pasos.length - 1, left: 0, prep: 0 };
 }
-function sdcEstMMSS(s) {
-  s = Math.max(0, Math.round(s));
-  return String(Math.floor(s / 60)) + ":" + String(s % 60).padStart(2, "0");
+function sdcEstMMSS(segundos) {
+  segundos = Math.max(0, Math.round(segundos));
+  return String(Math.floor(segundos / 60)) + ":" + String(segundos % 60).padStart(2, "0");
 }
 var sdcFlexNiv = [
   { n: 1, t: "A las rodillas" },
@@ -111,52 +126,53 @@ var sdcFlexNiv = [
   { n: 4, t: "A los dedos de los pies" },
   { n: 5, t: "Palmas apoyadas en el piso" },
 ];
-function sdcFlexTxt(n) {
-  for (var k = 0; k < sdcFlexNiv.length; k++) if (sdcFlexNiv[k].n === n) return sdcFlexNiv[k].t;
+function sdcFlexTxt(nivel) {
+  for (var indice = 0; indice < sdcFlexNiv.length; indice++)
+    if (sdcFlexNiv[indice].n === nivel) return sdcFlexNiv[indice].t;
   return "";
 }
-function sdcFlex(e) {
-  return (e && e.flex) || {};
+function sdcFlex(partida) {
+  return (partida && partida.flex) || {};
 }
-function sdcFlexToca(e) {
-  var f = sdcFlex(e);
-  if (!f.fecha) return !0;
-  var d = Math.round(
-    (new Date(fechaHoy() + "T00:00:00") - new Date(f.fecha + "T00:00:00")) / 864e5,
+function sdcFlexToca(partida) {
+  var flex = sdcFlex(partida);
+  if (!flex.fecha) return !0;
+  var dias = Math.round(
+    (new Date(fechaHoy() + "T00:00:00") - new Date(flex.fecha + "T00:00:00")) / 864e5,
   );
-  return d >= 7;
+  return dias >= 7;
 }
-function sdcFlexSet(e, n) {
-  var a = clonar(e),
-    f = sdcFlex(a),
-    pr = f.mejor || 0,
+function sdcFlexSet(actual, nivel) {
+  var partida = clonar(actual),
+    flex = sdcFlex(partida),
+    mejor = flex.mejor || 0,
     hoy = fechaHoy(),
-    l = [];
-  a.flex = {
-    nivel: n,
+    avisos = [];
+  partida.flex = {
+    nivel: nivel,
     fecha: hoy,
-    primero: f.primero || n,
-    mejor: Math.max(pr, n),
-    historial: (f.historial || []).concat([{ fecha: hoy, nivel: n }]).slice(-40),
+    primero: flex.primero || nivel,
+    mejor: Math.max(mejor, nivel),
+    historial: (flex.historial || []).concat([{ fecha: hoy, nivel: nivel }]).slice(-40),
   };
-  if (pr && n > pr) {
+  if (mejor && nivel > mejor) {
     sdcPrimeraAdd(
-      a,
+      partida,
       "Flexibilidad: llegás " +
-        sdcFlexTxt(n).toLowerCase() +
+        sdcFlexTxt(nivel).toLowerCase() +
         ". Antes llegabas " +
-        sdcFlexTxt(pr).toLowerCase() +
+        sdcFlexTxt(mejor).toLowerCase() +
         ".",
       "medida",
     );
-    l.push("Primera vez: llegás " + sdcFlexTxt(n).toLowerCase() + ".");
+    avisos.push("Primera vez: llegás " + sdcFlexTxt(nivel).toLowerCase() + ".");
   } else
-    l.push(
-      pr
+    avisos.push(
+      mejor
         ? "Alcance anotado. Te lo vuelvo a preguntar en una semana."
         : "Alcance anotado: este es tu punto de partida. Te lo vuelvo a preguntar en una semana.",
     );
-  return { state: a, notices: l };
+  return { state: partida, notices: avisos };
 }
 
 export {
