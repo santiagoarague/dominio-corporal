@@ -16,44 +16,46 @@ var velocidadesReaccion = [
     { id: "rapido", name: "Rápido", min: 1200, max: 2800, level: 3 },
   ],
   senalesPorPrueba = 15;
-function Reaccion({ onDone: e }) {
-  let [a, l] = useState("idle"),
-    [n, o] = useState(velocidadesReaccion[1]),
-    [s, u] = useState(null),
-    [c, r] = useState(0),
-    [p, v] = useState(3);
+function Reaccion({ onDone }) {
+  let [fase, setFase] = useState("idle"),
+    [velocidad, setVelocidad] = useState(velocidadesReaccion[1]),
+    [senal, setSenal] = useState(null),
+    [cuenta, setCuenta] = useState(0),
+    [cuentaAtras, setCuentaAtras] = useState(3);
   return (
     useEffect(() => {
-      if (a !== "countdown") return;
-      if (p <= 0) {
-        (r(0), u(null), l("gap"));
+      if (fase !== "countdown") return;
+      if (cuentaAtras <= 0) {
+        (setCuenta(0), setSenal(null), setFase("gap"));
         return;
       }
-      p <= 3 && pitido(520, 110);
-      let x = setTimeout(() => v((y) => y - 1), 1e3);
-      return () => clearTimeout(x);
-    }, [a, p]),
+      cuentaAtras <= 3 && pitido(520, 110);
+      let espera = setTimeout(() => setCuentaAtras((previa) => previa - 1), 1e3);
+      return () => clearTimeout(espera);
+    }, [fase, cuentaAtras]),
     useEffect(() => {
-      if (a !== "gap") return;
-      let x = n.min + Math.random() * (n.max - n.min),
-        y = setTimeout(() => {
-          (u(senalesReaccion[Math.floor(Math.random() * senalesReaccion.length)]),
+      if (fase !== "gap") return;
+      let hueco = velocidad.min + Math.random() * (velocidad.max - velocidad.min),
+        espera = setTimeout(() => {
+          (setSenal(senalesReaccion[Math.floor(Math.random() * senalesReaccion.length)]),
             pitido(900, 130),
-            l("signal"));
-        }, x);
-      return () => clearTimeout(y);
-    }, [a, c]),
+            setFase("signal"));
+        }, hueco);
+      return () => clearTimeout(espera);
+    }, [fase, cuenta]),
     useEffect(() => {
-      if (a !== "signal") return;
-      let x = setTimeout(() => {
-        let y = c + 1;
-        (r(y),
-          u(null),
-          y >= senalesPorPrueba ? (pitido(1100, 250), l("done"), e(n.level)) : l("gap"));
+      if (fase !== "signal") return;
+      let espera = setTimeout(() => {
+        let siguiente = cuenta + 1;
+        (setCuenta(siguiente),
+          setSenal(null),
+          siguiente >= senalesPorPrueba
+            ? (pitido(1100, 250), setFase("done"), onDone(velocidad.level))
+            : setFase("gap"));
       }, 2200);
-      return () => clearTimeout(x);
-    }, [a]),
-    a === "idle" ? (
+      return () => clearTimeout(espera);
+    }, [fase]),
+    fase === "idle" ? (
       <>
         <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
           {senalesPorPrueba} señales con huecos impredecibles. No tenés que tocar nada: dejá el
@@ -63,25 +65,26 @@ function Reaccion({ onDone: e }) {
           Ritmo
         </div>
         <div className="grid grid-cols-3 gap-1 mb-3">
-          {velocidadesReaccion.map((x) => (
+          {velocidadesReaccion.map((vel) => (
             <button
-              key={x.id}
-              onClick={() => o(x)}
+              key={vel.id}
+              onClick={() => setVelocidad(vel)}
               className="py-2 text-xs"
               style={{
-                background: n.id === x.id ? "#4f9dff" : "rgba(255,255,255,0.03)",
-                border: "1px solid " + (n.id === x.id ? "#4f9dff" : "rgba(255,255,255,0.12)"),
-                color: n.id === x.id ? "#0a0e1a" : "#8a93ad",
+                background: velocidad.id === vel.id ? "#4f9dff" : "rgba(255,255,255,0.03)",
+                border:
+                  "1px solid " + (velocidad.id === vel.id ? "#4f9dff" : "rgba(255,255,255,0.12)"),
+                color: velocidad.id === vel.id ? "#0a0e1a" : "#8a93ad",
                 fontWeight: 600,
               }}
             >
-              {x.name}
+              {vel.name}
             </button>
           ))}
         </div>
         <button
           onClick={() => {
-            (v(10), l("countdown"));
+            (setCuentaAtras(10), setFase("countdown"));
           }}
           className="w-full py-3 text-sm"
           style={{ background: "#4f9dff", color: "#0a0e1a", fontWeight: 700 }}
@@ -89,25 +92,25 @@ function Reaccion({ onDone: e }) {
           Empezar
         </button>
       </>
-    ) : a === "countdown" ? (
+    ) : fase === "countdown" ? (
       <div className="text-center py-6">
         <div style={{ fontFamily: "Chakra Petch, sans-serif", fontSize: 48, color: "#4f9dff" }}>
-          {p || "¡YA!"}
+          {cuentaAtras || "¡YA!"}
         </div>
         <div className="text-xs mt-1" style={{ color: "#9aa4bd" }}>
           Apoyá el teléfono y colocate
         </div>
       </div>
-    ) : a === "done" ? (
+    ) : fase === "done" ? (
       <div className="text-center">
         <div style={{ fontFamily: "Chakra Petch, sans-serif", fontSize: 24, color: "#3ecf8e" }}>
           Drill completado
         </div>
         <div className="text-xs mt-1" style={{ color: "#9aa4bd" }}>
-          {senalesPorPrueba} señales a ritmo {n.name}
+          {senalesPorPrueba} señales a ritmo {velocidad.name}
         </div>
         <button
-          onClick={() => l("idle")}
+          onClick={() => setFase("idle")}
           className="w-full py-2 text-xs mt-3"
           style={{
             background: "rgba(255,255,255,0.08)",
@@ -123,13 +126,13 @@ function Reaccion({ onDone: e }) {
       <div
         className="text-center"
         style={{
-          background: a === "signal" && s ? s.color : "rgba(255,255,255,0.03)",
+          background: fase === "signal" && senal ? senal.color : "rgba(255,255,255,0.03)",
           border: "1px solid rgba(255,255,255,0.12)",
           padding: "30px 12px",
           transition: "background .1s",
         }}
       >
-        {a === "signal" && s ? (
+        {fase === "signal" && senal ? (
           <>
             <div
               style={{
@@ -139,10 +142,10 @@ function Reaccion({ onDone: e }) {
                 letterSpacing: 2,
               }}
             >
-              {s.label}
+              {senal.label}
             </div>
             <div className="text-xs mt-1" style={{ color: "#0a0e1a" }}>
-              {s.action}
+              {senal.action}
             </div>
           </>
         ) : (
@@ -156,38 +159,38 @@ function Reaccion({ onDone: e }) {
             · · ·
           </div>
         )}
-        <div className="text-xs mt-3" style={{ color: a === "signal" ? "#0a0e1a" : "#5a6178" }}>
-          {c} / {senalesPorPrueba}
+        <div className="text-xs mt-3" style={{ color: fase === "signal" ? "#0a0e1a" : "#5a6178" }}>
+          {cuenta} / {senalesPorPrueba}
         </div>
       </div>
     )
   );
 }
-function Secuencia({ onDone: e }) {
-  let [a, l] = useState("idle"),
-    [n, o] = useState([]),
-    [s, u] = useState(0),
-    [c, r] = useState(3),
-    p = (x) => {
-      let y = [];
-      for (let S = 0; S < x; S++)
-        y.push(movimientosSecuencia[Math.floor(Math.random() * movimientosSecuencia.length)]);
-      return y;
+function Secuencia({ onDone }) {
+  let [fase, setFase] = useState("idle"),
+    [cadena, setCadena] = useState([]),
+    [mostrado, setMostrado] = useState(0),
+    [largo, setLargo] = useState(3),
+    armarCadena = (cantidad) => {
+      let lista = [];
+      for (let i = 0; i < cantidad; i++)
+        lista.push(movimientosSecuencia[Math.floor(Math.random() * movimientosSecuencia.length)]);
+      return lista;
     };
   useEffect(() => {
-    if (a !== "show") return;
-    if (s >= n.length) {
-      let y = setTimeout(() => l("execute"), 700);
-      return () => clearTimeout(y);
+    if (fase !== "show") return;
+    if (mostrado >= cadena.length) {
+      let espera = setTimeout(() => setFase("execute"), 700);
+      return () => clearTimeout(espera);
     }
     pitido(600, 80);
-    let x = setTimeout(() => u((y) => y + 1), 950);
-    return () => clearTimeout(x);
-  }, [a, s, n.length]);
-  let v = (x) => {
-    (o(p(x)), u(0), l("show"));
+    let espera = setTimeout(() => setMostrado((previo) => previo + 1), 950);
+    return () => clearTimeout(espera);
+  }, [fase, mostrado, cadena.length]);
+  let empezar = (cantidad) => {
+    (setCadena(armarCadena(cantidad)), setMostrado(0), setFase("show"));
   };
-  return a === "idle" ? (
+  return fase === "idle" ? (
     <>
       <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
         Vas a ver una cadena de movimientos, uno a uno. Memorizala, ejecutala completa con tu cuerpo
@@ -195,7 +198,7 @@ function Secuencia({ onDone: e }) {
       </div>
       <button
         onClick={() => {
-          (r(3), v(3));
+          (setLargo(3), empezar(3));
         }}
         className="w-full py-3 text-sm"
         style={{ background: "#b084f5", color: "#0a0e1a", fontWeight: 700 }}
@@ -203,43 +206,43 @@ function Secuencia({ onDone: e }) {
         Empezar en 3
       </button>
     </>
-  ) : a === "show" ? (
+  ) : fase === "show" ? (
     <div className="text-center py-4">
       <div className="text-xs mb-2" style={{ color: "#9aa4bd" }}>
-        Memorizá · {s} de {n.length}
+        Memorizá · {mostrado} de {cadena.length}
       </div>
       <div style={{ fontFamily: "Chakra Petch, sans-serif", fontSize: 30, color: "#b084f5" }}>
-        {s > 0 ? n[s - 1] : "..."}
+        {mostrado > 0 ? cadena[mostrado - 1] : "..."}
       </div>
     </div>
-  ) : a === "execute" ? (
+  ) : fase === "execute" ? (
     <div className="text-center py-4">
       <div style={{ fontFamily: "Chakra Petch, sans-serif", fontSize: 22, color: "#e8ecf7" }}>
         Ejecuta la secuencia
       </div>
       <div className="text-xs mt-1 mb-4" style={{ color: "#9aa4bd" }}>
-        {n.length} movimientos, de memoria y en orden. Sin mirar.
+        {cadena.length} movimientos, de memoria y en orden. Sin mirar.
       </div>
       <button
-        onClick={() => l("reveal")}
+        onClick={() => setFase("reveal")}
         className="w-full py-3 text-sm"
         style={{ background: "#b084f5", color: "#0a0e1a", fontWeight: 700 }}
       >
         Ya la hice
       </button>
     </div>
-  ) : a === "reveal" ? (
+  ) : fase === "reveal" ? (
     <>
       <div className="text-xs mb-2" style={{ color: "#9aa4bd" }}>
         Esta era la secuencia:
       </div>
-      {n.map((x, y) => (
+      {cadena.map((mov, i) => (
         <div
-          key={y}
+          key={i}
           className="text-sm py-1"
           style={{ color: "#e8ecf7", borderBottom: "1px solid rgba(255,255,255,0.06)" }}
         >
-          {y + 1}. {x}
+          {i + 1}. {mov}
         </div>
       ))}
       <div className="text-xs mt-3 mb-2" style={{ color: "#9aa4bd" }}>
@@ -248,7 +251,7 @@ function Secuencia({ onDone: e }) {
       <div className="flex gap-2">
         <button
           onClick={() => {
-            (e(c - 1), l("idle"));
+            (onDone(largo - 1), setFase("idle"));
           }}
           className="flex-1 py-3 text-sm"
           style={{
@@ -261,7 +264,7 @@ function Secuencia({ onDone: e }) {
           No del todo
         </button>
         <button
-          onClick={() => l("win")}
+          onClick={() => setFase("win")}
           className="flex-1 py-3 text-sm"
           style={{ background: "#3ecf8e", color: "#0a0e1a", fontWeight: 700 }}
         >
@@ -272,12 +275,12 @@ function Secuencia({ onDone: e }) {
   ) : (
     <div className="text-center">
       <div style={{ fontFamily: "Chakra Petch, sans-serif", fontSize: 22, color: "#3ecf8e" }}>
-        Correcto · {c} movimientos
+        Correcto · {largo} movimientos
       </div>
       <div className="flex gap-2 mt-3">
         <button
           onClick={() => {
-            (e(c), l("idle"));
+            (onDone(largo), setFase("idle"));
           }}
           className="flex-1 py-2 text-xs"
           style={{
@@ -291,30 +294,30 @@ function Secuencia({ onDone: e }) {
         </button>
         <button
           onClick={() => {
-            let x = c + 1;
-            (r(x), v(x));
+            let siguiente = largo + 1;
+            (setLargo(siguiente), empezar(siguiente));
           }}
           className="flex-1 py-2 text-xs"
           style={{ background: "#b084f5", color: "#0a0e1a", fontWeight: 700 }}
         >
-          Subir a {c + 1}
+          Subir a {largo + 1}
         </button>
       </div>
     </div>
   );
 }
-function TareaDual({ onDone: e }) {
-  let [a, l] = useState("idle"),
-    [n, o] = useState(0),
-    [s, u] = useState(sostenesDual[0]),
-    [c, r] = useState(tareasMentales[0]);
+function TareaDual({ onDone }) {
+  let [fase, setFase] = useState("idle"),
+    [segundos, setSegundos] = useState(0),
+    [sosten, setSosten] = useState(sostenesDual[0]),
+    [tarea, setTarea] = useState(tareasMentales[0]);
   return (
     useEffect(() => {
-      if (a !== "run") return;
-      let p = setTimeout(() => o((v) => v + 1), 1e3);
-      return () => clearTimeout(p);
-    }, [a, n]),
-    a === "idle" ? (
+      if (fase !== "run") return;
+      let espera = setTimeout(() => setSegundos((previo) => previo + 1), 1e3);
+      return () => clearTimeout(espera);
+    }, [fase, segundos]),
+    fase === "idle" ? (
       <>
         <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
           Sostén una posición isométrica mientras resuelves una tarea mental en voz alta. Para
@@ -322,10 +325,10 @@ function TareaDual({ onDone: e }) {
         </div>
         <button
           onClick={() => {
-            (u(sostenesDual[Math.floor(Math.random() * sostenesDual.length)]),
-              r(tareasMentales[Math.floor(Math.random() * tareasMentales.length)]),
-              o(0),
-              l("run"));
+            (setSosten(sostenesDual[Math.floor(Math.random() * sostenesDual.length)]),
+              setTarea(tareasMentales[Math.floor(Math.random() * tareasMentales.length)]),
+              setSegundos(0),
+              setFase("run"));
           }}
           className="w-full py-3 text-sm"
           style={{ background: "#3ecf8e", color: "#0a0e1a", fontWeight: 700 }}
@@ -333,19 +336,19 @@ function TareaDual({ onDone: e }) {
           Empezar
         </button>
       </>
-    ) : a === "run" ? (
+    ) : fase === "run" ? (
       <div className="text-center">
         <div className="text-xs" style={{ color: "#9aa4bd" }}>
           Posición
         </div>
         <div style={{ fontFamily: "Chakra Petch, sans-serif", fontSize: 20, color: "#e8ecf7" }}>
-          {s}
+          {sosten}
         </div>
         <div className="text-xs mt-2" style={{ color: "#9aa4bd" }}>
           Tarea mental
         </div>
         <div className="text-sm" style={{ color: "#3ecf8e" }}>
-          {c}
+          {tarea}
         </div>
         <div
           style={{
@@ -355,11 +358,11 @@ function TareaDual({ onDone: e }) {
             marginTop: 8,
           }}
         >
-          {Math.floor(n / 60)}:{String(n % 60).padStart(2, "0")}
+          {Math.floor(segundos / 60)}:{String(segundos % 60).padStart(2, "0")}
         </div>
         <button
           onClick={() => {
-            (l("idle"), e(n));
+            (setFase("idle"), onDone(segundos));
           }}
           className="w-full py-3 text-sm mt-2"
           style={{ background: "#ff5c7a", color: "#0a0e1a", fontWeight: 700 }}
@@ -370,32 +373,32 @@ function TareaDual({ onDone: e }) {
     ) : null
   );
 }
-function Ritmo({ onDone: e }) {
-  let [a, l] = useState("idle"),
-    [n, o] = useState(0),
-    [s, u] = useState(30),
-    [c, r] = useState(patronesCruzados[0]),
-    [p, v] = useState(!1),
-    x = bpmRitmo[n];
+function Ritmo({ onDone }) {
+  let [fase, setFase] = useState("idle"),
+    [nivel, setNivel] = useState(0),
+    [segundos, setSegundos] = useState(30),
+    [patron, setPatron] = useState(patronesCruzados[0]),
+    [golpe, setGolpe] = useState(!1),
+    bpm = bpmRitmo[nivel];
   return (
     useEffect(() => {
-      if (a !== "run") return;
-      if (s <= 0) {
-        (l("done"), e(x));
+      if (fase !== "run") return;
+      if (segundos <= 0) {
+        (setFase("done"), onDone(bpm));
         return;
       }
-      let y = setTimeout(() => u((S) => S - 1), 1e3);
-      return () => clearTimeout(y);
-    }, [a, s]),
+      let espera = setTimeout(() => setSegundos((previo) => previo - 1), 1e3);
+      return () => clearTimeout(espera);
+    }, [fase, segundos]),
     useEffect(() => {
-      if (a !== "run") return;
-      let y = 6e4 / x,
-        S = setInterval(() => {
-          (v((E) => !E), pitido(700, 60));
-        }, y);
-      return () => clearInterval(S);
-    }, [a, x]),
-    a === "idle" ? (
+      if (fase !== "run") return;
+      let intervalo = 6e4 / bpm,
+        reloj = setInterval(() => {
+          (setGolpe((previo) => !previo), pitido(700, 60));
+        }, intervalo);
+      return () => clearInterval(reloj);
+    }, [fase, bpm]),
+    fase === "idle" ? (
       <>
         <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
           Patrón cruzado al ritmo del metrónomo, 30 segundos por nivel. Si aguantás limpio, subí el
@@ -403,23 +406,23 @@ function Ritmo({ onDone: e }) {
         </div>
         <button
           onClick={() => {
-            (r(patronesCruzados[Math.floor(Math.random() * patronesCruzados.length)]),
-              u(30),
-              l("run"));
+            (setPatron(patronesCruzados[Math.floor(Math.random() * patronesCruzados.length)]),
+              setSegundos(30),
+              setFase("run"));
           }}
           className="w-full py-3 text-sm"
           style={{ background: "#ffb84f", color: "#0a0e1a", fontWeight: 700 }}
         >
-          Empezar a {x} bpm
+          Empezar a {bpm} bpm
         </button>
       </>
-    ) : a === "run" ? (
+    ) : fase === "run" ? (
       <div className="text-center">
         <div className="text-xs" style={{ color: "#9aa4bd" }}>
-          {x} bpm
+          {bpm} bpm
         </div>
         <div className="text-sm mb-2" style={{ color: "#e8ecf7" }}>
-          {c}
+          {patron}
         </div>
         <div
           style={{
@@ -427,7 +430,7 @@ function Ritmo({ onDone: e }) {
             height: 60,
             borderRadius: "50%",
             margin: "0 auto",
-            background: p ? "#ffb84f" : "rgba(255,184,79,0.15)",
+            background: golpe ? "#ffb84f" : "rgba(255,184,79,0.15)",
             border: "2px solid #ffb84f",
             transition: "background .08s",
           }}
@@ -440,11 +443,11 @@ function Ritmo({ onDone: e }) {
             marginTop: 8,
           }}
         >
-          {s}s
+          {segundos}s
         </div>
         <button
           onClick={() => {
-            (l("idle"), e(n > 0 ? bpmRitmo[n - 1] : 0));
+            (setFase("idle"), onDone(nivel > 0 ? bpmRitmo[nivel - 1] : 0));
           }}
           className="w-full py-2 text-xs mt-2"
           style={{
@@ -460,12 +463,12 @@ function Ritmo({ onDone: e }) {
     ) : (
       <div className="text-center">
         <div style={{ fontFamily: "Chakra Petch, sans-serif", fontSize: 22, color: "#3ecf8e" }}>
-          Nivel superado a {x} bpm
+          Nivel superado a {bpm} bpm
         </div>
         <div className="flex gap-2 mt-3">
           <button
             onClick={() => {
-              (o(0), l("idle"));
+              (setNivel(0), setFase("idle"));
             }}
             className="flex-1 py-2 text-xs"
             style={{
@@ -477,15 +480,15 @@ function Ritmo({ onDone: e }) {
           >
             Salir
           </button>
-          {n < bpmRitmo.length - 1 && (
+          {nivel < bpmRitmo.length - 1 && (
             <button
               onClick={() => {
-                (o(n + 1), u(30), l("run"));
+                (setNivel(nivel + 1), setSegundos(30), setFase("run"));
               }}
               className="flex-1 py-2 text-xs"
               style={{ background: "#ffb84f", color: "#0a0e1a", fontWeight: 700 }}
             >
-              Subir a {bpmRitmo[n + 1]} bpm
+              Subir a {bpmRitmo[nivel + 1]} bpm
             </button>
           )}
         </div>

@@ -46,16 +46,16 @@ var sdcAnimoTx = { fontSize: 14, lineHeight: 1.5, color: "#c8d0e4" },
     border: "1px solid rgba(62,207,142,0.4)",
     color: "#bdf0d9",
   };
-function sdcAnimoHoy(e) {
-  return e && e.today ? sdcAnimo(e)[e.today.date] || {} : {};
+function sdcAnimoHoy(partida) {
+  return partida && partida.today ? sdcAnimo(partida)[partida.today.date] || {} : {};
 }
-function sdcAnimoOn(e) {
-  return sistemaActivo(e, "animo");
+function sdcAnimoOn(partida) {
+  return sistemaActivo(partida, "animo");
 }
-function sdcAnimoOtra(f) {
+function sdcAnimoOtra(alTocar) {
   return (
     <button
-      onClick={f}
+      onClick={alTocar}
       className="text-xs"
       style={{
         color: "#7a83a0",
@@ -72,126 +72,128 @@ function sdcAnimoOtra(f) {
     </button>
   );
 }
-function sdcAnimoFrase(n) {
-  var x = sdcAnimoEsc[(n || 3) - 1];
-  return x ? x.f : "";
+function sdcAnimoFrase(valor) {
+  var cara = sdcAnimoEsc[(valor || 3) - 1];
+  return cara ? cara.f : "";
 }
-function sdcAnimoPut(e, cp) {
-  var a = clonar(e),
-    d = a.today.date,
-    m = {},
-    k,
-    v = sdcAnimo(a),
-    o,
-    h = {},
-    ks;
-  for (k in v) m[k] = v[k];
-  o = m[d] || {};
-  for (k in o) h[k] = o[k];
-  for (k in cp) h[k] = cp[k];
-  m[d] = h;
-  a.seenUnlocks && a.seenUnlocks.indexOf("animo") < 0 && a.seenUnlocks.push("animo");
-  ks = Object.keys(m).sort();
-  for (k = 0; k < ks.length - 400; k++) delete m[ks[k]];
-  a.animo = m;
-  return a;
+function sdcAnimoPut(original, cambios) {
+  var partida = clonar(original),
+    fecha = partida.today.date,
+    mapa = {},
+    clave,
+    previo = sdcAnimo(partida),
+    delDia,
+    nuevo = {},
+    claves;
+  for (clave in previo) mapa[clave] = previo[clave];
+  delDia = mapa[fecha] || {};
+  for (clave in delDia) nuevo[clave] = delDia[clave];
+  for (clave in cambios) nuevo[clave] = cambios[clave];
+  mapa[fecha] = nuevo;
+  partida.seenUnlocks &&
+    partida.seenUnlocks.indexOf("animo") < 0 &&
+    partida.seenUnlocks.push("animo");
+  claves = Object.keys(mapa).sort();
+  for (clave = 0; clave < claves.length - 400; clave++) delete mapa[claves[clave]];
+  partida.animo = mapa;
+  return partida;
 }
-function sdcAnimoSet(e, cp) {
-  return { state: sdcAnimoPut(e, cp), notices: [] };
+function sdcAnimoSet(partida, cambios) {
+  return { state: sdcAnimoPut(partida, cambios), notices: [] };
 }
-function sdcAnimoSetDa(e, cp) {
-  var o = revisarLogros(sdcAnimoPut(e, cp));
-  return { state: o.state, notices: o.notices };
+function sdcAnimoSetDa(partida, cambios) {
+  var revisado = revisarLogros(sdcAnimoPut(partida, cambios));
+  return { state: revisado.state, notices: revisado.notices };
 }
-function sdcAnimoCalor(e, B) {
-  var r = sdcCalorIni(sdcAnimoPut(e, { ack: 1 }), B),
-    a = r.state;
-  a.ui = a.ui || { collapsed: {} };
-  a.ui.collapsed = a.ui.collapsed || {};
-  a.ui.collapsed.calentamiento = !1;
-  return r;
+function sdcAnimoCalor(partida, modalidad) {
+  var resultado = sdcCalorIni(sdcAnimoPut(partida, { ack: 1 }), modalidad),
+    nueva = resultado.state;
+  nueva.ui = nueva.ui || { collapsed: {} };
+  nueva.ui.collapsed = nueva.ui.collapsed || {};
+  nueva.ui.collapsed.calentamiento = !1;
+  return resultado;
 }
-function sdcAbrirCard(e, id) {
-  var a = clonar(e);
-  a.ui = a.ui || { collapsed: {} };
-  a.ui.collapsed = a.ui.collapsed || {};
-  a.ui.collapsed[id] = !1;
-  return { state: a, notices: [] };
+function sdcAbrirCard(original, id) {
+  var partida = clonar(original);
+  partida.ui = partida.ui || { collapsed: {} };
+  partida.ui.collapsed = partida.ui.collapsed || {};
+  partida.ui.collapsed[id] = !1;
+  return { state: partida, notices: [] };
 }
-function sdcAnimoEvid(e) {
-  var v = sdcAnimo(e),
-    hoy = e.today.date,
-    ks = Object.keys(v)
-      .filter(function (k) {
-        var x = v[k];
-        return k < hoy && x && x.antes && x.antes <= 2 && x.despues;
+function sdcAnimoEvid(partida) {
+  var respuestas = sdcAnimo(partida),
+    hoy = partida.today.date,
+    claves = Object.keys(respuestas)
+      .filter(function (fecha) {
+        var dia = respuestas[fecha];
+        return fecha < hoy && dia && dia.antes && dia.antes <= 2 && dia.despues;
       })
       .sort()
       .slice(-5),
-    m = 0;
-  ks.forEach(function (k) {
-    v[k].despues > v[k].antes && m++;
+    mejor = 0;
+  claves.forEach(function (fecha) {
+    respuestas[fecha].despues > respuestas[fecha].antes && mejor++;
   });
-  return { n: ks.length, m: m };
+  return { n: claves.length, m: mejor };
 }
-function sdcCargaRacha(e) {
-  var v = sdcAnimo(e),
-    ks = Object.keys(v)
-      .filter(function (k) {
-        return v[k] && v[k].carga;
+function sdcCargaRacha(partida) {
+  var respuestas = sdcAnimo(partida),
+    claves = Object.keys(respuestas)
+      .filter(function (fecha) {
+        return respuestas[fecha] && respuestas[fecha].carga;
       })
       .sort()
       .slice(-3),
-    c,
-    j;
-  if (ks.length < 3) return null;
-  c = v[ks[0]].carga;
-  for (j = 1; j < 3; j++) if (v[ks[j]].carga !== c) return null;
-  return c === "justa" ? null : c;
+    carga,
+    i;
+  if (claves.length < 3) return null;
+  carga = respuestas[claves[0]].carga;
+  for (i = 1; i < 3; i++) if (respuestas[claves[i]].carga !== carga) return null;
+  return carga === "justa" ? null : carga;
 }
-function Cara({ n: n, size: s, color: c }) {
-  var bo = [
+function Cara({ n: nivel, size, color }) {
+  var boca = [
     "M8 16.6 Q12 12.6 16 16.6",
     "M8.5 16 Q12 14.3 15.5 16",
     "M8.5 15.2 L15.5 15.2",
     "M8.5 14.4 Q12 17.6 15.5 14.4",
     "M7.5 13.4 H16.5 Q12 20.2 7.5 13.4 Z",
-  ][(n || 3) - 1];
+  ][(nivel || 3) - 1];
   return (
-    <svg width={s || 26} height={s || 26} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <circle cx={12} cy={12} r={9.5} stroke={c} strokeWidth={1.8} />
-      <circle cx={9} cy={10} r={1.2} fill={c} />
-      <circle cx={15} cy={10} r={1.2} fill={c} />
+    <svg width={size || 26} height={size || 26} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx={12} cy={12} r={9.5} stroke={color} strokeWidth={1.8} />
+      <circle cx={9} cy={10} r={1.2} fill={color} />
+      <circle cx={15} cy={10} r={1.2} fill={color} />
       <path
-        d={bo}
-        stroke={c}
+        d={boca}
+        stroke={color}
         strokeWidth={1.8}
         strokeLinecap="round"
         strokeLinejoin="round"
-        fill={n === 5 ? c : "none"}
+        fill={nivel === 5 ? color : "none"}
       />
     </svg>
   );
 }
-function Caras({ sel: sl, onPick: op }) {
+function Caras({ sel, onPick }) {
   return (
     <div style={{ display: "grid", gridTemplateColumns: "repeat(5,minmax(0,1fr))", gap: 4 }}>
-      {sdcAnimoEsc.map(function (x) {
-        var on = sl === x.n,
-          cc = on ? "#4f9dff" : "#c8d0e4";
+      {sdcAnimoEsc.map(function (cara) {
+        var elegida = sel === cara.n,
+          color = elegida ? "#4f9dff" : "#c8d0e4";
         return (
           <button
-            key={x.n}
+            key={cara.n}
             onClick={function () {
-              (sdcBeep(560 + x.n * 60, 70), sdcVib(12), op(x.n));
+              (sdcBeep(560 + cara.n * 60, 70), sdcVib(12), onPick(cara.n));
             }}
-            aria-pressed={on}
+            aria-pressed={elegida}
             style={{
               minHeight: 66,
               padding: "6px 2px",
-              background: on ? "rgba(79,157,255,0.15)" : "rgba(255,255,255,0.03)",
-              border: "1px solid " + (on ? "#4f9dff" : "rgba(255,255,255,0.12)"),
-              color: cc,
+              background: elegida ? "rgba(79,157,255,0.15)" : "rgba(255,255,255,0.03)",
+              border: "1px solid " + (elegida ? "#4f9dff" : "rgba(255,255,255,0.12)"),
+              color,
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
@@ -200,7 +202,7 @@ function Caras({ sel: sl, onPick: op }) {
               paddingTop: 8,
             }}
           >
-            <Cara n={x.n} size={26} color={cc} />
+            <Cara n={cara.n} size={26} color={color} />
             <span
               style={{
                 fontSize: 11,
@@ -211,7 +213,7 @@ function Caras({ sel: sl, onPick: op }) {
                 alignItems: "center",
               }}
             >
-              {x.t}
+              {cara.t}
             </span>
           </button>
         );
@@ -219,15 +221,15 @@ function Caras({ sel: sl, onPick: op }) {
     </div>
   );
 }
-function AnimoAntes({ st: e, Ne: Ne, mod: B, onModo: om, descLibre: dl, onDescanso: odc }) {
-  let [cf, scf] = useState(!1),
-    h = sdcAnimoHoy(e),
+function AnimoAntes({ st: player, Ne: aplicar, mod, onModo, descLibre, onDescanso }) {
+  let [confirmando, setConfirmando] = useState(!1),
+    animo = sdcAnimoHoy(player),
     cambiar = (
       <button
         onClick={() => {
-          (scf(!1),
-            h.modo && om("normal"),
-            Ne((d) => sdcAnimoSet(d, { antes: 0, cuerpo: 0, modo: 0, ack: 0 })));
+          (setConfirmando(!1),
+            animo.modo && onModo("normal"),
+            aplicar((partida) => sdcAnimoSet(partida, { antes: 0, cuerpo: 0, modo: 0, ack: 0 })));
         }}
         className="text-xs"
         style={{
@@ -242,13 +244,13 @@ function AnimoAntes({ st: e, Ne: Ne, mod: B, onModo: om, descLibre: dl, onDescan
         Cambiar respuesta
       </button>
     );
-  if (!h.antes)
+  if (!animo.antes)
     return (
       <div>
         <div className="flex items-center justify-between mb-2">
           <span style={sdcAnimoTit}>¿Cómo llegás hoy?</span>
           <button
-            onClick={() => Ne((d) => sdcAnimoSet(d, { no: 1 }))}
+            onClick={() => aplicar((partida) => sdcAnimoSet(partida, { no: 1 }))}
             className="text-xs"
             style={{
               color: "#7a83a0",
@@ -261,51 +263,56 @@ function AnimoAntes({ st: e, Ne: Ne, mod: B, onModo: om, descLibre: dl, onDescan
             Hoy no
           </button>
         </div>
-        <Caras sel={0} onPick={(n) => Ne((d) => sdcAnimoSet(d, { antes: n }))} />
+        <Caras
+          sel={0}
+          onPick={(valor) => aplicar((partida) => sdcAnimoSet(partida, { antes: valor }))}
+        />
       </div>
     );
-  if (h.antes >= 3 || h.ack)
+  if (animo.antes >= 3 || animo.ack)
     return (
       <div className="flex items-center gap-2" style={sdcAnimoTx}>
-        <Cara n={h.antes} size={22} color="#c8d0e4" />
-        {"Llegás " + sdcAnimoFrase(h.antes) + "."}
+        <Cara n={animo.antes} size={22} color="#c8d0e4" />
+        {"Llegás " + sdcAnimoFrase(animo.antes) + "."}
         <span style={{ marginLeft: "auto" }}>{cambiar}</span>
       </div>
     );
-  if (!h.cuerpo)
+  if (!animo.cuerpo)
     return (
       <div>
         <div className="text-xs mb-1" style={{ color: "#9aa4bd" }}>
-          Llegás {sdcAnimoFrase(h.antes)}.
+          Llegás {sdcAnimoFrase(animo.antes)}.
         </div>
         <div className="mb-2" style={sdcAnimoTit}>
           ¿Y el cuerpo?
         </div>
         <div className="grid grid-cols-2 gap-2">
-          {sdcAnimoCuerpo.map((x) => (
+          {sdcAnimoCuerpo.map((opcion) => (
             <button
-              key={x.k}
+              key={opcion.k}
               onClick={() => {
                 (sdcVib(12),
-                  x.k !== "dolor" && om("recovery"),
-                  Ne((d) =>
+                  opcion.k !== "dolor" && onModo("recovery"),
+                  aplicar((partida) =>
                     sdcAnimoSet(
-                      d,
-                      x.k !== "dolor" ? { cuerpo: x.k, modo: "recovery" } : { cuerpo: x.k },
+                      partida,
+                      opcion.k !== "dolor"
+                        ? { cuerpo: opcion.k, modo: "recovery" }
+                        : { cuerpo: opcion.k },
                     ),
                   ));
               }}
               className="py-2 text-sm"
               style={sdcAnimoB2}
             >
-              {x.t}
+              {opcion.t}
             </button>
           ))}
         </div>
         <div className="text-right">{cambiar}</div>
       </div>
     );
-  if (h.cuerpo === "dolor")
+  if (animo.cuerpo === "dolor")
     return (
       <div>
         <div className="mb-1" style={sdcAnimoTit}>
@@ -314,8 +321,8 @@ function AnimoAntes({ st: e, Ne: Ne, mod: B, onModo: om, descLibre: dl, onDescan
         <div className="mb-3" style={sdcAnimoTx}>
           Si es un dolor agudo o punzante, no entrenes esa zona hoy. {reglaDolor}
         </div>
-        {dl ? (
-          cf ? (
+        {descLibre ? (
+          confirmando ? (
             <div className="mb-2">
               <div className="text-xs mb-2" style={{ color: "#ffb84f" }}>
                 El día de descanso no da XP y solo tenés uno por semana.
@@ -323,27 +330,36 @@ function AnimoAntes({ st: e, Ne: Ne, mod: B, onModo: om, descLibre: dl, onDescan
               <div className="grid grid-cols-2 gap-2">
                 <button
                   onClick={() => {
-                    (scf(!1), odc());
+                    (setConfirmando(!1), onDescanso());
                   }}
                   className="py-2 text-sm"
                   style={sdcAnimoB1}
                 >
                   Sí, descansar
                 </button>
-                <button onClick={() => scf(!1)} className="py-2 text-sm" style={sdcAnimoB2}>
+                <button
+                  onClick={() => setConfirmando(!1)}
+                  className="py-2 text-sm"
+                  style={sdcAnimoB2}
+                >
                   Mejor no
                 </button>
               </div>
             </div>
           ) : (
-            <button onClick={() => scf(!0)} className="w-full py-2 text-sm mb-2" style={sdcAnimoB2}>
+            <button
+              onClick={() => setConfirmando(!0)}
+              className="w-full py-2 text-sm mb-2"
+              style={sdcAnimoB2}
+            >
               Usar mi día de descanso
             </button>
           )
         ) : null}
         <button
           onClick={() => {
-            (om("recovery"), Ne((d) => sdcAnimoSet(d, { modo: "recovery", ack: 1 })));
+            (onModo("recovery"),
+              aplicar((partida) => sdcAnimoSet(partida, { modo: "recovery", ack: 1 })));
           }}
           className="w-full py-2 text-sm"
           style={sdcAnimoB2}
@@ -353,11 +369,11 @@ function AnimoAntes({ st: e, Ne: Ne, mod: B, onModo: om, descLibre: dl, onDescan
         <div className="text-right">{cambiar}</div>
       </div>
     );
-  let ev = sdcAnimoEvid(e);
+  let evidencia = sdcAnimoEvid(player);
   return (
     <div>
       <div className="text-xs mb-1" style={{ color: "#9aa4bd" }}>
-        Llegás {sdcAnimoFrase(h.antes)}.
+        Llegás {sdcAnimoFrase(animo.antes)}.
       </div>
       <div className="mb-2" style={sdcAnimoTit}>
         Hoy alcanza con empezar
@@ -366,14 +382,14 @@ function AnimoAntes({ st: e, Ne: Ne, mod: B, onModo: om, descLibre: dl, onDescan
         Hacé el calentamiento y la rutina en Recuperación, con la mitad de las repeticiones. Si
         después del calentamiento te vino el envión, pasás a la normal.
       </div>
-      {ev.n >= 3 && ev.m >= 2 ? (
+      {evidencia.n >= 3 && evidencia.m >= 2 ? (
         <div className="mt-2 p-2 text-sm" style={sdcAnimoEvBox}>
-          Las últimas {ev.n} veces que llegaste así, en {ev.m} terminaste mejor.
+          Las últimas {evidencia.n} veces que llegaste así, en {evidencia.m} terminaste mejor.
         </div>
       ) : null}
       <button
         onClick={() => {
-          (sdcBeep(660, 100), Ne((d) => sdcAnimoCalor(d, B)));
+          (sdcBeep(660, 100), aplicar((partida) => sdcAnimoCalor(partida, mod)));
         }}
         className="w-full mt-3 py-3 text-sm"
         style={sdcAnimoB1}
@@ -381,7 +397,7 @@ function AnimoAntes({ st: e, Ne: Ne, mod: B, onModo: om, descLibre: dl, onDescan
         Empezar calentamiento
       </button>
       <button
-        onClick={() => Ne((d) => sdcAnimoSet(d, { ack: 1 }))}
+        onClick={() => aplicar((partida) => sdcAnimoSet(partida, { ack: 1 }))}
         className="w-full mt-2 py-2 text-sm"
         style={sdcAnimoB2}
       >
@@ -391,46 +407,50 @@ function AnimoAntes({ st: e, Ne: Ne, mod: B, onModo: om, descLibre: dl, onDescan
     </div>
   );
 }
-function AnimoAhora({ st: e, Ne: Ne, onModo: om, sinSeries: ss }) {
-  let h = sdcAnimoHoy(e),
-    bx = { border: "1px solid rgba(79,157,255,0.35)", background: "rgba(79,157,255,0.06)" };
+function AnimoAhora({ st: player, Ne: aplicar, onModo, sinSeries }) {
+  let animo = sdcAnimoHoy(player),
+    caja = { border: "1px solid rgba(79,157,255,0.35)", background: "rgba(79,157,255,0.06)" };
   if (
-    !sdcAnimoOn(e) ||
-    !h.antes ||
-    h.antes > 2 ||
-    h.cuerpo === "dolor" ||
-    h.ahoraOk ||
-    !ss ||
-    (e.today.doneModalities || []).length
+    !sdcAnimoOn(player) ||
+    !animo.antes ||
+    animo.antes > 2 ||
+    animo.cuerpo === "dolor" ||
+    animo.ahoraOk ||
+    !sinSeries ||
+    (player.today.doneModalities || []).length
   )
     return null;
-  if (!h.ahora)
+  if (!animo.ahora)
     return (
-      <div className="mt-3 p-2" style={bx}>
+      <div className="mt-3 p-2" style={caja}>
         <div className="mb-2" style={sdcAnimoTit}>
           ¿Y ahora?
         </div>
         <Caras
           sel={0}
-          onPick={(n) =>
-            Ne((d) => {
-              let r = sdcAnimoSet(d, n <= 2 ? { ahora: n, ahoraOk: 1 } : { ahora: n });
-              n <= 2 && (r.notices = ["Seguí en Recuperación: con eso alcanza."]);
-              return r;
+          onPick={(valor) =>
+            aplicar((partida) => {
+              let resultado = sdcAnimoSet(
+                partida,
+                valor <= 2 ? { ahora: valor, ahoraOk: 1 } : { ahora: valor },
+              );
+              valor <= 2 && (resultado.notices = ["Seguí en Recuperación: con eso alcanza."]);
+              return resultado;
             })
           }
         />
       </div>
     );
   return (
-    <div className="mt-3 p-2" style={bx}>
+    <div className="mt-3 p-2" style={caja}>
       <div className="mb-2" style={sdcAnimoTx}>
         Te vino el envión. ¿Hacés la rutina normal?
       </div>
       <div className="grid grid-cols-2 gap-2">
         <button
           onClick={() => {
-            (om("normal"), Ne((d) => sdcAnimoSet(d, { modo: "normal", ahoraOk: 1 })));
+            (onModo("normal"),
+              aplicar((partida) => sdcAnimoSet(partida, { modo: "normal", ahoraOk: 1 })));
           }}
           className="py-2 text-sm"
           style={sdcAnimoB1}
@@ -438,7 +458,7 @@ function AnimoAhora({ st: e, Ne: Ne, onModo: om, sinSeries: ss }) {
           Normal
         </button>
         <button
-          onClick={() => Ne((d) => sdcAnimoSet(d, { ahoraOk: 1 }))}
+          onClick={() => aplicar((partida) => sdcAnimoSet(partida, { ahoraOk: 1 }))}
           className="py-2 text-sm"
           style={sdcAnimoB2}
         >
@@ -448,34 +468,41 @@ function AnimoAhora({ st: e, Ne: Ne, onModo: om, sinSeries: ss }) {
     </div>
   );
 }
-function AnimoDespues({ st: e, Ne: Ne, onPrueba: op }) {
-  let h = sdcAnimoHoy(e),
-    bx = { marginBottom: 12, paddingBottom: 12, borderBottom: "1px solid rgba(255,255,255,0.08)" };
-  if (h.no) return null;
-  let delta = h.despues
-    ? h.antes
+function AnimoDespues({ st: player, Ne: aplicar, onPrueba }) {
+  let animo = sdcAnimoHoy(player),
+    bloque = {
+      marginBottom: 12,
+      paddingBottom: 12,
+      borderBottom: "1px solid rgba(255,255,255,0.08)",
+    };
+  if (animo.no) return null;
+  let delta = animo.despues
+    ? animo.antes
       ? "Llegaste " +
-        sdcAnimoFrase(h.antes) +
+        sdcAnimoFrase(animo.antes) +
         " y te vas " +
-        (h.despues === h.antes ? "igual" : sdcAnimoFrase(h.despues)) +
+        (animo.despues === animo.antes ? "igual" : sdcAnimoFrase(animo.despues)) +
         "."
-      : "Te vas " + sdcAnimoFrase(h.despues) + "."
+      : "Te vas " + sdcAnimoFrase(animo.despues) + "."
     : "";
-  if (!h.despues)
+  if (!animo.despues)
     return (
-      <div style={bx}>
+      <div style={bloque}>
         <div className="mb-2" style={sdcAnimoTit}>
           ¿Cómo te vas?
         </div>
-        <Caras sel={0} onPick={(n) => Ne((d) => sdcAnimoSetDa(d, { despues: n }))} />
+        <Caras
+          sel={0}
+          onPick={(valor) => aplicar((partida) => sdcAnimoSetDa(partida, { despues: valor }))}
+        />
       </div>
     );
-  if (!h.carga)
+  if (!animo.carga)
     return (
-      <div style={bx}>
+      <div style={bloque}>
         <div className="mb-2 flex items-center gap-2" style={sdcAnimoTx}>
           {delta}
-          {sdcAnimoOtra(() => Ne((d) => sdcAnimoSet(d, { despues: 0, carga: 0 })))}
+          {sdcAnimoOtra(() => aplicar((partida) => sdcAnimoSet(partida, { despues: 0, carga: 0 })))}
         </div>
         <div className="mb-2" style={sdcAnimoTit}>
           ¿Cómo te quedó la rutina?
@@ -485,45 +512,46 @@ function AnimoDespues({ st: e, Ne: Ne, onPrueba: op }) {
             ["corta", "Corta"],
             ["justa", "Justa"],
             ["mucha", "Mucha"],
-          ].map((x) => (
+          ].map((opcion) => (
             <button
-              key={x[0]}
+              key={opcion[0]}
               onClick={() => {
-                (sdcVib(12), Ne((d) => sdcAnimoSet(d, { carga: x[0] })));
+                (sdcVib(12), aplicar((partida) => sdcAnimoSet(partida, { carga: opcion[0] })));
               }}
               className="py-2 text-sm"
               style={sdcAnimoB2}
             >
-              {x[1]}
+              {opcion[1]}
             </button>
           ))}
         </div>
       </div>
     );
-  let ct = sdcAnimoCuenta(e),
-    cr = sdcCargaRacha(e);
+  let cuenta = sdcAnimoCuenta(player),
+    racha = sdcCargaRacha(player);
   return (
-    <div style={bx}>
+    <div style={bloque}>
       <div className="flex items-center gap-2" style={sdcAnimoTx}>
         <Cara
-          n={h.despues}
+          n={animo.despues}
           size={22}
-          color={h.antes && h.despues > h.antes ? "#3ecf8e" : "#c8d0e4"}
+          color={animo.antes && animo.despues > animo.antes ? "#3ecf8e" : "#c8d0e4"}
         />
         {delta}
-        {sdcAnimoOtra(() => Ne((d) => sdcAnimoSet(d, { despues: 0, carga: 0 })))}
+        {sdcAnimoOtra(() => aplicar((partida) => sdcAnimoSet(partida, { despues: 0, carga: 0 })))}
       </div>
-      {h.antes && h.antes <= 2 && ct.noResp >= 2 ? (
+      {animo.antes && animo.antes <= 2 && cuenta.noResp >= 2 ? (
         <div className="mt-2 p-2 text-sm" style={sdcAnimoEvBox}>
-          Días que no querías: {ct.noResp}. En {ct.noMejor} terminaste mejor.
+          Días que no querías: {cuenta.noResp}. En {cuenta.noMejor} terminaste mejor.
         </div>
       ) : null}
-      {cr ? (
+      {racha ? (
         <div className="mt-2">
           <div style={sdcAnimoTx}>
-            Las últimas 3 veces la rutina te quedó {cr}. Repetí la prueba de aptitud para ajustarla.
+            Las últimas 3 veces la rutina te quedó {racha}. Repetí la prueba de aptitud para
+            ajustarla.
           </div>
-          <button onClick={op} className="w-full mt-2 py-2 text-sm" style={sdcAnimoB2}>
+          <button onClick={onPrueba} className="w-full mt-2 py-2 text-sm" style={sdcAnimoB2}>
             Ir a la prueba de aptitud
           </button>
         </div>
