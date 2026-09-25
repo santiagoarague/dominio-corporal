@@ -18,9 +18,13 @@ describe("series", () => {
   it("ninguna serie vale 0, suman el total y van de mayor a menor", () => {
     for (let t = 1; t <= 400; t++) {
       const s = J.sdcSplit(t, J.sdcNSets(t));
-      expect(s.reduce((a, b) => a + b, 0), `total ${t}`).toBe(t);
+      expect(
+        s.reduce((a, b) => a + b, 0),
+        `total ${t}`,
+      ).toBe(t);
       expect(Math.min(...s), `total ${t}: ${s}`).toBeGreaterThanOrEqual(1);
-      for (let k = 1; k < s.length; k++) expect(s[k], `total ${t}: ${s}`).toBeLessThanOrEqual(s[k - 1]);
+      for (let k = 1; k < s.length; k++)
+        expect(s[k], `total ${t}: ${s}`).toBeLessThanOrEqual(s[k - 1]);
     }
   });
 
@@ -53,7 +57,9 @@ describe("metronomo segun el modificador del dia", () => {
   it("solo tres de los dieciocho modificadores cambian el tempo", () => {
     const todos = Object.values(J.sdcMods).flat();
     expect(todos).toHaveLength(18);
-    const cambian = todos.filter((m) => JSON.stringify(J.sdcTempoMod(m)) !== JSON.stringify(normal));
+    const cambian = todos.filter(
+      (m) => JSON.stringify(J.sdcTempoMod(m)) !== JSON.stringify(normal),
+    );
     expect(cambian.map((m) => m.n).sort()).toEqual(["Control", "Tempo", "Tempo"]);
   });
 });
@@ -63,8 +69,12 @@ describe("avisos: sdcTier clasifica por el texto", () => {
     expect(J.sdcTier("Subiste a nivel 2.")).toBe("epic");
     expect(J.sdcTier("¡Cruzaste a Eje!")).toBe("epic");
     expect(J.sdcTier("Primera vez: 10 dominadas.")).toBe("epic");
-    expect(J.sdcTier("Volviste al último rango. Las metas vuelven a salir de tus récords.")).toBe("epic");
-    expect(J.sdcTier("Sesión corta (20%). Conservas tu XP, pero la racha vuelve a empezar.")).toBe("bad");
+    expect(J.sdcTier("Volviste al último rango. Las metas vuelven a salir de tus récords.")).toBe(
+      "epic",
+    );
+    expect(J.sdcTier("Sesión corta (20%). Conservas tu XP, pero la racha vuelve a empezar.")).toBe(
+      "bad",
+    );
     expect(J.sdcTier('¡Travesía completada! "El Motor" +40 XP.')).toBe("good");
     expect(J.sdcTier("+25 XP: nueva marca de carga. Prensa 60 → 65 kg")).toBe("good");
     expect(J.sdcTier("Logros: 7 logros desbloqueados (+9 PD).")).toBe("good");

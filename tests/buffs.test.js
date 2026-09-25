@@ -86,7 +86,13 @@ describe("mejoras permanentes", () => {
 describe("racha", () => {
   it("+2% por dia seguido, con techo de +30% a los 15 dias", () => {
     const e = jugadorNuevo();
-    for (const [dias, mult] of [[0, 1], [1, 1.02], [10, 1.2], [15, 1.3], [40, 1.3]]) {
+    for (const [dias, mult] of [
+      [0, 1],
+      [1, 1.02],
+      [10, 1.2],
+      [15, 1.3],
+      [40, 1.3],
+    ]) {
       e.streak.current = dias;
       expect(J.sdcRacha(e)).toBeCloseTo(mult, 10);
     }

@@ -1,6 +1,15 @@
 // Varias sesiones por dia, deshacer el registro y anotar un dia olvidado.
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { J, fijarFecha, soltarFecha, jugadorNuevo, meta, registrar, nuevaSesion, suma } from "./ayuda.js";
+import {
+  J,
+  fijarFecha,
+  soltarFecha,
+  jugadorNuevo,
+  meta,
+  registrar,
+  nuevaSesion,
+  suma,
+} from "./ayuda.js";
 
 beforeEach(() => fijarFecha());
 afterEach(() => soltarFecha());

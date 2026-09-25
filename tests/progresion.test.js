@@ -1,6 +1,16 @@
 // XP, niveles, Umbral y lo que paga una rutina.
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { J, fijarFecha, soltarFecha, jugadorNuevo, jugadorEn, meta, registrar, parte, suma } from "./ayuda.js";
+import {
+  J,
+  fijarFecha,
+  soltarFecha,
+  jugadorNuevo,
+  jugadorEn,
+  meta,
+  registrar,
+  parte,
+  suma,
+} from "./ayuda.js";
 
 beforeEach(() => fijarFecha());
 afterEach(() => soltarFecha());
@@ -87,13 +97,23 @@ describe("la primera rutina", () => {
   const clases = ["principiante", "intermedio", "avanzado"];
   const enfoques = ["fuerza", "resistencia", "salud"];
   const modalidades = ["bodyweight", "gym", "flow"];
-  const pruebas = [undefined, { squat: 0, pushup: 0, abs: 0, back: 0 }, { squat: 15, pushup: 10, abs: 15, back: 6 }, { squat: 80, pushup: 45, abs: 70, back: 25 }];
+  const pruebas = [
+    undefined,
+    { squat: 0, pushup: 0, abs: 0, back: 0 },
+    { squat: 15, pushup: 10, abs: 15, back: 6 },
+    { squat: 80, pushup: 45, abs: 70, back: 25 },
+  ];
   for (const modalities of modalidades)
     for (const classification of clases)
       for (const focusProfile of enfoques)
         it(`sube a nivel 2 · ${modalities} · ${classification} · ${focusProfile}`, () => {
           for (const testResults of pruebas) {
-            const e = jugadorNuevo({ modalities: [modalities], classification, focusProfile, testResults });
+            const e = jugadorNuevo({
+              modalities: [modalities],
+              classification,
+              focusProfile,
+              testResults,
+            });
             const { state: s } = registrar(e);
             expect(s.progress.level, JSON.stringify(testResults)).toBeGreaterThanOrEqual(2);
           }
@@ -132,7 +152,11 @@ describe("los tres enfoques pagan parecido por el mismo trabajo", () => {
   function xpPorEnfoque(modalidad, rango) {
     const out = {};
     for (const f of ["fuerza", "resistencia", "salud"]) {
-      const e = jugadorEn(rango, 10, { focusProfile: f, modalities: [modalidad], classification: "intermedio" });
+      const e = jugadorEn(rango, 10, {
+        focusProfile: f,
+        modalities: [modalidad],
+        classification: "intermedio",
+      });
       out[f] = registrar(e).state.today.xpEarned;
     }
     return out;
