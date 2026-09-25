@@ -9,6 +9,7 @@ import {
   sdcSostenEstado,
   sdcSostenPrep,
   sdcPrimalSon,
+  sdcMarcadas,
 } from "../logica/series.js";
 import { BarraXp } from "./base.jsx";
 import { usePantallaSi } from "./pantalla.js";
@@ -88,8 +89,8 @@ function FilaEjercicio({
   onChange,
   tip,
   onWeight,
-  done,
-  onSet,
+  marcadas: marcadasGuardadas,
+  onSerie,
   accent,
   aj: ajustes,
   onAj,
@@ -109,14 +110,15 @@ function FilaEjercicio({
     repsSerie = function (i, porDefecto) {
       return ajustes && ajustes[i] !== void 0 ? ajustes[i] : porDefecto;
     },
+    marcadas = sdcMarcadas(marcadasGuardadas, nSeries),
     hechas = series.reduce(function (suma, reps, i) {
-      return i < (done || 0) ? suma + repsSerie(i, reps) : suma;
+      return marcadas[i] ? suma + repsSerie(i, reps) : suma;
     }, 0),
     color = accent || "#4f9dff",
-    completa = (done || 0) >= nSeries && value > 0,
+    completa = marcadas.every(Boolean) && value > 0,
     segs = sdcSegs(tip),
     [sdcAbre, sdcSetAbre] = useState(!1),
-    [sdcCierra, sdcSetCierra] = useState(() => !!(completa && onSet)),
+    [sdcCierra, sdcSetCierra] = useState(() => !!(completa && onSerie)),
     // El reloj de un sostén: { ini, pz, prep, total, serie } mientras corre.
     [reloj, setReloj] = useState(null),
     [, setTic] = useState(0),
@@ -124,7 +126,8 @@ function FilaEjercicio({
     estadoReloj = reloj
       ? sdcSostenEstado(reloj.ini, reloj.pz, reloj.prep, reloj.total, Date.now())
       : null,
-    serieActual = done || 0,
+    // La serie pendiente: la primera sin marcar.
+    serieActual = marcadas.indexOf(!1) < 0 ? nSeries : marcadas.indexOf(!1),
     segsPendiente =
       segs > 0 && serieActual < nSeries ? repsSerie(serieActual, series[serieActual]) * segs : 0,
     marcaReloj = estadoReloj && !reloj.pz ? estadoReloj.fase + estadoReloj.quedan : "";
@@ -171,7 +174,7 @@ function FilaEjercicio({
     function () {
       if (!marcarLuego) return;
       if (repsSerie(marcarLuego.serie, series[marcarLuego.serie]) !== marcarLuego.reps) return;
-      (setMarcarLuego(null), onSet(marcarLuego.serie + 1));
+      (setMarcarLuego(null), onSerie(marcarLuego.serie, !0));
     },
     [marcarLuego, ajustes],
   );
@@ -207,11 +210,11 @@ function FilaEjercicio({
     sdcPrimalSon("fin");
     reps < meta && onAj
       ? (onAj(serie, reps), setMarcarLuego({ serie: serie, reps: reps }))
-      : onSet(serie + 1);
+      : onSerie(serie, !0);
   }
   useEffect(
     function () {
-      if (completa && onSet) {
+      if (completa && onSerie) {
         if (sdcCierra) return;
         var espera = setTimeout(function () {
           sdcSetCierra(!0);
@@ -224,7 +227,7 @@ function FilaEjercicio({
     },
     [completa],
   );
-  if (completa && onSet && sdcCierra && !sdcAbre)
+  if (completa && onSerie && sdcCierra && !sdcAbre)
     return (
       <button
         onClick={function () {
@@ -253,7 +256,7 @@ function FilaEjercicio({
     );
   return (
     <div className="py-2" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-      {completa && onSet && sdcCierra && sdcAbre ? (
+      {completa && onSerie && sdcCierra && sdcAbre ? (
         <button
           onClick={function () {
             sdcSetAbre(!1);
@@ -336,12 +339,12 @@ function FilaEjercicio({
           </button>
         </div>
       </div>
-      {onSet && (
+      {onSerie && (
         <div className="flex gap-2 mt-2">
           {series.map(function (reps, i) {
             var efectivas = repsSerie(i, reps),
-              hecha = i < (done || 0),
-              ajustable = i === (done || 0) && !!onAj,
+              hecha = marcadas[i],
+              ajustable = i === serieActual && !!onAj,
               contenido =
                 segs > 0 ? (
                   <div>
@@ -377,7 +380,7 @@ function FilaEjercicio({
                   </button>
                   <button
                     onClick={function () {
-                      onSet(i + 1);
+                      onSerie(i, !0);
                     }}
                     className="flex-1"
                     aria-label={
@@ -407,7 +410,7 @@ function FilaEjercicio({
               <button
                 key={i}
                 onClick={function () {
-                  onSet(done === i + 1 ? i : i + 1);
+                  onSerie(i, !hecha);
                 }}
                 className="sdc-chip flex-1 py-3"
                 aria-label={
@@ -429,7 +432,7 @@ function FilaEjercicio({
           })}
         </div>
       )}
-      {onSet && segsPendiente > 0 && !reloj && (
+      {onSerie && segsPendiente > 0 && !reloj && (
         <button
           onClick={empezarSosten}
           disabled={sostenLibre === !1}
@@ -511,7 +514,7 @@ function FilaEjercicio({
           ) : null}
         </>
       )}
-      {onSet && (
+      {onSerie && (
         <div className="text-xs mt-1" style={{ color: completa ? "#3ecf8e" : "#8a93ad" }}>
           {completa
             ? "✓ Series hechas · " +

@@ -101,7 +101,14 @@ import {
   sdcTier,
 } from "../logica/extras.js";
 import { Avisos } from "./avisos.jsx";
-import { sdcBeep, sdcNSets, sdcSplit, sdcVib, sdcPrimalSon } from "../logica/series.js";
+import {
+  sdcMarcadas,
+  sdcBeep,
+  sdcNSets,
+  sdcSplit,
+  sdcVib,
+  sdcPrimalSon,
+} from "../logica/series.js";
 import { colorProgreso } from "./cuerpo.jsx";
 import { diasConstancia } from "./constancia.jsx";
 import { DibujoMascota, Plegable, colorDeRango } from "./tarjetas.jsx";
@@ -605,9 +612,10 @@ function App({ player, setPlayer, initialNotices }) {
     let lista = ["squat", "pushup", "back", "abs"],
       hechas = {};
     for (let grupo of lista) {
-      let marcadas = sdcSer[grupo] || 0,
+      let marcadas = sdcMarcadas(sdcSer[grupo], sdcNSets(metaSesion[grupo] || 0)),
         suma = 0;
-      for (let serie = 0; serie < marcadas; serie++) suma += sdcRepsSerie(grupo, serie);
+      for (let serie = 0; serie < marcadas.length; serie++)
+        marcadas[serie] && (suma += sdcRepsSerie(grupo, serie));
       hechas[grupo] = suma;
     }
     return hechas;
@@ -649,13 +657,15 @@ function App({ player, setPlayer, initialNotices }) {
       return partida;
     });
   }
-  function sdcSerie(grupo, marcadas) {
-    let antes = sdcSer[grupo] || 0,
-      nuevo = { ...sdcSer, [grupo]: marcadas };
+  // Marca o desmarca una sola serie; las demás quedan como estaban.
+  function sdcSerie(grupo, serie, marcar) {
+    let marcadas = sdcMarcadas(sdcSer[grupo], sdcNSets(metaSesion[grupo] || 0));
+    if (marcadas[serie] === marcar) return;
+    marcadas[serie] = marcar;
+    let nuevo = { ...sdcSer, [grupo]: marcadas };
     (sdcSetSer(nuevo), sdcMarcaOk(nuevo, sdcAjuste, sdcModOk));
-    if (marcadas > antes) {
-      let ganadas = 0;
-      for (let serie = antes; serie < marcadas; serie++) ganadas += sdcRepsSerie(grupo, serie);
+    if (marcar) {
+      let ganadas = sdcRepsSerie(grupo, serie);
       (sdcBeep(660, 80),
         setTimeout(() => sdcBeep(880, 110), 85),
         sdcVib(18),
@@ -712,16 +722,21 @@ function App({ player, setPlayer, initialNotices }) {
     );
   }
   function sdcMarcarTodo() {
-    let tod = {
-      squat: sdcNSets(metaSesion.squat || 0),
-      pushup: sdcNSets(metaSesion.pushup || 0),
-      back: sdcNSets(metaSesion.back || 0),
-      abs: sdcNSets(metaSesion.abs || 0),
-    };
+    let todas = (grupo) => new Array(sdcNSets(metaSesion[grupo] || 0)).fill(!0),
+      tod = {
+        squat: todas("squat"),
+        pushup: todas("pushup"),
+        back: todas("back"),
+        abs: todas("abs"),
+      };
     (sdcSetSer(tod),
       sdcMarcaOk(tod, sdcAjuste, sdcModOk),
       sdcCelebra(),
       sdcSetFlota({ n: sdcTotalMeta() - sdcTotalHechas(), id: Date.now() }));
+  }
+  function sdcDesmarcarTodo() {
+    let ninguna = { squat: [], pushup: [], back: [], abs: [] };
+    (sdcSetSer(ninguna), sdcMarcaOk(ninguna, sdcAjuste, sdcModOk), setDescansando(!1), sdcVib(8));
   }
   function sdcKgVer(grupo, serie) {
     var escritos = sdcKgS[grupo] || {},
@@ -793,14 +808,14 @@ function App({ player, setPlayer, initialNotices }) {
     for (i = 0; i < 4; i++) {
       grupo = lista[i];
       nSeries = sdcNSets(metaSesion[grupo] || 0);
-      hechas = Math.min(sdcSer[grupo] || 0, nSeries);
+      hechas = sdcMarcadas(sdcSer[grupo], nSeries);
       vol = 0;
       maximo = 0;
       kgs = [];
       for (serie = 0; serie < nSeries; serie++) {
         kg = sdcKgNum(grupo, serie);
         kgs.push(kg);
-        if (serie < hechas) {
+        if (hechas[serie]) {
           reps = sdcRepsSerie(grupo, serie) || 0;
           vol += kg * reps;
           if (kg > maximo) maximo = kg;
@@ -1826,6 +1841,7 @@ function App({ player, setPlayer, initialNotices }) {
               sdcKgVer,
               sdcMarcaOk,
               sdcMarcarTodo,
+              sdcDesmarcarTodo,
               sdcModOk,
               sdcSer,
               sdcSerie,

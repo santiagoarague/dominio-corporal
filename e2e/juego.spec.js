@@ -159,3 +159,43 @@ test("el peso corporal se anota en Tus números cuando entrenás en el gimnasio"
   await boton(page, "Perfil").click();
   await expect(page.getByLabel("Tu peso corporal")).toHaveValue("72,5");
 });
+
+test("cada serie se desmarca sola, y Desmarcar todas limpia todo", async ({ page }) => {
+  const errores = [];
+  page.on("pageerror", (e) => errores.push(e.message));
+  // Reloj quieto: una fila completa se pliega a los 1,2 s, y aca se desmarca despues.
+  await page.clock.install({ time: new Date("2026-09-24T10:00:00-03:00") });
+  await page.clock.pauseAt(new Date("2026-09-24T10:00:01-03:00"));
+  await page.goto("/");
+  await page.clock.runFor(60_000);
+  await boton(page, "Continuar").click();
+  await boton(page, "Saltar y empezar con valores por defecto").click();
+  await expect(page.getByText("Rutina de hoy")).toBeVisible();
+  await boton(page, "Hoy no").click();
+
+  // La primera fila: tres series, marcadas una por una (la pendiente es la de −/+).
+  const fila = page
+    .locator("div.py-2")
+    .filter({ has: page.locator(".sdc-chip") })
+    .first();
+  for (const n of [1, 2, 3])
+    await fila.getByRole("button", { name: new RegExp(`^Marcar serie ${n} de 3`) }).click();
+  let ser = (await partida(page)).today.marcas["bodyweight|normal"].ser.squat;
+  expect(ser).toEqual([true, true, true]);
+
+  // Desmarcar solo la primera: las otras dos siguen hechas.
+  await fila.getByRole("button", { name: "Serie 1 de 3, hecha" }).click();
+  await expect(fila.getByRole("button", { name: "Serie 2 de 3, hecha" })).toBeVisible();
+  await expect(fila.getByRole("button", { name: "Serie 3 de 3, hecha" })).toBeVisible();
+  await expect(fila.getByRole("button", { name: /^Marcar serie 1 de 3/ })).toBeVisible();
+  ser = (await partida(page)).today.marcas["bodyweight|normal"].ser.squat;
+  expect(ser).toEqual([false, true, true]);
+
+  // Desmarcar todas: nada marcado en ningún ejercicio, y el botón se apaga.
+  await boton(page, "DESMARCAR TODAS").click();
+  await expect(fila.getByText(/^Llevás 0 de/)).toBeVisible();
+  await expect(boton(page, "DESMARCAR TODAS")).toBeDisabled();
+  const marcas = (await partida(page)).today.marcas["bodyweight|normal"].ser;
+  expect(Object.values(marcas).flat().filter(Boolean)).toEqual([]);
+  expect(errores).toEqual([]);
+});

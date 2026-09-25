@@ -49,6 +49,13 @@ function sdcSostenEstado(ini, pausa, prep, total, ahora) {
   if (hecho >= total) return { fase: "fin", quedan: 0, hecho: total };
   return { fase: "sosten", quedan: Math.ceil(total - hecho), hecho: Math.floor(hecho) };
 }
+// Las series marcadas de un ejercicio, una por una: n verdaderos o falsos. Antes
+// se guardaba solo cuántas (siempre las primeras), y un número se sigue leyendo así.
+function sdcMarcadas(valor, n) {
+  var marcadas = [];
+  for (var i = 0; i < n; i++) marcadas.push(Array.isArray(valor) ? !!valor[i] : i < (valor || 0));
+  return marcadas;
+}
 function sdcSuma(total, series, hasta) {
   let partes = sdcSplit(total, series),
     suma = 0;
@@ -85,6 +92,7 @@ export {
   sdcPrimalSon,
   sdcSostenPrep,
   sdcSostenEstado,
+  sdcMarcadas,
   sdcSegs,
   sdcCatMod,
   sdcCatSis,

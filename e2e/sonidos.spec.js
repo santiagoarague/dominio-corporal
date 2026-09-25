@@ -186,7 +186,7 @@ test("sostén: 10 s para ponerse, 3-2-1, arranque, y al terminar marca la serie"
   await expect(page.getByRole("button", { name: "Serie 1 de 3, hecha" })).toBeVisible();
   await expect(page.getByText("DESCANSO", { exact: true })).toBeVisible();
   await expect(boton(page, "Sostener 9 s")).toBeVisible();
-  expect((await partida(page)).today.marcas["bodyweight|normal"].ser.abs).toBe(1);
+  expect((await partida(page)).today.marcas["bodyweight|normal"].ser.abs).toEqual([true, false, false]);
   expect(errores).toEqual([]);
 });
 
@@ -210,7 +210,7 @@ test("sostén: la pausa congela el reloj y Terminé antes anota lo que sostuvist
   await pasar(page, 500);
   await expect(page.getByRole("button", { name: "Serie 1 de 3, hecha" })).toHaveText(/✓ 2/);
   const marca = (await partida(page)).today.marcas["bodyweight|normal"];
-  expect(marca.ser.abs).toBe(1);
+  expect(marca.ser.abs).toEqual([true, false, false]);
   expect(marca.aj.abs).toEqual({ 0: 2 });
   expect(errores).toEqual([]);
 });

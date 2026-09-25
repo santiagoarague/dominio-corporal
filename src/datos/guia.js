@@ -15,7 +15,7 @@ var guia = [
     {
       g: "PARA EMPEZAR",
       title: "Cómo se anota lo que hacés",
-      text: "Las repeticiones de cada patrón vienen partidas en dos o tres series, y cada serie es un botón. Tocalo apenas terminás esa serie, no al final de todo: la app suena, vibra, te suma la XP y te arranca el descanso, que queda fijo abajo de la pantalla. Cuando terminás todas las series de un ejercicio, se pliega: tocalo para abrirlo de nuevo. Si una serie te salió más corta de lo pedido, tocá el − N + de la serie que queda pendiente y anotá lo que hiciste de verdad. Lo que se guarda es lo que hiciste, no lo que decía la meta. Si entrenás en gimnasio, debajo de las series vas a ver un campo de kilos para cada una: podés subir el peso serie a serie, y la próxima vez la app te recuerda lo que usaste la última.",
+      text: "Las repeticiones de cada patrón vienen partidas en dos o tres series, y cada serie es un botón. Tocalo apenas terminás esa serie, no al final de todo: la app suena, vibra, te suma la XP y te arranca el descanso, que queda fijo abajo de la pantalla. Si marcaste una por error, tocala otra vez y se desmarca solo esa; MARCAR TODAS y DESMARCAR TODAS hacen todo de una vez. Cuando terminás todas las series de un ejercicio, se pliega: tocalo para abrirlo de nuevo. Si una serie te salió más corta de lo pedido, tocá el − N + de la serie que queda pendiente y anotá lo que hiciste de verdad. Lo que se guarda es lo que hiciste, no lo que decía la meta. Si entrenás en gimnasio, debajo de las series vas a ver un campo de kilos para cada una: podés subir el peso serie a serie, y la próxima vez la app te recuerda lo que usaste la última.",
     },
     {
       g: "PARA EMPEZAR",

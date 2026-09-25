@@ -161,7 +161,9 @@ flow           Gateo · Apoyo · Giro · Enlace · Inversión · Quietud · Vuel
   (**252 ejercicios**) y la app rota según la fecha.
 - Las reps del día se parten en 2–3 series **descendentes** (40/33/27%), porque la última serie es
   la más cara. Cada serie es un botón: se toca al terminarla. Suena, vibra, suma XP y arranca el
-  descanso, que queda fijo abajo de la pantalla con su cuenta y un botón para saltarlo.
+  descanso, que queda fijo abajo de la pantalla con su cuenta y un botón para saltarlo. Tocar una
+  serie marcada la desmarca a ella sola; "MARCAR TODAS" y "DESMARCAR TODAS" están juntos, arriba de
+  los ejercicios.
 - Cuando se completan todas las series de un ejercicio, **la fila se pliega** a una línea
   ("✓ nombre · 12 reps") para que un toque sin querer no la desmarque; se abre tocándola.
 - **Modificador del día**: uno de seis por modalidad (Tempo, Densidad, Drop set, Sostén largo…).

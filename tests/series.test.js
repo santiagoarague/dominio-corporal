@@ -36,6 +36,21 @@ describe("series", () => {
   });
 });
 
+describe("series marcadas", () => {
+  it("cada serie tiene su marca, y un número viejo son las primeras marcadas", () => {
+    expect(J.sdcMarcadas([false, true, true], 3)).toEqual([false, true, true]);
+    expect(J.sdcMarcadas(2, 3)).toEqual([true, true, false]);
+    expect(J.sdcMarcadas(0, 2)).toEqual([false, false]);
+    expect(J.sdcMarcadas(undefined, 3)).toEqual([false, false, false]);
+    expect(J.sdcMarcadas([], 2)).toEqual([false, false]);
+  });
+
+  it("si la meta baja y quedan menos series, sobran las marcas de más", () => {
+    expect(J.sdcMarcadas([true, true, true], 2)).toEqual([true, true]);
+    expect(J.sdcMarcadas(3, 1)).toEqual([true]);
+  });
+});
+
 describe("reloj del sostén", () => {
   const ini = 1_000_000;
   const en = (s, pausa = 0) => J.sdcSostenEstado(ini, pausa, 10, 12, ini + s * 1000);

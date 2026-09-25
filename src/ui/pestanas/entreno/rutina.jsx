@@ -15,6 +15,7 @@ import { Tarjeta } from "../../base.jsx";
 import { Plegable } from "../../tarjetas.jsx";
 import { IconoCheck, IconoDestello } from "../../iconos.jsx";
 import { BarraDescanso } from "../../descanso.jsx";
+import { sdcMarcadas } from "../../../logica/series.js";
 import { FilaEjercicio } from "../../ejercicio.jsx";
 
 export function TarjetaRutina({
@@ -49,6 +50,7 @@ export function TarjetaRutina({
   sdcKgVer,
   sdcMarcaOk,
   sdcMarcarTodo,
+  sdcDesmarcarTodo,
   sdcModOk,
   sdcSer,
   sdcSerie,
@@ -69,6 +71,10 @@ export function TarjetaRutina({
   // El ejercicio de sostén con el reloj en marcha: calla el metrónomo, corta el
   // descanso y no deja arrancar otro sostén a la vez.
   let [sosten, setSosten] = useState(null),
+    // Hasta tres series por ejercicio: alcanza con mirar las tres primeras.
+    algunaMarcada = ["squat", "pushup", "back", "abs"].some((grupo) =>
+      sdcMarcadas(sdcSer[grupo], 3).some(Boolean),
+    ),
     sostenDe = (grupo) => ({
       sostenLibre: !sosten || sosten === grupo,
       onSosten: (activo) => (setSosten(activo ? grupo : null), activo && setDescansando(!1)),
@@ -329,18 +335,6 @@ export function TarjetaRutina({
       </div>
       <div className="grid grid-cols-2 gap-2 mb-3">
         <button
-          onClick={() => setMetronomoOn((encendido) => !encendido)}
-          className="py-2 text-xs"
-          style={{
-            background: metronomoOn ? "rgba(79,157,255,0.15)" : "rgba(255,255,255,0.03)",
-            border: "1px solid " + (metronomoOn ? "#4f9dff" : "rgba(255,255,255,0.12)"),
-            color: metronomoOn ? "#4f9dff" : "#8a93ad",
-            minHeight: 44,
-          }}
-        >
-          Metrónomo {metronomoOn ? "ON" : "OFF"}
-        </button>
-        <button
           onClick={sdcMarcarTodo}
           className="py-2 text-xs"
           style={{
@@ -352,7 +346,32 @@ export function TarjetaRutina({
         >
           MARCAR TODAS
         </button>
+        <button
+          onClick={sdcDesmarcarTodo}
+          disabled={!algunaMarcada}
+          className="py-2 text-xs disabled:opacity-40"
+          style={{
+            background: "rgba(255,255,255,0.03)",
+            border: "1px solid rgba(255,184,79,0.6)",
+            color: "#ffb84f",
+            minHeight: 44,
+          }}
+        >
+          DESMARCAR TODAS
+        </button>
       </div>
+      <button
+        onClick={() => setMetronomoOn((encendido) => !encendido)}
+        className="w-full py-2 text-xs mb-2"
+        style={{
+          background: metronomoOn ? "rgba(79,157,255,0.15)" : "rgba(255,255,255,0.03)",
+          border: "1px solid " + (metronomoOn ? "#4f9dff" : "rgba(255,255,255,0.12)"),
+          color: metronomoOn ? "#4f9dff" : "#8a93ad",
+          minHeight: 44,
+        }}
+      >
+        Metrónomo {metronomoOn ? "ON" : "OFF"}
+      </button>
       <div className="text-xs mb-2" style={{ color: "#8a93ad" }}>
         El metrónomo marca el ritmo de cada repetición. Los sostenes tienen su propio reloj.
       </div>
@@ -390,8 +409,8 @@ export function TarjetaRutina({
               }
             : null
         }
-        done={sdcSer.squat}
-        onSet={(marcadas) => sdcSerie("squat", marcadas)}
+        marcadas={sdcSer.squat}
+        onSerie={(serie, marcar) => sdcSerie("squat", serie, marcar)}
         accent={colorDelRango}
         aj={sdcAjuste.squat}
         onAj={(serie, reps) => sdcAjustar("squat", serie, reps)}
@@ -420,8 +439,8 @@ export function TarjetaRutina({
               }
             : null
         }
-        done={sdcSer.pushup}
-        onSet={(marcadas) => sdcSerie("pushup", marcadas)}
+        marcadas={sdcSer.pushup}
+        onSerie={(serie, marcar) => sdcSerie("pushup", serie, marcar)}
         accent={colorDelRango}
         aj={sdcAjuste.pushup}
         onAj={(serie, reps) => sdcAjustar("pushup", serie, reps)}
@@ -450,8 +469,8 @@ export function TarjetaRutina({
               }
             : null
         }
-        done={sdcSer.back}
-        onSet={(marcadas) => sdcSerie("back", marcadas)}
+        marcadas={sdcSer.back}
+        onSerie={(serie, marcar) => sdcSerie("back", serie, marcar)}
         accent={colorDelRango}
         aj={sdcAjuste.back}
         onAj={(serie, reps) => sdcAjustar("back", serie, reps)}
@@ -478,8 +497,8 @@ export function TarjetaRutina({
               }
             : null
         }
-        done={sdcSer.abs}
-        onSet={(marcadas) => sdcSerie("abs", marcadas)}
+        marcadas={sdcSer.abs}
+        onSerie={(serie, marcar) => sdcSerie("abs", serie, marcar)}
         accent={colorDelRango}
         aj={sdcAjuste.abs}
         onAj={(serie, reps) => sdcAjustar("abs", serie, reps)}
