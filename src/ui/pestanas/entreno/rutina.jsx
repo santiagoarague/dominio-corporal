@@ -11,7 +11,6 @@ import {
 import { sdcDescRango, sdcVistos, sdcGymUlt, sdcSugKg } from "../../../logica/extras.js";
 import { sdcTempoMod, Metronomo } from "../../metronomo.jsx";
 import { sdcModDia } from "../../../logica/tienda.js";
-import { regresiones } from "../../../logica/primal.js";
 import { Tarjeta } from "../../base.jsx";
 import { Plegable } from "../../tarjetas.jsx";
 import { IconoCheck, IconoDestello } from "../../iconos.jsx";
@@ -375,7 +374,7 @@ export function TarjetaRutina({
         min={0}
         max={Math.round(modo === "recovery" ? metaDia.squat * 0.5 : metaDia.squat * 1.5)}
         onChange={(valor) => setMetaSesion((previa) => ({ ...previa, squat: valor }))}
-        tip={alternativaEjercicio(progress.rank, "squat", modalidad) || regresiones.squat}
+        tip={alternativaEjercicio(progress.rank, "squat", modalidad)}
         guia={sdcGuia(progress.rank, "squat", modalidad)}
         abrir={!sdcVistos(player)[sdcEjNom("squat")]}
         onWeight={modalidad === "gym" ? (serie, texto) => sdcKgSet("squat", serie, texto) : void 0}
@@ -405,7 +404,7 @@ export function TarjetaRutina({
         min={0}
         max={Math.round(modo === "recovery" ? metaDia.pushup * 0.5 : metaDia.pushup * 1.5)}
         onChange={(valor) => setMetaSesion((previa) => ({ ...previa, pushup: valor }))}
-        tip={alternativaEjercicio(progress.rank, "pushup", modalidad) || regresiones.pushup}
+        tip={alternativaEjercicio(progress.rank, "pushup", modalidad)}
         guia={sdcGuia(progress.rank, "pushup", modalidad)}
         abrir={!sdcVistos(player)[sdcEjNom("pushup")]}
         onWeight={modalidad === "gym" ? (serie, texto) => sdcKgSet("pushup", serie, texto) : void 0}
@@ -435,7 +434,7 @@ export function TarjetaRutina({
         min={0}
         max={Math.round(modo === "recovery" ? metaDia.back * 0.5 : metaDia.back * 1.5)}
         onChange={(valor) => setMetaSesion((previa) => ({ ...previa, back: valor }))}
-        tip={alternativaEjercicio(progress.rank, "back", modalidad) || regresiones.back}
+        tip={alternativaEjercicio(progress.rank, "back", modalidad)}
         guia={sdcGuia(progress.rank, "back", modalidad)}
         abrir={!sdcVistos(player)[sdcEjNom("back")]}
         onWeight={modalidad === "gym" ? (serie, texto) => sdcKgSet("back", serie, texto) : void 0}
@@ -465,7 +464,7 @@ export function TarjetaRutina({
         min={0}
         max={Math.round(modo === "recovery" ? metaDia.abs * 0.5 : metaDia.abs * 1.5)}
         onChange={(valor) => setMetaSesion((previa) => ({ ...previa, abs: valor }))}
-        tip={alternativaEjercicio(progress.rank, "abs", modalidad) || regresiones.abs}
+        tip={alternativaEjercicio(progress.rank, "abs", modalidad)}
         guia={sdcGuia(progress.rank, "abs", modalidad)}
         abrir={!sdcVistos(player)[sdcEjNom("abs")]}
         onWeight={modalidad === "gym" ? (serie, texto) => sdcKgSet("abs", serie, texto) : void 0}

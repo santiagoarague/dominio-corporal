@@ -149,30 +149,22 @@ function registrarPrimal(actual, indice) {
   return { state: conCarga.state, notices: [...conAvisos.notices, ...conCarga.notices] };
 }
 var consejos = [
-    "No te olvides de hidratarte antes y después de entrenar.",
-    "Un calentamiento de 5 minutos reduce el riesgo de lesiones.",
-    "Los músculos crecen en el descanso, no solo en el esfuerzo. Tu día de descanso es parte del plan, no una excepción.",
-    "Si un ejercicio se siente demasiado fácil, es buena señal — estás listo para más.",
-    "Mejor 10 repeticiones con buena técnica que 20 apuradas.",
-    "Dormir bien es tan importante como entrenar bien.",
-    "El dolor agudo o punzante no es normal. Si algo duele mal, pará y descansá.",
-    "Entrenar un poco todos los días vale más que entrenar mucho una sola vez.",
-    "Respirá: exhalá en el esfuerzo, inhalá en el regreso.",
-    "Si te sentís muy cansado, el Modo Recuperación existe justo para eso — usalo sin culpa.",
-    "Estirar después de entrenar ayuda a tu cuerpo a recuperarse mejor.",
-    "Progresar no siempre se ve como hacer más — a veces es hacerlo mejor.",
-    "Tu cuerpo de hoy no es tu cuerpo de mañana. Sé paciente con vos mismo.",
-    "Antes de aumentar la dificultad, asegurate de dominar la técnica actual.",
-    "Un buen calzado y una superficie estable evitan muchas lesiones innecesarias.",
-  ],
-  regresiones = {
-    squat:
-      "Si la sentadilla completa es muy exigente, apóyate en una silla o pared, o reduce la profundidad. La forma correcta importa más que el rango completo.",
-    pushup:
-      "Si no llegas a las repeticiones completas, apoya las rodillas en el suelo. Sigues trabajando el mismo movimiento con menos carga.",
-    back: "Si te cuesta mantener la posición, reduce cuánto elevas el pecho y las piernas, o sostén por menos tiempo. La técnica limpia vale más que la altura.",
-    abs: "Si sientes tensión en el cuello, cruza los brazos sobre el pecho en vez de apoyar las manos detrás de la cabeza.",
-  };
+  "No te olvides de hidratarte antes y después de entrenar.",
+  "Un calentamiento de 5 minutos reduce el riesgo de lesiones.",
+  "Los músculos crecen en el descanso, no solo en el esfuerzo. Tu día de descanso es parte del plan, no una excepción.",
+  "Si un ejercicio se siente demasiado fácil, es buena señal — estás listo para más.",
+  "Mejor 10 repeticiones con buena técnica que 20 apuradas.",
+  "Dormir bien es tan importante como entrenar bien.",
+  "El dolor agudo o punzante no es normal. Si algo duele mal, pará y descansá.",
+  "Entrenar un poco todos los días vale más que entrenar mucho una sola vez.",
+  "Respirá: exhalá en el esfuerzo, inhalá en el regreso.",
+  "Si te sentís muy cansado, el Modo Recuperación existe justo para eso — usalo sin culpa.",
+  "Estirar después de entrenar ayuda a tu cuerpo a recuperarse mejor.",
+  "Progresar no siempre se ve como hacer más — a veces es hacerlo mejor.",
+  "Tu cuerpo de hoy no es tu cuerpo de mañana. Sé paciente con vos mismo.",
+  "Antes de aumentar la dificultad, asegurate de dominar la técnica actual.",
+  "Un buen calzado y una superficie estable evitan muchas lesiones innecesarias.",
+];
 function hashDia(texto, opciones) {
   let hash = 0;
   for (let indice = 0; indice < texto.length; indice++)
@@ -218,7 +210,6 @@ export {
   primalInicial,
   registrarPrimal,
   consejos,
-  regresiones,
   hashDia,
   consejoDelDia,
   frasesVolver,

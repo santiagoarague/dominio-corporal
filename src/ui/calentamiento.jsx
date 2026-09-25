@@ -1,7 +1,6 @@
 // Calentamiento y los pasos guiados que comparte con el estiramiento.
 import { useState, useEffect } from "react";
 import { IconoCheck, IconoLlama } from "./iconos.jsx";
-import { regresiones } from "../logica/primal.js";
 import { multImpulso } from "../logica/tienda.js";
 import { sdcEstMMSS, sdcEstPaso, sdcEstPrep, sdcEstTotal } from "../logica/estiramiento.js";
 import { revisarLogros } from "../datos/logros.js";
@@ -194,7 +193,7 @@ function sdcCalorEnsayo(partida, mod, metas) {
     ej = ejercicioDe(grupo, rango, mod) || {};
     if (!ej.name) continue;
     primera = sdcSplit(meta, sdcNSets(meta))[0] || meta;
-    segs = sdcSegs(alternativaEjercicio(rango, grupo, mod) || regresiones[grupo]);
+    segs = sdcSegs(alternativaEjercicio(rango, grupo, mod));
     if (segs > 0) {
       cant = Math.max(5, Math.min(15, Math.round((primera * segs) / 15) * 5));
       texto = cant + " segundos, " + (mod === "gym" ? "sin carga extra" : "sin llegar al temblor");
