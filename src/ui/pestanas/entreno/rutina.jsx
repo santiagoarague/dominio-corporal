@@ -73,7 +73,7 @@ export function TarjetaRutina({
           st={player}
           Ne={aplicar}
           onPrueba={() => {
-            (setPestana("profile"), aplicar((d) => sdcAbrirCard(d, "aptitud")));
+            (setPestana("profile"), aplicar((partida) => sdcAbrirCard(partida, "aptitud")));
           }}
         />
       )}
@@ -100,36 +100,36 @@ export function TarjetaRutina({
         </div>
       )}
       {(() => {
-        let rp = today.reps || {},
-          rc = player.records || {},
-          wk = (week && week.reps) || {},
-          gs = [
+        let repsSesion = today.reps || {},
+          records = player.records || {},
+          semana = (week && week.reps) || {},
+          filas = [
             ["squat", "Piernas"],
             ["pushup", "Empuje"],
             ["back", "Tracción"],
             ["abs", "Core"],
           ],
-          tot = gs.reduce((ac, g) => ac + (rp[g[0]] || 0), 0);
+          tot = filas.reduce((suma, fila) => suma + (repsSesion[fila[0]] || 0), 0);
         if (!tot) return null;
-        let sem = gs.reduce((ac, g) => ac + (wk[g[0]] || 0), 0);
+        let sem = filas.reduce((suma, fila) => suma + (semana[fila[0]] || 0), 0);
         return (
           <div className="mt-3 pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
             <div className="text-xs mb-2" style={{ color: "#9aa4bd" }}>
               Lo que hiciste hoy: <b style={{ color: "#e8ecf7" }}>{tot} reps</b>
             </div>
-            {gs.map((g) => {
-              let v = rp[g[0]] || 0,
-                mx = rc[g[0]] || 0,
-                pr = v > 0 && v >= mx && (lifetimeReps[g[0]] || 0) > v;
+            {filas.map((fila) => {
+              let reps = repsSesion[fila[0]] || 0,
+                mejor = records[fila[0]] || 0,
+                esRecord = reps > 0 && reps >= mejor && (lifetimeReps[fila[0]] || 0) > reps;
               return (
-                <div key={g[0]} className="flex items-center justify-between text-xs mb-1">
-                  <span style={{ color: pr ? "#ffb84f" : "#8a93ad" }}>
-                    {g[1]}
-                    {pr ? " ★ récord" : ""}
+                <div key={fila[0]} className="flex items-center justify-between text-xs mb-1">
+                  <span style={{ color: esRecord ? "#ffb84f" : "#8a93ad" }}>
+                    {fila[1]}
+                    {esRecord ? " ★ récord" : ""}
                   </span>
                   <span style={{ color: "#e8ecf7" }}>
-                    {v}
-                    <span style={{ color: "#7a83a0" }}> / {mx} máx</span>
+                    {reps}
+                    <span style={{ color: "#7a83a0" }}> / {mejor} máx</span>
                   </span>
                 </div>
               );
@@ -143,7 +143,7 @@ export function TarjetaRutina({
       })()}
       {(() => {
         let hechas = today.doneModalities || [],
-          restan = modalidadesDe(profile).filter((id) => !hechas.includes(id));
+          restan = modalidadesDe(profile).filter((mod) => !hechas.includes(mod));
         if (!restan.length) return null;
         return (
           <div className="mt-3">
@@ -151,10 +151,10 @@ export function TarjetaRutina({
               {"Añade otro estilo hoy y esa sesión te dará +" + 25 * hechas.length + "% de XP:"}
             </div>
             <div className="flex gap-2">
-              {restan.map((id) => (
+              {restan.map((mod) => (
                 <button
-                  key={id}
-                  onClick={() => mmNueva(id)}
+                  key={mod}
+                  onClick={() => mmNueva(mod)}
                   className="flex-1 py-2 text-xs"
                   style={{
                     background: "rgba(79,157,255,0.12)",
@@ -163,7 +163,7 @@ export function TarjetaRutina({
                     fontWeight: 600,
                   }}
                 >
-                  + {id === "bodyweight" ? "Peso corporal" : id === "gym" ? "Gimnasio" : "Flow"}
+                  + {mod === "bodyweight" ? "Peso corporal" : mod === "gym" ? "Gimnasio" : "Flow"}
                 </button>
               ))}
             </div>
@@ -205,7 +205,7 @@ export function TarjetaRutina({
       style={{ marginBottom: 16, order: -4 }}
       collapsed={plegado("rutina")}
       onToggle={alternarPlegable}
-      right={`${(modalidades.find((f) => f.id === modalidad) || modalidades[0]).name}`}
+      right={`${(modalidades.find((mod) => mod.id === modalidad) || modalidades[0]).name}`}
     >
       <div className="flex mb-3" style={{ border: "1px solid rgba(255,255,255,0.12)" }}>
         <button
@@ -239,22 +239,26 @@ export function TarjetaRutina({
             ¿Con qué entrenás hoy?
           </div>
           <div className="grid grid-cols-3 gap-1">
-            {modalidadesDe(profile).map((f) => {
-              let d = modalidades.find((N) => N.id === f),
-                m = modalidad === f;
+            {modalidadesDe(profile).map((mod) => {
+              let datos = modalidades.find((otra) => otra.id === mod),
+                activa = modalidad === mod;
               return (
                 <button
-                  key={f}
-                  onClick={() => elegirModalidad(f)}
+                  key={mod}
+                  onClick={() => elegirModalidad(mod)}
                   className="py-2 text-xs"
                   style={{
-                    background: m ? "#4f9dff" : "rgba(255,255,255,0.03)",
-                    border: "1px solid " + (m ? "#4f9dff" : "rgba(255,255,255,0.12)"),
-                    color: m ? "#0a0e1a" : "#8a93ad",
+                    background: activa ? "#4f9dff" : "rgba(255,255,255,0.03)",
+                    border: "1px solid " + (activa ? "#4f9dff" : "rgba(255,255,255,0.12)"),
+                    color: activa ? "#0a0e1a" : "#8a93ad",
                     fontWeight: 600,
                   }}
                 >
-                  {d.id === "bodyweight" ? "Peso corporal" : d.id === "gym" ? "Gimnasio" : "Flow"}
+                  {datos.id === "bodyweight"
+                    ? "Peso corporal"
+                    : datos.id === "gym"
+                      ? "Gimnasio"
+                      : "Flow"}
                 </button>
               );
             })}
@@ -262,15 +266,16 @@ export function TarjetaRutina({
         </div>
       ) : (
         <div className="text-xs mb-1" style={{ color: "#4f9dff" }}>
-          Modalidad de hoy: {(modalidades.find((f) => f.id === modalidad) || modalidades[0]).name}
+          Modalidad de hoy:{" "}
+          {(modalidades.find((mod) => mod.id === modalidad) || modalidades[0]).name}
         </div>
       )}
       <div className="text-xs mb-2" style={{ color: "#7a83a0" }}>
         {sdcDescRango(progress.rank, profile)}
       </div>
       {(() => {
-        let mm = sdcModDia(modalidad, today.date);
-        if (!mm) return null;
+        let modDia = sdcModDia(modalidad, today.date);
+        if (!modDia) return null;
         return (
           <div
             className="p-2 mb-2"
@@ -288,15 +293,15 @@ export function TarjetaRutina({
                 letterSpacing: 1,
               }}
             >
-              HOY · {mm.n} · +{Math.round(mm.x * 100)}% XP
+              HOY · {modDia.n} · +{Math.round(modDia.x * 100)}% XP
             </div>
             <div className="text-xs mt-1" style={{ color: "#9aa4bd" }}>
-              {mm.d}
+              {modDia.d}
             </div>
             <button
               onClick={() => {
-                let nv = !sdcModOk;
-                (sdcSetModOk(nv), sdcMarcaOk(sdcSer, sdcAjuste, nv));
+                let pendiente = !sdcModOk;
+                (sdcSetModOk(pendiente), sdcMarcaOk(sdcSer, sdcAjuste, pendiente));
               }}
               className="w-full py-2 text-xs mt-2"
               style={{
@@ -318,7 +323,7 @@ export function TarjetaRutina({
       </div>
       <div className="grid grid-cols-2 gap-2 mb-3">
         <button
-          onClick={() => setMetronomoOn((f) => !f)}
+          onClick={() => setMetronomoOn((encendido) => !encendido)}
           className="py-2 text-xs"
           style={{
             background: metronomoOn ? "rgba(79,157,255,0.15)" : "rgba(255,255,255,0.03)",
@@ -360,12 +365,12 @@ export function TarjetaRutina({
         base={metaDia.squat}
         min={0}
         max={Math.round(modo === "recovery" ? metaDia.squat * 0.5 : metaDia.squat * 1.5)}
-        onChange={(f) => setMetaSesion((d) => ({ ...d, squat: f }))}
+        onChange={(valor) => setMetaSesion((previa) => ({ ...previa, squat: valor }))}
         tip={alternativaEjercicio(progress.rank, "squat", modalidad) || regresiones.squat}
         guia={sdcGuia(progress.rank, "squat", modalidad)}
         abrir={!sdcVistos(player)[sdcEjNom("squat")]}
-        onWeight={modalidad === "gym" ? (k, f) => sdcKgSet("squat", k, f) : void 0}
-        kgv={modalidad === "gym" ? (k) => sdcKgVer("squat", k) : void 0}
+        onWeight={modalidad === "gym" ? (serie, texto) => sdcKgSet("squat", serie, texto) : void 0}
+        kgv={modalidad === "gym" ? (serie) => sdcKgVer("squat", serie) : void 0}
         kgPrev={
           modalidad === "gym" ? (sdcGymUlt(player)[sdcEjNom("squat")] || {}).kgs || null : null
         }
@@ -373,15 +378,15 @@ export function TarjetaRutina({
           modalidad === "gym"
             ? {
                 s: sdcSugKg(player, "squat", sdcEjNom("squat")),
-                fn: (k) => sdcKgUsar("squat", k),
+                fn: (kg) => sdcKgUsar("squat", kg),
               }
             : null
         }
         done={sdcSer.squat}
-        onSet={(f) => sdcSerie("squat", f)}
+        onSet={(marcadas) => sdcSerie("squat", marcadas)}
         accent={colorDelRango}
         aj={sdcAjuste.squat}
-        onAj={(k, v) => sdcAjustar("squat", k, v)}
+        onAj={(serie, reps) => sdcAjustar("squat", serie, reps)}
       />
       <FilaEjercicio
         label={nombreEjercicio(progress.rank, profile.classification, "pushup", modalidad)}
@@ -389,12 +394,12 @@ export function TarjetaRutina({
         base={metaDia.pushup}
         min={0}
         max={Math.round(modo === "recovery" ? metaDia.pushup * 0.5 : metaDia.pushup * 1.5)}
-        onChange={(f) => setMetaSesion((d) => ({ ...d, pushup: f }))}
+        onChange={(valor) => setMetaSesion((previa) => ({ ...previa, pushup: valor }))}
         tip={alternativaEjercicio(progress.rank, "pushup", modalidad) || regresiones.pushup}
         guia={sdcGuia(progress.rank, "pushup", modalidad)}
         abrir={!sdcVistos(player)[sdcEjNom("pushup")]}
-        onWeight={modalidad === "gym" ? (k, f) => sdcKgSet("pushup", k, f) : void 0}
-        kgv={modalidad === "gym" ? (k) => sdcKgVer("pushup", k) : void 0}
+        onWeight={modalidad === "gym" ? (serie, texto) => sdcKgSet("pushup", serie, texto) : void 0}
+        kgv={modalidad === "gym" ? (serie) => sdcKgVer("pushup", serie) : void 0}
         kgPrev={
           modalidad === "gym" ? (sdcGymUlt(player)[sdcEjNom("pushup")] || {}).kgs || null : null
         }
@@ -402,15 +407,15 @@ export function TarjetaRutina({
           modalidad === "gym"
             ? {
                 s: sdcSugKg(player, "pushup", sdcEjNom("pushup")),
-                fn: (k) => sdcKgUsar("pushup", k),
+                fn: (kg) => sdcKgUsar("pushup", kg),
               }
             : null
         }
         done={sdcSer.pushup}
-        onSet={(f) => sdcSerie("pushup", f)}
+        onSet={(marcadas) => sdcSerie("pushup", marcadas)}
         accent={colorDelRango}
         aj={sdcAjuste.pushup}
-        onAj={(k, v) => sdcAjustar("pushup", k, v)}
+        onAj={(serie, reps) => sdcAjustar("pushup", serie, reps)}
       />
       <FilaEjercicio
         label={nombreEjercicio(progress.rank, profile.classification, "back", modalidad)}
@@ -418,12 +423,12 @@ export function TarjetaRutina({
         base={metaDia.back}
         min={0}
         max={Math.round(modo === "recovery" ? metaDia.back * 0.5 : metaDia.back * 1.5)}
-        onChange={(f) => setMetaSesion((d) => ({ ...d, back: f }))}
+        onChange={(valor) => setMetaSesion((previa) => ({ ...previa, back: valor }))}
         tip={alternativaEjercicio(progress.rank, "back", modalidad) || regresiones.back}
         guia={sdcGuia(progress.rank, "back", modalidad)}
         abrir={!sdcVistos(player)[sdcEjNom("back")]}
-        onWeight={modalidad === "gym" ? (k, f) => sdcKgSet("back", k, f) : void 0}
-        kgv={modalidad === "gym" ? (k) => sdcKgVer("back", k) : void 0}
+        onWeight={modalidad === "gym" ? (serie, texto) => sdcKgSet("back", serie, texto) : void 0}
+        kgv={modalidad === "gym" ? (serie) => sdcKgVer("back", serie) : void 0}
         kgPrev={
           modalidad === "gym" ? (sdcGymUlt(player)[sdcEjNom("back")] || {}).kgs || null : null
         }
@@ -431,15 +436,15 @@ export function TarjetaRutina({
           modalidad === "gym"
             ? {
                 s: sdcSugKg(player, "back", sdcEjNom("back")),
-                fn: (k) => sdcKgUsar("back", k),
+                fn: (kg) => sdcKgUsar("back", kg),
               }
             : null
         }
         done={sdcSer.back}
-        onSet={(f) => sdcSerie("back", f)}
+        onSet={(marcadas) => sdcSerie("back", marcadas)}
         accent={colorDelRango}
         aj={sdcAjuste.back}
-        onAj={(k, v) => sdcAjustar("back", k, v)}
+        onAj={(serie, reps) => sdcAjustar("back", serie, reps)}
       />
       <FilaEjercicio
         label={nombreEjercicio(progress.rank, profile.classification, "abs", modalidad)}
@@ -447,26 +452,26 @@ export function TarjetaRutina({
         base={metaDia.abs}
         min={0}
         max={Math.round(modo === "recovery" ? metaDia.abs * 0.5 : metaDia.abs * 1.5)}
-        onChange={(f) => setMetaSesion((d) => ({ ...d, abs: f }))}
+        onChange={(valor) => setMetaSesion((previa) => ({ ...previa, abs: valor }))}
         tip={alternativaEjercicio(progress.rank, "abs", modalidad) || regresiones.abs}
         guia={sdcGuia(progress.rank, "abs", modalidad)}
         abrir={!sdcVistos(player)[sdcEjNom("abs")]}
-        onWeight={modalidad === "gym" ? (k, f) => sdcKgSet("abs", k, f) : void 0}
-        kgv={modalidad === "gym" ? (k) => sdcKgVer("abs", k) : void 0}
+        onWeight={modalidad === "gym" ? (serie, texto) => sdcKgSet("abs", serie, texto) : void 0}
+        kgv={modalidad === "gym" ? (serie) => sdcKgVer("abs", serie) : void 0}
         kgPrev={modalidad === "gym" ? (sdcGymUlt(player)[sdcEjNom("abs")] || {}).kgs || null : null}
         sug={
           modalidad === "gym"
             ? {
                 s: sdcSugKg(player, "abs", sdcEjNom("abs")),
-                fn: (k) => sdcKgUsar("abs", k),
+                fn: (kg) => sdcKgUsar("abs", kg),
               }
             : null
         }
         done={sdcSer.abs}
-        onSet={(f) => sdcSerie("abs", f)}
+        onSet={(marcadas) => sdcSerie("abs", marcadas)}
         accent={colorDelRango}
         aj={sdcAjuste.abs}
-        onAj={(k, v) => sdcAjustar("abs", k, v)}
+        onAj={(serie, reps) => sdcAjustar("abs", serie, reps)}
       />
       <button
         onClick={registrar}

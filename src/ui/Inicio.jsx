@@ -17,21 +17,21 @@ import { DibujoMascota } from "./tarjetas.jsx";
 import { Bienvenida } from "./intro.jsx";
 import { PruebaAptitud } from "./prueba.jsx";
 
-function Inicio({ onFinish: e, onLoadBackup: a }) {
-  let [l, n] = useState(!1),
-    [o, s] = useState(0),
-    [u, c] = useState(""),
-    [r, p] = useState("salud"),
-    [v, x] = useState(["bodyweight"]),
-    [y, S] = useState(3),
-    [E, T] = useState(""),
-    [A, g] = useState(""),
-    [b, h] = useState(""),
-    [C, D] = useState(0),
-    [H, z] = useState(!1),
-    [q, U] = useState(""),
-    [Y, B] = useState(""),
-    J = [
+function Inicio({ onFinish, onLoadBackup }) {
+  let [introVista, setIntroVista] = useState(!1),
+    [paso, setPaso] = useState(0),
+    [nombre, setNombre] = useState(""),
+    [enfoque, setEnfoque] = useState("salud"),
+    [mods, setMods] = useState(["bodyweight"]),
+    [meta, setMeta] = useState(3),
+    [sentadillas, setSentadillas] = useState(""),
+    [flexiones, setFlexiones] = useState(""),
+    [abdominales, setAbdominales] = useState(""),
+    [pruebaPaso, setPruebaPaso] = useState(0),
+    [restaurando, setRestaurando] = useState(!1),
+    [respaldo, setRespaldo] = useState(""),
+    [errorRespaldo, setErrorRespaldo] = useState(""),
+    ejerciciosPrueba = [
       {
         key: "sq",
         label: "Sentadillas",
@@ -53,15 +53,15 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
         hint: "Bajo una mesa firme, cuerpo recto, tirá hasta tocar el borde con el pecho. Sin mesa: superman en el suelo, 1 rep = 3 segundos arriba.",
       },
     ],
-    [De, On] = useState("dog"),
-    [Aa, Va] = useState(""),
+    [mascota, setMascota] = useState("dog"),
+    [nombreMascota, setNombreMascota] = useState(""),
     [sdcBk, sdcSetBk] = useState(""),
     [sdcRitOnb, sdcSetRitOnb] = useState(!1),
-    ja = Math.max(0, parseInt(E || "0", 10)),
-    Ba = Math.max(0, parseInt(A || "0", 10)),
-    fa = Math.max(0, parseInt(b || "0", 10)),
+    nSentadillas = Math.max(0, parseInt(sentadillas || "0", 10)),
+    nFlexiones = Math.max(0, parseInt(flexiones || "0", 10)),
+    nAbdominales = Math.max(0, parseInt(abdominales || "0", 10)),
     sdcBkN = Math.max(0, parseInt(sdcBk || "0", 10));
-  return l ? (
+  return introVista ? (
     <div
       className="min-h-screen flex flex-col items-center justify-center px-4"
       style={{ background: "#0a0e1a" }}
@@ -82,7 +82,7 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
             Dominio Corporal
           </h1>
         </div>
-        {o === 0 && (
+        {paso === 0 && (
           <Tarjeta accent="#4f9dff">
             <div className="text-sm mb-3" style={{ color: "#9aa4bd" }}>
               Antes de empezar
@@ -91,8 +91,8 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
               ¿Cómo te llamas?
             </label>
             <input
-              value={u}
-              onChange={(j) => c(j.target.value)}
+              value={nombre}
+              onChange={(evento) => setNombre(evento.target.value)}
               placeholder="Tu nombre"
               className="w-full mb-4 px-3 py-2 text-sm"
               style={{
@@ -102,8 +102,8 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
               }}
             />
             <button
-              disabled={!u.trim()}
-              onClick={() => s(5)}
+              disabled={!nombre.trim()}
+              onClick={() => setPaso(5)}
               className="w-full flex items-center justify-center gap-1 py-3 text-sm disabled:opacity-40"
               style={{ background: "#4f9dff", color: "#0a0e1a", fontWeight: 700 }}
             >
@@ -112,15 +112,15 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
             <div className="text-center text-xs my-3" style={{ color: "#7a83a0" }}>
               o
             </div>
-            {H ? (
+            {restaurando ? (
               <>
                 <div className="text-xs mb-2" style={{ color: "#9aa4bd" }}>
                   Pega aquí tu respaldo y recuperarás tu progreso sin repetir la calibración.
                 </div>
                 <textarea
-                  value={q}
-                  onChange={(j) => {
-                    (U(j.target.value), B(""));
+                  value={respaldo}
+                  onChange={(evento) => {
+                    (setRespaldo(evento.target.value), setErrorRespaldo(""));
                   }}
                   placeholder="Pega aquí tu texto de respaldo"
                   rows={4}
@@ -132,15 +132,15 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
                     resize: "none",
                   }}
                 />
-                {Y && (
+                {errorRespaldo && (
                   <div className="text-xs mb-2" style={{ color: "#ff5c7a" }}>
-                    {Y}
+                    {errorRespaldo}
                   </div>
                 )}
                 <div className="flex gap-2">
                   <button
                     onClick={() => {
-                      (z(!1), U(""), B(""));
+                      (setRestaurando(!1), setRespaldo(""), setErrorRespaldo(""));
                     }}
                     className="flex-1 py-3 text-sm"
                     style={{
@@ -153,9 +153,12 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
                     Cancelar
                   </button>
                   <button
-                    disabled={!q.trim()}
+                    disabled={!respaldo.trim()}
                     onClick={() => {
-                      a(q) || B("Ese respaldo no es válido. Revisá que copiaste todo el texto.");
+                      onLoadBackup(respaldo) ||
+                        setErrorRespaldo(
+                          "Ese respaldo no es válido. Revisá que copiaste todo el texto.",
+                        );
                     }}
                     className="flex-1 py-3 text-sm disabled:opacity-40"
                     style={{ background: "#7c5cff", color: "#0a0e1a", fontWeight: 700 }}
@@ -167,7 +170,7 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
             ) : (
               <>
                 <button
-                  onClick={() => z(!0)}
+                  onClick={() => setRestaurando(!0)}
                   className="w-full py-3 text-sm mb-2"
                   style={{
                     background: "rgba(124,92,255,0.12)",
@@ -180,8 +183,8 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
                 </button>
                 <button
                   onClick={() =>
-                    e({
-                      name: u.trim() || "Atleta",
+                    onFinish({
+                      name: nombre.trim() || "Atleta",
                       focusProfile: "salud",
                       modalities: ["bodyweight"],
                       weeklyGoal: 3,
@@ -204,7 +207,7 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
             )}
           </Tarjeta>
         )}
-        {o === 5 && (
+        {paso === 5 && (
           <Tarjeta accent="#4f9dff">
             <div className="text-sm mb-1" style={{ color: "#9aa4bd" }}>
               Métodos de entrenamiento
@@ -212,20 +215,24 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
             <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
               Elegí uno, varios o todos. Podrás cambiarlo cuando quieras desde tu Perfil.
             </div>
-            {modalidades.map((j) => {
-              let Se = v.includes(j.id);
+            {modalidades.map((mod) => {
+              let elegida = mods.includes(mod.id);
               return (
                 <button
-                  key={j.id}
+                  key={mod.id}
                   onClick={() =>
-                    x((gt) =>
-                      Se ? (gt.length > 1 ? gt.filter((oi) => oi !== j.id) : gt) : [...gt, j.id],
+                    setMods((previas) =>
+                      elegida
+                        ? previas.length > 1
+                          ? previas.filter((id) => id !== mod.id)
+                          : previas
+                        : [...previas, mod.id],
                     )
                   }
                   className="w-full text-left px-3 py-2 mb-2"
                   style={{
-                    background: Se ? "rgba(79,157,255,0.14)" : "rgba(255,255,255,0.03)",
-                    border: Se ? "1px solid #4f9dff" : "1px solid rgba(255,255,255,0.1)",
+                    background: elegida ? "rgba(79,157,255,0.14)" : "rgba(255,255,255,0.03)",
+                    border: elegida ? "1px solid #4f9dff" : "1px solid rgba(255,255,255,0.1)",
                   }}
                 >
                   <div className="flex items-center gap-2">
@@ -235,22 +242,22 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
                         height: 16,
                         display: "inline-block",
                         flexShrink: 0,
-                        border: "1px solid " + (Se ? "#4f9dff" : "rgba(255,255,255,0.3)"),
-                        background: Se ? "#4f9dff" : "transparent",
+                        border: "1px solid " + (elegida ? "#4f9dff" : "rgba(255,255,255,0.3)"),
+                        background: elegida ? "#4f9dff" : "transparent",
                       }}
                     />
                     <span className="text-sm" style={{ color: "#e8ecf7", fontWeight: 600 }}>
-                      {j.name}
+                      {mod.name}
                     </span>
                   </div>
                   <div className="text-xs mt-1" style={{ color: "#9aa4bd" }}>
-                    {j.desc}
+                    {mod.desc}
                   </div>
                 </button>
               );
             })}
             <button
-              onClick={() => x(modalidades.map((j) => j.id))}
+              onClick={() => setMods(modalidades.map((mod) => mod.id))}
               className="w-full py-2 text-xs mb-3"
               style={{
                 background: "rgba(255,184,79,0.1)",
@@ -263,7 +270,7 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
             </button>
             <div className="flex gap-2">
               <button
-                onClick={() => s(0)}
+                onClick={() => setPaso(0)}
                 className="flex-1 py-3 text-sm"
                 style={{
                   background: "rgba(255,255,255,0.08)",
@@ -275,7 +282,7 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
                 Atrás
               </button>
               <button
-                onClick={() => s(4)}
+                onClick={() => setPaso(4)}
                 className="flex-1 flex items-center justify-center gap-1 py-3 text-sm"
                 style={{ background: "#4f9dff", color: "#0a0e1a", fontWeight: 700 }}
               >
@@ -284,7 +291,7 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
             </div>
           </Tarjeta>
         )}
-        {o === 4 && (
+        {paso === 4 && (
           <Tarjeta accent="#3ecf8e">
             <div className="text-sm mb-1" style={{ color: "#9aa4bd" }}>
               Perfiles de Enfoque Biomecánico
@@ -292,31 +299,31 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
             <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
               Elegí cómo querés que se calibre tu carga y tu progresión.
             </div>
-            {enfoques.map((j) => {
-              let Se = r === j.id;
+            {enfoques.map((opcion) => {
+              let elegido = enfoque === opcion.id;
               return (
                 <button
-                  key={j.id}
-                  onClick={() => p(j.id)}
+                  key={opcion.id}
+                  onClick={() => setEnfoque(opcion.id)}
                   className="w-full text-left px-3 py-2 mb-2"
                   style={{
-                    background: Se ? "rgba(62,207,142,0.12)" : "rgba(255,255,255,0.03)",
-                    border: Se ? "1px solid #3ecf8e" : "1px solid rgba(255,255,255,0.1)",
+                    background: elegido ? "rgba(62,207,142,0.12)" : "rgba(255,255,255,0.03)",
+                    border: elegido ? "1px solid #3ecf8e" : "1px solid rgba(255,255,255,0.1)",
                   }}
                 >
                   <div className="text-sm" style={{ color: "#e8ecf7", fontWeight: 600 }}>
-                    {j.name}
+                    {opcion.name}
                   </div>
-                  {Se && (
+                  {elegido && (
                     <div className="mt-2">
                       <div className="text-xs" style={{ color: "#9aa4bd" }}>
-                        <b style={{ color: "#4f9dff" }}>Ajuste:</b> {j.ajuste}
+                        <b style={{ color: "#4f9dff" }}>Ajuste:</b> {opcion.ajuste}
                       </div>
                       <div className="text-xs mt-1" style={{ color: "#9aa4bd" }}>
-                        <b style={{ color: "#3ecf8e" }}>Ventaja:</b> {j.ventaja}
+                        <b style={{ color: "#3ecf8e" }}>Ventaja:</b> {opcion.ventaja}
                       </div>
                       <div className="text-xs mt-1" style={{ color: "#9aa4bd" }}>
-                        <b style={{ color: "#ff5c7a" }}>Desventaja:</b> {j.desventaja}
+                        <b style={{ color: "#ff5c7a" }}>Desventaja:</b> {opcion.desventaja}
                       </div>
                     </div>
                   )}
@@ -325,7 +332,7 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
             })}
             <div className="flex gap-2 mt-2">
               <button
-                onClick={() => s(5)}
+                onClick={() => setPaso(5)}
                 className="flex-1 py-3 text-sm"
                 style={{
                   background: "rgba(255,255,255,0.08)",
@@ -337,7 +344,7 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
                 Atrás
               </button>
               <button
-                onClick={() => s(6)}
+                onClick={() => setPaso(6)}
                 className="flex-1 flex items-center justify-center gap-1 py-3 text-sm"
                 style={{ background: "#3ecf8e", color: "#0a0e1a", fontWeight: 700 }}
               >
@@ -346,7 +353,7 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
             </div>
           </Tarjeta>
         )}
-        {o === 6 && (
+        {paso === 6 && (
           <Tarjeta accent="#3ecf8e">
             <div className="text-sm mb-1" style={{ color: "#9aa4bd" }}>
               Tu compromiso semanal
@@ -356,32 +363,32 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
               alcanzar esa meta, no por saltarte un día suelto.
             </div>
             <div className="grid grid-cols-7 gap-1 mb-3">
-              {[1, 2, 3, 4, 5, 6, 7].map((j) => (
+              {[1, 2, 3, 4, 5, 6, 7].map((dias) => (
                 <button
-                  key={j}
-                  onClick={() => S(j)}
+                  key={dias}
+                  onClick={() => setMeta(dias)}
                   className="py-3 text-sm"
                   style={{
-                    background: y === j ? "#3ecf8e" : "rgba(255,255,255,0.05)",
-                    border: "1px solid " + (y === j ? "#3ecf8e" : "rgba(255,255,255,0.15)"),
-                    color: y === j ? "#0a0e1a" : "#9aa4bd",
+                    background: meta === dias ? "#3ecf8e" : "rgba(255,255,255,0.05)",
+                    border: "1px solid " + (meta === dias ? "#3ecf8e" : "rgba(255,255,255,0.15)"),
+                    color: meta === dias ? "#0a0e1a" : "#9aa4bd",
                     fontWeight: 700,
                   }}
                 >
-                  {j}
+                  {dias}
                 </button>
               ))}
             </div>
             <div className="text-xs mb-3" style={{ color: "#7a83a0" }}>
-              {y <= 2
+              {meta <= 2
                 ? "Ritmo suave: ideal para empezar sin romperte."
-                : y <= 4
+                : meta <= 4
                   ? "Ritmo equilibrado: el más sostenible a largo plazo."
                   : "Ritmo exigente: asegúrate de descansar bien."}
             </div>
             <div className="flex gap-2">
               <button
-                onClick={() => s(4)}
+                onClick={() => setPaso(4)}
                 className="flex-1 py-3 text-sm"
                 style={{
                   background: "rgba(255,255,255,0.08)",
@@ -393,7 +400,7 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
                 Atrás
               </button>
               <button
-                onClick={() => s(1)}
+                onClick={() => setPaso(1)}
                 className="flex-1 flex items-center justify-center gap-1 py-3 text-sm"
                 style={{ background: "#3ecf8e", color: "#0a0e1a", fontWeight: 700 }}
               >
@@ -402,31 +409,31 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
             </div>
           </Tarjeta>
         )}
-        {o === 1 &&
-          (C < J.length ? (
+        {paso === 1 &&
+          (pruebaPaso < ejerciciosPrueba.length ? (
             <>
               <Tarjeta accent="#ffb84f" style={{ marginBottom: 12 }}>
                 <div className="text-sm mb-1" style={{ color: "#ffb84f", fontWeight: 700 }}>
-                  Punto de Partida ({C + 1}/{J.length})
+                  Punto de Partida ({pruebaPaso + 1}/{ejerciciosPrueba.length})
                 </div>
                 <div className="text-xs" style={{ color: "#9aa4bd" }}>
                   Máximas repeticiones seguidas, siguiendo la cadencia del metrónomo.
                 </div>
               </Tarjeta>
               <PruebaAptitud
-                key={J[C].key}
-                exercise={J[C]}
-                onFinish={(j) => {
+                key={ejerciciosPrueba[pruebaPaso].key}
+                exercise={ejerciciosPrueba[pruebaPaso]}
+                onFinish={(reps) => {
                   sdcSetRitOnb(!0);
-                  let Se = J[C].key;
-                  (Se === "sq" && T(String(j)),
-                    Se === "pu" && g(String(j)),
-                    Se === "ab" && h(String(j)),
-                    Se === "bk" && sdcSetBk(String(j)),
-                    D((gt) => gt + 1));
+                  let clave = ejerciciosPrueba[pruebaPaso].key;
+                  (clave === "sq" && setSentadillas(String(reps)),
+                    clave === "pu" && setFlexiones(String(reps)),
+                    clave === "ab" && setAbdominales(String(reps)),
+                    clave === "bk" && sdcSetBk(String(reps)),
+                    setPruebaPaso((previo) => previo + 1));
                 }}
               />
-              {C === 0 && (
+              {pruebaPaso === 0 && (
                 <Tarjeta accent="#4f9dff" style={{ marginTop: 12 }}>
                   <div className="text-sm mb-1" style={{ color: "#e8ecf7", fontWeight: 600 }}>
                     ¿Ya conocés tus números?
@@ -435,22 +442,22 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
                     Anotalos aquí y te saltás la prueba con cadencia.
                   </div>
                   {[
-                    { lb: "Sentadillas", vl: E, st: T },
-                    { lb: "Flexiones", vl: A, st: g },
-                    { lb: "Abdominales", vl: b, st: h },
+                    { lb: "Sentadillas", vl: sentadillas, st: setSentadillas },
+                    { lb: "Flexiones", vl: flexiones, st: setFlexiones },
+                    { lb: "Abdominales", vl: abdominales, st: setAbdominales },
                     { lb: "Remo invertido", vl: sdcBk, st: sdcSetBk },
-                  ].map((mn) => (
-                    <div key={mn.lb} className="flex justify-between items-center gap-2 mb-2">
+                  ].map((campo) => (
+                    <div key={campo.lb} className="flex justify-between items-center gap-2 mb-2">
                       <span className="text-xs" style={{ color: "#9aa4bd" }}>
-                        {mn.lb}
+                        {campo.lb}
                       </span>
                       <input
                         type="number"
                         inputMode="numeric"
                         min="0"
-                        value={mn.vl}
-                        onChange={(ev) => {
-                          (sdcSetRitOnb(!1), mn.st(ev.target.value));
+                        value={campo.vl}
+                        onChange={(evento) => {
+                          (sdcSetRitOnb(!1), campo.st(evento.target.value));
                         }}
                         placeholder="0"
                         className="px-2 py-2 text-sm text-center"
@@ -464,8 +471,8 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
                     </div>
                   ))}
                   <button
-                    onClick={() => D(J.length)}
-                    disabled={!(E || A || b || sdcBk)}
+                    onClick={() => setPruebaPaso(ejerciciosPrueba.length)}
+                    disabled={!(sentadillas || flexiones || abdominales || sdcBk)}
                     className="w-full py-2 text-xs mt-2 disabled:opacity-40"
                     style={{ background: "#4f9dff", color: "#0a0e1a", fontWeight: 700 }}
                   >
@@ -473,7 +480,7 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
                   </button>
                 </Tarjeta>
               )}
-              {C === 0 && (
+              {pruebaPaso === 0 && (
                 <Tarjeta accent="#3ecf8e" style={{ marginTop: 12 }}>
                   <div className="text-sm mb-1" style={{ color: "#e8ecf7", fontWeight: 600 }}>
                     Prefiero no ir al máximo
@@ -482,17 +489,17 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
                     Elegí la frase que más se te parezca. La app calcula tu volumen sin que tengas
                     que llegar al fallo, y siempre podés hacer la prueba después desde tu Perfil.
                   </div>
-                  {sdcNiveles.map(function (jn) {
+                  {sdcNiveles.map(function (nivel) {
                     return (
                       <button
-                        key={jn.t}
+                        key={nivel.t}
                         onClick={function () {
-                          (T(String(jn.sq)),
-                            g(String(jn.pu)),
-                            h(String(jn.ab)),
-                            sdcSetBk(String(jn.bk)),
+                          (setSentadillas(String(nivel.sq)),
+                            setFlexiones(String(nivel.pu)),
+                            setAbdominales(String(nivel.ab)),
+                            sdcSetBk(String(nivel.bk)),
                             sdcSetRitOnb(!1),
-                            D(J.length));
+                            setPruebaPaso(ejerciciosPrueba.length));
                         }}
                         className="w-full text-left px-3 py-2 mb-2"
                         style={{
@@ -502,10 +509,10 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
                         }}
                       >
                         <div className="text-xs" style={{ color: "#e8ecf7", fontWeight: 600 }}>
-                          {jn.t}
+                          {nivel.t}
                         </div>
                         <div className="text-xs" style={{ color: "#9aa4bd" }}>
-                          {jn.d}
+                          {nivel.d}
                         </div>
                       </button>
                     );
@@ -515,7 +522,7 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
               <div className="text-center mt-3">
                 <button
                   onClick={() => {
-                    (D(0), s(6));
+                    (setPruebaPaso(0), setPaso(6));
                   }}
                   className="text-xs underline"
                   style={{ color: "#9aa4bd" }}
@@ -531,15 +538,15 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
               </div>
               <div className="flex justify-between text-sm mb-1" style={{ color: "#9aa4bd" }}>
                 <span>Sentadillas</span>
-                <span style={{ color: "#e8ecf7" }}>{ja}</span>
+                <span style={{ color: "#e8ecf7" }}>{nSentadillas}</span>
               </div>
               <div className="flex justify-between text-sm mb-1" style={{ color: "#9aa4bd" }}>
                 <span>Flexiones (×2)</span>
-                <span style={{ color: "#e8ecf7" }}>{Ba}</span>
+                <span style={{ color: "#e8ecf7" }}>{nFlexiones}</span>
               </div>
               <div className="flex justify-between text-sm mb-1" style={{ color: "#9aa4bd" }}>
                 <span>Abdominales</span>
-                <span style={{ color: "#e8ecf7" }}>{fa}</span>
+                <span style={{ color: "#e8ecf7" }}>{nAbdominales}</span>
               </div>
               <div className="flex justify-between text-sm mb-3" style={{ color: "#9aa4bd" }}>
                 <span>Remo invertido (×2)</span>
@@ -550,11 +557,11 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
                 style={{ color: "#ffb84f", fontWeight: 700 }}
               >
                 <span>Puntaje</span>
-                <span>{puntajePrueba(ja, Ba, fa, sdcBkN)} pts</span>
+                <span>{puntajePrueba(nSentadillas, nFlexiones, nAbdominales, sdcBkN)} pts</span>
               </div>
               <div className="flex gap-2">
                 <button
-                  onClick={() => D(0)}
+                  onClick={() => setPruebaPaso(0)}
                   className="flex-1 py-3 text-sm"
                   style={{
                     background: "rgba(255,255,255,0.08)",
@@ -566,7 +573,7 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
                   Repetir
                 </button>
                 <button
-                  onClick={() => s(2)}
+                  onClick={() => setPaso(2)}
                   className="flex-1 flex items-center justify-center gap-1 py-3 text-sm"
                   style={{ background: "#ffb84f", color: "#0a0e1a", fontWeight: 700 }}
                 >
@@ -575,7 +582,7 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
               </div>
             </Tarjeta>
           ))}
-        {o === 2 && (
+        {paso === 2 && (
           <Tarjeta accent="#ffb84f">
             <div className="text-sm mb-1" style={{ color: "#9aa4bd" }}>
               Un compañero se acerca
@@ -584,26 +591,30 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
               Te acompañará en tu camino con consejos de entrenamiento y salud.
             </div>
             <div className="flex justify-center mb-4">
-              <DibujoMascota type={De} size={90} color="#ffb84f" />
+              <DibujoMascota type={mascota} size={90} color="#ffb84f" />
             </div>
             <div className="flex gap-2 mb-4">
               <button
-                onClick={() => On("dog")}
+                onClick={() => setMascota("dog")}
                 className="flex-1 py-3 text-sm"
                 style={{
-                  background: De === "dog" ? "rgba(255,184,79,0.15)" : "rgba(255,255,255,0.03)",
-                  border: De === "dog" ? "1px solid #ffb84f" : "1px solid rgba(255,255,255,0.1)",
+                  background:
+                    mascota === "dog" ? "rgba(255,184,79,0.15)" : "rgba(255,255,255,0.03)",
+                  border:
+                    mascota === "dog" ? "1px solid #ffb84f" : "1px solid rgba(255,255,255,0.1)",
                   color: "#e8ecf7",
                 }}
               >
                 🐶 Perro
               </button>
               <button
-                onClick={() => On("cat")}
+                onClick={() => setMascota("cat")}
                 className="flex-1 py-3 text-sm"
                 style={{
-                  background: De === "cat" ? "rgba(255,184,79,0.15)" : "rgba(255,255,255,0.03)",
-                  border: De === "cat" ? "1px solid #ffb84f" : "1px solid rgba(255,255,255,0.1)",
+                  background:
+                    mascota === "cat" ? "rgba(255,184,79,0.15)" : "rgba(255,255,255,0.03)",
+                  border:
+                    mascota === "cat" ? "1px solid #ffb84f" : "1px solid rgba(255,255,255,0.1)",
                   color: "#e8ecf7",
                 }}
               >
@@ -614,8 +625,8 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
               ¿Cómo se llama?
             </label>
             <input
-              value={Aa}
-              onChange={(j) => Va(j.target.value)}
+              value={nombreMascota}
+              onChange={(evento) => setNombreMascota(evento.target.value)}
               placeholder="Nombre de tu compañero"
               className="w-full mb-4 px-3 py-2 text-sm"
               style={{
@@ -626,7 +637,7 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
             />
             <div className="flex gap-2">
               <button
-                onClick={() => s(1)}
+                onClick={() => setPaso(1)}
                 className="flex-1 py-3 text-sm"
                 style={{
                   background: "rgba(255,255,255,0.08)",
@@ -638,8 +649,8 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
                 Atrás
               </button>
               <button
-                disabled={!Aa.trim()}
-                onClick={() => s(3)}
+                disabled={!nombreMascota.trim()}
+                onClick={() => setPaso(3)}
                 className="flex-1 flex items-center justify-center gap-1 py-3 text-sm disabled:opacity-40"
                 style={{ background: "#ffb84f", color: "#0a0e1a", fontWeight: 700 }}
               >
@@ -648,12 +659,18 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
             </div>
           </Tarjeta>
         )}
-        {o === 3 &&
+        {paso === 3 &&
           (() => {
-            let j = bandaCalibre(ja, Ba, fa, sdcBkN, sdcRitOnb ? sdcRitmoK : 1),
-              Se = colorRango["E"];
+            let banda = bandaCalibre(
+                nSentadillas,
+                nFlexiones,
+                nAbdominales,
+                sdcBkN,
+                sdcRitOnb ? sdcRitmoK : 1,
+              ),
+              color = colorRango["E"];
             return (
-              <Tarjeta accent={Se}>
+              <Tarjeta accent={color}>
                 <div className="text-center mb-4">
                   <div className="text-xs uppercase" style={{ letterSpacing: 2, color: "#9aa4bd" }}>
                     Calibración completa
@@ -662,27 +679,27 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
                     style={{
                       fontFamily: "Chakra Petch, sans-serif",
                       fontSize: 36,
-                      color: Se,
+                      color,
                       fontWeight: 700,
                     }}
                   >
-                    {sdcRango("E", { modalities: v })}
+                    {sdcRango("E", { modalities: mods })}
                   </div>
                   <div className="text-xs mt-1" style={{ color: "#9aa4bd" }}>
-                    {sdcCalT(bandasCalibre.indexOf(j), { modalities: v })} ·{" "}
-                    {puntajePrueba(ja, Ba, fa, sdcBkN)} pts
+                    {sdcCalT(bandasCalibre.indexOf(banda), { modalities: mods })} ·{" "}
+                    {puntajePrueba(nSentadillas, nFlexiones, nAbdominales, sdcBkN)} pts
                   </div>
                   <div className="text-xs mt-1" style={{ color: "#9aa4bd" }}>
-                    Enfoque: {sdcCalF(bandasCalibre.indexOf(j), { modalities: v })}
+                    Enfoque: {sdcCalF(bandasCalibre.indexOf(banda), { modalities: mods })}
                   </div>
                 </div>
                 <div className="text-sm mb-2" style={{ color: "#e8ecf7", fontWeight: 600 }}>
-                  Bienvenido, {u}. Esto es tuyo.
+                  Bienvenido, {nombre}. Esto es tuyo.
                 </div>
                 <div className="text-sm mb-4" style={{ color: "#9aa4bd" }}>
-                  Todos empiezan en {sdcRango("E", { modalities: v })}. Tu prueba no fija el rango:
-                  define el volumen de tu rutina. Cuantas más repeticiones hagas, más XP ganarás y
-                  más rápido avanzarás.
+                  Todos empiezan en {sdcRango("E", { modalities: mods })}. Tu prueba no fija el
+                  rango: define el volumen de tu rutina. Cuantas más repeticiones hagas, más XP
+                  ganarás y más rápido avanzarás.
                 </div>
                 <div
                   className="flex items-center gap-2 mb-4 p-3"
@@ -691,28 +708,39 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
                     border: "1px solid rgba(255,184,79,0.3)",
                   }}
                 >
-                  <DibujoMascota type={De} size={40} color="#ffb84f" />
+                  <DibujoMascota type={mascota} size={40} color="#ffb84f" />
                   <div className="text-xs" style={{ color: "#e8ecf7" }}>
-                    <b>{Aa}</b> te acompañará y te dará consejos en el camino.
+                    <b>{nombreMascota}</b> te acompañará y te dará consejos en el camino.
                   </div>
                 </div>
                 <button
                   onClick={() =>
-                    e({
-                      name: u.trim(),
-                      focusProfile: r,
-                      modalities: v,
-                      weeklyGoal: y,
-                      classification: j.classification,
+                    onFinish({
+                      name: nombre.trim(),
+                      focusProfile: enfoque,
+                      modalities: mods,
+                      weeklyGoal: meta,
+                      classification: banda.classification,
                       startRank: "E",
                       testResults: sdcRitOnb
-                        ? { squat: ja, pushup: Ba, abs: fa, back: sdcBkN, ritmo: 5 }
-                        : { squat: ja, pushup: Ba, abs: fa, back: sdcBkN },
-                      pet: { type: De, name: Aa.trim() },
+                        ? {
+                            squat: nSentadillas,
+                            pushup: nFlexiones,
+                            abs: nAbdominales,
+                            back: sdcBkN,
+                            ritmo: 5,
+                          }
+                        : {
+                            squat: nSentadillas,
+                            pushup: nFlexiones,
+                            abs: nAbdominales,
+                            back: sdcBkN,
+                          },
+                      pet: { type: mascota, name: nombreMascota.trim() },
                     })
                   }
                   className="w-full py-3 text-sm"
-                  style={{ background: Se, color: "#0a0e1a", fontWeight: 700, letterSpacing: 1 }}
+                  style={{ background: color, color: "#0a0e1a", fontWeight: 700, letterSpacing: 1 }}
                 >
                   INICIAR DOMINIO CORPORAL
                 </button>
@@ -722,7 +750,7 @@ function Inicio({ onFinish: e, onLoadBackup: a }) {
       </div>
     </div>
   ) : (
-    <Bienvenida onDone={() => n(!0)} />
+    <Bienvenida onDone={() => setIntroVista(!0)} />
   );
 }
 
