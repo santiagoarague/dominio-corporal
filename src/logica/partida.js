@@ -17,6 +17,7 @@ import {
   metaSemanal,
   diasParaBajarZ,
   pruebaUmbral,
+  sdcGymXp,
   volumen,
   xpTotal,
   costoNivel,
@@ -453,6 +454,16 @@ function registrarRutina(e, a, l, mok, gvol) {
     r = l.squat + l.pushup + (l.back || 0) + l.abs,
     p = c > 0 ? r / c : 0,
     v = r;
+  // En gimnasio las reps ya no suben con el rango (volumen), asi que cada rep vale
+  // segun el rango y el ejercicio (sdcGymXp): una rutina completa paga lo mismo que
+  // cuando subian.
+  modalidadDelDia(o.profile, o.today.date, o.today.modality) === "gym" &&
+    (v = Math.round(
+      ["squat", "pushup", "back", "abs"].reduce(
+        (t, b) => t + (l[b] || 0) * sdcGymXp(b, o.progress.rank),
+        0,
+      ),
+    ));
   let sdcPRb = [];
   if (modalidadDelDia(o.profile, o.today.date, o.today.modality) === "gym")
     for (let b of ["squat", "pushup", "back", "abs"]) {
@@ -728,9 +739,14 @@ function cruzarUmbralBase(e) {
   return { state: o.state, notices: [...l, ...o.notices] };
 }
 // El Umbral pide, ademas del nivel, un minimo de rutinas completas en el
-// rango: el nivel se puede apurar (racha, impulsos, entrenar todos los dias)
-// y el cuerpo necesita semanas con los ejercicios nuevos.
-var sdcUmbralMin = 24;
+// rango: el nivel se puede apurar (racha, impulsos, varias sesiones por dia,
+// XP de otros sistemas) y el cuerpo necesita semanas con los ejercicios nuevos.
+// Crece con el rango porque los ultimos duran anos. A quien hace rutinas
+// completas no lo frena: aun entrenando todos los dias junta mas en cada rango.
+var sdcUmbralMin = { E: 24, D: 36, C: 48, B: 60, A: 72, S: 84 };
+function sdcUmbralMinDe(r) {
+  return sdcUmbralMin[r] || 0;
+}
 function sdcRangoSig(r) {
   var k = rangos.indexOf(r);
   return k >= 0 && k < rangos.length - 1 ? rangos[k + 1] : null;
@@ -749,10 +765,12 @@ function sdcRangoCompletas(e) {
 }
 function sdcUmbralFalta(e) {
   if (e.umbralForzado === e.progress.rank) return 0;
-  return Math.max(0, sdcUmbralMin - sdcRangoCompletas(e));
+  return Math.max(0, sdcUmbralMinDe(e.progress.rank) - sdcRangoCompletas(e));
 }
-// La prueba se hace con los ejercicios y el volumen del rango que viene, con
-// las rondas y el porcentaje de gy para el rango que se deja.
+// La prueba es una rutina completa del rango que viene (sus ejercicios y su
+// volumen), repartida en las rondas del rango que se deja: prueba justo lo que
+// se va a hacer cada dia despues de cruzar. Antes cada ronda era el 60-80% de esa
+// rutina, y la prueba sumaba entre 2 y 6 rutinas encima de la del dia.
 function sdcUmbralPrueba(e, mod) {
   var r = e.progress.rank,
     sig = sdcRangoSig(r) || r,
@@ -763,7 +781,7 @@ function sdcUmbralPrueba(e, mod) {
     nombres = {},
     g;
   for (g in v) {
-    reps[g] = Math.max(1, Math.round(v[g] * o.pct));
+    reps[g] = Math.max(1, Math.round(v[g] / o.rounds));
     nombres[g] = ejercicioDe(g, sig, mod, e.today && e.today.date).name;
   }
   return { rounds: o.rounds, note: o.note, reps: reps, nombres: nombres, rango: sig };
@@ -893,6 +911,7 @@ export {
   completarTravesia,
   cruzarUmbralBase,
   sdcUmbralMin,
+  sdcUmbralMinDe,
   sdcRangoSig,
   sdcRangoCompletas,
   sdcUmbralFalta,

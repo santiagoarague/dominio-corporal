@@ -3,6 +3,7 @@ import { hashDia } from "./primal.js";
 import { ejerciciosGym, ejerciciosFlow, factorRango, ejerciciosPeso } from "../datos/ejercicios.js";
 import { clonar } from "./partida.js";
 import { sdcCalT } from "./extras.js";
+import { sdcSegs } from "./series.js";
 
 function modalidadesDe(e) {
   let a = (e && e.modalities) || ["bodyweight"];
@@ -40,13 +41,15 @@ function ejercicioDe(e, a, l, fx) {
     )
   ];
 }
+// Rondas y reglas de la prueba del Umbral, segun el rango que se deja. La prueba
+// reparte en esas rondas una rutina completa del rango que viene (sdcUmbralPrueba).
 var pruebaUmbral = {
-  E: { rounds: 3, pct: 0.6, note: "Cadencia controlada, sin prisa." },
-  D: { rounds: 3, pct: 0.7, note: "Sin descanso entre ejercicios." },
-  C: { rounds: 4, pct: 0.7, note: "Superserie: encadena los cuatro patrones." },
-  B: { rounds: 4, pct: 0.75, note: "Descanso máximo de 30 s entre rondas." },
-  A: { rounds: 5, pct: 0.75, note: "Descanso máximo de 15 s entre rondas." },
-  S: { rounds: 5, pct: 0.8, note: "Sin cortes. La prueba del Dominio Total." },
+  E: { rounds: 3, note: "Cadencia controlada, sin prisa." },
+  D: { rounds: 3, note: "Sin descanso entre ejercicios." },
+  C: { rounds: 4, note: "Superserie: encadena los cuatro patrones." },
+  B: { rounds: 4, note: "Descanso máximo de 30 s entre rondas." },
+  A: { rounds: 5, note: "Descanso máximo de 15 s entre rondas." },
+  S: { rounds: 5, note: "Sin cortes. La prueba del Dominio Total." },
 };
 var enfoques = [
     {
@@ -178,9 +181,25 @@ function volumen(e, a, l, n, tr) {
     s = factorRango[e] || 1,
     u = sdcBase(tr, a, n),
     c = {};
-  for (let r of Object.keys(u))
-    c[r] = Math.max(1, Math.round(u[r] * s * ejercicioDe(r, e, n).repFactor * o));
+  for (let r of Object.keys(u)) {
+    let ej = ejercicioDe(r, e, n),
+      f = sdcGymFijo(ej, n) ? factorRango.E : s * ej.repFactor;
+    c[r] = Math.max(1, Math.round(u[r] * f * o));
+  }
   return c;
+}
+// En el gimnasio lo que sube con el rango es el ejercicio y la carga, no las
+// repeticiones: cada serie queda en el rango del enfoque (salud 12/10/8, fuerza
+// 8/7/5, resistencia 17/14/11) en todos los rangos. Los sostenes siguen la
+// formula comun, porque sus reps son segundos y repFactor los calibra.
+function sdcGymFijo(ej, mod) {
+  return mod === "gym" && !!ej && !sdcSegs(ej.alt);
+}
+// Lo que vale en XP cada rep de gimnasio de ese patron: lo necesario para que
+// una rutina completa pague lo mismo que cuando las reps subian con el rango.
+function sdcGymXp(g, rank) {
+  let ej = ejercicioDe(g, rank, "gym");
+  return sdcGymFijo(ej, "gym") ? ((factorRango[rank] || 1) * ej.repFactor) / factorRango.E : 1;
 }
 function multEnfoque(e) {
   let a = enfoqueDe(e.profile.focusProfile),
@@ -321,6 +340,8 @@ export {
   baseClase,
   ejercicioDe,
   pruebaUmbral,
+  sdcGymFijo,
+  sdcGymXp,
   enfoques,
   rachaBonoSalud,
   metaSemanalDefecto,

@@ -225,9 +225,11 @@ hay un botón para anotar a mano. Es la tesis hecha pantalla.
 - **XP y niveles.** La XP de la rutina son las reps hechas, más **30** si la completás al 100%.
   El primer nivel cuesta 48 XP y **la primera rutina tiene que alcanzar para subirlo**: es la
   recompensa más barata e importante del juego.
-- **Rangos** (7). Para pasar hace falta un nivel, **24 rutinas completas en ese rango** y superar
-  el **Umbral**, una prueba que encadena rondas de los cuatro patrones **con los ejercicios del
-  rango que viene** y solo se puede dar un día con la rutina al 100%. Las dos condiciones nuevas
+- **Rangos** (7). Para pasar hace falta un nivel, **rutinas completas en ese rango** (24, 36, 48, 60,
+  72 y 84, del primero al sexto) y superar el **Umbral**: **una rutina completa del rango que viene**,
+  con sus ejercicios, repartida en 3 a 5 rondas encadenadas; solo se puede dar un día con la
+  rutina al 100%. Antes cada ronda era el 60–80% de esa rutina y la prueba sumaba entre 2 y 6
+  rutinas encima de la del día (575 reps en el gimnasio para el sexto rango). Las dos condiciones nuevas
   existen porque el nivel se puede apurar y el cuerpo no: entrenando todos los días con racha se
   llegaba al primer Umbral en 7 semanas, y la prueba se hacía con ejercicios que ya dominabas. Los
   impulsos de la tienda aceleran poco (~10%) y no se tocaron. Tiempos
@@ -309,9 +311,6 @@ No hace falta saber programar, pero sí qué es posible:
 4. 12 testers durante 14 días seguidos.
 
 **Decisiones de diseño abiertas:**
-- En gimnasio las reps suben con el rango (117 por día en el primero, 190 en el tercero), aunque la
-  idea es que en el gimnasio la variable sea la carga. Aplanarlo cambia la XP de todos los que
-  entrenan en gimnasio.
 - El calibre de las pruebas nuevas se escala con un factor de 0,6 que es una **estimación**. Hay
   que confirmarlo con datos reales: alguien que tenga una prueba vieja y una nueva del mismo
   ejercicio.

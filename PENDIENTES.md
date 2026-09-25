@@ -16,14 +16,17 @@ ni la dirección del sitio.
 - **Código fuente de verdad**: Vite + React 19, en módulos por tema, con nombres reales en vez
   de los del minificador, y en JSX. Cada paso se comprobó comparando el resultado con la versión
   publicada, pantalla por pantalla.
-- **Pruebas**: 103 automáticas (curva de XP, Umbral, buffos, deshacer, sonidos…) y 8 de punta a
+- **Pruebas**: 114 automáticas (curva de XP, Umbral, buffos, deshacer, sonidos…) y 8 de punta a
   punta en Edge. **Si alguna falla, no se publica nada**: el deploy lo hace GitHub Actions y las
   corre antes.
 - **App partida**: cada pestaña en su archivo (`src/ui/pestanas/`) y Entreno en tarjetas.
 - **La partida se guarda en un solo lugar**, cada vez que cambia: ningún cambio puede quedar sin
   guardar por olvido.
-- **Umbral**: además del nivel pide 24 rutinas completas en el rango y la prueba usa los
-  ejercicios del rango siguiente. El bono de +30 ya no se multiplica por el enfoque (fuerza
+- **Umbral**: además del nivel pide rutinas completas en el rango (24 en el primero, 12 más en
+  cada uno de los siguientes) y la prueba es una rutina completa del rango siguiente, con sus
+  ejercicios, repartida en rondas (antes sumaba entre 2 y 6 rutinas).
+- **Gimnasio**: las reps son siempre las de tu enfoque (salud 12/10/8, fuerza 8/7/5, resistencia
+  17/14/11); lo que sube con el rango es el ejercicio y el peso. El XP por sesión quedó igual. El bono de +30 ya no se multiplica por el enfoque (fuerza
   cobraba ~20% de más) y resistencia cobra 0,72×: los tres enfoques pagan dentro de un 3,4%.
 - **Deshacer** ahora deshace todo: reps del mes, contadores de modalidad y logros.
 - **Cómo llegás**: toda respuesta se puede cambiar. **Peso corporal** se llama **Calistenia**.
@@ -394,10 +397,8 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
   puede nombrar un movimiento, porque un enfoque es lo que viene, no lo que ya tenés.
   Los números no cambiaron: `classification` sale del mismo `vy` de siempre y el volumen de la
   rutina es idéntico.
-- **Falta decidir**: las reps de gimnasio suben con el rango (117/día en E, 190 en C) aunque el
-  diseño dice que en el gimnasio la variable es la carga, no las reps. Un jugador de rango C
-  hace 20 sentadillas con barra en la primera serie: duro pero real. Aplanarlo cambiaría el XP
-  por sesión de todos los que entrenan en gimnasio, así que es una decisión tuya, no un bug.
+- ~~Las reps de gimnasio subían con el rango~~ — resuelto (24/09/2026): ahora son siempre las de
+  tu enfoque y lo que sube es el ejercicio y el peso. El XP por sesión se mantuvo igual.
 
 ## C · Decisiones de diseño que quedaron abiertas
 
@@ -408,8 +409,10 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
 - La fuente "medida" de Primeras veces (récord propio superado) se dejó afuera a propósito:
   al principio casi toda sesión bate un récord y la lista se llenaría de ruido.
 - **Elegidas por Claude en la modernización, fáciles de cambiar si no te convencen:**
-  - Las **24 rutinas completas** que pide el Umbral.
-  - La prueba del Umbral: 3 rondas al 60% de la meta del rango siguiente. Puede ser exigente.
+  - ~~Las 24 rutinas completas y la prueba del Umbral~~ — decidido (24/09/2026): el mínimo crece
+    con el rango (24 → 84) y la prueba es una rutina completa del rango siguiente.
+  - Gimnasio y flow dan más XP por sesión que peso corporal (150 y 124 contra 66 para un
+    principiante): se decidió dejarlo así.
   - El nombre **Calistenia** para la modalidad de peso corporal.
   - **0,6** como factor para comparar pruebas viejas y nuevas del calibre: es una estimación.
 - ~~**Movilidad & Primal Flow** (la modalidad) se parecía mucho a **Instinto Primal** (el sistema)~~ —

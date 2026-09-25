@@ -2,7 +2,7 @@
 import {
   sdcUmbralFalta,
   sdcRangoCompletas,
-  sdcUmbralMin,
+  sdcUmbralMinDe,
   sdcFaltanTxt,
   sdcUmbralPrueba,
 } from "../../../logica/partida.js";
@@ -31,7 +31,8 @@ export function TarjetaUmbral({ ascension, cruzarUmbral, modalidad, player, prof
           return (
             <div className="mb-3">
               <div className="text-sm mb-1" style={{ color: "#e8ecf7", fontWeight: 600 }}>
-                {f.rounds} rondas encadenadas, con los ejercicios de {sdcRango(f.rango, profile)}:
+                {f.rounds} rondas encadenadas con los ejercicios de {sdcRango(f.rango, profile)}. En
+                cada ronda:
               </div>
               {["squat", "pushup", "back", "abs"].map((d) => (
                 <div key={d} className="text-sm" style={{ color: "#9aa4bd" }}>
@@ -52,8 +53,9 @@ export function TarjetaUmbral({ ascension, cruzarUmbral, modalidad, player, prof
           className="text-xs mb-3"
           style={{ color: sdcUmbralFalta(player) > 0 ? "#ffb84f" : "#3ecf8e" }}
         >
-          Rutinas completas en este rango: {Math.min(sdcRangoCompletas(player), sdcUmbralMin)} de{" "}
-          {sdcUmbralMin}.
+          Rutinas completas en este rango:{" "}
+          {Math.min(sdcRangoCompletas(player), sdcUmbralMinDe(player.progress.rank))} de{" "}
+          {sdcUmbralMinDe(player.progress.rank)}.
         </div>
         <button
           onClick={cruzarUmbral}
