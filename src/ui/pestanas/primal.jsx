@@ -64,7 +64,7 @@ export function PestanaPrimal({
   setSeccionPrimal,
   ui,
 }) {
-  let f = primal.unlockedCount - 1;
+  let masNuevo = primal.unlockedCount - 1;
   return (
     <>
       <div
@@ -138,20 +138,24 @@ export function PestanaPrimal({
       {seccionPrimal === "neuro" &&
         sistemaActivo(player, "neuro") &&
         (() => {
-          let d = player.neuro || {
+          let neuro = player.neuro || {
               bestSpeedLevel: 0,
               bestSequence: 0,
               bestDualSec: 0,
               bestBpm: 0,
               sessions: 0,
             },
-            m = [
+            pruebas = [
               {
                 id: "reaction",
                 name: "Reacción",
                 accent: "#4f9dff",
-                best: d.bestSpeedLevel
-                  ? (velocidadesReaccion.find((N) => N.level === d.bestSpeedLevel) || {}).name
+                best: neuro.bestSpeedLevel
+                  ? (
+                      velocidadesReaccion.find(
+                        (velocidad) => velocidad.level === neuro.bestSpeedLevel,
+                      ) || {}
+                    ).name
                   : "—",
                 desc: "Señales impredecibles sin tocar la pantalla. Solo atención y cuerpo.",
               },
@@ -159,17 +163,17 @@ export function PestanaPrimal({
                 id: "sequence",
                 name: "Secuencia motriz",
                 accent: "#b084f5",
-                best: d.bestSequence ? d.bestSequence + " movs" : "—",
+                best: neuro.bestSequence ? neuro.bestSequence + " movs" : "—",
                 desc: "Memorizá una cadena, ejecutala de memoria y comprobá.",
               },
               {
                 id: "dual",
                 name: "Doble tarea",
                 accent: "#3ecf8e",
-                best: d.bestDualSec
-                  ? Math.floor(d.bestDualSec / 60) +
+                best: neuro.bestDualSec
+                  ? Math.floor(neuro.bestDualSec / 60) +
                     ":" +
-                    String(d.bestDualSec % 60).padStart(2, "0")
+                    String(neuro.bestDualSec % 60).padStart(2, "0")
                   : "—",
                 desc: "Isométrico sostenido mientras resuelves una tarea mental.",
               },
@@ -177,7 +181,7 @@ export function PestanaPrimal({
                 id: "coord",
                 name: "Coordinación cruzada",
                 accent: "#ffb84f",
-                best: d.bestBpm ? d.bestBpm + " bpm" : "—",
+                best: neuro.bestBpm ? neuro.bestBpm + " bpm" : "—",
                 desc: "Patrones contralaterales al ritmo del metrónomo.",
               },
             ];
@@ -200,7 +204,7 @@ export function PestanaPrimal({
                         fontWeight: 700,
                       }}
                     >
-                      {d.sessions || 0} sesiones
+                      {neuro.sessions || 0} sesiones
                     </div>
                   </div>
                   <IconoRayo size={24} color="#ff6b4a" />
@@ -221,12 +225,12 @@ export function PestanaPrimal({
                   motor, no tu inteligencia general.
                 </div>
               </Tarjeta>
-              {m.map((N) => {
-                let _ = neuroAbierto === N.id;
+              {pruebas.map((prueba) => {
+                let abierta = neuroAbierto === prueba.id;
                 return (
-                  <Tarjeta key={N.id} accent={N.accent} style={{ marginBottom: 12 }}>
+                  <Tarjeta key={prueba.id} accent={prueba.accent} style={{ marginBottom: 12 }}>
                     <button
-                      onClick={() => setNeuroAbierto(_ ? null : N.id)}
+                      onClick={() => setNeuroAbierto(abierta ? null : prueba.id)}
                       className="w-full text-left"
                       style={{ background: "transparent", border: "none", padding: 0 }}
                     >
@@ -235,7 +239,7 @@ export function PestanaPrimal({
                           <span
                             style={{
                               display: "inline-block",
-                              transform: _ ? "rotate(90deg)" : "rotate(0deg)",
+                              transform: abierta ? "rotate(90deg)" : "rotate(0deg)",
                               transition: "transform .2s",
                             }}
                           >
@@ -243,44 +247,57 @@ export function PestanaPrimal({
                           </span>
                           <div>
                             <div className="text-sm" style={{ color: "#e8ecf7", fontWeight: 600 }}>
-                              {N.name}
+                              {prueba.name}
                             </div>
                             <div className="text-xs" style={{ color: "#7a83a0" }}>
-                              {N.desc}
+                              {prueba.desc}
                             </div>
                           </div>
                         </div>
-                        <div className="text-xs" style={{ color: N.accent, whiteSpace: "nowrap" }}>
-                          {N.best}
+                        <div
+                          className="text-xs"
+                          style={{ color: prueba.accent, whiteSpace: "nowrap" }}
+                        >
+                          {prueba.best}
                         </div>
                       </div>
                     </button>
-                    {_ && (
+                    {abierta && (
                       <div className="mt-3">
-                        {N.id === "reaction" && (
+                        {prueba.id === "reaction" && (
                           <Reaccion
-                            onDone={(X) =>
-                              aplicar((de) => registrarNeuromotor(de, "reaction", X, !1))
+                            onDone={(resultado) =>
+                              aplicar((partida) =>
+                                registrarNeuromotor(partida, "reaction", resultado, !1),
+                              )
                             }
                           />
                         )}
-                        {N.id === "sequence" && (
+                        {prueba.id === "sequence" && (
                           <Secuencia
-                            onDone={(X) =>
-                              aplicar((de) => registrarNeuromotor(de, "sequence", X, !1))
+                            onDone={(resultado) =>
+                              aplicar((partida) =>
+                                registrarNeuromotor(partida, "sequence", resultado, !1),
+                              )
                             }
                           />
                         )}
-                        {N.id === "dual" && (
+                        {prueba.id === "dual" && (
                           <TareaDual
-                            onDone={(X) =>
-                              aplicar((de) => registrarNeuromotor(de, "dual", X, X >= 45))
+                            onDone={(resultado) =>
+                              aplicar((partida) =>
+                                registrarNeuromotor(partida, "dual", resultado, resultado >= 45),
+                              )
                             }
                           />
                         )}
-                        {N.id === "coord" && (
+                        {prueba.id === "coord" && (
                           <Ritmo
-                            onDone={(X) => aplicar((de) => registrarNeuromotor(de, "coord", X, !1))}
+                            onDone={(resultado) =>
+                              aplicar((partida) =>
+                                registrarNeuromotor(partida, "coord", resultado, !1),
+                              )
+                            }
                           />
                         )}
                       </div>
@@ -294,7 +311,7 @@ export function PestanaPrimal({
       {seccionPrimal === "care" &&
         sistemaActivo(player, "care") &&
         (() => {
-          let d =
+          let hechosHoy =
             player.care && player.care.today.date === fechaHoy() ? player.care.today.done : [];
           return (
             <>
@@ -360,26 +377,26 @@ export function PestanaPrimal({
                 <div className="text-xs mb-2" style={{ color: "#9aa4bd" }}>
                   Si aparece cualquiera de estas, deja el protocolo y busca valoración profesional:
                 </div>
-                {alarmas.map((m) => (
-                  <div key={m} className="flex items-start gap-2 py-1">
+                {alarmas.map((alarma) => (
+                  <div key={alarma} className="flex items-start gap-2 py-1">
                     <span style={{ color: "#ff5c7a" }}>•</span>
                     <span className="text-xs" style={{ color: "#e8ecf7" }}>
-                      {m}
+                      {alarma}
                     </span>
                   </div>
                 ))}
               </Plegable>
-              {cuidadoArticular.map((m) => {
-                let N = cuidadoAbierto === m.id,
-                  _ = d.includes(m.id);
+              {cuidadoArticular.map((protocolo) => {
+                let abierto = cuidadoAbierto === protocolo.id,
+                  hecho = hechosHoy.includes(protocolo.id);
                 return (
                   <Tarjeta
-                    key={m.id}
-                    accent={_ ? "#3ecf8e" : "#5a6178"}
+                    key={protocolo.id}
+                    accent={hecho ? "#3ecf8e" : "#5a6178"}
                     style={{ marginBottom: 12 }}
                   >
                     <button
-                      onClick={() => setCuidadoAbierto(N ? null : m.id)}
+                      onClick={() => setCuidadoAbierto(abierto ? null : protocolo.id)}
                       className="w-full text-left"
                       style={{ background: "transparent", border: "none", padding: 0 }}
                     >
@@ -388,7 +405,7 @@ export function PestanaPrimal({
                           <span
                             style={{
                               display: "inline-block",
-                              transform: N ? "rotate(90deg)" : "rotate(0deg)",
+                              transform: abierto ? "rotate(90deg)" : "rotate(0deg)",
                               transition: "transform .2s",
                             }}
                           >
@@ -396,24 +413,24 @@ export function PestanaPrimal({
                           </span>
                           <div>
                             <div className="text-sm" style={{ color: "#e8ecf7", fontWeight: 600 }}>
-                              {m.zone}
+                              {protocolo.zone}
                             </div>
                             <div className="text-xs" style={{ color: "#7a83a0" }}>
-                              {m.common}
+                              {protocolo.common}
                             </div>
                           </div>
                         </div>
-                        {_ && <IconoCheck size={16} color="#3ecf8e" />}
+                        {hecho && <IconoCheck size={16} color="#3ecf8e" />}
                       </div>
                     </button>
-                    {N && (
+                    {abierto && (
                       <div className="mt-3">
                         <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
-                          {m.context}
+                          {protocolo.context}
                         </div>
-                        {m.exercises.map((X, de) => (
+                        {protocolo.exercises.map((ejercicio, i) => (
                           <div
-                            key={X.name}
+                            key={ejercicio.name}
                             className="py-2"
                             style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}
                           >
@@ -422,34 +439,36 @@ export function PestanaPrimal({
                                 className="text-sm"
                                 style={{ color: "#e8ecf7", fontWeight: 600 }}
                               >
-                                {de + 1}. {X.name}
+                                {i + 1}. {ejercicio.name}
                               </div>
                               <div
                                 className="text-xs"
                                 style={{ color: "#4f9dff", whiteSpace: "nowrap" }}
                               >
-                                {X.dose}
+                                {ejercicio.dose}
                               </div>
                             </div>
                             <div className="text-xs mt-1" style={{ color: "#9aa4bd" }}>
-                              {X.how}
+                              {ejercicio.how}
                             </div>
                             <div className="text-xs mt-1" style={{ color: "#7a83a0" }}>
-                              Para qué: {X.why}
+                              Para qué: {ejercicio.why}
                             </div>
                           </div>
                         ))}
                         <button
-                          onClick={() => aplicar((X) => registrarCuidado(X, m.id))}
-                          disabled={_}
+                          onClick={() =>
+                            aplicar((partida) => registrarCuidado(partida, protocolo.id))
+                          }
+                          disabled={hecho}
                           className="w-full py-3 text-sm mt-3 disabled:opacity-40"
                           style={{
-                            background: _ ? "rgba(255,255,255,0.05)" : "#4f9dff",
-                            color: _ ? "#9aa4bd" : "#0a0e1a",
+                            background: hecho ? "rgba(255,255,255,0.05)" : "#4f9dff",
+                            color: hecho ? "#9aa4bd" : "#0a0e1a",
                             fontWeight: 700,
                           }}
                         >
-                          {_ ? "Registrado hoy" : "Registrar protocolo (+" + xpCuidado + " XP)"}
+                          {hecho ? "Registrado hoy" : "Registrar protocolo (+" + xpCuidado + " XP)"}
                         </button>
                       </div>
                     )}
@@ -485,15 +504,19 @@ export function PestanaPrimal({
               verdad: no hay prisa ni penalización por tardar semanas.
             </div>
           </Tarjeta>
-          {habilidades.map((d) => {
-            let m = pasosHabilidad(player, d.id),
-              N = m.filter(Boolean).length,
-              _ = N >= d.steps.length,
-              X = habilidadAbierta === d.id;
+          {habilidades.map((habilidad) => {
+            let pasos = pasosHabilidad(player, habilidad.id),
+              hechos = pasos.filter(Boolean).length,
+              completa = hechos >= habilidad.steps.length,
+              abierta = habilidadAbierta === habilidad.id;
             return (
-              <Tarjeta key={d.id} accent={_ ? "#3ecf8e" : "#5a6178"} style={{ marginBottom: 12 }}>
+              <Tarjeta
+                key={habilidad.id}
+                accent={completa ? "#3ecf8e" : "#5a6178"}
+                style={{ marginBottom: 12 }}
+              >
                 <button
-                  onClick={() => setHabilidadAbierta(X ? null : d.id)}
+                  onClick={() => setHabilidadAbierta(abierta ? null : habilidad.id)}
                   className="w-full text-left"
                   style={{ background: "transparent", border: "none", padding: 0 }}
                 >
@@ -502,7 +525,7 @@ export function PestanaPrimal({
                       <span
                         style={{
                           display: "inline-block",
-                          transform: X ? "rotate(90deg)" : "rotate(0deg)",
+                          transform: abierta ? "rotate(90deg)" : "rotate(0deg)",
                           transition: "transform .2s",
                         }}
                       >
@@ -510,39 +533,45 @@ export function PestanaPrimal({
                       </span>
                       <div>
                         <div className="text-sm" style={{ color: "#e8ecf7", fontWeight: 600 }}>
-                          {d.name}
+                          {habilidad.name}
                         </div>
                         <div className="text-xs" style={{ color: "#7a83a0" }}>
-                          {d.family} · {d.level}
+                          {habilidad.family} · {habilidad.level}
                         </div>
                       </div>
                     </div>
-                    <div className="text-xs" style={{ color: _ ? "#3ecf8e" : "#8a93ad" }}>
-                      {_ ? "Aprendida" : `${N}/${d.steps.length}`}
+                    <div className="text-xs" style={{ color: completa ? "#3ecf8e" : "#8a93ad" }}>
+                      {completa ? "Aprendida" : `${hechos}/${habilidad.steps.length}`}
                     </div>
                   </div>
                 </button>
                 <div className="mt-2">
-                  <BarraXp value={N} max={d.steps.length} color={_ ? "#3ecf8e" : "#b084f5"} />
+                  <BarraXp
+                    value={hechos}
+                    max={habilidad.steps.length}
+                    color={completa ? "#3ecf8e" : "#b084f5"}
+                  />
                 </div>
-                {X && (
+                {abierta && (
                   <div className="mt-3">
                     <div className="text-xs mb-1" style={{ color: "#e8ecf7" }}>
-                      {d.what}
+                      {habilidad.what}
                     </div>
                     <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
-                      {d.why}
+                      {habilidad.why}
                     </div>
-                    {d.steps.map((de, te) => {
-                      let Bl = !!m[te];
+                    {habilidad.steps.map((paso, i) => {
+                      let marcado = !!pasos[i];
                       return (
                         <div
-                          key={de.name}
+                          key={paso.name}
                           className="py-2"
                           style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}
                         >
                           <button
-                            onClick={() => aplicar((wl) => marcarPasoHabilidad(wl, d.id, te))}
+                            onClick={() =>
+                              aplicar((partida) => marcarPasoHabilidad(partida, habilidad.id, i))
+                            }
                             className="w-full text-left flex items-start gap-2"
                             style={{
                               background: "transparent",
@@ -556,25 +585,26 @@ export function PestanaPrimal({
                                 height: 16,
                                 flexShrink: 0,
                                 marginTop: 2,
-                                border: "1px solid " + (Bl ? "#3ecf8e" : "rgba(255,255,255,0.3)"),
-                                background: Bl ? "#3ecf8e" : "transparent",
+                                border:
+                                  "1px solid " + (marcado ? "#3ecf8e" : "rgba(255,255,255,0.3)"),
+                                background: marcado ? "#3ecf8e" : "transparent",
                                 display: "inline-flex",
                                 alignItems: "center",
                                 justifyContent: "center",
                               }}
                             >
-                              {Bl && <IconoCheck size={12} color="#0a0e1a" />}
+                              {marcado && <IconoCheck size={12} color="#0a0e1a" />}
                             </span>
                             <span>
                               <span
                                 className="text-sm"
                                 style={{
-                                  color: Bl ? "#8a93ad" : "#e8ecf7",
+                                  color: marcado ? "#8a93ad" : "#e8ecf7",
                                   fontWeight: 600,
-                                  textDecoration: Bl ? "line-through" : "none",
+                                  textDecoration: marcado ? "line-through" : "none",
                                 }}
                               >
-                                {te + 1}. {de.name}
+                                {i + 1}. {paso.name}
                               </span>
                               <span
                                 className="text-xs"
@@ -584,7 +614,7 @@ export function PestanaPrimal({
                                   marginTop: 2,
                                 }}
                               >
-                                {de.how}
+                                {paso.how}
                               </span>
                               <span
                                 className="text-xs"
@@ -594,7 +624,7 @@ export function PestanaPrimal({
                                   marginTop: 2,
                                 }}
                               >
-                                Clave: {de.cue}
+                                Clave: {paso.cue}
                               </span>
                             </span>
                           </button>
@@ -609,7 +639,7 @@ export function PestanaPrimal({
                         border: "1px solid rgba(62,207,142,0.25)",
                       }}
                     >
-                      <b>Si te atascas:</b> {d.regression}
+                      <b>Si te atascas:</b> {habilidad.regression}
                     </div>
                     <div
                       className="text-xs mt-2 p-2"
@@ -619,7 +649,7 @@ export function PestanaPrimal({
                         border: "1px solid rgba(255,92,122,0.25)",
                       }}
                     >
-                      <b>Error común:</b> {d.mistake}
+                      <b>Error común:</b> {habilidad.mistake}
                     </div>
                   </div>
                 )}
@@ -692,8 +722,8 @@ export function PestanaPrimal({
               ) : (
                 <>
                   {(() => {
-                    let et = sdcPrimalEtapa(primalFase, primalRonda, primalSegundos),
-                      aviso = et === "posicion" || et === "prepara";
+                    let etapa = sdcPrimalEtapa(primalFase, primalRonda, primalSegundos),
+                      aviso = etapa === "posicion" || etapa === "prepara";
                     return (
                       <div
                         className="text-center text-xs mb-1"
@@ -707,11 +737,11 @@ export function PestanaPrimal({
                       >
                         {primalPausa
                           ? "EN PAUSA"
-                          : et === "posicion"
+                          : etapa === "posicion"
                             ? "PONETE EN POSICIÓN"
-                            : et === "prepara"
+                            : etapa === "prepara"
                               ? "PREPARATE · RONDA " + (primalRonda + 1) + "/" + rondasPrimal
-                              : et === "descanso"
+                              : etapa === "descanso"
                                 ? "Ronda " +
                                   primalRonda +
                                   "/" +
@@ -811,23 +841,23 @@ export function PestanaPrimal({
                   Ya completaste tus {primalSesionesHoy} sesiones de hoy. Volvé mañana.
                 </div>
               )}
-              {movimientosPrimal.map((d, m) => {
-                let N = m < primal.unlockedCount,
-                  _ = m === f,
-                  X = !N || primalHechasHoy >= primalSesionesHoy;
+              {movimientosPrimal.map((mov, i) => {
+                let abierto = i < primal.unlockedCount,
+                  esNuevo = i === masNuevo,
+                  bloqueado = !abierto || primalHechasHoy >= primalSesionesHoy;
                 return (
                   <button
-                    key={d.name}
-                    onClick={() => !X && primalElegir(m)}
-                    disabled={X}
+                    key={mov.name}
+                    onClick={() => !bloqueado && primalElegir(i)}
+                    disabled={bloqueado}
                     className="w-full text-left py-2 px-3 mb-2 disabled:opacity-40"
                     style={{
-                      background: N ? "rgba(62,207,142,0.08)" : "rgba(255,255,255,0.03)",
-                      border: "1px solid " + (N ? "#3ecf8e55" : "rgba(255,255,255,0.1)"),
+                      background: abierto ? "rgba(62,207,142,0.08)" : "rgba(255,255,255,0.03)",
+                      border: "1px solid " + (abierto ? "#3ecf8e55" : "rgba(255,255,255,0.1)"),
                     }}
                   >
                     <div className="flex items-center gap-2">
-                      {N ? (
+                      {abierto ? (
                         <IconoPata size={16} color="#3ecf8e" />
                       ) : (
                         <IconoCandado size={16} color="#7a83a0" />
@@ -835,21 +865,21 @@ export function PestanaPrimal({
                       <div
                         className="text-sm"
                         style={{
-                          color: N ? "#e8ecf7" : "#5a6178",
-                          fontWeight: N ? 600 : 400,
+                          color: abierto ? "#e8ecf7" : "#5a6178",
+                          fontWeight: abierto ? 600 : 400,
                         }}
                       >
-                        {d.name}
+                        {mov.name}
                       </div>
-                      {_ && (
+                      {esNuevo && (
                         <span className="text-xs ml-auto" style={{ color: "#ffb84f" }}>
                           {primal.masteryProgress}/{vecesParaDominar}
                         </span>
                       )}
                     </div>
-                    {N && (
+                    {abierto && (
                       <div className="text-xs mt-1" style={{ color: "#9aa4bd" }}>
-                        {d.desc}
+                        {mov.desc}
                       </div>
                     )}
                   </button>

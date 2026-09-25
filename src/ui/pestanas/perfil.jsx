@@ -67,8 +67,8 @@ function AnotarPrimera({ onAnotar }) {
         value={texto}
         autoFocus
         maxLength={120}
-        onChange={(e) => setTexto(e.target.value)}
-        onKeyDown={(e) => e.key === "Enter" && anotar()}
+        onChange={(evento) => setTexto(evento.target.value)}
+        onKeyDown={(evento) => evento.key === "Enter" && anotar()}
         placeholder="¿Qué pudiste hacer hoy que antes no podías?"
         aria-label="Qué pudiste hacer hoy que antes no podías"
         className="w-full px-3 py-2 text-sm"
@@ -146,7 +146,7 @@ export function PestanaPerfil({
   setRespaldoTexto,
   ui,
 }) {
-  let f = Math.max(
+  let diasDesde = Math.max(
     1,
     Math.floor(
       (new Date(fechaHoy() + "T00:00:00") - new Date(profile.createdDate + "T00:00:00")) / 864e5,
@@ -169,7 +169,7 @@ export function PestanaPerfil({
           </div>
         </div>
         <div className="text-xs" style={{ color: "#9aa4bd" }}>
-          Entrenando desde el {profile.createdDate} · Día {f}
+          Entrenando desde el {profile.createdDate} · Día {diasDesde}
         </div>
         <div className="text-xs mt-1" style={{ color: "#9aa4bd" }}>
           Enfoque: {enfoqueDe(profile.focusProfile).name}
@@ -187,7 +187,7 @@ export function PestanaPerfil({
           ui && ui.collapsed && ui.collapsed.sistemas !== void 0 ? plegado("sistemas") : !0
         }
         onToggle={alternarPlegable}
-        right={`${sistemas.filter((m) => sistemaActivo(player, m.id)).length + 1}/${sistemas.length + 1}`}
+        right={`${sistemas.filter((sistema) => sistemaActivo(player, sistema.id)).length + 1}/${sistemas.length + 1}`}
       >
         <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
           Los sistemas se abren solos a medida que subís de nivel. Podés abrirlos todos de golpe o
@@ -221,40 +221,40 @@ export function PestanaPerfil({
             Base
           </span>
         </div>
-        {sistemas.map((m) => {
-          let N = sistemaAbierto(player, m.id),
-            _ = (player.disabled || []).includes(m.id),
-            X = sistemaActivo(player, m.id);
+        {sistemas.map((sistema) => {
+          let abierto = sistemaAbierto(player, sistema.id),
+            apagado = (player.disabled || []).includes(sistema.id),
+            activo = sistemaActivo(player, sistema.id);
           return (
             <div
-              key={m.id}
+              key={sistema.id}
               className="flex items-center justify-between gap-2 py-2"
               style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}
             >
               <div style={{ flex: 1 }}>
                 <div
                   className="text-sm"
-                  style={{ color: X ? "#e8ecf7" : "#5a6178", fontWeight: 600 }}
+                  style={{ color: activo ? "#e8ecf7" : "#5a6178", fontWeight: 600 }}
                 >
-                  {m.name}
+                  {sistema.name}
                 </div>
                 <div className="text-xs" style={{ color: "#7a83a0" }}>
-                  {N ? m.why : `Se abre en el nivel ${m.level}`}
+                  {abierto ? sistema.why : `Se abre en el nivel ${sistema.level}`}
                 </div>
               </div>
-              {N ? (
+              {abierto ? (
                 <button
-                  onClick={() => alternarSistema(m.id)}
+                  onClick={() => alternarSistema(sistema.id)}
                   className="py-2 px-3 text-xs"
                   style={{
-                    background: _ ? "rgba(255,255,255,0.05)" : "rgba(62,207,142,0.12)",
-                    border: "1px solid " + (_ ? "rgba(255,255,255,0.2)" : "#3ecf8e"),
-                    color: _ ? "#9aa4bd" : "#3ecf8e",
+                    background: apagado ? "rgba(255,255,255,0.05)" : "rgba(62,207,142,0.12)",
+                    border: "1px solid " + (apagado ? "rgba(255,255,255,0.2)" : "#3ecf8e"),
+                    color: apagado ? "#9aa4bd" : "#3ecf8e",
                     fontWeight: 700,
                     whiteSpace: "nowrap",
                   }}
                 >
-                  {_ ? "Apagado" : "Activo"}
+                  {apagado ? "Apagado" : "Activo"}
                 </button>
               ) : (
                 <IconoCandado size={16} color="#7a83a0" />
@@ -270,26 +270,26 @@ export function PestanaPerfil({
         style={{ marginBottom: 16 }}
         collapsed={ui && ui.collapsed && ui.collapsed.metodos !== void 0 ? plegado("metodos") : !0}
         onToggle={alternarPlegable}
-        right={(modalidades.find((m) => m.id === modalidad) || modalidades[0]).name}
+        right={(modalidades.find((mod) => mod.id === modalidad) || modalidades[0]).name}
       >
         <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
           Activa o desactiva modalidades cuando quieras. Con varias activas elegís cuál usar cada
           día en la Rutina. Hoy:{" "}
           <b style={{ color: "#4f9dff" }}>
-            {(modalidades.find((m) => m.id === modalidad) || modalidades[0]).name}
+            {(modalidades.find((mod) => mod.id === modalidad) || modalidades[0]).name}
           </b>
           .
         </div>
-        {modalidades.map((m) => {
-          let N = modalidadesDe(profile).includes(m.id);
+        {modalidades.map((mod) => {
+          let activa = modalidadesDe(profile).includes(mod.id);
           return (
             <button
-              key={m.id}
-              onClick={() => alternarModalidad(m.id)}
+              key={mod.id}
+              onClick={() => alternarModalidad(mod.id)}
               className="w-full text-left px-3 py-2 mb-2"
               style={{
-                background: N ? "rgba(79,157,255,0.14)" : "rgba(255,255,255,0.03)",
-                border: N ? "1px solid #4f9dff" : "1px solid rgba(255,255,255,0.1)",
+                background: activa ? "rgba(79,157,255,0.14)" : "rgba(255,255,255,0.03)",
+                border: activa ? "1px solid #4f9dff" : "1px solid rgba(255,255,255,0.1)",
               }}
             >
               <div className="flex items-center gap-2">
@@ -299,22 +299,22 @@ export function PestanaPerfil({
                     height: 16,
                     display: "inline-block",
                     flexShrink: 0,
-                    border: "1px solid " + (N ? "#4f9dff" : "rgba(255,255,255,0.3)"),
-                    background: N ? "#4f9dff" : "transparent",
+                    border: "1px solid " + (activa ? "#4f9dff" : "rgba(255,255,255,0.3)"),
+                    background: activa ? "#4f9dff" : "transparent",
                   }}
                 />
                 <span className="text-sm" style={{ color: "#e8ecf7", fontWeight: 600 }}>
-                  {m.name}
+                  {mod.name}
                 </span>
               </div>
               <div className="text-xs mt-1" style={{ color: "#9aa4bd" }}>
-                {m.desc}
+                {mod.desc}
               </div>
             </button>
           );
         })}
         <button
-          onClick={() => ponerModalidades(modalidades.map((m) => m.id))}
+          onClick={() => ponerModalidades(modalidades.map((mod) => mod.id))}
           className="w-full py-2 text-xs"
           style={{
             background: "rgba(255,184,79,0.1)",
@@ -332,30 +332,30 @@ export function PestanaPerfil({
               repeticiones.
             </div>
             <div className="grid grid-cols-3 gap-1">
-              {modalidadesDe(profile).map(function (jm) {
-                var jN = sdcJuego(profile) === jm,
-                  jT =
-                    modalidades.find(function (jR) {
-                      return jR.id === jm;
+              {modalidadesDe(profile).map(function (mod) {
+                var elegido = sdcJuego(profile) === mod,
+                  datos =
+                    modalidades.find(function (otra) {
+                      return otra.id === mod;
                     }) || modalidades[0];
                 return (
                   <button
-                    key={jm}
+                    key={mod}
                     onClick={function () {
-                      sdcPonerJuego(jm);
+                      sdcPonerJuego(mod);
                     }}
                     className="py-2 text-xs"
                     style={{
                       minHeight: 44,
-                      background: jN ? "rgba(79,157,255,0.14)" : "rgba(255,255,255,0.03)",
-                      border: jN ? "1px solid #4f9dff" : "1px solid rgba(255,255,255,0.1)",
-                      color: jN ? "#e8ecf7" : "#9aa4bd",
+                      background: elegido ? "rgba(79,157,255,0.14)" : "rgba(255,255,255,0.03)",
+                      border: elegido ? "1px solid #4f9dff" : "1px solid rgba(255,255,255,0.1)",
+                      color: elegido ? "#e8ecf7" : "#9aa4bd",
                     }}
                   >
                     <div style={{ fontFamily: "Chakra Petch, sans-serif", fontWeight: 700 }}>
-                      {(sdcTitulos[jm] || {})[progress.rank] || ""}
+                      {(sdcTitulos[mod] || {})[progress.rank] || ""}
                     </div>
-                    <div style={{ fontSize: 10, color: "#7a83a0" }}>{jT.name}</div>
+                    <div style={{ fontSize: 10, color: "#7a83a0" }}>{datos.name}</div>
                   </button>
                 );
               })}
@@ -380,12 +380,12 @@ export function PestanaPerfil({
         }
       >
         {(() => {
-          let ct = sdcAnimoCuenta(player);
-          if (!ct.no && !ct.ambas) return null;
-          let fila = (t, v) => (
+          let cuenta = sdcAnimoCuenta(player);
+          if (!cuenta.no && !cuenta.ambas) return null;
+          let fila = (etiqueta, valor) => (
             <div className="flex justify-between text-sm mb-1">
-              <span style={{ color: "#9aa4bd" }}>{t}</span>
-              <span style={{ color: "#e8ecf7" }}>{v}</span>
+              <span style={{ color: "#9aa4bd" }}>{etiqueta}</span>
+              <span style={{ color: "#e8ecf7" }}>{valor}</span>
             </div>
           );
           return (
@@ -402,9 +402,9 @@ export function PestanaPerfil({
               >
                 CÓMO LLEGÁS Y CÓMO TE VAS
               </div>
-              {fila("Días que no querías", ct.no)}
-              {fila("Entrenaste igual", ct.vino)}
-              {fila("Terminaste mejor de lo que llegaste", ct.mejor + " de " + ct.ambas)}
+              {fila("Días que no querías", cuenta.no)}
+              {fila("Entrenaste igual", cuenta.vino)}
+              {fila("Terminaste mejor de lo que llegaste", cuenta.mejor + " de " + cuenta.ambas)}
             </div>
           );
         })()}
@@ -414,16 +414,16 @@ export function PestanaPerfil({
         <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
           No se compran: suben solos con lo que entrenás.
         </div>
-        {listaAtributos.map((m) => {
-          let N = valorAtributo(player, m),
-            _ = progresoAtributo(N);
+        {listaAtributos.map((atributo) => {
+          let valor = valorAtributo(player, atributo),
+            progreso = progresoAtributo(valor);
           return (
-            <div key={m.key} className="mb-3">
+            <div key={atributo.key} className="mb-3">
               <div className="flex justify-between text-sm mb-1">
-                <span style={{ color: m.color, fontWeight: 600 }}>{m.name}</span>
-                <span style={{ color: "#e8ecf7" }}>Nv. {nivelAtributo(N)}</span>
+                <span style={{ color: atributo.color, fontWeight: 600 }}>{atributo.name}</span>
+                <span style={{ color: "#e8ecf7" }}>Nv. {nivelAtributo(valor)}</span>
               </div>
-              <BarraXp value={_.cur} max={_.need} color={m.color} />
+              <BarraXp value={progreso.cur} max={progreso.need} color={atributo.color} />
             </div>
           );
         })}
@@ -511,8 +511,8 @@ export function PestanaPerfil({
                   type="text"
                   inputMode="decimal"
                   defaultValue={profile.bodyWeight > 0 ? sdcKgTxt(profile.bodyWeight) : ""}
-                  onBlur={(y) => ponerPesoCorporal(y.target.value)}
-                  onKeyDown={(y) => y.key === "Enter" && y.target.blur()}
+                  onBlur={(evento) => ponerPesoCorporal(evento.target.value)}
+                  onKeyDown={(evento) => evento.key === "Enter" && evento.target.blur()}
                   placeholder="kg"
                   className="px-1 py-2 text-center text-xs"
                   style={{
@@ -545,52 +545,53 @@ export function PestanaPerfil({
           progreso, solo ajusta el volumen de tu rutina y tu calibre.
         </div>
         {(() => {
-          let pt = sdcPuntaje(profile),
-            ff = sdcRitmoF(profile),
-            ix = sdcBandaIx(pt, ff),
-            sg = ix < bandasCalibre.length - 1 ? bandasCalibre[ix + 1] : null;
+          let puntaje = sdcPuntaje(profile),
+            factor = sdcRitmoF(profile),
+            banda = sdcBandaIx(puntaje, factor),
+            siguiente = banda < bandasCalibre.length - 1 ? bandasCalibre[banda + 1] : null;
           return (
             <div className="mb-3">
               <div className="text-xs mb-2" style={{ color: "#9aa4bd" }}>
-                Tu puntaje: <b style={{ color: "#ffb84f", fontSize: 14 }}>{pt} pts</b>
+                Tu puntaje: <b style={{ color: "#ffb84f", fontSize: 14 }}>{puntaje} pts</b>
                 <div style={{ color: "#7a83a0", marginTop: 2 }}>
                   sentadillas + 2×flexiones + 2×remo + abdominales
                 </div>
                 {sdcCalibre(profile) ? (
                   <div style={{ color: "#7a83a0", marginTop: 2 }}>
-                    Enfoque: {sdcCalF(ix, profile)}
+                    Enfoque: {sdcCalF(banda, profile)}
                   </div>
                 ) : null}
               </div>
-              {bandasCalibre.map((v, k) => (
+              {bandasCalibre.map((datosBanda, i) => (
                 <div
-                  key={k}
+                  key={i}
                   className="flex items-center justify-between gap-2 px-2 py-1 mb-1"
                   style={{
-                    background: k === ix ? "rgba(255,184,79,0.12)" : "transparent",
-                    border: "1px solid " + (k === ix ? "#ffb84f" : "rgba(255,255,255,0.06)"),
+                    background: i === banda ? "rgba(255,184,79,0.12)" : "transparent",
+                    border: "1px solid " + (i === banda ? "#ffb84f" : "rgba(255,255,255,0.06)"),
                   }}
                 >
                   <span
                     className="text-xs"
                     style={{
-                      color: k === ix ? "#ffe2b0" : k < ix ? "#5a6178" : "#8a93ad",
-                      fontWeight: k === ix ? 700 : 400,
+                      color: i === banda ? "#ffe2b0" : i < banda ? "#5a6178" : "#8a93ad",
+                      fontWeight: i === banda ? 700 : 400,
                     }}
                   >
-                    {k < ix ? "✓ " : k === ix ? "● " : ""}
-                    {sdcCalT(k, profile)}
+                    {i < banda ? "✓ " : i === banda ? "● " : ""}
+                    {sdcCalT(i, profile)}
                   </span>
                   <span className="text-xs" style={{ color: "#7a83a0", whiteSpace: "nowrap" }}>
-                    {k === bandasCalibre.length - 1
-                      ? sdcBandaMin(k, ff) + "+"
-                      : sdcBandaMin(k, ff) + "–" + (sdcBandaMin(k + 1, ff) - 1)}
+                    {i === bandasCalibre.length - 1
+                      ? sdcBandaMin(i, factor) + "+"
+                      : sdcBandaMin(i, factor) + "–" + (sdcBandaMin(i + 1, factor) - 1)}
                   </span>
                 </div>
               ))}
-              {sg ? (
+              {siguiente ? (
                 <div className="text-xs mt-2" style={{ color: "#3ecf8e" }}>
-                  Te faltan {sdcBandaMin(ix + 1, ff) - pt} pts para {sdcCalT(ix + 1, profile)}.
+                  Te faltan {sdcBandaMin(banda + 1, factor) - puntaje} pts para{" "}
+                  {sdcCalT(banda + 1, profile)}.
                 </div>
               ) : (
                 <div className="text-xs mt-2" style={{ color: "#ffb84f" }}>
@@ -610,13 +611,13 @@ export function PestanaPerfil({
               <PruebaAptitud
                 key={"re-" + repruebaEjercicios[repruebaPaso].key}
                 exercise={repruebaEjercicios[repruebaPaso]}
-                onFinish={(m) => {
-                  let N = repruebaEjercicios[repruebaPaso].key;
-                  (N === "sq" && setRepSentadillas(String(m)),
-                    N === "pu" && setRepFlexiones(String(m)),
-                    N === "ab" && setRepAbdominales(String(m)),
-                    N === "bk" && sdcSetRbk(String(m)),
-                    setRepruebaPaso((_) => _ + 1));
+                onFinish={(reps) => {
+                  let clave = repruebaEjercicios[repruebaPaso].key;
+                  (clave === "sq" && setRepSentadillas(String(reps)),
+                    clave === "pu" && setRepFlexiones(String(reps)),
+                    clave === "ab" && setRepAbdominales(String(reps)),
+                    clave === "bk" && sdcSetRbk(String(reps)),
+                    setRepruebaPaso((previo) => previo + 1));
                 }}
               />
               <button
@@ -728,10 +729,10 @@ export function PestanaPerfil({
             Todavía no hay ninguna. Van a aparecer solas.
           </div>
         ) : (
-          sdcPrimeras(player).map(function (jp, ji) {
+          sdcPrimeras(player).map(function (primera, i) {
             return (
               <div
-                key={ji}
+                key={i}
                 className="py-2 px-2 mb-1"
                 style={{
                   background: "rgba(255,255,255,0.03)",
@@ -739,10 +740,11 @@ export function PestanaPerfil({
                 }}
               >
                 <div className="text-xs" style={{ color: "#e8ecf7" }}>
-                  {jp.texto}
+                  {primera.texto}
                 </div>
                 <div className="text-xs" style={{ color: "#7a83a0" }}>
-                  {jp.fecha + (jp.origen === "escrita" ? " · lo anotaste vos" : " · primera vez")}
+                  {primera.fecha +
+                    (primera.origen === "escrita" ? " · lo anotaste vos" : " · primera vez")}
                 </div>
               </div>
             );
@@ -769,7 +771,7 @@ export function PestanaPerfil({
         <textarea
           readOnly={!0}
           value={JSON.stringify(player)}
-          onClick={(m) => m.target.select()}
+          onClick={(evento) => evento.target.select()}
           rows={3}
           className="w-full mb-2 px-2 py-2 text-xs"
           style={{
@@ -802,7 +804,7 @@ export function PestanaPerfil({
         </div>
         <textarea
           value={respaldoTexto}
-          onChange={(m) => setRespaldoTexto(m.target.value)}
+          onChange={(evento) => setRespaldoTexto(evento.target.value)}
           placeholder="Pega aquí tu texto de respaldo"
           rows={3}
           className="w-full mb-2 px-2 py-2 text-xs"
