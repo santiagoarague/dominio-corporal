@@ -118,142 +118,156 @@ var sdcCalorActF = {
   ],
   abs: [sdcCalorHollow, sdcCalorDead],
 };
-function sdcCalor(e) {
-  return (e && e.today && e.today.calentamiento) || {};
+function sdcCalor(partida) {
+  return (partida && partida.today && partida.today.calentamiento) || {};
 }
-function sdcCalorLista(mod, rk) {
-  var l = [],
-    k,
-    s,
-    g,
-    op,
-    nm,
+function sdcCalorLista(mod, rango) {
+  var lista = [],
+    i,
+    paso,
+    grupo,
+    opciones,
+    nombre,
     j,
-    a,
-    gs = ["squat", "pushup", "back", "abs"];
-  for (k = 0; k < sdcCalorPasos.length; k++) {
-    s = sdcCalorPasos[k];
-    if (s.lados) {
-      l.push({
-        f: s.f,
-        name: s.name,
-        desc: s.desc,
-        seconds: s.seconds,
+    elegida,
+    grupos = ["squat", "pushup", "back", "abs"];
+  for (i = 0; i < sdcCalorPasos.length; i++) {
+    paso = sdcCalorPasos[i];
+    if (paso.lados) {
+      lista.push({
+        f: paso.f,
+        name: paso.name,
+        desc: paso.desc,
+        seconds: paso.seconds,
         lado: "lado derecho",
-        prep: s.pr,
+        prep: paso.pr,
       });
-      l.push({ f: s.f, name: s.name, desc: s.desc, seconds: s.seconds, lado: "lado izquierdo" });
+      lista.push({
+        f: paso.f,
+        name: paso.name,
+        desc: paso.desc,
+        seconds: paso.seconds,
+        lado: "lado izquierdo",
+      });
     } else
-      l.push({ f: s.f, name: s.name, desc: s.desc, seconds: s.seconds, lado: null, prep: s.pr });
+      lista.push({
+        f: paso.f,
+        name: paso.name,
+        desc: paso.desc,
+        seconds: paso.seconds,
+        lado: null,
+        prep: paso.pr,
+      });
   }
-  for (k = 0; k < gs.length; k++) {
-    g = gs[k];
-    op = (mod === "flow" && sdcCalorActF[g]) || sdcCalorAct[g];
-    nm = (ejercicioDe(g, rk, mod) || {}).name || "";
-    a = op[0];
-    for (j = 0; j < op.length; j++)
-      if (!op[j].ev || !op[j].ev.test(nm)) {
-        a = op[j];
+  for (i = 0; i < grupos.length; i++) {
+    grupo = grupos[i];
+    opciones = (mod === "flow" && sdcCalorActF[grupo]) || sdcCalorAct[grupo];
+    nombre = (ejercicioDe(grupo, rango, mod) || {}).name || "";
+    elegida = opciones[0];
+    for (j = 0; j < opciones.length; j++)
+      if (!opciones[j].ev || !opciones[j].ev.test(nombre)) {
+        elegida = opciones[j];
         break;
       }
-    l.push({ f: 3, name: a.name, desc: a.desc, seconds: 20, lado: null, prep: 8 });
+    lista.push({ f: 3, name: elegida.name, desc: elegida.desc, seconds: 20, lado: null, prep: 8 });
   }
-  return l;
+  return lista;
 }
-function sdcCalorEnsayo(e, mod, mt) {
-  var gs = ["squat", "pushup", "back", "abs"],
-    l = [],
-    k,
-    g,
-    x,
-    t,
-    pr,
-    sg,
-    n,
-    tx,
-    sk,
+function sdcCalorEnsayo(partida, mod, metas) {
+  var grupos = ["squat", "pushup", "back", "abs"],
+    lista = [],
+    i,
+    grupo,
+    ej,
+    meta,
+    primera,
+    segs,
+    cant,
+    texto,
+    sug,
     kg,
-    rk = e.progress.rank;
-  for (k = 0; k < gs.length; k++) {
-    g = gs[k];
-    t = Math.max(0, Math.round((mt && mt[g]) || 0));
-    if (!t) continue;
-    x = ejercicioDe(g, rk, mod) || {};
-    if (!x.name) continue;
-    pr = sdcSplit(t, sdcNSets(t))[0] || t;
-    sg = sdcSegs(alternativaEjercicio(rk, g, mod) || regresiones[g]);
-    if (sg > 0) {
-      n = Math.max(5, Math.min(15, Math.round((pr * sg) / 15) * 5));
-      tx = n + " segundos, " + (mod === "gym" ? "sin carga extra" : "sin llegar al temblor");
+    rango = partida.progress.rank;
+  for (i = 0; i < grupos.length; i++) {
+    grupo = grupos[i];
+    meta = Math.max(0, Math.round((metas && metas[grupo]) || 0));
+    if (!meta) continue;
+    ej = ejercicioDe(grupo, rango, mod) || {};
+    if (!ej.name) continue;
+    primera = sdcSplit(meta, sdcNSets(meta))[0] || meta;
+    segs = sdcSegs(alternativaEjercicio(rango, grupo, mod) || regresiones[grupo]);
+    if (segs > 0) {
+      cant = Math.max(5, Math.min(15, Math.round((primera * segs) / 15) * 5));
+      texto = cant + " segundos, " + (mod === "gym" ? "sin carga extra" : "sin llegar al temblor");
     } else if (mod === "gym") {
-      n = Math.max(4, Math.min(8, Math.round(pr * 0.6)));
-      sk = sdcSugKg(e, g, x.name);
-      kg = sk && sk.kg ? sk.kg / 2 : 0;
+      cant = Math.max(4, Math.min(8, Math.round(primera * 0.6)));
+      sug = sdcSugKg(partida, grupo, ej.name);
+      kg = sug && sug.kg ? sug.kg / 2 : 0;
       if (kg > 0) {
-        var pa = sdcIncKg(kg, g);
-        kg = Math.round(kg / pa) * pa;
+        var paso = sdcIncKg(kg, grupo);
+        kg = Math.round(kg / paso) * paso;
       }
-      tx =
-        n +
+      texto =
+        cant +
         " repeticiones con la mitad del peso" +
         (kg > 0 ? " (≈ " + sdcKgTxt(kg) + " kg)" : " que vas a usar");
     } else {
-      n = Math.max(pr >= 5 ? 2 : 1, Math.min(6, Math.round(pr * 0.4)));
-      tx = n + (n === 1 ? " repetición suave" : " repeticiones suaves");
+      cant = Math.max(primera >= 5 ? 2 : 1, Math.min(6, Math.round(primera * 0.4)));
+      texto = cant + (cant === 1 ? " repetición suave" : " repeticiones suaves");
     }
-    l.push({ g: g, name: x.name, dosis: tx, sost: sg > 0 });
+    lista.push({ g: grupo, name: ej.name, dosis: texto, sost: segs > 0 });
   }
-  return l;
+  return lista;
 }
-function sdcEstDesde(l, k) {
-  var a = 0,
-    j;
-  for (j = 0; j < k && j < l.length; j++) a += (l[j].prep || sdcEstPrep) + l[j].seconds;
-  return a;
+function sdcEstDesde(lista, indice) {
+  var segundos = 0,
+    i;
+  for (i = 0; i < indice && i < lista.length; i++)
+    segundos += (lista[i].prep || sdcEstPrep) + lista[i].seconds;
+  return segundos;
 }
-function sdcPasosV(e) {
-  return (e && e.pasosVistos) || {};
+function sdcPasosV(partida) {
+  return (partida && partida.pasosVistos) || {};
 }
-function sdcPasoEspera(l, k, v) {
-  var s = l && l[k];
-  if (!s) return !1;
-  if (k > 0 && l[k - 1].name === s.name) return !1;
-  return !(v && v[s.name]);
+function sdcPasoEspera(lista, indice, vistos) {
+  var paso = lista && lista[indice];
+  if (!paso) return !1;
+  if (indice > 0 && lista[indice - 1].name === paso.name) return !1;
+  return !(vistos && vistos[paso.name]);
 }
-function sdcPasosMarcar(a, l, n) {
-  if (!a || !l) return a;
-  var v = {},
-    q,
-    o = a.pasosVistos || {},
-    j;
-  for (q in o) v[q] = o[q];
-  for (j = 0; j < n && j < l.length; j++) v[l[j].name] = 1;
-  a.pasosVistos = v;
-  return a;
+function sdcPasosMarcar(partida, lista, hasta) {
+  if (!partida || !lista) return partida;
+  var vistos = {},
+    clave,
+    previos = partida.pasosVistos || {},
+    i;
+  for (clave in previos) vistos[clave] = previos[clave];
+  for (i = 0; i < hasta && i < lista.length; i++) vistos[lista[i].name] = 1;
+  partida.pasosVistos = vistos;
+  return partida;
 }
-function sdcPasosHook(r, l, n) {
-  r && r.state && sdcPasosMarcar(r.state, l, n);
-  return r;
+function sdcPasosHook(resultado, lista, hasta) {
+  resultado && resultado.state && sdcPasosMarcar(resultado.state, lista, hasta);
+  return resultado;
 }
 function PasoGuiado({
-  ls: ls,
-  p: p,
+  ls: lista,
+  p: paso,
   cab: cab,
   col: col,
   esp: esp,
-  pz: pz,
-  fin: fn,
-  resto: rs,
-  onListo: oL,
-  onYa: oY,
-  onPausa: oP,
-  onSeguir: oS,
-  onTerminar: oT,
+  pz: pausado,
+  fin,
+  resto,
+  onListo,
+  onYa,
+  onPausa,
+  onSeguir,
+  onTerminar,
 }) {
-  let s = ls[p.index],
-    m = ls[p.index + 1],
-    pr = p.prep > 0,
-    cc = esp || pr ? "#ffb84f" : col,
+  let actual = lista[paso.index],
+    siguiente = lista[paso.index + 1],
+    preparando = paso.prep > 0,
+    color = esp || preparando ? "#ffb84f" : col,
     bSec = {
       minHeight: 44,
       background: "rgba(255,255,255,0.08)",
@@ -268,12 +282,12 @@ function PasoGuiado({
       color: "#0a0e1a",
       fontWeight: 700,
     },
-    et = esp
+    etiqueta = esp
       ? "LEÉ Y PONETE EN POSICIÓN"
-      : pz
+      : pausado
         ? "EN PAUSA"
-        : pr
-          ? p.index === 0
+        : preparando
+          ? paso.index === 0
             ? "PONETE EN POSICIÓN"
             : "PREPARATE"
           : null;
@@ -281,17 +295,17 @@ function PasoGuiado({
     <div>
       {cab}
       <div className="text-center">
-        {et ? (
+        {etiqueta ? (
           <div
             className="text-xs uppercase"
             style={{
               letterSpacing: 2,
-              color: pz && !esp ? "#9aa4bd" : "#ffb84f",
+              color: pausado && !esp ? "#9aa4bd" : "#ffb84f",
               fontWeight: 700,
               marginTop: 2,
             }}
           >
-            {et}
+            {etiqueta}
           </div>
         ) : null}
         <div
@@ -302,54 +316,58 @@ function PasoGuiado({
             fontWeight: 700,
           }}
         >
-          {s.name}
+          {actual.name}
         </div>
-        {s.lado ? (
-          <div className="text-sm" style={{ color: cc, fontWeight: 700 }}>
-            {s.lado}
+        {actual.lado ? (
+          <div className="text-sm" style={{ color, fontWeight: 700 }}>
+            {actual.lado}
           </div>
         ) : null}
         <div
           className="mt-1"
           style={{ fontSize: esp ? 15 : 14, lineHeight: 1.5, color: "#c8d0e4" }}
         >
-          {s.desc}
+          {actual.desc}
         </div>
         {esp ? null : (
           <div
             style={{
               fontFamily: "Chakra Petch, sans-serif",
               fontSize: 34,
-              color: pz ? "#7a83a0" : cc,
+              color: pausado ? "#7a83a0" : color,
               marginTop: 6,
             }}
           >
-            {pr ? p.prep : p.left}s
+            {preparando ? paso.prep : paso.left}s
           </div>
         )}
       </div>
       {esp ? null : (
         <BarraXp
-          value={pr ? (s.prep || sdcEstPrep) - p.prep : s.seconds - p.left}
-          max={pr ? s.prep || sdcEstPrep : s.seconds}
-          color={pz ? "#5a6178" : cc}
+          value={preparando ? (actual.prep || sdcEstPrep) - paso.prep : actual.seconds - paso.left}
+          max={preparando ? actual.prep || sdcEstPrep : actual.seconds}
+          color={pausado ? "#5a6178" : color}
         />
       )}
       <div className="text-xs mt-2 text-center" style={{ color: "#7a83a0" }}>
-        {m ? (m.name === s.name ? "Ahora el otro lado" : "Sigue: " + m.name) : fn}
-        {rs}
+        {siguiente
+          ? siguiente.name === actual.name
+            ? "Ahora el otro lado"
+            : "Sigue: " + siguiente.name
+          : fin}
+        {resto}
       </div>
       {esp ? (
-        <button onClick={oL} className="w-full mt-3 py-3 text-sm" style={bPri}>
+        <button onClick={onListo} className="w-full mt-3 py-3 text-sm" style={bPri}>
           Listo, empezar →
         </button>
-      ) : pz ? (
-        <button onClick={oS} className="w-full mt-3 py-3 text-sm" style={bPri}>
+      ) : pausado ? (
+        <button onClick={onSeguir} className="w-full mt-3 py-3 text-sm" style={bPri}>
           Seguir →
         </button>
-      ) : pr ? (
+      ) : preparando ? (
         <button
-          onClick={oY}
+          onClick={onYa}
           className="w-full mt-3 py-2 text-sm"
           style={{
             minHeight: 44,
@@ -362,16 +380,16 @@ function PasoGuiado({
           Ya estoy →
         </button>
       ) : null}
-      {esp || pz ? (
-        <button onClick={oT} className="w-full mt-2 py-2 text-sm" style={bSec}>
+      {esp || pausado ? (
+        <button onClick={onTerminar} className="w-full mt-2 py-2 text-sm" style={bSec}>
           Terminar acá
         </button>
       ) : (
         <div className="grid grid-cols-2 gap-2 mt-2">
-          <button onClick={oP} className="py-2 text-sm" style={bSec}>
+          <button onClick={onPausa} className="py-2 text-sm" style={bSec}>
             Pausa
           </button>
-          <button onClick={oT} className="py-2 text-sm" style={bSec}>
+          <button onClick={onTerminar} className="py-2 text-sm" style={bSec}>
             Terminar acá
           </button>
         </div>
@@ -379,133 +397,146 @@ function PasoGuiado({
     </div>
   );
 }
-function sdcCalorCorre(c, mod, tt) {
-  return c.ini > 0 && c.mod === mod && (c.pz || Date.now()) - c.ini < (tt + 1200) * 1e3;
+function sdcCalorCorre(estado, mod, total) {
+  return (
+    estado.ini > 0 &&
+    estado.mod === mod &&
+    (estado.pz || Date.now()) - estado.ini < (total + 1200) * 1e3
+  );
 }
-function sdcCalorT(c) {
-  return Math.max(0, Math.floor(((c.pz || Date.now()) - c.ini) / 1e3));
+function sdcCalorT(estado) {
+  return Math.max(0, Math.floor(((estado.pz || Date.now()) - estado.ini) / 1e3));
 }
-function sdcCalorIni(e, mod) {
-  var a = clonar(e),
-    c = sdcCalor(a);
-  a.today.calentamiento = {
+function sdcCalorIni(original, mod) {
+  var partida = clonar(original),
+    previo = sdcCalor(partida);
+  partida.today.calentamiento = {
     mod: mod,
     ini: Date.now(),
     pot: 0,
-    xp: !!c.xp,
-    hecho: !!c.hecho,
+    xp: !!previo.xp,
+    hecho: !!previo.hecho,
     pz: 0,
     ok: -1,
   };
-  return { state: a, notices: [] };
+  return { state: partida, notices: [] };
 }
-function sdcCalorPrep(e, s) {
-  var a = clonar(e),
-    c = a.today.calentamiento;
-  c && c.ini && !c.pz && (c.ini -= s * 1e3);
-  return { state: a, notices: [] };
+function sdcCalorPrep(original, segundos) {
+  var partida = clonar(original),
+    estado = partida.today.calentamiento;
+  estado && estado.ini && !estado.pz && (estado.ini -= segundos * 1e3);
+  return { state: partida, notices: [] };
 }
-function sdcCalorPausa(e) {
-  var a = clonar(e),
-    c = a.today.calentamiento;
-  c && c.ini && !c.pz && (c.pz = Date.now());
-  return { state: a, notices: [] };
+function sdcCalorPausa(original) {
+  var partida = clonar(original),
+    estado = partida.today.calentamiento;
+  estado && estado.ini && !estado.pz && (estado.pz = Date.now());
+  return { state: partida, notices: [] };
 }
-function sdcCalorSeguir(e) {
-  var a = clonar(e),
-    c = a.today.calentamiento;
-  c && c.ini && c.pz && ((c.ini += Date.now() - c.pz), (c.pz = 0));
-  return { state: a, notices: [] };
+function sdcCalorSeguir(original) {
+  var partida = clonar(original),
+    estado = partida.today.calentamiento;
+  estado && estado.ini && estado.pz && ((estado.ini += Date.now() - estado.pz), (estado.pz = 0));
+  return { state: partida, notices: [] };
 }
-function sdcCalorEspera(e, w) {
-  var a = clonar(e),
-    c = a.today.calentamiento;
-  c && c.ini && !c.pz && (c.pz = w);
-  return { state: a, notices: [] };
+function sdcCalorEspera(original, desde) {
+  var partida = clonar(original),
+    estado = partida.today.calentamiento;
+  estado && estado.ini && !estado.pz && (estado.pz = desde);
+  return { state: partida, notices: [] };
 }
-function sdcCalorListo(e, k, d0) {
-  var a = clonar(e),
-    c = a.today.calentamiento;
-  c && c.ini && ((c.ini = Date.now() - d0 * 1e3), (c.pz = 0), (c.ok = k));
-  return { state: a, notices: [] };
+function sdcCalorListo(original, indice, hasta) {
+  var partida = clonar(original),
+    estado = partida.today.calentamiento;
+  estado &&
+    estado.ini &&
+    ((estado.ini = Date.now() - hasta * 1e3), (estado.pz = 0), (estado.ok = indice));
+  return { state: partida, notices: [] };
 }
-function sdcCalorPot(e) {
-  var a = clonar(e),
-    c = a.today.calentamiento;
-  c && c.ini && (c.pot = (c.pot || 0) + 1);
-  return { state: a, notices: [] };
+function sdcCalorPot(original) {
+  var partida = clonar(original),
+    estado = partida.today.calentamiento;
+  estado && estado.ini && (estado.pot = (estado.pot || 0) + 1);
+  return { state: partida, notices: [] };
 }
-function sdcCalorFin(e, hh, tt, ls) {
-  var a = clonar(e),
-    c = sdcCalor(a),
-    l = [],
-    fr,
-    n,
-    o;
-  if (!c.ini) return { state: a, notices: l };
-  fr = tt > 0 ? Math.max(0, Math.min(1, (hh || 0) / tt)) : 1;
-  a.today.calentamiento = {
-    mod: c.mod,
+function sdcCalorFin(original, hechos, total, lista) {
+  var partida = clonar(original),
+    estado = sdcCalor(partida),
+    avisos = [],
+    fraccion,
+    xp,
+    revisado;
+  if (!estado.ini) return { state: partida, notices: avisos };
+  fraccion = total > 0 ? Math.max(0, Math.min(1, (hechos || 0) / total)) : 1;
+  partida.today.calentamiento = {
+    mod: estado.mod,
     ini: 0,
     pot: 0,
-    xp: !!c.xp,
-    hecho: !!c.hecho || fr >= 0.34,
+    xp: !!estado.xp,
+    hecho: !!estado.hecho || fraccion >= 0.34,
   };
-  sdcPasosMarcar(a, ls, Math.min(hh || 0, ls ? ls.length : 0));
-  if (fr < 0.34)
+  sdcPasosMarcar(partida, lista, Math.min(hechos || 0, lista ? lista.length : 0));
+  if (fraccion < 0.34)
     return {
-      state: a,
+      state: partida,
       notices: [
         "Calentamiento cortado muy temprano, sin XP. Si vas a entrenar igual, hacé las primeras series más livianas.",
       ],
     };
-  if (c.xp)
-    return { state: a, notices: ["Calentamiento hecho. La XP de hoy ya la habías sumado."] };
-  a.today.calentamiento.xp = !0;
-  n = Math.round(10 * fr);
-  a.streak.flexBuff && (n = Math.round(n * 1.1));
-  n = Math.round(n * multImpulso(a));
-  a.progress.currentXP += n;
-  a.today.xpEarned = (a.today.xpEarned || 0) + n;
-  l.push(
-    fr >= 0.999
-      ? "+" + n + " XP por calentar. Ahora sí, la rutina."
-      : "+" + n + " XP por lo que alcanzaste a calentar.",
+  if (estado.xp)
+    return { state: partida, notices: ["Calentamiento hecho. La XP de hoy ya la habías sumado."] };
+  partida.today.calentamiento.xp = !0;
+  xp = Math.round(10 * fraccion);
+  partida.streak.flexBuff && (xp = Math.round(xp * 1.1));
+  xp = Math.round(xp * multImpulso(partida));
+  partida.progress.currentXP += xp;
+  partida.today.xpEarned = (partida.today.xpEarned || 0) + xp;
+  avisos.push(
+    fraccion >= 0.999
+      ? "+" + xp + " XP por calentar. Ahora sí, la rutina."
+      : "+" + xp + " XP por lo que alcanzaste a calentar.",
   );
-  a = subirNiveles(a, l);
-  o = revisarLogros(a);
-  return { state: o.state, notices: l.concat(o.notices) };
+  partida = subirNiveles(partida, avisos);
+  revisado = revisarLogros(partida);
+  return { state: revisado.state, notices: avisos.concat(revisado.notices) };
 }
-function sdcCalorDer(e, mod, mt) {
-  var c = sdcCalor(e),
-    ls = sdcCalorLista(mod, e.progress.rank),
-    tt = sdcEstTotal(ls);
-  if (sdcCalorCorre(c, mod, tt)) return "en curso";
-  if (c.hecho) return "hecho ✓";
+function sdcCalorDer(partida, mod, metas) {
+  var estado = sdcCalor(partida),
+    lista = sdcCalorLista(mod, partida.progress.rank),
+    total = sdcEstTotal(lista);
+  if (sdcCalorCorre(estado, mod, total)) return "en curso";
+  if (estado.hecho) return "hecho ✓";
   return (
-    "≈ " + Math.max(1, Math.round((tt + sdcCalorEnsayo(e, mod, mt).length * 20) / 60)) + " min"
+    "≈ " +
+    Math.max(1, Math.round((total + sdcCalorEnsayo(partida, mod, metas).length * 20) / 60)) +
+    " min"
   );
 }
-function Calentamiento({ st: e, mod: B, metas: mt, Ne: Ne, onModo: om, sinSeries: ss }) {
-  let [, tk] = useState(0),
-    [ul, sul] = useState(-1),
-    c = sdcCalor(e),
-    ls = sdcCalorLista(B, e.progress.rank),
-    en = sdcCalorEnsayo(e, B, mt),
-    tt = sdcEstTotal(ls),
-    tot = ls.length + en.length,
-    corre = sdcCalorCorre(c, B, tt),
-    t = corre ? sdcCalorT(c) : 0,
-    k = c.pot || 0,
-    enE = corre && t >= tt,
-    p = corre && !enE ? sdcEstPaso(ls, t) : null,
-    ok = c.ok === void 0 ? -1 : c.ok,
-    esp = !!(p && p.prep > 0 && ok < p.index && sdcPasoEspera(ls, p.index, sdcPasosV(e))),
-    fs = !corre ? -1 : enE ? 1e3 + k : p.index * 2 + (p.prep > 0 ? 0 : 1),
-    ac = "#ff8f5a",
-    fin = (hh) => Ne((d) => sdcCalorFin(d, hh, tot, ls)),
+function Calentamiento({ st: player, mod, metas, Ne: aplicar, onModo, sinSeries }) {
+  let [, setTic] = useState(0),
+    [ultimaFase, setUltimaFase] = useState(-1),
+    estado = sdcCalor(player),
+    lista = sdcCalorLista(mod, player.progress.rank),
+    ensayo = sdcCalorEnsayo(player, mod, metas),
+    totalSeg = sdcEstTotal(lista),
+    tot = lista.length + ensayo.length,
+    corre = sdcCalorCorre(estado, mod, totalSeg),
+    transcurrido = corre ? sdcCalorT(estado) : 0,
+    ensayados = estado.pot || 0,
+    enE = corre && transcurrido >= totalSeg,
+    paso = corre && !enE ? sdcEstPaso(lista, transcurrido) : null,
+    ok = estado.ok === void 0 ? -1 : estado.ok,
+    esp = !!(
+      paso &&
+      paso.prep > 0 &&
+      ok < paso.index &&
+      sdcPasoEspera(lista, paso.index, sdcPasosV(player))
+    ),
+    fase = !corre ? -1 : enE ? 1e3 + ensayados : paso.index * 2 + (paso.prep > 0 ? 0 : 1),
+    acento = "#ff8f5a",
+    fin = (hechos) => aplicar((partida) => sdcCalorFin(partida, hechos, tot, lista)),
     arr = () => {
-      (sdcBeep(660, 120), sdcVib(22), Ne((d) => sdcCalorIni(d, B)));
+      (sdcBeep(660, 120), sdcVib(22), aplicar((partida) => sdcCalorIni(partida, mod)));
     },
     bSec = {
       minHeight: 44,
@@ -517,52 +548,61 @@ function Calentamiento({ st: e, mod: B, metas: mt, Ne: Ne, onModo: om, sinSeries
   usePantallaSi(corre);
   useEffect(() => {
     if (!corre) return;
-    let x = setInterval(() => tk((n) => n + 1), 300);
-    return () => clearInterval(x);
-  }, [corre, c.ini, c.pz]);
+    let reloj = setInterval(() => setTic((previo) => previo + 1), 300);
+    return () => clearInterval(reloj);
+  }, [corre, estado.ini, estado.pz]);
   useEffect(() => {
-    if (fs < 0) return;
-    if (ul < 0 || fs < ul) {
-      sul(fs);
+    if (fase < 0) return;
+    if (ultimaFase < 0 || fase < ultimaFase) {
+      setUltimaFase(fase);
       return;
     }
-    if (fs === ul) return;
-    sul(fs);
-    fs === 1e3
+    if (fase === ultimaFase) return;
+    setUltimaFase(fase);
+    fase === 1e3
       ? (sdcBeep(880, 160), sdcVib([30, 50, 30]))
-      : fs < 1e3 &&
-        (p && p.prep > 0 ? (sdcBeep(520, 120), sdcVib(18)) : (sdcBeep(760, 140), sdcVib(22)));
-  }, [fs]);
+      : fase < 1e3 &&
+        (paso && paso.prep > 0 ? (sdcBeep(520, 120), sdcVib(18)) : (sdcBeep(760, 140), sdcVib(22)));
+  }, [fase]);
   useEffect(() => {
-    esp && !c.pz && Ne((d) => sdcCalorEspera(d, c.ini + sdcEstDesde(ls, p.index) * 1e3));
-  }, [esp, c.pz]);
+    esp &&
+      !estado.pz &&
+      aplicar((partida) =>
+        sdcCalorEspera(partida, estado.ini + sdcEstDesde(lista, paso.index) * 1e3),
+      );
+  }, [esp, estado.pz]);
   useEffect(() => {
     corre &&
       enE &&
-      k >= en.length &&
+      ensayados >= ensayo.length &&
       (sdcBeep(880, 200),
       setTimeout(() => sdcBeep(1175, 340), 210),
       sdcVib([40, 60, 140]),
       fin(tot));
-  }, [corre, enE, k, en.length]);
-  let cab = (f, n) => (
+  }, [corre, enE, ensayados, ensayo.length]);
+  let cab = (numFase, numero) => (
     <div className="flex items-center justify-between mb-1">
-      <span className="text-xs" style={{ letterSpacing: 2, color: ac, fontWeight: 700 }}>
-        {f} · {sdcCalorFases[f - 1]}
+      <span className="text-xs" style={{ letterSpacing: 2, color: acento, fontWeight: 700 }}>
+        {numFase} · {sdcCalorFases[numFase - 1]}
       </span>
       <span className="text-xs" style={{ color: "#9aa4bd" }}>
-        Paso {n} de {tot}
+        Paso {numero} de {tot}
       </span>
     </div>
   );
   if (!corre) {
-    if (c.hecho)
+    if (estado.hecho)
       return (
         <div>
           <div className="flex items-center gap-2 text-sm" style={{ color: "#3ecf8e" }}>
             <IconoCheck size={16} /> Calentaste hoy
           </div>
-          <AnimoAhora st={e} Ne={Ne} onModo={om || function () {}} sinSeries={ss} />
+          <AnimoAhora
+            st={player}
+            Ne={aplicar}
+            onModo={onModo || function () {}}
+            sinSeries={sinSeries}
+          />
           <div className="text-xs mt-1" style={{ color: "#9aa4bd" }}>
             Si más tarde entrenás otra vez, conviene repetirlo.
           </div>
@@ -587,8 +627,8 @@ function Calentamiento({ st: e, mod: B, metas: mt, Ne: Ne, onModo: om, sinSeries
           className="w-full py-3 px-3 text-sm text-left"
           style={{
             background: "rgba(255,143,90,0.12)",
-            border: "1px solid " + ac,
-            color: ac,
+            border: "1px solid " + acento,
+            color: acento,
             fontWeight: 700,
           }}
         >
@@ -598,7 +638,7 @@ function Calentamiento({ st: e, mod: B, metas: mt, Ne: Ne, onModo: om, sinSeries
               Empezar
             </span>
             <span className="text-xs" style={{ whiteSpace: "nowrap" }}>
-              ≈ {Math.max(1, Math.round((tt + en.length * 20) / 60))} min · {tot} pasos
+              ≈ {Math.max(1, Math.round((totalSeg + ensayo.length * 20) / 60))} min · {tot} pasos
             </span>
           </div>
           <div className="text-xs mt-1" style={{ color: "#9aa4bd", fontWeight: 400 }}>
@@ -614,43 +654,45 @@ function Calentamiento({ st: e, mod: B, metas: mt, Ne: Ne, onModo: om, sinSeries
   if (!enE)
     return (
       <PasoGuiado
-        ls={ls}
-        p={p}
-        cab={cab(ls[p.index].f, p.index + 1)}
-        col={ac}
+        ls={lista}
+        p={paso}
+        cab={cab(lista[paso.index].f, paso.index + 1)}
+        col={acento}
         esp={esp}
-        pz={!!c.pz && !esp}
-        fin={en.length ? "Sigue: el ensayo de tus ejercicios" : "Último paso"}
+        pz={!!estado.pz && !esp}
+        fin={ensayo.length ? "Sigue: el ensayo de tus ejercicios" : "Último paso"}
         resto={
-          en.length
-            ? " · " + sdcEstMMSS(tt - t) + " hasta el ensayo"
-            : " · queda " + sdcEstMMSS(tt - t)
+          ensayo.length
+            ? " · " + sdcEstMMSS(totalSeg - transcurrido) + " hasta el ensayo"
+            : " · queda " + sdcEstMMSS(totalSeg - transcurrido)
         }
         onListo={() => {
-          let d0 = sdcEstDesde(ls, p.index) + Math.max(0, (ls[p.index].prep || sdcEstPrep) - 3);
-          (sdcBeep(660, 100), Ne((d) => sdcCalorListo(d, p.index, d0)));
+          let hasta =
+            sdcEstDesde(lista, paso.index) +
+            Math.max(0, (lista[paso.index].prep || sdcEstPrep) - 3);
+          (sdcBeep(660, 100), aplicar((partida) => sdcCalorListo(partida, paso.index, hasta)));
         }}
-        onYa={() => Ne((d) => sdcCalorPrep(d, p.prep))}
-        onPausa={() => Ne((d) => sdcCalorPausa(d))}
-        onSeguir={() => Ne((d) => sdcCalorSeguir(d))}
-        onTerminar={() => fin(p.index)}
+        onYa={() => aplicar((partida) => sdcCalorPrep(partida, paso.prep))}
+        onPausa={() => aplicar((partida) => sdcCalorPausa(partida))}
+        onSeguir={() => aplicar((partida) => sdcCalorSeguir(partida))}
+        onTerminar={() => fin(paso.index)}
       />
     );
-  if (k < en.length) {
-    let x = en[k],
-      gy = B === "gym",
+  if (ensayados < ensayo.length) {
+    let ej = ensayo[ensayados],
+      esGym = mod === "gym",
       sig = () => {
-        (sdcBeep(760, 120), sdcVib(22), Ne((d) => sdcCalorPot(d)));
+        (sdcBeep(760, 120), sdcVib(22), aplicar((partida) => sdcCalorPot(partida)));
       };
     return (
       <div>
-        {cab(4, ls.length + k + 1)}
+        {cab(4, lista.length + ensayados + 1)}
         <div className="text-center">
           <div
             className="text-xs uppercase"
             style={{ letterSpacing: 2, color: "#9aa4bd", marginTop: 2 }}
           >
-            Ejercicio {k + 1} de {en.length} · el mismo de tu rutina
+            Ejercicio {ensayados + 1} de {ensayo.length} · el mismo de tu rutina
           </div>
           <div
             style={{
@@ -660,24 +702,24 @@ function Calentamiento({ st: e, mod: B, metas: mt, Ne: Ne, onModo: om, sinSeries
               fontWeight: 700,
             }}
           >
-            {x.name}
+            {ej.name}
           </div>
           <div
             style={{
               fontFamily: "Chakra Petch, sans-serif",
               fontSize: 18,
-              color: ac,
+              color: acento,
               fontWeight: 700,
               marginTop: 4,
             }}
           >
-            {x.dosis}
+            {ej.dosis}
           </div>
           <div className="mt-1" style={{ fontSize: 14, lineHeight: 1.5, color: "#c8d0e4" }}>
-            {x.sost
+            {ej.sost
               ? "En la posición exacta y sin apurarte: es un ensayo, no una serie."
               : "Con todo el recorrido y lejos del cansancio: es un ensayo, no una serie."}
-            {gy ? " Si la máquina está ocupada, hazlo justo antes de su primera serie." : ""}
+            {esGym ? " Si la máquina está ocupada, hazlo justo antes de su primera serie." : ""}
           </div>
         </div>
         <button
@@ -685,15 +727,15 @@ function Calentamiento({ st: e, mod: B, metas: mt, Ne: Ne, onModo: om, sinSeries
           className="w-full mt-3 py-3 text-sm"
           style={{
             minHeight: 48,
-            background: ac,
-            border: "1px solid " + ac,
+            background: acento,
+            border: "1px solid " + acento,
             color: "#0a0e1a",
             fontWeight: 700,
           }}
         >
-          {k + 1 < en.length ? "Hecho →" : "Hecho, terminar"}
+          {ensayados + 1 < ensayo.length ? "Hecho →" : "Hecho, terminar"}
         </button>
-        {gy ? (
+        {esGym ? (
           <button
             onClick={sig}
             className="w-full mt-2 py-2 text-xs"
@@ -708,7 +750,7 @@ function Calentamiento({ st: e, mod: B, metas: mt, Ne: Ne, onModo: om, sinSeries
           </button>
         ) : null}
         <button
-          onClick={() => fin(ls.length + k)}
+          onClick={() => fin(lista.length + ensayados)}
           className="w-full mt-2 py-2 text-sm"
           style={bSec}
         >
