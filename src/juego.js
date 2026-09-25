@@ -34,5 +34,8 @@ export * from "./ui/travesia.jsx";
 export * from "./ui/descanso.jsx";
 export * from "./ui/neuromotor.jsx";
 export * from "./ui/Inicio.jsx";
+export * from "./ui/pestanas/logros.jsx";
+export * from "./ui/pestanas/explorar.jsx";
+export * from "./ui/pestanas/combate.jsx";
 export * from "./ui/App.jsx";
 export * from "./ui/Raiz.jsx";

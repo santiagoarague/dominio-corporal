@@ -13,22 +13,11 @@ import {
   IconoEspadas,
   IconoTrofeo,
   IconoFlecha,
-  IconoUbicacion,
   IconoReloj,
   IconoPersona,
 } from "./iconos.jsx";
 import { colorRango, nivelUmbral, sdcTitulos, vd, rangos } from "../datos/rangos.js";
-import {
-  Ed,
-  Ny,
-  sectores,
-  travesiaDelDia,
-  i2,
-  l2,
-  nodosExplorar,
-  s2,
-  sdcPortales,
-} from "../logica/explorar.js";
+import { Ed, travesiaDelDia, l2, nodosExplorar, sdcPortales } from "../logica/explorar.js";
 import {
   $o,
   Ad,
@@ -37,18 +26,13 @@ import {
   Ws,
   b2,
   dd,
-  g2,
   h2,
   repsCombate,
-  iy,
   m2,
   p2,
-  sy,
   golpesNecesarios,
   repsCombateSuave,
-  v2,
   perderVida,
-  y2,
   za,
 } from "../logica/combate.js";
 import { A2, E2, regresiones, movimientosPrimal, cy, ou, xd } from "../logica/primal.js";
@@ -71,13 +55,11 @@ import { Al, cuidadoArticular, alarmas, Ps, Ty, reglaDolor, Y2 } from "../datos/
 import { sistemas, sistemaActivo, sistemaAbierto } from "../logica/sistemas.js";
 import {
   logros,
-  ordenDificultad,
   revisarLogros,
   avisoCarga,
   categoriasLogros,
   sdcAnimo,
   sdcAnimoCuenta,
-  sdcDific,
 } from "../datos/logros.js";
 import { modalidades } from "../datos/ejercicios.js";
 import {
@@ -155,7 +137,7 @@ import {
   sdcVistos,
 } from "../logica/extras.js";
 import { Avisos } from "./avisos.jsx";
-import { sdcBeep, sdcCatAbierta, sdcNSets, sdcSplit, sdcVib } from "../logica/series.js";
+import { sdcBeep, sdcNSets, sdcSplit, sdcVib } from "../logica/series.js";
 import { FilaEjercicio } from "./ejercicio.jsx";
 import { gruposCuerpo, colorProgreso, FiguraCuerpo, PanelZonas, wd } from "./cuerpo.jsx";
 import {
@@ -170,7 +152,6 @@ import { PruebaAptitud } from "./prueba.jsx";
 import { Metronomo, sdcTempoMod } from "./metronomo.jsx";
 import { sdcAvisaRespaldo, sdcRespaldoOk, sdcRespaldoPosponer } from "../logica/respaldo.js";
 import { sdcWakeSi } from "./pantalla.js";
-import { CronoCaminata, sdcRitmos } from "./caminata.jsx";
 import {
   sdcCalor,
   Calentamiento,
@@ -185,6 +166,9 @@ import { sdcAbrirCard, AnimoAntes, AnimoDespues, sdcAnimoHoy, sdcAnimoOn } from 
 import { CronoTravesia, sdcTravMin, sdcTravRitmo } from "./travesia.jsx";
 import { BarraDescanso } from "./descanso.jsx";
 import { Reaccion, Ritmo, Secuencia, kd, TareaDual } from "./neuromotor.jsx";
+import { PestanaLogros } from "./pestanas/logros.jsx";
+import { PestanaExplorar } from "./pestanas/explorar.jsx";
+import { PestanaCombate } from "./pestanas/combate.jsx";
 
 var sdcDevN = 0;
 function App({ player, setPlayer, initialNotices }) {
@@ -3236,449 +3220,29 @@ function App({ player, setPlayer, initialNotices }) {
             </Plegable>
           </div>
         )}
-        {pestana === "combat" &&
-          (() => {
-            let f = za(combat.villainIndex),
-              d = golpesNecesarios(f);
-            return (
-              <>
-                <Tarjeta accent={f.isBoss ? "#ffb84f" : "#ff5c7a"} style={{ marginBottom: 16 }}>
-                  <div className="flex items-center justify-between mb-2">
-                    <div>
-                      <div
-                        className="text-xs uppercase"
-                        style={{ letterSpacing: 2, color: f.isBoss ? "#ffb84f" : "#ff5c7a" }}
-                      >
-                        {f.isBoss ? "JEFE · DOS PATRONES ENCADENADOS" : `Terreno #${f.index + 1}`}
-                      </div>
-                      <div
-                        style={{
-                          fontFamily: "Chakra Petch, sans-serif",
-                          fontSize: 22,
-                          color: "#e8ecf7",
-                          fontWeight: 700,
-                        }}
-                      >
-                        {f.name}
-                      </div>
-                    </div>
-                    <IconoUbicacion size={28} color={f.isBoss ? "#ffb84f" : "#ff5c7a"} />
-                  </div>
-                  {combat.villainCurrentHP !== null && (
-                    <>
-                      <div className="text-xs mb-1" style={{ color: "#9aa4bd" }}>
-                        Terreno que falta
-                      </div>
-                      <BarraXp
-                        value={combat.villainCurrentHP}
-                        max={d}
-                        color={f.isBoss ? "#ffb84f" : "#ff5c7a"}
-                      />
-                    </>
-                  )}
-                  <div className="flex items-center gap-1 mt-3">
-                    {[1, 2, 3].map((m) => (
-                      <IconoCorazon
-                        key={m}
-                        size={16}
-                        color={m <= combat.lives ? "#ff5c7a" : "#2a3148"}
-                        fill={m <= combat.lives ? "#ff5c7a" : "none"}
-                      />
-                    ))}
-                    <span className="text-xs ml-1" style={{ color: "#9aa4bd" }}>
-                      {combat.villainsDefeated || 0} terrenos recuperados
-                    </span>
-                  </div>
-                </Tarjeta>
-                {combat.phase === "choosing" && (
-                  <Tarjeta accent="#ff5c7a" style={{ marginBottom: 16 }}>
-                    <div
-                      style={{
-                        fontFamily: "Chakra Petch, sans-serif",
-                        color: "#e8ecf7",
-                        fontWeight: 700,
-                      }}
-                      className="mb-2"
-                    >
-                      Elegí tu ataque
-                    </div>
-                    <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
-                      No podés repetir la categoría que usaste en el terreno anterior.
-                    </div>
-                    {["upper_front", "upper_back", "lower"].map((m) => {
-                      let N = m === combat.lastExercise;
-                      return (
-                        <button
-                          key={m}
-                          onClick={() => !N && combElegir(m)}
-                          disabled={N}
-                          className="w-full py-3 text-sm mb-2 disabled:opacity-30"
-                          style={{
-                            background: N ? "rgba(255,255,255,0.03)" : "rgba(255,92,122,0.1)",
-                            border: "1px solid " + (N ? "rgba(255,255,255,0.1)" : "#ff5c7a"),
-                            color: N ? "#5a6178" : "#ff5c7a",
-                          }}
-                        >
-                          {iy[m]}
-                        </button>
-                      );
-                    })}
-                  </Tarjeta>
-                )}
-                {combat.phase === "decision" && (
-                  <Tarjeta accent="#ffb84f" style={{ marginBottom: 16 }}>
-                    <div
-                      style={{
-                        fontFamily: "Chakra Petch, sans-serif",
-                        color: "#ffb84f",
-                        fontWeight: 700,
-                      }}
-                      className="mb-1"
-                    >
-                      Decisión táctica
-                    </div>
-                    <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
-                      Perdiste un corazón. Te quedan {combat.lives}. ¿Cómo seguís?
-                    </div>
-                    <button
-                      onClick={() => aplicar((m) => y2(m))}
-                      className="w-full text-left px-3 py-2 mb-2"
-                      style={{ background: "rgba(255,92,122,0.08)", border: "1px solid #ff5c7a" }}
-                    >
-                      <div className="text-sm" style={{ color: "#e8ecf7", fontWeight: 600 }}>
-                        Reintentar
-                      </div>
-                      <div className="text-xs" style={{ color: "#9aa4bd" }}>
-                        Mismo ejercicio, misma exigencia. Si volvés a fallar, perdés otro corazón.
-                      </div>
-                    </button>
-                    <button
-                      onClick={() => aplicar((m) => g2(m))}
-                      className="w-full text-left px-3 py-2 mb-2"
-                      style={{ background: "rgba(255,184,79,0.08)", border: "1px solid #ffb84f" }}
-                    >
-                      <div className="text-sm" style={{ color: "#e8ecf7", fontWeight: 600 }}>
-                        Ajuste de carga
-                      </div>
-                      <div className="text-xs" style={{ color: "#9aa4bd" }}>
-                        −20% de repeticiones en el mismo tiempo. Tus golpes harán un 30% menos de
-                        daño.
-                      </div>
-                    </button>
-                    {!f.isBoss && (
-                      <>
-                        <div className="text-xs mt-3 mb-1" style={{ color: "#9aa4bd" }}>
-                          Cambio táctico de patrón (perdés un 15% del terreno):
-                        </div>
-                        {["upper_front", "upper_back", "lower"].map((m) =>
-                          m === combat.lastExercise || m === combat.exercise ? null : (
-                            <button
-                              key={m}
-                              onClick={() => aplicar((_) => v2(_, m))}
-                              className="w-full py-2 text-sm mb-2"
-                              style={{
-                                background: "rgba(124,92,255,0.1)",
-                                border: "1px solid #7c5cff",
-                                color: "#b9a5ff",
-                              }}
-                            >
-                              {iy[m]}
-                            </button>
-                          ),
-                        )}
-                      </>
-                    )}
-                  </Tarjeta>
-                )}
-                {combat.phase === "resting" &&
-                  !combPrep &&
-                  !combVentana &&
-                  (() => {
-                    let sdcCr = f.isBoss
-                        ? 0
-                        : Math.max(
-                            1,
-                            Math.round(
-                              repsCombate(
-                                progress.rank,
-                                profile.classification,
-                                combat.exercise,
-                                profile.focusProfile,
-                                modalidad,
-                                profile.testResults,
-                              ) * (combat.loadFactor || 1),
-                            ),
-                          ),
-                      sdcCs = f.isBoss ? p2() : m2(sdcCr);
-                    return (
-                      <Tarjeta accent="#ff5c7a" style={{ marginBottom: 16 }}>
-                        <div
-                          style={{
-                            fontFamily: "Chakra Petch, sans-serif",
-                            color: "#e8ecf7",
-                            fontWeight: 700,
-                          }}
-                          className="mb-2"
-                        >
-                          Cuando estés listo
-                        </div>
-                        {f.isBoss ? (
-                          <div className="text-sm" style={{ color: "#e8ecf7" }}>
-                            <div style={{ color: "#ffb84f", fontWeight: 700 }}>
-                              Superserie enlazada · sin descanso
-                            </div>
-                            {(combat.bossCats || $o(combat.lastExercise)).map((m, N) => (
-                              <div key={m} className="mt-1">
-                                Fase {N + 1}:{" "}
-                                {repsCombateSuave(
-                                  progress.rank,
-                                  profile.classification,
-                                  profile.focusProfile,
-                                  m,
-                                  modalidad,
-                                  profile.testResults,
-                                )}{" "}
-                                × {sy(progress.rank, profile.classification, m, modalidad)}
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <div className="text-sm" style={{ color: "#e8ecf7" }}>
-                            {sdcCr} ×{" "}
-                            {sy(progress.rank, profile.classification, combat.exercise, modalidad)}
-                            {(combat.loadFactor || 1) < 1 && (
-                              <div className="text-xs mt-1" style={{ color: "#ffb84f" }}>
-                                Carga recalibrada · daño reducido
-                              </div>
-                            )}
-                          </div>
-                        )}
-                        <div className="text-xs mt-2 mb-3" style={{ color: "#9aa4bd" }}>
-                          Vas a tener {sdcCs} segundos para completarlo. El reloj arranca cuando
-                          toques Empezar, no antes.
-                        </div>
-                        <button
-                          onClick={() => {
-                            let sdcCd = f.isBoss ? 20 : 12;
-                            (setCombSegundosMax(sdcCd), setCombSegundos(sdcCd), setCombPrep(!0));
-                          }}
-                          className="w-full py-3 text-sm"
-                          style={{ background: "#ff5c7a", color: "#0a0e1a", fontWeight: 700 }}
-                        >
-                          Empezar
-                        </button>
-                      </Tarjeta>
-                    );
-                  })()}
-                {combat.phase === "resting" && combPrep && (
-                  <Tarjeta accent="#ff5c7a" style={{ marginBottom: 16 }}>
-                    <div className="text-center">
-                      <div className="text-xs" style={{ color: "#9aa4bd" }}>
-                        Prepárate...
-                      </div>
-                      <div
-                        style={{
-                          fontFamily: "Chakra Petch, sans-serif",
-                          fontSize: 40,
-                          color: "#ff5c7a",
-                        }}
-                      >
-                        {combSegundos}
-                      </div>
-                      <button
-                        onClick={() => setCombSegundos(0)}
-                        className="text-xs underline mt-2"
-                        style={{ color: "#9aa4bd" }}
-                      >
-                        Comenzar ahora
-                      </button>
-                    </div>
-                  </Tarjeta>
-                )}
-                {combVentana && (
-                  <Tarjeta accent="#ff5c7a" style={{ marginBottom: 16 }}>
-                    <div className="text-center mb-3">
-                      <div className="text-sm" style={{ color: "#e8ecf7" }}>
-                        {f.isBoss ? (
-                          <>
-                            <div style={{ color: "#ffb84f", fontWeight: 700 }}>
-                              Superserie enlazada · sin descanso
-                            </div>
-                            {(combat.bossCats || $o(combat.lastExercise)).map((m, N) => (
-                              <div key={m} className="mt-1">
-                                Fase {N + 1}:{" "}
-                                {repsCombateSuave(
-                                  progress.rank,
-                                  profile.classification,
-                                  profile.focusProfile,
-                                  m,
-                                  modalidad,
-                                  profile.testResults,
-                                )}{" "}
-                                × {sy(progress.rank, profile.classification, m, modalidad)}
-                              </div>
-                            ))}
-                          </>
-                        ) : (
-                          <>
-                            {Math.max(
-                              1,
-                              Math.round(
-                                repsCombate(
-                                  progress.rank,
-                                  profile.classification,
-                                  combat.exercise,
-                                  profile.focusProfile,
-                                  modalidad,
-                                  profile.testResults,
-                                ) * (combat.loadFactor || 1),
-                              ),
-                            )}{" "}
-                            ×{" "}
-                            {sy(progress.rank, profile.classification, combat.exercise, modalidad)}
-                            {(combat.loadFactor || 1) < 1 && (
-                              <div className="text-xs mt-1" style={{ color: "#ffb84f" }}>
-                                Carga recalibrada · daño reducido
-                              </div>
-                            )}
-                          </>
-                        )}
-                      </div>
-                    </div>
-                    <div
-                      style={{
-                        fontFamily: "Chakra Petch, sans-serif",
-                        fontSize: 36,
-                        color: combSegundos <= 5 ? "#ff5c7a" : "#e8ecf7",
-                        textAlign: "center",
-                      }}
-                    >
-                      {combSegundos}s
-                    </div>
-                    <BarraXp value={combSegundos} max={combSegundosMax} color="#ff5c7a" />
-                    {(() => {
-                      let fs = f.isBoss
-                          ? (combat.bossCats || $o(combat.lastExercise)).map((m) =>
-                              repsCombateSuave(
-                                progress.rank,
-                                profile.classification,
-                                profile.focusProfile,
-                                m,
-                                modalidad,
-                                profile.testResults,
-                              ),
-                            )
-                          : [
-                              Math.max(
-                                1,
-                                Math.round(
-                                  repsCombate(
-                                    progress.rank,
-                                    profile.classification,
-                                    combat.exercise,
-                                    profile.focusProfile,
-                                    modalidad,
-                                    profile.testResults,
-                                  ) * (combat.loadFactor || 1),
-                                ),
-                              ),
-                            ],
-                        listo = fs.every((rq, ix) => (sdcCombSer[ix] || 0) >= sdcNSets(rq));
-                      return (
-                        <>
-                          {fs.map((rq, ix) => (
-                            <div key={ix} className="mt-3">
-                              {f.isBoss && (
-                                <div className="text-xs mb-1" style={{ color: "#ffb84f" }}>
-                                  Fase {ix + 1}
-                                </div>
-                              )}
-                              {sdcCombChips(ix, rq)}
-                            </div>
-                          ))}
-                          <button
-                            onClick={sdcGolpe}
-                            disabled={!listo}
-                            className="w-full py-3 text-sm mt-3 disabled:opacity-40"
-                            style={{ background: "#ff5c7a", color: "#0a0e1a", fontWeight: 700 }}
-                          >
-                            {listo ? "GOLPEAR" : "Marcá las series para golpear"}
-                          </button>
-                        </>
-                      );
-                    })()}
-                    <button
-                      onClick={combCancelar}
-                      className="w-full py-2 text-xs mt-2"
-                      style={{
-                        background: "rgba(255,255,255,0.08)",
-                        border: "1px solid rgba(255,255,255,0.28)",
-                        color: "#e8ecf7",
-                        fontWeight: 600,
-                      }}
-                    >
-                      Cancelar (sin perder vida)
-                    </button>
-                  </Tarjeta>
-                )}
-                {combat.phase === "victory" && (
-                  <Tarjeta accent="#3ecf8e" style={{ marginBottom: 16 }}>
-                    <div className="text-center">
-                      <IconoTrofeo size={32} color="#3ecf8e" style={{ margin: "0 auto" }} />
-                      <div
-                        style={{
-                          fontFamily: "Chakra Petch, sans-serif",
-                          fontSize: 20,
-                          color: "#3ecf8e",
-                          fontWeight: 700,
-                        }}
-                        className="mt-2"
-                      >
-                        ¡Victoria!
-                      </div>
-                      <div className="text-sm mt-1" style={{ color: "#e8ecf7" }}>
-                        Recuperaste {f.name}
-                      </div>
-                    </div>
-                    <button
-                      onClick={combSiguiente}
-                      className="w-full py-3 text-sm mt-4"
-                      style={{ background: "#3ecf8e", color: "#0a0e1a", fontWeight: 700 }}
-                    >
-                      Continuar al siguiente villano
-                    </button>
-                  </Tarjeta>
-                )}
-                {combat.phase === "defeat" && (
-                  <Tarjeta accent="#ff5c7a" style={{ marginBottom: 16 }}>
-                    <div className="text-center">
-                      <div
-                        style={{
-                          fontFamily: "Chakra Petch, sans-serif",
-                          fontSize: 20,
-                          color: "#ff5c7a",
-                          fontWeight: 700,
-                        }}
-                      >
-                        Te quedaste sin vidas
-                      </div>
-                      <div className="text-sm mt-1" style={{ color: "#9aa4bd" }}>
-                        {f.name} sigue activa, pero no perdiste el daño que ya le hiciste. Recuperá
-                        el aliento e intentalo de nuevo.
-                      </div>
-                    </div>
-                    <button
-                      onClick={combReintentar}
-                      className="w-full py-3 text-sm mt-4"
-                      style={{ background: "#ff5c7a", color: "#0a0e1a", fontWeight: 700 }}
-                    >
-                      Reintentar
-                    </button>
-                  </Tarjeta>
-                )}
-              </>
-            );
-          })()}
+        {pestana === "combat" && (
+          <PestanaCombate
+            aplicar={aplicar}
+            combat={combat}
+            combCancelar={combCancelar}
+            combElegir={combElegir}
+            combPrep={combPrep}
+            combReintentar={combReintentar}
+            combSegundos={combSegundos}
+            combSegundosMax={combSegundosMax}
+            combSiguiente={combSiguiente}
+            combVentana={combVentana}
+            modalidad={modalidad}
+            profile={profile}
+            progress={progress}
+            sdcCombChips={sdcCombChips}
+            sdcCombSer={sdcCombSer}
+            sdcGolpe={sdcGolpe}
+            setCombPrep={setCombPrep}
+            setCombSegundos={setCombSegundos}
+            setCombSegundosMax={setCombSegundosMax}
+          />
+        )}
         {pestana === "primal" &&
           (() => {
             let f = primal.unlockedCount - 1;
@@ -4470,451 +4034,40 @@ function App({ player, setPlayer, initialNotices }) {
               </>
             );
           })()}
-        {pestana === "exploration" &&
-          (() => {
-            let f = s2(kmTotales),
-              d = sectores[f],
-              m = i2(f),
-              N = Math.max(0, Math.min(kmTotales - m, d.endKm - m)),
-              _ = d.endKm - m,
-              X = Math.round((N / _) * 100),
-              de = nodosExplorar.filter((te) => te.sector === f);
-            return (
-              <>
-                <Tarjeta accent="#7c5cff" style={{ marginBottom: 16 }}>
-                  <div className="flex items-center justify-between mb-2">
-                    <div>
-                      <div
-                        className="text-xs uppercase"
-                        style={{ letterSpacing: 2, color: "#7c5cff" }}
-                      >
-                        Sector {f + 1}
-                      </div>
-                      <div
-                        style={{
-                          fontFamily: "Chakra Petch, sans-serif",
-                          fontSize: 20,
-                          color: "#e8ecf7",
-                          fontWeight: 700,
-                        }}
-                      >
-                        {d.name}
-                      </div>
-                    </div>
-                    <IconoPasos size={26} color="#7c5cff" />
-                  </div>
-                  <div className="text-xs mb-1 flex justify-between" style={{ color: "#9aa4bd" }}>
-                    <span>Progreso del sector</span>
-                    <span>
-                      {X}% · {N.toFixed(1)} / {_} km
-                    </span>
-                  </div>
-                  <BarraXp value={N} max={_} color="#7c5cff" />
-                  <div className="text-xs mt-3" style={{ color: "#9aa4bd" }}>
-                    {kmTotales.toFixed(1)} km totales · {rangoCaminante.name}
-                  </div>
-                  {nodoSiguiente && (
-                    <div className="text-xs mt-1" style={{ color: "#7a83a0" }}>
-                      Próximo nodo: {nodoSiguiente.name} a {nodoSiguiente.km} km (faltan{" "}
-                      {(nodoSiguiente.km - kmTotales).toFixed(1)})
-                    </div>
-                  )}
-                </Tarjeta>
-                <Tarjeta accent="#7c5cff" style={{ marginBottom: 16 }}>
-                  <div
-                    style={{
-                      fontFamily: "Chakra Petch, sans-serif",
-                      color: "#e8ecf7",
-                      fontWeight: 700,
-                    }}
-                    className="mb-2"
-                  >
-                    Expedición en curso
-                  </div>
-                  <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
-                    Registrá tramos a lo largo del día. Los kilómetros se consolidan al concluir la
-                    expedición.
-                  </div>
-                  {(function () {
-                    var ws = (player.exploration && player.exploration.walkStart) || 0,
-                      kmh = (player.profile && player.profile.ritmoKmH) || 5;
-                    if (ws)
-                      return (
-                        <CronoCaminata
-                          inicio={ws}
-                          kmh={kmh}
-                          onCancel={sdcCamCancelar}
-                          onListo={sdcCamListo}
-                        />
-                      );
-                    return (
-                      <div
-                        className="mb-3 p-2"
-                        style={{
-                          background: "rgba(124,92,255,0.06)",
-                          border: "1px solid rgba(124,92,255,0.25)",
-                        }}
-                      >
-                        <div className="text-xs mb-1" style={{ color: "#e8ecf7", fontWeight: 600 }}>
-                          Salir a caminar
-                        </div>
-                        <div className="text-xs mb-2" style={{ color: "#9aa4bd" }}>
-                          La app cuenta el tiempo y estima los kilómetros a tu ritmo. Al terminar
-                          los podés corregir.
-                        </div>
-                        <div className="grid grid-cols-2 gap-1 mb-2">
-                          {sdcRitmos.map(function (jr) {
-                            var sel = Math.abs(kmh - jr.v) < 0.01;
-                            return (
-                              <button
-                                key={jr.t}
-                                onClick={function () {
-                                  sdcCamRitmo(jr.v);
-                                }}
-                                className="py-2 text-xs"
-                                style={{
-                                  minHeight: 44,
-                                  background: sel
-                                    ? "rgba(124,92,255,0.2)"
-                                    : "rgba(255,255,255,0.03)",
-                                  border: sel
-                                    ? "1px solid #7c5cff"
-                                    : "1px solid rgba(255,255,255,0.12)",
-                                  color: sel ? "#e8ecf7" : "#9aa4bd",
-                                }}
-                              >
-                                {jr.t}
-                              </button>
-                            );
-                          })}
-                        </div>
-                        <button
-                          onClick={sdcCamEmpezar}
-                          className="w-full py-2 text-xs"
-                          style={{
-                            minHeight: 44,
-                            background: "#7c5cff",
-                            color: "#0a0e1a",
-                            fontWeight: 700,
-                          }}
-                        >
-                          Empezar la salida
-                        </button>
-                      </div>
-                    );
-                  })()}
-                  <div className="flex gap-2 mb-2">
-                    <input
-                      type="text"
-                      inputMode="decimal"
-                      value={kmTexto}
-                      onChange={(te) => setKmTexto(te.target.value.replace(/[^0-9.,]/g, ""))}
-                      placeholder="Km del tramo"
-                      className="px-3 py-2 text-sm"
-                      style={{
-                        flex: 1,
-                        background: "rgba(255,255,255,0.05)",
-                        border: "1px solid rgba(255,255,255,0.15)",
-                        color: "#e8ecf7",
-                      }}
-                    />
-                    <button
-                      onClick={sumarKm}
-                      className="px-3 py-2 text-sm"
-                      style={{
-                        background: "rgba(124,92,255,0.15)",
-                        border: "1px solid #7c5cff",
-                        color: "#b9a5ff",
-                        fontWeight: 700,
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      + Tramo
-                    </button>
-                  </div>
-                  <div className="flex gap-2 mb-2">
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      value={pasosTexto}
-                      onChange={(te) => setPasosTexto(te.target.value.replace(/[^0-9]/g, ""))}
-                      placeholder="o pasos dados"
-                      className="px-3 py-2 text-sm"
-                      style={{
-                        flex: 1,
-                        background: "rgba(255,255,255,0.05)",
-                        border: "1px solid rgba(255,255,255,0.15)",
-                        color: "#e8ecf7",
-                      }}
-                    />
-                    <button
-                      onClick={sumarPasos}
-                      className="px-3 py-2 text-sm"
-                      style={{
-                        background: "rgba(124,92,255,0.15)",
-                        border: "1px solid #7c5cff",
-                        color: "#b9a5ff",
-                        fontWeight: 700,
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      + Pasos
-                    </button>
-                  </div>
-                  {pasosTexto && parseInt(pasosTexto, 10) > 0 && (
-                    <div className="text-xs mb-2" style={{ color: "#7a83a0" }}>
-                      {parseInt(pasosTexto, 10).toLocaleString("es")} pasos ≈{" "}
-                      {((parseInt(pasosTexto, 10) * vd) / 1e3).toFixed(2)} km
-                    </div>
-                  )}
-                  <div
-                    className="text-center py-2 mb-2"
-                    style={{
-                      background: "rgba(124,92,255,0.06)",
-                      border: "1px solid rgba(124,92,255,0.25)",
-                    }}
-                  >
-                    <div className="text-xs" style={{ color: "#9aa4bd" }}>
-                      Tramos sin consolidar
-                    </div>
-                    <div
-                      style={{
-                        fontFamily: "Chakra Petch, sans-serif",
-                        fontSize: 28,
-                        color: "#b9a5ff",
-                      }}
-                    >
-                      {(exploration.pendingKm || 0).toFixed(1)} km
-                    </div>
-                  </div>
-                  <button
-                    onClick={consolidarKmHoy}
-                    disabled={!(exploration.pendingKm > 0)}
-                    className="w-full py-3 text-sm disabled:opacity-40"
-                    style={{ background: "#7c5cff", color: "#0a0e1a", fontWeight: 700 }}
-                  >
-                    Concluir Expedición
-                  </button>
-                  {exploration.pendingKm > 0 && (
-                    <button
-                      onClick={descartarTramosHoy}
-                      className="w-full py-2 text-xs mt-2"
-                      style={{
-                        background: "rgba(255,255,255,0.08)",
-                        border: "1px solid rgba(255,255,255,0.28)",
-                        color: "#e8ecf7",
-                        fontWeight: 600,
-                      }}
-                    >
-                      Descartar tramos
-                    </button>
-                  )}
-                  <div className="text-xs mt-2 text-center" style={{ color: "#7a83a0" }}>
-                    Hoy llevás{" "}
-                    {(exploration.today.date === fechaHoy() ? exploration.today.km : 0).toFixed(1)}{" "}
-                    km consolidados
-                  </div>
-                </Tarjeta>
-                <Plegable
-                  id="mapaSector"
-                  title="Mapa del sector"
-                  accent="#5a6178"
-                  style={{ marginBottom: 16 }}
-                  collapsed={plegado("mapaSector")}
-                  onToggle={alternarPlegable}
-                  right={verTodoMapa ? "todo" : "sector"}
-                >
-                  <div className="flex items-center justify-end mb-3">
-                    <div className="flex gap-1">
-                      <button
-                        onClick={() => setVerTodoMapa((te) => !te)}
-                        className="px-2 py-1 text-xs"
-                        style={{
-                          background: "rgba(255,255,255,0.05)",
-                          border: "1px solid rgba(255,255,255,0.15)",
-                          color: "#9aa4bd",
-                        }}
-                      >
-                        {verTodoMapa ? "Ver sector" : "Ver todo"}
-                      </button>
-                    </div>
-                  </div>
-                  {(verTodoMapa ? nodosExplorar : de).map((te) => {
-                    let wl = nodosExplorar.indexOf(te) <= exploration.unlockedIndex,
-                      Ig = Math.max(0, te.km - kmTotales);
-                    return (
-                      <div
-                        key={te.name}
-                        className="flex items-start gap-2 py-2"
-                        style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
-                      >
-                        {wl ? (
-                          <IconoUbicacion size={16} color="#7c5cff" />
-                        ) : (
-                          <IconoCandado size={16} color="#7a83a0" />
-                        )}
-                        <div>
-                          <div
-                            className="text-sm"
-                            style={{
-                              color: wl ? "#e8ecf7" : "#5a6178",
-                              fontWeight: wl ? 600 : 400,
-                            }}
-                          >
-                            {te.name}{" "}
-                            <span className="text-xs" style={{ color: "#7a83a0" }}>
-                              · {te.km} km
-                            </span>
-                          </div>
-                          {wl ? (
-                            <div className="text-xs" style={{ color: "#9aa4bd" }}>
-                              {te.text}
-                            </div>
-                          ) : (
-                            <div className="text-xs" style={{ color: "#7a83a0" }}>
-                              Bloqueado — faltan {Ig.toFixed(1)} km
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </Plegable>
-                <Plegable
-                  id="codice"
-                  title="Códice"
-                  accent="#ffb84f"
-                  style={{ marginBottom: 16 }}
-                  collapsed={
-                    ui && ui.collapsed && ui.collapsed.codice !== void 0 ? plegado("codice") : !0
-                  }
-                  onToggle={alternarPlegable}
-                  right={`${(exploration.relics || []).length} / ${nodosExplorar.length} · +${Math.round((exploration.relics || []).length * Ny * 100)}% XP`}
-                >
-                  {(exploration.relics || []).length === 0 ? (
-                    <div className="text-xs" style={{ color: "#7a83a0" }}>
-                      Aún no hallaste ninguna reliquia. Caminá y concluí expediciones para llenar el
-                      Códice.
-                    </div>
-                  ) : (
-                    nodosExplorar
-                      .filter((te) => (exploration.relics || []).includes(te.relic))
-                      .map((te) => (
-                        <div
-                          key={te.relic}
-                          className="py-2"
-                          style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
-                        >
-                          <div className="flex items-center gap-2">
-                            <IconoDestello size={14} color="#ffb84f" />
-                            <div className="text-sm" style={{ color: "#e8ecf7", fontWeight: 600 }}>
-                              {te.relic}
-                            </div>
-                          </div>
-                          <div className="text-xs mt-1" style={{ color: "#9aa4bd" }}>
-                            {te.lore}
-                          </div>
-                          <div className="text-xs mt-1" style={{ color: "#7a83a0" }}>
-                            Hallada en {te.name} · {te.km} km
-                          </div>
-                        </div>
-                      ))
-                  )}
-                </Plegable>
-              </>
-            );
-          })()}
+        {pestana === "exploration" && (
+          <PestanaExplorar
+            alternarPlegable={alternarPlegable}
+            consolidarKmHoy={consolidarKmHoy}
+            descartarTramosHoy={descartarTramosHoy}
+            exploration={exploration}
+            kmTexto={kmTexto}
+            kmTotales={kmTotales}
+            nodoSiguiente={nodoSiguiente}
+            pasosTexto={pasosTexto}
+            player={player}
+            plegado={plegado}
+            rangoCaminante={rangoCaminante}
+            sdcCamCancelar={sdcCamCancelar}
+            sdcCamEmpezar={sdcCamEmpezar}
+            sdcCamListo={sdcCamListo}
+            sdcCamRitmo={sdcCamRitmo}
+            setKmTexto={setKmTexto}
+            setPasosTexto={setPasosTexto}
+            setVerTodoMapa={setVerTodoMapa}
+            sumarKm={sumarKm}
+            sumarPasos={sumarPasos}
+            ui={ui}
+            verTodoMapa={verTodoMapa}
+          />
+        )}
         {pestana === "achievements" && (
-          <>
-            <Tarjeta accent="#ffb84f" style={{ marginBottom: 16 }}>
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-xs uppercase" style={{ letterSpacing: 2, color: "#ffb84f" }}>
-                    Logros
-                  </div>
-                  <div
-                    style={{
-                      fontFamily: "Chakra Petch, sans-serif",
-                      fontSize: 22,
-                      color: "#e8ecf7",
-                      fontWeight: 700,
-                    }}
-                  >
-                    {achievements.length} / {logros.length}
-                  </div>
-                </div>
-                <IconoTrofeo size={26} color="#ffb84f" />
-              </div>
-            </Tarjeta>
-            {categoriasLogros.map((f) => {
-              let d = logros.filter((N) => N.category === f);
-              if (!d.length) return null;
-              let m = d.filter((N) => achievements.includes(N.id)).length;
-              return (
-                <Plegable
-                  key={f}
-                  id={"ach-" + f}
-                  title={f}
-                  accent="#5a6178"
-                  style={{ marginBottom: 16 }}
-                  collapsed={
-                    ui && ui.collapsed && ui.collapsed["ach-" + f] !== void 0
-                      ? plegado("ach-" + f)
-                      : !sdcCatAbierta(player, f)
-                  }
-                  onToggle={alternarPlegable}
-                  right={`${m}/${d.length}`}
-                >
-                  {ordenDificultad.map((N) => {
-                    let _ = d.filter((X) => X.tier === N);
-                    return _.length ? (
-                      <div key={N} className="mb-2">
-                        <div
-                          className="text-xs mb-1"
-                          style={{ color: colorRango[N], letterSpacing: 1, fontWeight: 700 }}
-                        >
-                          {sdcDific[N] || N}
-                        </div>
-                        {_.map((X) => {
-                          let de = achievements.includes(X.id);
-                          return (
-                            <div
-                              key={X.id}
-                              className="flex items-start gap-2 py-2"
-                              style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
-                            >
-                              {de ? (
-                                <IconoTrofeo size={16} color="#ffb84f" />
-                              ) : (
-                                <IconoCandado size={16} color="#7a83a0" />
-                              )}
-                              <div>
-                                <div
-                                  className="text-sm"
-                                  style={{
-                                    color: de ? "#e8ecf7" : "#5a6178",
-                                    fontWeight: de ? 600 : 400,
-                                  }}
-                                >
-                                  {X.name}
-                                </div>
-                                <div
-                                  className="text-xs"
-                                  style={{ color: de ? "#8a93ad" : "#5a6178" }}
-                                >
-                                  {X.desc}
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    ) : null;
-                  })}
-                </Plegable>
-              );
-            })}
-          </>
+          <PestanaLogros
+            achievements={achievements}
+            alternarPlegable={alternarPlegable}
+            player={player}
+            plegado={plegado}
+            ui={ui}
+          />
         )}
         {pestana === "profile" &&
           (() => {
