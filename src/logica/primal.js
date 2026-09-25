@@ -27,11 +27,11 @@ var descansoPrimal = 15,
     },
     {
       name: "Lagartija",
-      desc: "Crawl bajo con el pecho cerca del suelo, llevando la rodilla hacia el codo externo en cada paso.",
+      desc: "Gateo bajo con el pecho cerca del suelo, llevando la rodilla hacia el codo externo en cada paso.",
     },
     {
       name: "Cocodrilo",
-      desc: "Plancha ancha y baja, avanzando con push-ups controlados hacia adelante.",
+      desc: "Plancha ancha y baja, avanzando con flexiones controladas hacia adelante.",
     },
     {
       name: "Rana",
@@ -46,7 +46,7 @@ var descansoPrimal = 15,
       desc: "Saltos explosivos hacia adelante llevando las rodillas hacia el pecho.",
     },
     {
-      name: "Skater Lateral",
+      name: "Patinador lateral",
       desc: "Saltos laterales alternando piernas, tocando el suelo detrás con la mano opuesta.",
     },
     {
@@ -55,18 +55,18 @@ var descansoPrimal = 15,
     },
     {
       name: "Araña",
-      desc: "Crawl llevando la rodilla hacia el codo del mismo lado, rotando la cadera.",
+      desc: "Gateo llevando la rodilla hacia el codo del mismo lado, rotando la cadera.",
     },
     {
       name: "Escorpión",
       desc: "Desde posición de bestia, mete una pierna por debajo del cuerpo hacia el lado contrario.",
     },
     {
-      name: "Shuffle Rítmico",
+      name: "Paso lateral al ritmo",
       desc: "Desplazamiento lateral tipo baile con sentadilla ligera en cada cambio de dirección.",
     },
     {
-      name: "High Knees al Ritmo",
+      name: "Rodillas arriba al ritmo",
       desc: "Rodillas altas rápidas alternando con cambios de dirección cada pocos segundos.",
     },
     {
@@ -78,31 +78,31 @@ var descansoPrimal = 15,
       desc: "Desde cangrejo, eleva la cadera y alcanza hacia atrás con un brazo, alternando.",
     },
     {
-      name: "Burpee Flow",
+      name: "Burpee con salto lateral",
       desc: "Burpee combinado con un salto lateral antes de bajar a la siguiente repetición.",
     },
     {
       name: "Sombra de Combate",
-      desc: "Boxeo sombra dinámico combinado con desplazamiento lateral constante.",
+      desc: "Golpes de boxeo al aire, en movimiento, con desplazamiento lateral constante.",
     },
     {
       name: "Flujo Encadenado",
       desc: "Secuencia continua combinando bestia, escorpión y cambio bajo sin pausas.",
     },
     {
-      name: "Beast Hold",
-      desc: "Sostén en cuadrupedia con rodillas a un centímetro del suelo, espalda plana y core activo.",
+      name: "Bestia quieta",
+      desc: "Sostén a cuatro patas con las rodillas a un centímetro del suelo, la espalda plana y el abdomen apretado.",
     },
     {
       name: "Movilidad 90/90",
       desc: "Sentado con ambas rodillas a 90°, rota de un lado al otro sin usar las manos.",
     },
     {
-      name: "Underswitch",
+      name: "Cambio por debajo",
       desc: "Desde posición de bestia, pasa una pierna por debajo del cuerpo y rota hacia el lado opuesto.",
     },
     {
-      name: "Kickthrough",
+      name: "Patada cruzada",
       desc: "Desde bestia, patea una pierna cruzada por debajo mientras levantas la mano contraria.",
     },
   ];

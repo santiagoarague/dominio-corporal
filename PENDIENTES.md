@@ -21,7 +21,7 @@ ni la dirección del sitio.
 - **Revisor automático (ESLint)**: marca variables que no existen, código que nadie usa, hooks de
   React dentro de un `if` y una variable que tapa a otra del mismo nombre. Corre antes de publicar, igual que las pruebas. En la primera pasada
   encontró que el campo del peso corporal se había perdido y una docena de valores muertos.
-- **Pruebas**: 124 automáticas (curva de XP, Umbral, buffos, deshacer, sonidos…) y 15 de punta a
+- **Pruebas**: 124 automáticas (curva de XP, Umbral, buffos, deshacer, sonidos…) y 17 de punta a
   punta en Edge, una de ellas mide la legibilidad de cada pestaña. **Si alguna falla, o el revisor encuentra un error, no se publica nada**: el deploy lo hace GitHub Actions y las
   corre antes.
 - **App partida**: cada pestaña en su archivo (`src/ui/pestanas/`) y Entreno en tarjetas. Entreno
@@ -106,6 +106,13 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
 - ~~Con las tres series marcadas no se podía desmarcar solo la primera: se desmarcaban todas~~ —
   resuelto (25/09/2026). Cada serie se marca y se desmarca sola, y **DESMARCAR TODAS** quedó al
   lado de MARCAR TODAS. Las series que ya estaban marcadas en una partida se leen igual que antes.
+- ~~El saludo al abrir la app ("Hola de nuevo") se iba antes de poder leerlo~~ — resuelto
+  (25/09/2026). A quien vuelve se le deja al menos 2,5 s (tocar la pantalla lo saca antes), y la
+  letra pasó a 22 px el saludo y 17 px el nivel.
+- ~~Las series del Combate se marcaban como antes (tocar la tercera marcaba las tres)~~ — resuelto:
+  ahora cada una se marca sola, como en la rutina, y GOLPEAR espera a que estén todas.
+- ~~Dos toques muy seguidos podían pisarse (una serie o un + que no quedaba)~~ — resuelto: cada
+  cambio se aplica sobre el último valor guardado.
 - ~~Solo se podían cambiar las reps de la serie pendiente~~ — resuelto (25/09/2026). «Ajustar series»
   pone un + y un − en cada serie para armar el plan antes de hacerlo (15-15-12, 8-12-8), y después
   se marcan una por una o todas juntas. La meta del día no cambia: lo que planeás de más cuenta como

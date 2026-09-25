@@ -396,7 +396,7 @@ function FilaEjercicio({
                 <div key={i} className="flex-1 flex flex-col gap-1" style={{ minWidth: 0 }}>
                   <button
                     onClick={function () {
-                      onAj(i, efectivas + 1);
+                      onAj(i, efectivas + 1, 1);
                     }}
                     style={botonPaso}
                     aria-label={"Una repetición más en la serie " + (i + 1)}
@@ -406,7 +406,7 @@ function FilaEjercicio({
                   {ficha}
                   <button
                     onClick={function () {
-                      onAj(i, Math.max(0, efectivas - 1));
+                      onAj(i, Math.max(0, efectivas - 1), -1);
                     }}
                     style={botonPaso}
                     aria-label={"Una repetición menos en la serie " + (i + 1)}
@@ -429,7 +429,7 @@ function FilaEjercicio({
                 >
                   <button
                     onClick={function () {
-                      onAj(i, efectivas - 1);
+                      onAj(i, efectivas - 1, -1);
                     }}
                     style={{ width: 28, color: "#9aa4bd", fontSize: 17 }}
                     aria-label={"Una repetición menos en la serie " + (i + 1)}
@@ -455,7 +455,7 @@ function FilaEjercicio({
                   </button>
                   <button
                     onClick={function () {
-                      onAj(i, efectivas + 1);
+                      onAj(i, efectivas + 1, 1);
                     }}
                     style={{ width: 28, color: "#9aa4bd", fontSize: 17 }}
                     aria-label={"Una repetición más en la serie " + (i + 1)}

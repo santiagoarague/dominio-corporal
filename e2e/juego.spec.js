@@ -243,3 +243,79 @@ test("Ajustar series: cada serie con su + y su −, y Marcar todas suma el plan"
   ).toBeVisible();
   expect(errores).toEqual([]);
 });
+
+test("dos toques antes de que la pantalla se redibuje no se pisan", async ({ page }) => {
+  const errores = [];
+  page.on("pageerror", (e) => errores.push(e.message));
+  await page.clock.install({ time: new Date("2026-09-24T10:00:00-03:00") });
+  await page.clock.pauseAt(new Date("2026-09-24T10:00:01-03:00"));
+  await page.goto("/");
+  await page.clock.runFor(60_000);
+  await boton(page, "Continuar").click();
+  await boton(page, "Saltar y empezar con valores por defecto").click();
+  await expect(page.getByText("Rutina de hoy")).toBeVisible();
+  await boton(page, "Hoy no").click();
+  const fila = page
+    .locator("div.py-2")
+    .filter({ has: page.locator(".sdc-chip") })
+    .first();
+  await fila.getByRole("button", { name: "Ajustar series" }).click();
+
+  // Dentro del mismo tick: dos + a la serie 1 y uno a la serie 2 (5, 4, 3 -> 7, 5, 3).
+  await fila.evaluate((f) => {
+    const mas = (n) => f.querySelector(`[aria-label="Una repetición más en la serie ${n}"]`);
+    (mas(1).click(), mas(1).click(), mas(2).click());
+  });
+  await expect(fila.locator(".sdc-chip")).toHaveText(["7", "5", "3"]);
+
+  // Y dos series marcadas en el mismo tick quedan las dos.
+  await fila.evaluate((f) => {
+    const fichas = f.querySelectorAll(".sdc-chip");
+    (fichas[0].click(), fichas[2].click());
+  });
+  await expect(fila.getByRole("button", { name: "Serie 1 de 3, hecha" })).toBeVisible();
+  await expect(fila.getByRole("button", { name: "Serie 3 de 3, hecha" })).toBeVisible();
+  const marca = (await partida(page)).today.marcas["bodyweight|normal"];
+  expect(marca.aj.squat).toEqual({ 0: 7, 1: 5 });
+  expect(marca.ser.squat).toEqual([true, false, true]);
+  expect(errores).toEqual([]);
+});
+
+test("combate: cada serie se marca sola y GOLPEAR espera a todas", async ({ page }) => {
+  const errores = [];
+  page.on("pageerror", (e) => errores.push(e.message));
+  await page.clock.install({ time: new Date("2026-09-24T10:00:00-03:00") });
+  await page.clock.pauseAt(new Date("2026-09-24T10:00:01-03:00"));
+  await page.goto("/");
+  await page.clock.runFor(60_000);
+  await boton(page, "Continuar").click();
+  await boton(page, "Saltar y empezar con valores por defecto").click();
+  await expect(page.getByText("Rutina de hoy")).toBeVisible();
+  await boton(page, "Perfil").click();
+  await page.getByRole("button", { name: /Sistemas del juego/ }).click();
+  await boton(page, "Desbloquear todo ahora").click();
+  await boton(page, "Combate").click();
+  await boton(page, "Tren Inferior").click();
+  await boton(page, "Empezar").click();
+  await boton(page, "Comenzar ahora").click();
+
+  const serie = (n, estado) =>
+    page.getByRole("button", { name: new RegExp(`^Combate, serie ${n} de [0-9]+, ${estado}$`) });
+  const golpear = page.getByRole("button", { name: /^(GOLPEAR|Marcá las series para golpear)$/ });
+  const todas = page.getByRole("button", { name: /^Combate, serie \d+ de \d+/ });
+  await expect(todas.first()).toBeVisible();
+  const total = await todas.count();
+  expect(total).toBeGreaterThan(1);
+  // Marcar la última sola no marca las anteriores.
+  await serie(total, "pendiente").click();
+  await expect(serie(total, "hecha")).toBeVisible();
+  await expect(serie(1, "pendiente")).toBeVisible();
+  await expect(golpear).toBeDisabled();
+  for (let n = 1; n < total; n++) await serie(n, "pendiente").click();
+  await expect(golpear).toBeEnabled();
+  // Desmarcar la primera deja las demás y vuelve a pedirla.
+  await serie(1, "hecha").click();
+  await expect(serie(total, "hecha")).toBeVisible();
+  await expect(golpear).toBeDisabled();
+  expect(errores).toEqual([]);
+});

@@ -108,12 +108,13 @@ button:disabled.disabled\:opacity-40{opacity:.6;}
 <link rel="preload" href="./fuentes/inter-var.woff2" as="font" type="font/woff2" crossorigin>
 </head>
 <body>
-<div id="sdcSplash" aria-hidden="true"><div class="sdcSplashIn"><div class="sdcSplashT">DOMINIO CORPORAL</div><div class="sdcSplashN" id="sdcSplashN">Abriendo&#8230;</div><div class="sdcSplashBar"><span></span></div></div></div>
+<div id="sdcSplash" aria-hidden="true"><div class="sdcSplashIn"><div class="sdcSplashT">DOMINIO CORPORAL</div><div class="sdcSplashN" id="sdcSplashN">Abriendo&#8230;</div><div class="sdcSplashL" id="sdcSplashL"></div><div class="sdcSplashBar"><span></span></div></div></div>
 <style>
 #sdcSplash{position:fixed;inset:0;z-index:9999;background:#0a0e1a;display:flex;align-items:center;justify-content:center;transition:opacity .25s ease}
-#sdcSplash .sdcSplashIn{width:100%;max-width:300px;padding:0 16px;text-align:center}
-#sdcSplash .sdcSplashT{font-family:'Chakra Petch',system-ui,sans-serif;font-size:15px;font-weight:700;letter-spacing:4px;color:#4f9dff}
-#sdcSplash .sdcSplashN{font-family:'Inter',system-ui,sans-serif;font-size:14px;color:#8a93ad;margin-top:10px;min-height:20px}
+#sdcSplash .sdcSplashIn{width:100%;max-width:340px;padding:0 16px;text-align:center}
+#sdcSplash .sdcSplashT{font-family:'Chakra Petch',system-ui,sans-serif;font-size:18px;font-weight:700;letter-spacing:3px;color:#4f9dff}
+#sdcSplash .sdcSplashN{font-family:'Inter',system-ui,sans-serif;font-size:22px;line-height:1.35;font-weight:600;color:#e8ecf7;margin-top:16px;min-height:30px}
+#sdcSplash .sdcSplashL{font-family:'Inter',system-ui,sans-serif;font-size:17px;color:#9aa4bd;margin-top:6px;min-height:24px}
 #sdcSplash .sdcSplashBar{margin-top:22px;height:2px;background:rgba(255,255,255,0.08);overflow:hidden}
 #sdcSplash .sdcSplashBar span{display:block;height:2px;width:40%;background:#4f9dff;animation:sdcSplashSlide 1.1s ease-in-out infinite}
 @keyframes sdcSplashSlide{0%{transform:translateX(-110%)}100%{transform:translateX(260%)}}
@@ -122,21 +123,35 @@ button:disabled.disabled\:opacity-40{opacity:.6;}
 <div id="root"></div>
 <script>
 (function(){
+  // A quien vuelve, el saludo se le deja al menos 2,5 s desde que abre: con el
+  // teléfono ya cacheado la app arranca en menos de un segundo y no se llegaba a leer.
+  // Tocar la pantalla lo saca antes.
+  var inicio=Date.now(),vuelve=false,MINIMO=2500;
   try{
     var raw=localStorage.getItem('dominio-corporal:player/state');
     if(raw){
       var s=JSON.parse(raw),n=s&&s.profile&&s.profile.name,lv=s&&s.progress&&s.progress.level;
-      if(n)document.getElementById('sdcSplashN').textContent='Hola de nuevo, '+n+(lv?'  ·  Nv. '+lv:'');
+      if(n){
+        document.getElementById('sdcSplashN').textContent='Hola de nuevo, '+n;
+        if(lv)document.getElementById('sdcSplashL').textContent='Nivel '+lv;
+        vuelve=true;
+      }
     }
   }catch(e){}
   var root=document.getElementById('root');
   if(!root)return;
-  var quitar=function(){
+  var fuera=function(){
     var sp=document.getElementById('sdcSplash');
     if(!sp)return;
     sp.style.opacity='0';
     setTimeout(function(){if(sp.parentNode)sp.parentNode.removeChild(sp)},260);
   };
+  var quitar=function(){
+    var falta=vuelve?MINIMO-(Date.now()-inicio):0;
+    falta>0?setTimeout(fuera,falta):fuera();
+  };
+  var sp0=document.getElementById('sdcSplash');
+  sp0&&sp0.addEventListener('click',function(){if(root.childNodes.length)fuera()});
   if(root.childNodes.length){quitar();return}
   var obs=new MutationObserver(function(){if(root.childNodes.length){obs.disconnect();quitar()}});
   obs.observe(root,{childList:true});

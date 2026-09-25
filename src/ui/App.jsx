@@ -632,12 +632,20 @@ function App({ player, setPlayer, initialNotices }) {
       (metaSesion.abs || 0)
     );
   }
-  function sdcAjustar(grupo, serie, reps) {
-    let nuevo = {
-      ...sdcAjuste,
-      [grupo]: { ...(sdcAjuste[grupo] || {}), [serie]: Math.max(0, reps) },
-    };
-    (sdcSetAjuste(nuevo), sdcMarcaOk(sdcSer, nuevo, sdcModOk), sdcVib(6));
+  // Con delta (+1 / -1) suma sobre el ultimo valor; sin delta, fija reps.
+  function sdcAjustar(grupo, serie, reps, delta) {
+    let meta = metaSesion[grupo] || 0,
+      base = sdcSplit(meta, sdcNSets(meta))[serie] || 0;
+    (cambiarMarca("aj", (ajustes) => {
+      ajustes = ajustes || {};
+      let delGrupo = ajustes[grupo] || {},
+        actual = delGrupo[serie] !== void 0 ? delGrupo[serie] : base;
+      return {
+        ...ajustes,
+        [grupo]: { ...delGrupo, [serie]: Math.max(0, delta ? actual + delta : reps) },
+      };
+    }),
+      sdcVib(6));
   }
   function sdcCelebra() {
     (sdcBeep(523, 120),
@@ -645,25 +653,36 @@ function App({ player, setPlayer, initialNotices }) {
       setTimeout(() => sdcBeep(784, 240), 240),
       sdcVib([30, 40, 70]));
   }
-  function sdcMarcaOk(ser, ajustes, mok) {
+  // Las marcas de la sesion (ser: las series, aj: los ajustes, mok: el modificador
+  // reclamado) se cambian de a un campo y siempre con una funcion sobre el ultimo
+  // valor, en la pantalla y en la partida a la vez. Antes cada toque reescribia las
+  // tres desde la copia de su render, y dos toques antes de redibujar se pisaban.
+  function cambiarMarca(campo, cambio) {
+    ({ ser: sdcSetSer, aj: sdcSetAjuste, mok: sdcSetModOk })[campo](cambio);
     setPlayer(function (previa) {
       var partida = clonar(previa);
       if (partida.today) {
         var clave = sdcMarcaK(modalidad, modo);
         partida.today.marcas || (partida.today.marcas = {});
-        var anterior = partida.today.marcas[clave] || {};
-        partida.today.marcas[clave] = { ser: ser, aj: ajustes, mok: !!mok, kg: anterior.kg };
+        var marca = { ser: sdcSer, aj: sdcAjuste, mok: sdcModOk, ...partida.today.marcas[clave] };
+        partida.today.marcas[clave] = { ...marca, [campo]: cambio(marca[campo]) };
       }
       return partida;
     });
   }
+  function sdcMarcarMod(valor) {
+    cambiarMarca("mok", () => !!valor);
+  }
   // Marca o desmarca una sola serie; las demás quedan como estaban.
   function sdcSerie(grupo, serie, marcar) {
-    let marcadas = sdcMarcadas(sdcSer[grupo], sdcNSets(metaSesion[grupo] || 0));
-    if (marcadas[serie] === marcar) return;
-    marcadas[serie] = marcar;
-    let nuevo = { ...sdcSer, [grupo]: marcadas };
-    (sdcSetSer(nuevo), sdcMarcaOk(nuevo, sdcAjuste, sdcModOk));
+    let n = sdcNSets(metaSesion[grupo] || 0);
+    if (sdcMarcadas(sdcSer[grupo], n)[serie] === marcar) return;
+    cambiarMarca("ser", (ser) => {
+      ser = ser || {};
+      let marcadas = sdcMarcadas(ser[grupo], n);
+      marcadas[serie] = marcar;
+      return { ...ser, [grupo]: marcadas };
+    });
     if (marcar) {
       let ganadas = sdcRepsSerie(grupo, serie);
       (sdcBeep(660, 80),
@@ -680,42 +699,44 @@ function App({ player, setPlayer, initialNotices }) {
   function sdcGolpe() {
     (setCombVentana(!1), aplicar((partida) => golpear(partida)), sdcSetCombSer({}));
   }
-  function sdcCombTocar(fase, marcadas) {
-    let antes = sdcCombSer[fase] || 0;
-    sdcSetCombSer((previo) => ({ ...previo, [fase]: marcadas }));
-    marcadas > antes
-      ? (sdcBeep(700, 70), setTimeout(() => sdcBeep(920, 100), 75), sdcVib(16))
-      : sdcVib(6);
+  // Como en la rutina: cada serie del combate se marca y se desmarca sola.
+  function sdcCombTocar(fase, serie, nSeries, marcar) {
+    sdcSetCombSer((previo) => {
+      let marcadas = sdcMarcadas(previo[fase], nSeries);
+      marcadas[serie] = marcar;
+      return { ...previo, [fase]: marcadas };
+    });
+    marcar ? (sdcBeep(700, 70), setTimeout(() => sdcBeep(920, 100), 75), sdcVib(16)) : sdcVib(6);
   }
   function sdcCombChips(fase, reps) {
     let nSeries = sdcNSets(reps),
       partes = sdcSplit(reps, nSeries),
-      marcadas = sdcCombSer[fase] || 0;
+      marcadas = sdcMarcadas(sdcCombSer[fase], nSeries);
     return (
       <div className="flex gap-2">
         {partes.map((repsSerie, i) => (
           <button
             key={i}
-            onClick={() => sdcCombTocar(fase, marcadas === i + 1 ? i : i + 1)}
+            onClick={() => sdcCombTocar(fase, i, nSeries, !marcadas[i])}
             className="sdc-chip flex-1 py-3"
             aria-label={
               "Combate, serie " +
               (i + 1) +
               " de " +
               nSeries +
-              (i < marcadas ? ", hecha" : ", pendiente")
+              (marcadas[i] ? ", hecha" : ", pendiente")
             }
             style={{
-              background: i < marcadas ? "#ff5c7a" : "rgba(255,255,255,0.04)",
-              border: "1px solid " + (i < marcadas ? "#ff5c7a" : "rgba(255,255,255,0.18)"),
-              color: i < marcadas ? "#0a0e1a" : "#8a93ad",
+              background: marcadas[i] ? "#ff5c7a" : "rgba(255,255,255,0.04)",
+              border: "1px solid " + (marcadas[i] ? "#ff5c7a" : "rgba(255,255,255,0.18)"),
+              color: marcadas[i] ? "#0a0e1a" : "#8a93ad",
               fontFamily: "Chakra Petch, sans-serif",
               fontSize: 16,
               fontWeight: 700,
               minHeight: 48,
             }}
           >
-            {i < marcadas ? "✓ " + repsSerie : repsSerie}
+            {marcadas[i] ? "✓ " + repsSerie : repsSerie}
           </button>
         ))}
       </div>
@@ -736,14 +757,11 @@ function App({ player, setPlayer, initialNotices }) {
         back: todas("back"),
         abs: todas("abs"),
       };
-    (sdcSetSer(tod),
-      sdcMarcaOk(tod, sdcAjuste, sdcModOk),
-      sdcCelebra(),
-      sdcSetFlota({ n: ganadas, id: Date.now() }));
+    (cambiarMarca("ser", () => tod), sdcCelebra(), sdcSetFlota({ n: ganadas, id: Date.now() }));
   }
   function sdcDesmarcarTodo() {
     let ninguna = { squat: [], pushup: [], back: [], abs: [] };
-    (sdcSetSer(ninguna), sdcMarcaOk(ninguna, sdcAjuste, sdcModOk), setDescansando(!1), sdcVib(8));
+    (cambiarMarca("ser", () => ninguna), setDescansando(!1), sdcVib(8));
   }
   function sdcKgVer(grupo, serie) {
     var escritos = sdcKgS[grupo] || {},
@@ -1846,14 +1864,13 @@ function App({ player, setPlayer, initialNotices }) {
               sdcKgSet,
               sdcKgUsar,
               sdcKgVer,
-              sdcMarcaOk,
+              sdcMarcarMod,
               sdcMarcarTodo,
               sdcDesmarcarTodo,
               sdcModOk,
               sdcSer,
               sdcSerie,
               sdcSetConfDesc,
-              sdcSetModOk,
               sdcTotalMeta,
               setConfirmarDeshacer,
               setDescansando,

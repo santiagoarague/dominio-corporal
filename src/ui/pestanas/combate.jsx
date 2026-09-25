@@ -13,7 +13,7 @@ import {
   segundosVentana,
   repsCombateSuave,
 } from "../../logica/combate.js";
-import { sdcNSets } from "../../logica/series.js";
+import { sdcMarcadas, sdcNSets } from "../../logica/series.js";
 import { BarraXp, Tarjeta } from "../base.jsx";
 import { IconoUbicacion, IconoCorazon, IconoTrofeo } from "../iconos.jsx";
 
@@ -394,7 +394,9 @@ export function PestanaCombate({
                       ),
                     ),
                   ],
-              listo = fases.every((reps, i) => (sdcCombSer[i] || 0) >= sdcNSets(reps));
+              listo = fases.every((reps, i) =>
+                sdcMarcadas(sdcCombSer[i], sdcNSets(reps)).every(Boolean),
+              );
             return (
               <>
                 {fases.map((reps, i) => (

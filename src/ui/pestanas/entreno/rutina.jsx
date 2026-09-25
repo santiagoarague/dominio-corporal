@@ -48,14 +48,13 @@ export function TarjetaRutina({
   sdcKgSet,
   sdcKgUsar,
   sdcKgVer,
-  sdcMarcaOk,
+  sdcMarcarMod,
   sdcMarcarTodo,
   sdcDesmarcarTodo,
   sdcModOk,
   sdcSer,
   sdcSerie,
   sdcSetConfDesc,
-  sdcSetModOk,
   sdcTotalHechas,
   sdcTotalMeta,
   setConfirmarDeshacer,
@@ -313,8 +312,7 @@ export function TarjetaRutina({
             </div>
             <button
               onClick={() => {
-                let pendiente = !sdcModOk;
-                (sdcSetModOk(pendiente), sdcMarcaOk(sdcSer, sdcAjuste, pendiente));
+                sdcMarcarMod(!sdcModOk);
               }}
               className="w-full py-2 text-xs mt-2"
               style={{
@@ -413,7 +411,7 @@ export function TarjetaRutina({
         onSerie={(serie, marcar) => sdcSerie("squat", serie, marcar)}
         accent={colorDelRango}
         aj={sdcAjuste.squat}
-        onAj={(serie, reps) => sdcAjustar("squat", serie, reps)}
+        onAj={(serie, reps, delta) => sdcAjustar("squat", serie, reps, delta)}
         {...sostenDe("squat")}
       />
       <FilaEjercicio
@@ -443,7 +441,7 @@ export function TarjetaRutina({
         onSerie={(serie, marcar) => sdcSerie("pushup", serie, marcar)}
         accent={colorDelRango}
         aj={sdcAjuste.pushup}
-        onAj={(serie, reps) => sdcAjustar("pushup", serie, reps)}
+        onAj={(serie, reps, delta) => sdcAjustar("pushup", serie, reps, delta)}
         {...sostenDe("pushup")}
       />
       <FilaEjercicio
@@ -473,7 +471,7 @@ export function TarjetaRutina({
         onSerie={(serie, marcar) => sdcSerie("back", serie, marcar)}
         accent={colorDelRango}
         aj={sdcAjuste.back}
-        onAj={(serie, reps) => sdcAjustar("back", serie, reps)}
+        onAj={(serie, reps, delta) => sdcAjustar("back", serie, reps, delta)}
         {...sostenDe("back")}
       />
       <FilaEjercicio
@@ -501,7 +499,7 @@ export function TarjetaRutina({
         onSerie={(serie, marcar) => sdcSerie("abs", serie, marcar)}
         accent={colorDelRango}
         aj={sdcAjuste.abs}
-        onAj={(serie, reps) => sdcAjustar("abs", serie, reps)}
+        onAj={(serie, reps, delta) => sdcAjustar("abs", serie, reps, delta)}
         {...sostenDe("abs")}
       />
       <button

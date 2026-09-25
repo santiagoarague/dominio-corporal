@@ -457,7 +457,7 @@ var guia = [
           cue: "Dedos de las manos hacia los pies o hacia fuera, lo que respete tu hombro.",
         },
         {
-          name: "Underswitch lento",
+          name: "Cambio por debajo, lento",
           how: "Desde la bestia, pasa una pierna por debajo y gira hasta el cangrejo. Para y vuelve.",
           cue: "La cadera no toca el suelo en ningún momento.",
         },

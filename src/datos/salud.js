@@ -321,8 +321,8 @@ var senalesReaccion = [
     "Bestia",
     "Cangrejo",
     "Escorpión",
-    "Underswitch",
-    "Kickthrough",
+    "Cambio por debajo",
+    "Patada cruzada",
     "Sentadilla",
     "Plancha",
     "Salto",
@@ -330,9 +330,9 @@ var senalesReaccion = [
   sostenesDual = [
     "Plancha frontal",
     "Sentadilla en pared",
-    "Beast hold",
+    "A cuatro patas con las rodillas flotando",
     "Plancha lateral",
-    "Hollow hold",
+    "Boca arriba con hombros y piernas despegados",
   ],
   tareasMentales = [
     "Cuenta hacia atrás de 7 en 7 desde 300, en voz alta",
