@@ -430,184 +430,213 @@ function misRevisar(e, notas) {
   }
   return e;
 }
-function registrarRutina(e, a, l, mok, gvol) {
-  let n = {
-      records: clonar(e.records || {}),
-      lastTrained: clonar(e.lastTrained || {}),
-      bestLiftKg: clonar(e.bestLiftKg || {}),
-      volume: e.lifetimeVolumeKg || 0,
-      today: clonar(e.today),
-      history: e.history[e.today.date] || null,
-      dayLog: e.dayLog && e.dayLog[e.today.date] ? clonar(e.dayLog[e.today.date]) : null,
-      streakBest: e.streak.best,
-      streakMissed: e.streak.missed,
-      lastFullDate: e.lastFullDate,
-      zDemoted: e.zDemoted,
-      maxComeback: e.maxComebackStreak,
-      pdBefore: e.dominion.points,
-      hadSession: (e.week.sessionDates || []).includes(e.today.date),
+function registrarRutina(original, modo, repsSesion, modificadorOk, gvol) {
+  let snap = {
+      records: clonar(original.records || {}),
+      lastTrained: clonar(original.lastTrained || {}),
+      bestLiftKg: clonar(original.bestLiftKg || {}),
+      volume: original.lifetimeVolumeKg || 0,
+      today: clonar(original.today),
+      history: original.history[original.today.date] || null,
+      dayLog:
+        original.dayLog && original.dayLog[original.today.date]
+          ? clonar(original.dayLog[original.today.date])
+          : null,
+      streakBest: original.streak.best,
+      streakMissed: original.streak.missed,
+      lastFullDate: original.lastFullDate,
+      zDemoted: original.zDemoted,
+      maxComeback: original.maxComebackStreak,
+      pdBefore: original.dominion.points,
+      hadSession: (original.week.sessionDates || []).includes(original.today.date),
     },
-    o = clonar(e),
-    s = [],
-    u = metaDelDia(o),
-    c = u.squat + u.pushup + u.back + u.abs,
-    r = l.squat + l.pushup + (l.back || 0) + l.abs,
-    p = c > 0 ? r / c : 0,
-    v = r;
+    partida = clonar(original),
+    avisos = [],
+    metaHoy = metaDelDia(partida),
+    metaTotal = metaHoy.squat + metaHoy.pushup + metaHoy.back + metaHoy.abs,
+    repsTotal = repsSesion.squat + repsSesion.pushup + (repsSesion.back || 0) + repsSesion.abs,
+    pct = metaTotal > 0 ? repsTotal / metaTotal : 0,
+    xp = repsTotal;
   // En gimnasio las reps ya no suben con el rango (volumen), asi que cada rep vale
   // segun el rango y el ejercicio (sdcGymXp): una rutina completa paga lo mismo que
   // cuando subian.
-  modalidadDelDia(o.profile, o.today.date, o.today.modality) === "gym" &&
-    (v = Math.round(
+  modalidadDelDia(partida.profile, partida.today.date, partida.today.modality) === "gym" &&
+    (xp = Math.round(
       ["squat", "pushup", "back", "abs"].reduce(
-        (t, b) => t + (l[b] || 0) * sdcGymXp(b, o.progress.rank),
+        (suma, grupo) => suma + (repsSesion[grupo] || 0) * sdcGymXp(grupo, partida.progress.rank),
         0,
       ),
     ));
-  let sdcPRb = [];
-  if (modalidadDelDia(o.profile, o.today.date, o.today.modality) === "gym")
-    for (let b of ["squat", "pushup", "back", "abs"]) {
-      let gb = gvol && gvol[b],
-        h = gb && gb.max > 0 ? gb.max : (o.gymWeights && o.gymWeights[b]) || 0,
-        C = l[b] || 0,
-        vv = gb && gb.vol > 0 ? gb.vol : h * C;
-      if (h > 0 && vv > 0) {
-        o.lifetimeVolumeKg = Math.round((o.lifetimeVolumeKg || 0) + vv);
-        h > (o.bestLiftKg[b] || 0) && (o.bestLiftKg[b] = h);
-        let nm = gb && gb.nom;
-        if (nm) {
-          o.gymUlt || (o.gymUlt = {});
-          let pr = (o.gymUlt[nm] && o.gymUlt[nm].best) || 0;
-          h > pr && pr > 0 && sdcPRb.push({ nom: nm, kg: h, pv: pr });
-          o.gymUlt[nm] = {
-            kgs: gb.kgs,
-            fecha: o.today.date,
-            best: Math.max(pr, h),
-            pct: u[b] > 0 ? Math.min(1.5, C / u[b]) : 1,
+  let marcasCarga = [];
+  if (modalidadDelDia(partida.profile, partida.today.date, partida.today.modality) === "gym")
+    for (let grupo of ["squat", "pushup", "back", "abs"]) {
+      let gv = gvol && gvol[grupo],
+        kgMax = gv && gv.max > 0 ? gv.max : (partida.gymWeights && partida.gymWeights[grupo]) || 0,
+        repsGrupo = repsSesion[grupo] || 0,
+        volKg = gv && gv.vol > 0 ? gv.vol : kgMax * repsGrupo;
+      if (kgMax > 0 && volKg > 0) {
+        partida.lifetimeVolumeKg = Math.round((partida.lifetimeVolumeKg || 0) + volKg);
+        kgMax > (partida.bestLiftKg[grupo] || 0) && (partida.bestLiftKg[grupo] = kgMax);
+        let nombre = gv && gv.nom;
+        if (nombre) {
+          partida.gymUlt || (partida.gymUlt = {});
+          let mejorKg = (partida.gymUlt[nombre] && partida.gymUlt[nombre].best) || 0;
+          kgMax > mejorKg &&
+            mejorKg > 0 &&
+            marcasCarga.push({ nom: nombre, kg: kgMax, pv: mejorKg });
+          partida.gymUlt[nombre] = {
+            kgs: gv.kgs,
+            fecha: partida.today.date,
+            best: Math.max(mejorKg, kgMax),
+            pct: metaHoy[grupo] > 0 ? Math.min(1.5, repsGrupo / metaHoy[grupo]) : 1,
           };
         }
       }
     }
-  let y = 0;
-  for (let b of ["squat", "pushup", "back", "abs"]) {
-    let h = l[b] || 0;
-    ((o.lifetimeReps[b] += h),
-      (o.week.reps[b] = (o.week.reps[b] || 0) + h),
-      o.month && (o.month.reps[b] = (o.month.reps[b] || 0) + h),
-      h > 0 && (o.lastTrained[b] = o.today.date),
-      h >= u[b] && (y += 1));
+  for (let grupo of ["squat", "pushup", "back", "abs"]) {
+    let hechas = repsSesion[grupo] || 0;
+    ((partida.lifetimeReps[grupo] += hechas),
+      (partida.week.reps[grupo] = (partida.week.reps[grupo] || 0) + hechas),
+      partida.month && (partida.month.reps[grupo] = (partida.month.reps[grupo] || 0) + hechas),
+      hechas > 0 && (partida.lastTrained[grupo] = partida.today.date));
   }
-  let sdcPR = !1;
-  for (let b of ["squat", "pushup", "back", "abs"]) {
-    let h = l[b] || 0;
-    h > (o.records[b] || 0) && ((o.records[b] = h), (o.lifetimeReps[b] || 0) > h && (sdcPR = !0));
+  let hayRecord = !1;
+  for (let grupo of ["squat", "pushup", "back", "abs"]) {
+    let hechas = repsSesion[grupo] || 0;
+    hechas > (partida.records[grupo] || 0) &&
+      ((partida.records[grupo] = hechas),
+      (partida.lifetimeReps[grupo] || 0) > hechas && (hayRecord = !0));
   }
   (() => {
-    let pd = (o.today.doneModalities || []).length > 0 ? 0 : p >= 1 ? 3 : p >= 0.5 ? 1 : 0;
-    pd > 0 && ((o.dominion.points += pd), s.push(`+${pd} Puntos de Dominio.`));
+    let pd =
+      (partida.today.doneModalities || []).length > 0 ? 0 : pct >= 1 ? 3 : pct >= 0.5 ? 1 : 0;
+    pd > 0 && ((partida.dominion.points += pd), avisos.push(`+${pd} Puntos de Dominio.`));
   })();
-  let nSes = (o.today.doneModalities || []).length;
-  let yaFull = o.history[o.today.date] === "full";
+  let sesionesPrevias = (partida.today.doneModalities || []).length;
+  let yaFull = partida.history[partida.today.date] === "full";
   // El bono por rutina completa es igual para los tres enfoques: si se
   // multiplicaba por el xpMult, fuerza (1.5) cobraba ~20% mas que salud por
   // menos reps cuando la meta es chica.
-  let sdcBono = p >= 1 ? 30 : 0;
-  if (p >= 1)
-    ((v += 30),
-      (o = anotarDia(o, "Rutina completa")),
+  let bono = pct >= 1 ? 30 : 0;
+  if (pct >= 1)
+    ((xp += 30),
+      (partida = anotarDia(partida, "Rutina completa")),
       yaFull ||
-        ((o.history[o.today.date] = "full"),
-        (o.lastFullDate = o.today.date),
-        (o.week.fullDays = (o.week.fullDays || 0) + 1)),
-      o.zDemoted &&
-        ((o.zDemoted = !1),
-        (o.progress.rank = "Z"),
-        s.push("Volviste al último rango. Las metas vuelven a salir de tus récords.")),
-      s.push(
+        ((partida.history[partida.today.date] = "full"),
+        (partida.lastFullDate = partida.today.date),
+        (partida.week.fullDays = (partida.week.fullDays || 0) + 1)),
+      partida.zDemoted &&
+        ((partida.zDemoted = !1),
+        (partida.progress.rank = "Z"),
+        avisos.push("Volviste al último rango. Las metas vuelven a salir de tus récords.")),
+      avisos.push(
         "¡Rutina completa! +30 XP de bono por constancia. Hoy es un día perfecto: si tenés un Umbral pendiente, podés cruzarlo.",
       ));
-  else if (p >= 0.5)
-    ((o = anotarDia(o, "Rutina parcial")),
-      yaFull || (o.history[o.today.date] = "partial"),
-      s.push("Rutina parcial registrada. Sin bono de constancia, sin penalización."));
-  else if (nSes > 0) s.push("Sesión extra demasiado corta. Sin bono, sin penalización.");
+  else if (pct >= 0.5)
+    ((partida = anotarDia(partida, "Rutina parcial")),
+      yaFull || (partida.history[partida.today.date] = "partial"),
+      avisos.push("Rutina parcial registrada. Sin bono de constancia, sin penalización."));
+  else if (sesionesPrevias > 0)
+    avisos.push("Sesión extra demasiado corta. Sin bono, sin penalización.");
   else {
-    ((o.streak.missed += 1), (o.streak.current = 0), (o.history[o.today.date] = "missed"));
-    (s.push(
-      `Sesión corta (${Math.round(p * 100)}%). Conservas tu XP, pero la racha vuelve a empezar.`,
+    ((partida.streak.missed += 1),
+      (partida.streak.current = 0),
+      (partida.history[partida.today.date] = "missed"));
+    (avisos.push(
+      `Sesión corta (${Math.round(pct * 100)}%). Conservas tu XP, pero la racha vuelve a empezar.`,
     ),
-      s.push(fraseMascota(frasesDiaDificil, o.today.date, o.profile.pet && o.profile.pet.name)));
+      avisos.push(
+        fraseMascota(
+          frasesDiaDificil,
+          partida.today.date,
+          partida.profile.pet && partida.profile.pet.name,
+        ),
+      ));
   }
-  ((v = Math.round((v - sdcBono) * multEnfoque(o)) + sdcBono),
-    (v = Math.round(v * sdcRacha(o))),
-    (v = Math.round(v * sdcPerk(o))),
+  ((xp = Math.round((xp - bono) * multEnfoque(partida)) + bono),
+    (xp = Math.round(xp * sdcRacha(partida))),
+    (xp = Math.round(xp * sdcPerk(partida))),
     (() => {
-      if (!mok) return;
-      let mm = sdcModDia(modalidadDelDia(o.profile, o.today.date, o.today.modality), o.today.date);
-      mm &&
-        ((v = Math.round(v * (1 + mm.x))),
-        s.push(`Modificador ${mm.n}: +${Math.round(mm.x * 100)}% XP.`));
+      if (!modificadorOk) return;
+      let modDia = sdcModDia(
+        modalidadDelDia(partida.profile, partida.today.date, partida.today.modality),
+        partida.today.date,
+      );
+      modDia &&
+        ((xp = Math.round(xp * (1 + modDia.x))),
+        avisos.push(`Modificador ${modDia.n}: +${Math.round(modDia.x * 100)}% XP.`));
     })(),
     (() => {
-      let d = (o.streak && o.streak.current) || 0;
-      d >= 3 &&
-        s.push(
-          `Racha de ${d} ${d === 1 ? "día" : "días"}: +${Math.round((sdcRacha(o) - 1) * 100)}% XP.`,
+      let racha = (partida.streak && partida.streak.current) || 0;
+      racha >= 3 &&
+        avisos.push(
+          `Racha de ${racha} ${racha === 1 ? "día" : "días"}: +${Math.round((sdcRacha(partida) - 1) * 100)}% XP.`,
         );
     })(),
-    o.streak.flexBuff && (v = Math.round(v * 1.1)),
-    (v = Math.round(v * multImpulso(o))),
-    nSes > 0 &&
-      ((v = Math.round(v * (1 + 0.25 * nSes))),
-      s.push(`Bono por combinar estilos: +${25 * nSes}% XP.`)),
+    partida.streak.flexBuff && (xp = Math.round(xp * 1.1)),
+    (xp = Math.round(xp * multImpulso(partida))),
+    sesionesPrevias > 0 &&
+      ((xp = Math.round(xp * (1 + 0.25 * sesionesPrevias))),
+      avisos.push(`Bono por combinar estilos: +${25 * sesionesPrevias}% XP.`)),
     (() => {
-      if (!sdcPRb.length) return;
-      let bn = 25 * sdcPRb.length;
-      v += bn;
-      let dt = sdcPRb.map((x) => x.nom + " " + x.pv + " → " + x.kg + " kg").join(" · ");
-      s.push(`+${bn} XP: nueva marca de carga. ${dt}`);
+      if (!marcasCarga.length) return;
+      let xpMarcas = 25 * marcasCarga.length;
+      xp += xpMarcas;
+      let detalle = marcasCarga
+        .map((marca) => marca.nom + " " + marca.pv + " → " + marca.kg + " kg")
+        .join(" · ");
+      avisos.push(`+${xpMarcas} XP: nueva marca de carga. ${detalle}`);
     })(),
-    (o.progress.currentXP += v),
-    (o = subirNiveles(o, s)),
-    (o.today.completed = !0),
-    (o.today.doneModalities = [...(o.today.doneModalities || [])]),
-    ((md) => {
-      (o.today.doneModalities.includes(md) || o.today.doneModalities.push(md),
-        o.lifetimeModalities || (o.lifetimeModalities = { bodyweight: 0, gym: 0, flow: 0 }),
-        (o.lifetimeModalities[md] = (o.lifetimeModalities[md] || 0) + 1),
-        o.week.modalities && (o.week.modalities[md] = (o.week.modalities[md] || 0) + 1),
-        o.month && (o.month.modalities[md] = (o.month.modalities[md] || 0) + 1));
-    })(modalidadDelDia(o.profile, o.today.date, o.today.modality)),
-    (o.today.mode = a),
-    (o.today.reps = l),
-    (o.today.fullCompletion = p >= 1),
-    (o.today.rank = o.progress.rank),
-    (o.today.xpEarned = (o.today.xpEarned || 0) + v),
-    (o.week.xp = (o.week.xp || 0) + v),
-    p >= 0.5 && s.push(sdcMascota(o, p, sdcPR)),
-    o.dayLog[o.today.date] &&
-      ((o.dayLog[o.today.date].reps = ((pr) => ({
-        squat: (pr.squat || 0) + (l.squat || 0),
-        pushup: (pr.pushup || 0) + (l.pushup || 0),
-        back: (pr.back || 0) + (l.back || 0),
-        abs: (pr.abs || 0) + (l.abs || 0),
-      }))(o.dayLog[o.today.date].reps || {})),
-      (o.dayLog[o.today.date].xp = (o.dayLog[o.today.date].xp || 0) + v)));
-  ((o = misRevisar(o, s)), (o = subirNiveles(o, s)));
-  let E = revisarLogros(o),
-    T = { state: E.state, notices: [...s, ...E.notices] },
-    A = avisoCarga(T.state),
-    g = A.state;
+    (partida.progress.currentXP += xp),
+    (partida = subirNiveles(partida, avisos)),
+    (partida.today.completed = !0),
+    (partida.today.doneModalities = [...(partida.today.doneModalities || [])]),
+    ((modalidad) => {
+      (partida.today.doneModalities.includes(modalidad) ||
+        partida.today.doneModalities.push(modalidad),
+        partida.lifetimeModalities ||
+          (partida.lifetimeModalities = { bodyweight: 0, gym: 0, flow: 0 }),
+        (partida.lifetimeModalities[modalidad] = (partida.lifetimeModalities[modalidad] || 0) + 1),
+        partida.week.modalities &&
+          (partida.week.modalities[modalidad] = (partida.week.modalities[modalidad] || 0) + 1),
+        partida.month &&
+          (partida.month.modalities[modalidad] = (partida.month.modalities[modalidad] || 0) + 1));
+    })(modalidadDelDia(partida.profile, partida.today.date, partida.today.modality)),
+    (partida.today.mode = modo),
+    (partida.today.reps = repsSesion),
+    (partida.today.fullCompletion = pct >= 1),
+    (partida.today.rank = partida.progress.rank),
+    (partida.today.xpEarned = (partida.today.xpEarned || 0) + xp),
+    (partida.week.xp = (partida.week.xp || 0) + xp),
+    pct >= 0.5 && avisos.push(sdcMascota(partida, pct, hayRecord)),
+    partida.dayLog[partida.today.date] &&
+      ((partida.dayLog[partida.today.date].reps = ((previas) => ({
+        squat: (previas.squat || 0) + (repsSesion.squat || 0),
+        pushup: (previas.pushup || 0) + (repsSesion.pushup || 0),
+        back: (previas.back || 0) + (repsSesion.back || 0),
+        abs: (previas.abs || 0) + (repsSesion.abs || 0),
+      }))(partida.dayLog[partida.today.date].reps || {})),
+      (partida.dayLog[partida.today.date].xp = (partida.dayLog[partida.today.date].xp || 0) + xp)));
+  ((partida = misRevisar(partida, avisos)), (partida = subirNiveles(partida, avisos)));
+  let conLogros = revisarLogros(partida),
+    conAvisos = { state: conLogros.state, notices: [...avisos, ...conLogros.notices] },
+    conCarga = avisoCarga(conAvisos.state),
+    final = conCarga.state;
   return (
-    (g.undoSnapshot = {
-      date: g.today.date,
-      snap: n,
-      xp: v,
-      pd: g.dominion.points - n.pdBefore,
-      reps: { squat: l.squat || 0, pushup: l.pushup || 0, back: l.back || 0, abs: l.abs || 0 },
-      fullDay: p >= 1,
+    (final.undoSnapshot = {
+      date: final.today.date,
+      snap: snap,
+      xp: xp,
+      pd: final.dominion.points - snap.pdBefore,
+      reps: {
+        squat: repsSesion.squat || 0,
+        pushup: repsSesion.pushup || 0,
+        back: repsSesion.back || 0,
+        abs: repsSesion.abs || 0,
+      },
+      fullDay: pct >= 1,
     }),
-    { state: g, notices: [...T.notices, ...A.notices] }
+    { state: final, notices: [...conAvisos.notices, ...conCarga.notices] }
   );
 }
 function deshacerRegistroBase(e) {
