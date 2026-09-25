@@ -16,7 +16,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 |---|---|
 | `src/datos/` | tables: `ejercicios.js` (`ejerciciosPeso`, `ejerciciosGym`, `ejerciciosFlow`, `factorRango`, `modalidades`), `logros.js` (`logros` and `revisarLogros`), `guia.js` (`guia`, skills `habilidades`), `salud.js` (`alarmas`, `reglaDolor`, `cuidadoArticular`, neuromotor), `rangos.js` (`rangos`, `nivelUmbral`, titles) |
 | `src/logica/` | rules without UI: `partida.js` (`crearPartida`, `cargarPartida`, `registrarRutina`, `subirNiveles`, undo, missions, Umbral), `rutina.js` (`modalidadDelDia`, `ejercicioDe`, `volumen`, `metaDelDia`, `costoNivel`, dates), `extras.js` (primeras veces, streak recount, set marks, gym helpers, `sdcTier`), `tienda.js`, `estiramiento.js`, `combate.js`, `explorar.js`, `primal.js` (also `hashDia`, the day hash), `sistemas.js`, `series.js`, `atributos.js`, `respaldo.js` |
-| `src/ui/` | JSX components: `App.jsx` (`App`: state, effects, handlers and what surrounds the tabs — header, notices, shop, guide, tab bar; 2.080 lines), `pestanas/` (one file per tab: `entreno.jsx` `PestanaEntreno` — its six big cards in `pestanas/entreno/`: `rutina.jsx` `TarjetaRutina`, `estiramiento.jsx`, `constancia.jsx`, `cuerpo.jsx`, `travesia.jsx`, `umbral.jsx` — `combate.jsx`, `primal.jsx`, `explorar.jsx`, `logros.jsx`, `perfil.jsx`, plus `pruebas.jsx` `PanelPruebas`), `Inicio.jsx` (`Inicio`, onboarding), `Raiz.jsx` (`Raiz`), and one file per piece: `ejercicio.jsx` (`FilaEjercicio`), `cuerpo.jsx` (`FiguraCuerpo`), `constancia.jsx`, `calentamiento.jsx` (also `PasoGuiado`, shared with stretching), `animo.jsx`, `tarjetas.jsx` (`Plegable`), `metronomo.jsx`, `descanso.jsx`, `prueba.jsx` (also `pitido`, the beep), `neuromotor.jsx`, `iconos.jsx`; `pantalla.js` (wake lock) has no markup |
+| `src/ui/` | JSX components: `App.jsx` (`App`: state, effects, handlers and what surrounds the tabs — header, notices, shop, guide, tab bar; 2.066 lines), `pestanas/` (one file per tab: `entreno.jsx` `PestanaEntreno` — its six big cards in `pestanas/entreno/`: `rutina.jsx` `TarjetaRutina`, `estiramiento.jsx`, `constancia.jsx`, `cuerpo.jsx`, `travesia.jsx`, `umbral.jsx` — `combate.jsx`, `primal.jsx`, `explorar.jsx`, `logros.jsx`, `perfil.jsx`, plus `pruebas.jsx` `PanelPruebas`), `Inicio.jsx` (`Inicio`, onboarding), `Raiz.jsx` (`Raiz`), and one file per piece: `ejercicio.jsx` (`FilaEjercicio`), `cuerpo.jsx` (`FiguraCuerpo`), `constancia.jsx`, `calentamiento.jsx` (also `PasoGuiado`, shared with stretching), `animo.jsx`, `tarjetas.jsx` (`Plegable`), `metronomo.jsx`, `descanso.jsx`, `prueba.jsx` (also `pitido`, the beep), `neuromotor.jsx`, `iconos.jsx`; `pantalla.js` (wake lock) has no markup |
 | `src/juego.js` | re-exports every module, so tests can `import * as J from "../src/juego.js"` |
 | `src/main.js` | mounts `Raiz` and registers the service worker in production |
 | `index.html` | the Vite entry: the head `<style>` (fonts and the utility classes), the splash, `storage.js`, the service-worker registration |
@@ -27,7 +27,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Commands:** `npm install` · `npm run dev` (5173, hot reload) · `npm test` · `npm run build` → `dist/` · `npm run preview` (4173) · `npm run test:e2e` · `npm run lint` · `npm run format`. The Vite warnings about `./fuentes/*.woff2` and `storage.js` are expected: they stay runtime paths into `public/`.
 
-**Run `npm run lint` and `npm test` before every commit that touches `src/`.** About 100 cases in 3 s, with the clock pinned to a Thursday in Buenos Aires time: the XP curve, the first level-up for every classification × focus × modality × test result, the Umbral gate, no-penalty sessions, multi-session bookkeeping, undo, the retro-logged day, save loading and migration, dates, sets, the metronome modifiers, notice tiering *using the notices `registrarRutina` really emits*, the exact duration of every XP buff, and what every metronome and Primal sound is (`tests/sonidos.test.js`, against a fake `AudioContext`). The deploy runs the linter and the tests and publishes nothing if either fails. `npm run test:e2e` builds, serves `dist/` on 4180 and, in the installed Edge (`channel: "msedge"`, no browser download), plays the new-player path with undo, the mood correction and an offline reload, and in `e2e/sonidos.spec.js` listens to the metronome and a whole Primal round through a fake `AudioContext` that logs each tone against `page.clock`. **When you change a rule, change its test in the same commit** — a test that no longer describes the game is worse than none.
+**Run `npm run lint` and `npm test` before every commit that touches `src/`.** 114 cases in about 3 s, with the clock pinned to a Thursday in Buenos Aires time: the XP curve, the first level-up for every classification × focus × modality × test result, the Umbral gate, no-penalty sessions, multi-session bookkeeping, undo, the retro-logged day, save loading and migration, dates, sets, the metronome modifiers, notice tiering *using the notices `registrarRutina` really emits*, the exact duration of every XP buff, and what every metronome and Primal sound is (`tests/sonidos.test.js`, against a fake `AudioContext`). The deploy runs the linter and the tests and publishes nothing if either fails. `npm run test:e2e` builds, serves `dist/` on 4180 and, in the installed Edge (`channel: "msedge"`, no browser download), plays the new-player path with undo, the mood correction and an offline reload, and in `e2e/sonidos.spec.js` listens to the metronome and a whole Primal round through a fake `AudioContext` that logs each tone against `page.clock`. **When you change a rule, change its test in the same commit** — a test that no longer describes the game is worse than none.
 
 **React is pinned to 19.2.5**, the exact version the original bundle carried. The UI is **JSX with the automatic runtime** (Vite's default for `.jsx`), and hooks are plain imports: `import { useState, useEffect } from "react"`. One element is still a `createElement` call on purpose, because its type arrives as a lowercase parameter (each tab's icon in `App`'s tab bar) and JSX would read `<m>` as an HTML tag. There were two; the other was inside `BotonSistema`, a component nothing rendered, removed with the rest of the dead code.
 
@@ -89,36 +89,36 @@ The fitness test used to run a **different** cadence (2s down, 1s up, no pause: 
 
 ### The body diagram
 
-`FiguraCuerpo({view, colors, glow, ratios, selected, onSelect})` draws the figure in "Tu cuerpo". It used to be six rounded rectangles; it is now an angular anatomical figure built from paths, but **the contract is unchanged** and must stay that way: `viewBox "0 0 200 300"`, the same four groups (`squat`, `pushup`, `back`, `abs`), and every interactive part spreading `r(group)` so it gets its fill from `colorProgreso(ratio)` â a ramp from `rgb(42,49,72)` to `#ff6b4a` â plus the white stroke when selected and `sdcPulse` at 100%.
+`FiguraCuerpo({view, colors, glow, ratios, selected, onSelect})` draws the figure in "Tu cuerpo". It used to be six rounded rectangles; it is now an angular anatomical figure built from paths, but **the contract is unchanged** and must stay that way: `viewBox "0 0 200 300"`, the same four groups (`squat`, `pushup`, `back`, `abs`), and every interactive part spreading `r(group)` so it gets its fill from `colorProgreso(ratio)` — a ramp from `rgb(42,49,72)` to `#ff6b4a` — plus the white stroke when selected and `sdcPulse` at 100%.
 
-Three local helpers keep it readable: `sdcPar(d, group)` draws a path and its mirror (`translate(200,0) scale(-1,1)`, so x becomes 200-x), `sdcSim(d, group)` draws a part that is already symmetric and must not be doubled, and `sdcIne(d, dup)` draws inert anatomy. Parts that the game does not measure separately are folded in rather than given their own colour: forearms and hands go with `pushup`, calves with `squat`, and neck, hips, knees and feet stay inert. **Do not colour a part as its own group unless the game actually tracks it** â the figure would be claiming to measure something it does not.
+Three local helpers keep it readable: `sdcPar(d, group)` draws a path and its mirror (`translate(200,0) scale(-1,1)`, so x becomes 200-x), `sdcSim(d, group)` draws a part that is already symmetric and must not be doubled, and `sdcIne(d, dup)` draws inert anatomy. Parts that the game does not measure separately are folded in rather than given their own colour: forearms and hands go with `pushup`, calves with `squat`, and neck, hips, knees and feet stay inert. **Do not colour a part as its own group unless the game actually tracks it** — the figure would be claiming to measure something it does not.
 
 ### Touch targets
 
-Measured, not guessed: the tab bar was 34 px tall and the meta steppers 32 px, both well under the 44â48 px that Android and iOS ask for. They are now `minHeight:48` and `44Ã44`. `button` also carries `touch-action:manipulation`, which drops the 300 ms double-tap-zoom delay. Still small and not yet raised, because raising them changes the visual density of every card: the collapsible headers (21 px, but full width), `ð¡ alternativa` (21 px) and the `?` in the header (22 px).
+Measured, not guessed: the tab bar was 34 px tall and the meta steppers 32 px, both well under the 44–48 px that Android and iOS ask for. They are now `minHeight:48` and `44×44`. `button` also carries `touch-action:manipulation`, which drops the 300 ms double-tap-zoom delay. Still small and not yet raised, because raising them changes the visual density of every card: the collapsible headers (21 px, but full width), `💡 alternativa` (21 px) and the `?` in the header (22 px).
 
 ### Fonts
 
-**The app makes zero network requests after it loads.** Chakra Petch (400/500/600/700) and Inter (one variable file, 100â900) live in `fuentes/` and are declared with `@font-face` at the top of the head `<style>`, latin subset only â which covers every accent and `Â¿Â¡` Spanish needs. They used to come from Google Fonts, twice: a `<link>` in `<head>` and an `@import` React injected in `Raiz`.
+**The app makes zero network requests after it loads.** Chakra Petch (400/500/600/700) and Inter (one variable file, 100–900) live in `fuentes/` and are declared with `@font-face` at the top of the head `<style>`, latin subset only — which covers every accent and `¿¡` Spanish needs. They used to come from Google Fonts, twice: a `<link>` in `<head>` and an `@import` React injected in `Raiz`.
 
 Self-hosting was not only about speed. A request to `fonts.googleapis.com` hands Google the user's IP, which a privacy policy has to declare; now `privacidad.html` can say "ninguna" and mean it. If you ever add a CDN, a web font or an analytics tag, **section 4 of `privacidad.html` becomes false** and has to be updated in the same commit.
 
 ### Styling constraint
 
-The CSS at the top of `index.html` is a small hand-written subset that *looks* like Tailwind but is not. Only the classes defined there exist â `justify-end`, for example, does **not**, and silently does nothing. Check the `<style>` block before using a utility class, or use an inline `style` object.
+The CSS at the top of `index.html` is a small hand-written subset that *looks* like Tailwind but is not. Only the classes defined there exist — `justify-end`, for example, does **not**, and silently does nothing. Check the `<style>` block before using a utility class, or use an inline `style` object.
 
 ## Running locally
 
 `npm run dev` for work, `npm run build && npm run preview` to see exactly what gets published (the service worker only exists in the build). `.claude/launch.json` has both for `preview_start`: `dominio-corporal` (5173) and `dominio-corporal-build` (4173). Node 24 is installed; Python is not (`python` is the Microsoft Store stub). `localhost` is not reachable from a phone on the LAN — to test on a real device, deploy.
 
 Testing notes that save time:
-- **15â20 s pass before the first button appears, but only ~5 s of that is the typewriter** (140 characters at 28â40 ms). The rest is parsing the ~620 KB bundle. Wait for it; do not assume a blank page is a crash.
-- Driving the app by clicking a `ref` is unreliable here: refs resolve to stale coordinates when the page scrolls between the `find` and the click, and a miss can silently hit "Usar mi dÃ­a de descanso" and burn the day. Prefer `javascript_tool` to click by text when scripting a test run.
+- **15–20 s pass before the first button appears, but only ~5 s of that is the typewriter** (140 characters at 28–40 ms). The rest is parsing the ~620 KB bundle. Wait for it; do not assume a blank page is a crash.
+- Driving the app by clicking a `ref` is unreliable here: refs resolve to stale coordinates when the page scrolls between the `find` and the click, and a miss can silently hit "Usar mi día de descanso" and burn the day. Prefer `javascript_tool` to click by text when scripting a test run.
 - `page.clock.runFor(n)` only fires timers that already exist, and every countdown here schedules its next tick after React re-renders, so one long jump advances a single step. Advance 100 ms at a time with a short real wait, as `e2e/sonidos.spec.js` does.
 - Reuse a **fresh browser tab** to read console errors. The console buffer persists across navigations, so a fixed error keeps reappearing.
 - Clear `localStorage`, unregister the service worker and delete caches between runs, otherwise you test a stale bundle.
 - "Saltar y empezar con valores por defecto" skips onboarding, but only activates the bodyweight modality.
-- `get_page_text` returns DOM order, not visual order â it will not reflect flexbox `order`. Use a screenshot.
+- `get_page_text` returns DOM order, not visual order — it will not reflect flexbox `order`. Use a screenshot.
 - The Perfil tab still has the **Panel de pruebas** for jumping ranks and forcing ascension without training, but it no longer announces itself: the entry point is a dim `v1.0` at the bottom of Perfil that opens it after **five taps** (`sdcDevN`). Sixteen destructive actions, one of them `Desbloquear todos los logros`, should not be one tap away from a curious player.
 
 ### The first paint, the first card, and the day you forgot
@@ -135,7 +135,7 @@ Three things that a distracted person feels and a developer never does, all meas
 
 ## Deploying
 
-`git push` to `main` is the deploy. `.github/workflows/publicar.yml` runs `npm ci`, `npm test` and `npm run build`, and publishes `dist/` to GitHub Pages at **https://santiagoarague.github.io/dominio-corporal/** — about two minutes after the push. **If a test fails, nothing is published** and the previous version stays online. Pages is set to *GitHub Actions* as its source (`build_type: workflow`); until the switch it served the repo root of `main` as is, which today would publish the raw Vite source and break the site, so do not switch it back without restoring a built `index.html` to the root. `gh run watch` follows a deploy; `gh workflow run publicar.yml` re-runs one.
+`git push` to `main` is the deploy. `.github/workflows/publicar.yml` runs `npm ci`, `npm run lint`, `npm test` and `npm run build`, and publishes `dist/` to GitHub Pages at **https://santiagoarague.github.io/dominio-corporal/** — about two minutes after the push. **If the linter or a test fails, nothing is published** and the previous version stays online. Pages is set to *GitHub Actions* as its source (`build_type: workflow`); until the switch it served the repo root of `main` as is, which today would publish the raw Vite source and break the site, so do not switch it back without restoring a built `index.html` to the root. `gh run watch` follows a deploy; `gh workflow run publicar.yml` re-runs one.
 
 Only `dist/` is published now, so `CLAUDE.md`, `PENDIENTES.md` and `diseno/` are no longer served to the world as they were under the old setup. The flip side: a future `.well-known/assetlinks.json` has to go in `public/`, and check that it actually reaches the site, because the Pages artifact may leave dotfiles out.
 
@@ -174,13 +174,13 @@ One plain object holds everything, deep-cloned with `clonar(e)` before mutation 
 
 ### The two functions that matter
 
-`registrarRutina(state, mode, reps)` records a completed routine: accumulates reps into lifetime/week/month, updates records and `lastTrained`, awards Dominion Points, applies the streak and history bookkeeping, computes XP, then runs `misRevisar` â `subirNiveles` â `revisarLogros` (achievements) â `avisoCarga` (training-load warning).
+`registrarRutina(state, mode, reps)` records a completed routine: accumulates reps into lifetime/week/month, updates records and `lastTrained`, awards Dominion Points, applies the streak and history bookkeeping, computes XP, then runs `misRevisar` → `subirNiveles` → `revisarLogros` (achievements) → `avisoCarga` (training-load warning).
 
-`subirNiveles(state, notices)` is the level-up loop: while `currentXP >= costoNivel(level)` it levels up; when `level >= nivelUmbral[rank]` it flags an Umbral instead. `costoNivel(e)` is the XP cost curve: `e<50 ? 45+3e : 5e-55`. The two branches used to be `45+3e` and `125+5e`, which met badly â `costoNivel(49)` was 192 and `costoNivel(50)` was **375**, a 95% jump inside one level. The second branch was rebased so the curve is continuous at 50 while keeping the steeper slope. `costoNivel(1)` is still 48, and it has to stay there. Because XP only converts to levels inside `subirNiveles`, **anything that grants XP must be followed by `subirNiveles`**, and `cargarPartida` calls it on load so curve changes apply retroactively.
+`subirNiveles(state, notices)` is the level-up loop: while `currentXP >= costoNivel(level)` it levels up; when `level >= nivelUmbral[rank]` it flags an Umbral instead. `costoNivel(e)` is the XP cost curve: `e<50 ? 45+3e : 5e-55`. The two branches used to be `45+3e` and `125+5e`, which met badly — `costoNivel(49)` was 192 and `costoNivel(50)` was **375**, a 95% jump inside one level. The second branch was rebased so the curve is continuous at 50 while keeping the steeper slope. `costoNivel(1)` is still 48, and it has to stay there. Because XP only converts to levels inside `subirNiveles`, **anything that grants XP must be followed by `subirNiveles`**, and `cargarPartida` calls it on load so curve changes apply retroactively.
 
 ### Multi-session days
 
-A day can hold one routine per modality. `today.doneModalities` lists the ones finished; the second and third sessions get +25% and +50% XP. Day-level bookkeeping â streak, `week.trained`, `week.fullDays`, `history`, the low-effort penalty and Dominion Points â must fire **only on the first session**, gated on that array being empty. `anotarDia()` is already idempotent per day for the streak, but the rest is not.
+A day can hold one routine per modality. `today.doneModalities` lists the ones finished; the second and third sessions get +25% and +50% XP. Day-level bookkeeping — streak, `week.trained`, `week.fullDays`, `history`, the low-effort penalty and Dominion Points — must fire **only on the first session**, gated on that array being empty. `anotarDia()` is already idempotent per day for the streak, but the rest is not.
 
 **`today.reps` is the *session*, `dayLog[date].reps` is the *day*, and anything showing "hoy" has to read the second one.** `registrarRutina` **assigns** `o.today.reps = l` and `mmNueva` zeroes it to open the next session, while `dayLog[date].reps` accumulates. The body map's Hoy view read `today.reps`, so after a bodyweight session followed by a flow one it showed 24 · 19 · 22 · 24 — only flow — while the very same card's XP line read 264, the sum of both. `sdcHoyReps(state)` returns the day total (`dayLog` first, `today.reps` as the fallback for a day whose log entry does not exist yet).
 
@@ -206,7 +206,7 @@ Both functions stay untouched; the fix wraps them like the other hooks. `registr
 
 ### Exercise selection
 
-Rank (`rangos` = EâZ) picks the exercise **variant**; the fitness test picks the **volume**. Tables: `ejerciciosPeso` (bodyweight), `ejerciciosGym` (gym), `ejerciciosFlow` (flow), resolved by `ejercicioDe(group, rank, modality)`, which falls back to `ejerciciosPeso` for a group a table lacks — none does any more: all three cover the four patterns at every rank. Every entry has an `alt` string, surfaced by the "ð¡ alternativa" button, which must name a real equipment-free substitute rather than a technique tip. Targets come from `metaDelDia(state)`; the four groups are always `squat`, `pushup`, `back`, `abs`
+Rank (`rangos` = E→Z) picks the exercise **variant**; the fitness test picks the **volume**. Tables: `ejerciciosPeso` (bodyweight), `ejerciciosGym` (gym), `ejerciciosFlow` (flow), resolved by `ejercicioDe(group, rank, modality)`, which falls back to `ejerciciosPeso` for a group a table lacks — none does any more: all three cover the four patterns at every rank. Every entry has an `alt` string, surfaced by the "💡 alternativa" button, which must name a real equipment-free substitute rather than a technique tip. Targets come from `metaDelDia(state)`; the four groups are always `squat`, `pushup`, `back`, `abs`
 
 **A rung can hold one exercise or several.** `ejercicioDe(group, rank, modality, date)` returns a plain entry unchanged, and picks from an array with `hashDia(date|group|rank|modality, n)` — the same hash `sdcModDia` uses. Mixed shapes coexist on purpose, so a table can be widened one modality at a time without touching the other two.
 
@@ -288,26 +288,26 @@ Coverage after the pass: `ejerciciosPeso` 39/84 alts carry an explicit way out, 
 **When adding a variant, `repFactor` is the safety valve.** It scales the prescribed reps, so a harder option at the same rung must carry a lower one — the arrow push-up at `.5` against the strict at `1`. And the `alt` still has to name a real equipment-free substitute, because the rotation means a player can land on the barbell-free day and still need somewhere to go.
 .
 
-Everyone starts at **rank E, level 1** regardless of the test. The test sets volume and calibre only, so stronger players do more work and climb faster without being handed dangerous movements. This is deliberate â do not wire the test's `rank` field (it is computed in `bandasCalibre` and intentionally discarded).
+Everyone starts at **rank E, level 1** regardless of the test. The test sets volume and calibre only, so stronger players do more work and climb faster without being handed dangerous movements. This is deliberate — do not wire the test's `rank` field (it is computed in `bandasCalibre` and intentionally discarded).
 
 ### Volume
 
-`volumen(rank, classification, focus, modality, testResults)` = `round(base Ã factorRango[rank] Ã repFactor Ã repMult[focus])`, per group. `metaDelDia(state, rank)` is the only caller that has the state, and it passes `state.profile.testResults`; `sdcUmbralPrueba` (the Umbral test) and `repsCombate`/`repsCombateSuave` (combat) pass it too so every path prescribes the same volume.
+`volumen(rank, classification, focus, modality, testResults)` = `round(base × factorRango[rank] × repFactor × repMult[focus])`, per group. `metaDelDia(state, rank)` is the only caller that has the state, and it passes `state.profile.testResults`; `sdcUmbralPrueba` (the Umbral test) and `repsCombate`/`repsCombateSuave` (combat) pass it too so every path prescribes the same volume.
 
 `base` comes from `sdcBase(testResults, classification, modality)`, and **each modality has its own model** because they are programmed differently:
 
-- **bodyweight** â derived from the player's measured maxima: `max(baseClase[classification][g], min(340, round(testMax Ã 1.15)))`. `factorRango.E` is `0.6`, so at rank E the daily total lands near 0.7Ã a single all-out set. `back` uses the measured pull result, falling back to `pushup Ã 0.85` only for saves that predate the pull test.
-- **gym / flow** â fixed tables in `sdcModBase`, ignoring the test. In the gym the variable is the load, not the reps, and the player adjusts with the `kg` field; `repMult` then lands the sets in the right ranges (fuerza 8/7/5, salud 12/10/8, resistencia 17/14/11).
+- **bodyweight** — derived from the player's measured maxima: `max(baseClase[classification][g], min(340, round(testMax × 1.15)))`. `factorRango.E` is `0.6`, so at rank E the daily total lands near 0.7× a single all-out set. `back` uses the measured pull result, falling back to `pushup × 0.85` only for saves that predate the pull test.
+- **gym / flow** — fixed tables in `sdcModBase`, ignoring the test. In the gym the variable is the load, not the reps, and the player adjusts with the `kg` field; `repMult` then lands the sets in the right ranges (fuerza 8/7/5, salud 12/10/8, resistencia 17/14/11).
 
 `baseClase[classification]` survives only as a **floor** on the bodyweight path, so this can raise a target but never lower one. Before this existed, the ceiling at rank E was 14 squats a day for everyone, including a player who did 114 in the test.
 
 ### Sets
 
-The daily target is split into tappable sets. `sdcNSets(total)` gives 3 sets at â¥6 reps, 2 at â¥3, else 1 â so no set is ever worth 0. `sdcSplit(total, n)` distributes them **descending** (40/33/27, or 55/45 for two) because a flat split pretends the last set is as cheap as the first; it is not, and the fatigue lands exactly where the player is least able to absorb it. `sdcSuma(total, n, k)` returns the reps inside the first `k` sets.
+The daily target is split into tappable sets. `sdcNSets(total)` gives 3 sets at ≥6 reps, 2 at ≥3, else 1 — so no set is ever worth 0. `sdcSplit(total, n)` distributes them **descending** (40/33/27, or 55/45 for two) because a flat split pretends the last set is as cheap as the first; it is not, and the fatigue lands exactly where the player is least able to absorb it. `sdcSuma(total, n, k)` returns the reps inside the first `k` sets.
 
 `FilaEjercicio` renders the chips and `sdcSerie(group, k)` handles the tap. Tapping chip `k` marks sets 1..k, so a player who did three sets in a row confirms with one tap and undoes the last with a second.
 
-The **pending** set also carries a `â N +`, so a player who fell short on the last set records that without disturbing the others (`sdcAjuste[group][index]`, read through `sdcRepsSerie`). Adjusting a set changes what you *did*, never the day's goal: `sdcTotalMeta()` deliberately sums the raw `metaSesion` targets, because `registrarRutina` grades against `metaDelDia()` and a button reading `30/30` would claim a completion the game scores as 94%.
+The **pending** set also carries a `− N +`, so a player who fell short on the last set records that without disturbing the others (`sdcAjuste[group][index]`, read through `sdcRepsSerie`). Adjusting a set changes what you *did*, never the day's goal: `sdcTotalMeta()` deliberately sums the raw `metaSesion` targets, because `registrarRutina` grades against `metaDelDia()` and a button reading `30/30` would claim a completion the game scores as 94%.
 
 **`registrarRutina` is still the only function that settles XP,** and the XP shown in the header during a session is a live projection: `progress.currentXP + sdcTotalHechas()`. `registrar` passes `sdcRepsHechas()` to `registrarRutina`, not the raw targets. Keep it that way — moving the **ledger** into the tap would break `Deshacer registro de hoy` and risk double counting.
 
@@ -326,9 +326,9 @@ The `[modo, progress.rank, modalidad]` effect rehydrates the slot unless the day
 Verified: marks survive a reload, each modality keeps its own set of chips while alternating, Recuperación gets its own slot, `today.reps` stays at zero until `registrar()` runs, registration still yields the same reps and XP, and a new day starts clean.
 
 
-When the day is registered the card is replaced by a summary: reps per group, the personal best in each, and the week's totals. The â only appears when `lifetimeReps[g]` exceeds today's reps, because otherwise every group is a record in the first session and the mark means nothing.
+When the day is registered the card is replaced by a summary: reps per group, the personal best in each, and the week's totals. The ★ only appears when `lifetimeReps[g]` exceeds today's reps, because otherwise every group is a record in the first session and the mark means nothing.
 
-Exercises measured in time rather than reps declare it in their own `alt` ("1 rep = 3 segundosâ¦"). `sdcSegs(alt)` parses that and the UI shows the seconds without the player opening anything. It **ignores conversions in parentheses**, which describe the substitute: the pull-group `alt` mentions "superman en el suelo (1 rep = 3 s)" and that does not make towel rows a hold.
+Exercises measured in time rather than reps declare it in their own `alt` ("1 rep = 3 segundos…"). `sdcSegs(alt)` parses that and the UI shows the seconds without the player opening anything. It **ignores conversions in parentheses**, which describe the substitute: the pull-group `alt` mentions "superman en el suelo (1 rep = 3 s)" and that does not make towel rows a hold.
 
 ### Gym: one weight per set, and tonnage is not a scoreboard
 
@@ -357,7 +357,7 @@ La última vez: 30 · 32,5 · 35 kg
 
 ### Unlocks
 
-`nivelUmbral` is the rank ladder â the level at which each rank offers its Umbral: `{E:50, D:100, C:140, B:180, A:220, S:260}`. It used to be `{E:50, D:100, C:300, B:700, A:1500, S:3000}`, which with the XP curve meant rank B cost 255k XP (about 12 years of training four times a week) and rank Z 22.9M. The game had three reachable ranks out of seven. The current ladder puts D at ~5 months, C at 1.3 years, B at 2.6, A at 4.4, S at 6.7 and Z at 9.4. Z has no entry because there is nothing above it, and the header correctly hides the Umbral line there.
+`nivelUmbral` is the rank ladder — the level at which each rank offers its Umbral: `{E:50, D:100, C:140, B:180, A:220, S:260}`. It used to be `{E:50, D:100, C:300, B:700, A:1500, S:3000}`, which with the XP curve meant rank B cost 255k XP (about 12 years of training four times a week) and rank Z 22.9M. The game had three reachable ranks out of seven. The current ladder puts D at ~5 months, C at 1.3 years, B at 2.6, A at 4.4, S at 6.7 and Z at 9.4. Z has no entry because there is nothing above it, and the header correctly hides the Umbral line there.
 
 **Crossing the Umbral takes three things now: the level, a minimum of complete routines in the rank, and a test that is one full routine of the next rank.** The level alone could be rushed: simulated with the real functions, a beginner who trains every day reached the first Umbral in 7 weeks (50 sessions, against 90 at three a week), because the streak adds up to +30% and salud another +15% — while the shop's boosts shaved only ~10%, since PD run out. And the test (`I2`, removed) prescribed rounds of the *current* rank's exercises, which the player already did every day, so nothing checked whether the next rank's movements were within reach.
 
@@ -376,7 +376,7 @@ La última vez: 30 · 32,5 · 35 kg
 Two patterns worth knowing:
 
 - **Collapsed by default, migration-safe:** `collapsed: ui&&ui.collapsed&&ui.collapsed.X!==void 0 ? plegado("X") : !0`. Inverting the flag instead breaks saves that already stored it.
-- **Hidden until requested:** the help panel and the shop render only when their flag is truthy, so nothing shows when closed â not even a title bar. The `?` button and the PD badge toggle those flags.
+- **Hidden until requested:** the help panel and the shop render only when their flag is truthy, so nothing shows when closed — not even a title bar. The `?` button and the PD badge toggle those flags.
 
 `plegablesTodos` lists the ids that "Minimizar todo" collapses; remove an id from it when a card stops being an ordinary collapsible.
 
@@ -436,7 +436,7 @@ Presentation, for readers who are not 25: topic titles at 16 px, body at **15 px
 
 The collapsed cards themselves were never the problem — they are 54–55 px each and read fine stacked. What was wrong in Perfil was **eight of them**, three of which were the same kind of thing: `atributos`, `volumen` and `hazanas` were all numbers you read and never touch. They are now one card, `numeros` ("Tus números"), with three labelled sections and the lifetime rep total on the collapsed bar. Six bars left, and the three old ids are gone from `plegablesTodos`. Stale keys left behind in a real save's `ui.collapsed` are harmless.
 
-**The header is permanent UI, not a card.** It carries the name, the calibre, the PD badge, the XP bar (`BarraXp`), `Ascenso: level/threshold` and the next system to unlock. All of that used to live inside the `rango` collapsible, which started closed â so a new player never saw their XP bar move and never learned anything was coming. That card is gone; do not reintroduce one that duplicates the header.
+**The header is permanent UI, not a card.** It carries the name, the calibre, the PD badge, the XP bar (`BarraXp`), `Ascenso: level/threshold` and the next system to unlock. All of that used to live inside the `rango` collapsible, which started closed — so a new player never saw their XP bar move and never learned anything was coming. That card is gone; do not reintroduce one that duplicates the header.
 
 ### Notices are added in a microtask
 
@@ -444,27 +444,27 @@ The collapsed cards themselves were never the problem — they are 54–55 px ea
 
 ### Feedback
 
-There were two `@keyframes` in the whole app and neither fired on a reward. Now the head `<style>` also defines `sdcPop` (floating `+N XP`), `sdcRise` (notices) and `.sdc-chip`, all suppressed under `prefers-reduced-motion` â the browser pane has that on, so animations will look dead there while the numbers still render.
+There were two `@keyframes` in the whole app and neither fired on a reward. Now the head `<style>` also defines `sdcPop` (floating `+N XP`), `sdcRise` (notices) and `.sdc-chip`, all suppressed under `prefers-reduced-motion` — the browser pane has that on, so animations will look dead there while the numbers still render.
 
-`usePantallaEncendida()` is a hook that holds a screen wake lock for as long as its component is mounted, re-acquiring it on `visibilitychange` because the browser drops the lock whenever the tab is hidden. `usePantallaSi(on)` is the conditional variant, for a timer that lives inside a component that is always mounted; the main component calls it with the combat and Primal countdowns. `BarraDescanso` (rest timer) and `PruebaAptitud` (fitness test) call the mount-based `usePantallaEncendida()` â the two moments where the phone is on the floor and the screen used to sleep mid-set. It swallows its own errors, so it is safe to add to any other component.
+`usePantallaEncendida()` is a hook that holds a screen wake lock for as long as its component is mounted, re-acquiring it on `visibilitychange` because the browser drops the lock whenever the tab is hidden. `usePantallaSi(on)` is the conditional variant, for a timer that lives inside a component that is always mounted; the main component calls it with the combat and Primal countdowns. `BarraDescanso` (rest timer) and `PruebaAptitud` (fitness test) call the mount-based `usePantallaEncendida()` — the two moments where the phone is on the floor and the screen used to sleep mid-set. It swallows its own errors, so it is safe to add to any other component.
 
 **The lock is counted, and it covers the whole routine session.** There is one wake lock for the whole app and several parts hold it at once — on every set, the session and the rest timer — so `sdcWakeOn` adds a request, `sdcWakeOff` removes one, and the screen is released only when none is left; the `visibilitychange` handlers re-request through `sdcWakePedir`, which does not count. It used to be released by the first part that let go, so the end of a rest turned the screen off in the middle of a routine, and two requests racing before the first one resolved leaked a second lock that nothing ever released. `App` now also holds it for the session itself: on Entreno, from the first marked set until the routine is registered. `tests/pantalla.test.js` covers the counting and `e2e/pantalla.spec.js` the session, with a fake `navigator.wakeLock` — and it fails on the old code.
 
-`sdcBeep(hz, ms)` wraps the existing `pitido()` oscillator and `sdcVib(pattern)` guards `navigator.vibrate`; both swallow their own errors, so call them anywhere. A set tap beeps, vibrates, floats the XP gained (`sdcFlota`) and starts the rest timer. `sdcDesc` scales that rest with the size of the set just completed (`base + reps Ã 1.5`, capped at 180 s) â `descansoBase` alone gave Resistencia the most reps and the shortest rest.
+`sdcBeep(hz, ms)` wraps the existing `pitido()` oscillator and `sdcVib(pattern)` guards `navigator.vibrate`; both swallow their own errors, so call them anywhere. A set tap beeps, vibrates, floats the XP gained (`sdcFlota`) and starts the rest timer. `sdcDesc` scales that rest with the size of the set just completed (`base + reps × 1.5`, capped at 180 s) — `descansoBase` alone gave Resistencia the most reps and the shortest rest.
 
-`Avisos` classifies each notice string with `sdcTier` into `epic` / `good` / `bad` / `info`, sorts epic to the top and styles it accordingly, plus a "Cerrar todo". Tiering is done by matching the text because the notice pipeline (`registrarRutina` â `misRevisar` â `subirNiveles` â `revisarLogros` â `avisoCarga`) passes plain strings; **if you reword "Subiste a nivel" or "Ascendiste", update `sdcTier` too** or a level-up will render like a bookkeeping line again.
+`Avisos` classifies each notice string with `sdcTier` into `epic` / `good` / `bad` / `info`, sorts epic to the top and styles it accordingly, plus a "Cerrar todo". Tiering is done by matching the text because the notice pipeline (`registrarRutina` → `misRevisar` → `subirNiveles` → `revisarLogros` → `avisoCarga`) passes plain strings; **if you reword "Subiste a nivel" or "Ascendiste", update `sdcTier` too** or a level-up will render like a bookkeeping line again.
 
 ### Variety
 
-`metaDelDia()` never received the date, so the routine was byte-identical every day for the ~50 levels rank E lasts. `sdcMods` now holds **six modifiers per modality** â they are not interchangeable, so gym gets drop sets and sets to failure while flow gets longer holds and unbroken transitions â and `sdcModDia(modality, date)` picks one by hashing both together. The bonus only applies when the player claims it (`sdcModOk`, passed to `registrarRutina` as a fourth argument); nothing can verify it, but it demands a deliberate act rather than handing out XP.
+`metaDelDia()` never received the date, so the routine was byte-identical every day for the ~50 levels rank E lasts. `sdcMods` now holds **six modifiers per modality** — they are not interchangeable, so gym gets drop sets and sets to failure while flow gets longer holds and unbroken transitions — and `sdcModDia(modality, date)` picks one by hashing both together. The bonus only applies when the player claims it (`sdcModOk`, passed to `registrarRutina` as a fourth argument); nothing can verify it, but it demands a deliberate act rather than handing out XP.
 
-The *travesias* (long cardio sessions, formerly "dungeons") draw from `sdcPortales`, ten name/challenge pairs. The identifier kept its old name; only the data changed. Each name states the quality of the body the session reveals (La Guardia, El Rebote, La Cuesta), never a monster. They used to be two independent lists, so "Guarida del Lobo SombrÃ­o" could ask for thirty minutes on a bike.
+The *travesias* (long cardio sessions, formerly "dungeons") draw from `sdcPortales`, ten name/challenge pairs. The identifier kept its old name; only the data changed. Each name states the quality of the body the session reveals (La Guardia, El Rebote, La Cuesta), never a monster. They used to be two independent lists, so "Guarida del Lobo Sombrío" could ask for thirty minutes on a bike.
 
-`sdcMascota(state, pct, isPR)` gives the pet a line about the session just recorded â a personal best, a streak of seven or more, a full routine or a partial one. It used to speak only when you failed. Keep new phrases species-neutral: the pet can be a dog or a cat.
+`sdcMascota(state, pct, isPR)` gives the pet a line about the session just recorded — a personal best, a streak of seven or more, a full routine or a partial one. It used to speak only when you failed. Keep new phrases species-neutral: the pet can be a dog or a cat.
 
 ### Combat
 
-The attack was typing the word "hecho" into an input. It now reuses the routine's set chips: `sdcCombChips(phase, reps)` renders them, `sdcCombTocar` handles the tap, and `sdcGolpe` lands the hit â the same thing the old `Rd` did minus the text check. The strike button stays disabled until every phase is complete, and bosses keep their superset by rendering one chip row per phase. `sdcCombSer` resets on any change of villain, exercise or phase, and on cancel.
+The attack was typing the word "hecho" into an input. It now reuses the routine's set chips: `sdcCombChips(phase, reps)` renders them, `sdcCombTocar` handles the tap, and `sdcGolpe` lands the hit — the same thing the old `Rd` did minus the text check. The strike button stays disabled until every phase is complete, and bosses keep their superset by rendering one chip row per phase. `sdcCombSer` resets on any change of villain, exercise or phase, and on cancel.
 
 **The clock never starts on its own.** It used to: entering `phase:"resting"` — which happens when you pick a pattern *and after every successful strike* — armed a 12 s (20 s boss) prep countdown that rolled straight into the attack window, and letting that window run out costs a heart via `perderVida`. So the game started counting against you while you were still reading the screen, once per hit. Now that effect only loads the numbers (`setCombSegundosMax`/`setCombSegundos`) and leaves `combPrep`/`combVentana` false; a **"Cuando estés listo"** card shows the prescription and the seconds you will get, and its `Empezar` button is the only thing that sets `combPrep`. Three render states share `phase:"resting"`: `!combPrep&&!combVentana` (ready), `combPrep` (prep, skippable with "Comenzar ahora"), `combVentana` (window). The time limit itself is untouched — it is what makes combat different from the routine — it just cannot start without you.
 
@@ -472,13 +472,13 @@ Two related holes closed with it: leaving the combat tab mid-window used to keep
 
 ### Dates
 
-Use `fechaLocal(date)` / `fechaHoy()`. **Never `toISOString().slice(0,10)`** â that is UTC, which rolled the day over at 21:00 in Argentina and broke streaks for anyone training at night. The same bug existed in five places.
+Use `fechaLocal(date)` / `fechaHoy()`. **Never `toISOString().slice(0,10)`** — that is UTC, which rolled the day over at 21:00 in Argentina and broke streaks for anyone training at night. The same bug existed in five places.
 
 ### Economy
 
-Dominion Points: 3 for a 100% routine, 1 for â¥50%, first session of the day only. The shop is `tienda` (id, cost, name, desc) and `comprar(state, id)` applies each purchase; add a branch there for every new item. The XP buff multiplier is `dominion.xpBuffMult`, read by `multImpulso()` â do not hardcode 1.25 again.
+Dominion Points: 3 for a 100% routine, 1 for ≥50%, first session of the day only. The shop is `tienda` (id, cost, name, desc) and `comprar(state, id)` applies each purchase; add a branch there for every new item. The XP buff multiplier is `dominion.xpBuffMult`, read by `multImpulso()` — do not hardcode 1.25 again.
 
-XP base is literally the reps performed, plus a flat **30** for a 100% routine. That bonus was 20, which made the first routine worth 44 XP against the 48 `costoNivel(1)` costs â a new player could not level up in their first session. **Any change to `costoNivel`, to the bonus, or to the volume model must keep that first level-up intact;** it is the cheapest, most load-bearing reward in the game.
+XP base is literally the reps performed, plus a flat **30** for a 100% routine. That bonus was 20, which made the first routine worth 44 XP against the 48 `costoNivel(1)` costs — a new player could not level up in their first session. **Any change to `costoNivel`, to the bonus, or to the volume model must keep that first level-up intact;** it is the cheapest, most load-bearing reward in the game.
 
 **The three focus profiles have to pay the same for equivalent work, and one of them did not.** `repMult` sets how many reps a profile does and `xpMult` is supposed to buy that back: `fuerza` does 65% of the reps at 1.5× XP, which nets 0.975. But `resistencia` did **140% of the reps at 1× XP** — it was paid in full for volume the other two trade away. Measured at gym rank C, same session, no streak: fuerza 210, salud 200, **resistencia 268**. `resistencia.xpMult` went to `.8`, which landed it at 214 — still ~2% ahead of fuerza, deliberately, because 238 reps takes longer than 110.
 
@@ -504,15 +504,15 @@ The increment is `sdcIncKg`: 5 kg for `squat` at 40 kg or more, otherwise 2.5, d
 
 **The gym's memory is keyed by exercise name, not by pattern** — `state.gymUlt["Sentadilla con barra"] = {kgs, fecha, best}` — and that distinction became load-bearing the moment each rung grew to three variants. Before the rotation, one exercise per rung meant pattern-keying and exercise-keying were the same thing. After it, `squat` at gym rank E covers *Prensa de piernas*, *Extensión de cuádriceps* and *Curl femoral*, where 120 kg is routine on the first and absurd on the others. Keyed by pattern, the app would have shown "La última vez: 120 kg" under a quad extension, pre-filled the field with it, and paid a PR for switching to an easier machine. **A weight suggestion that is wrong is worse than none**, so an exercise you have not done yet shows an empty field and no history line. `bestLiftKg[pattern]` is still written alongside because sixteen achievements read it through `Object.values`.
 
-The multipliers stack in `registrarRutina`, each with its own `Math.round`: `multEnfoque` (focus, plus the `salud`-only +15% at streak â¥3), `sdcRacha` (+2% per consecutive day, capped at +30%, every profile), `flexBuff`, `multImpulso` (day buffs from the shop), `sdcPerk` (permanent perks) and the multi-modality bonus. A 12-day streak with both perks turns a 62 XP routine into 97.
+The multipliers stack in `registrarRutina`, each with its own `Math.round`: `multEnfoque` (focus, plus the `salud`-only +15% at streak ≥3), `sdcRacha` (+2% per consecutive day, capped at +30%, every profile), `flexBuff`, `multImpulso` (day buffs from the shop), `sdcPerk` (permanent perks) and the multi-modality bonus. A 12-day streak with both perks turns a 62 XP routine into 97.
 
-`tienda` now ends with two **permanent** purchases, `memoria` (40 PD, +5% XP) and `nucleo` (90 PD, raises it to +10% and requires `memoria`). They live in `dominion.perks`, which `cargarPartida` backfills and `dominioInicial()` creates â the first array that needed a migration default in a while, so treat it as the worked example. Everything else in the shop is a consumable.
+`tienda` now ends with two **permanent** purchases, `memoria` (40 PD, +5% XP) and `nucleo` (90 PD, raises it to +10% and requires `memoria`). They live in `dominion.perks`, which `cargarPartida` backfills and `dominioInicial()` creates — the first array that needed a migration default in a while, so treat it as the worked example. Everything else in the shop is a consumable.
 
 `revisarLogros()` pays PD by achievement tier (E/D 1, C/B 2, A 3, S 4, Z 5). The 88 entries in `logros` used to grant nothing at all.
 
 **The modalities do not pay the same per session, and that was kept on purpose** (decided 2026-09-24). A full routine for a beginner is worth 150 XP in the gym, 124 in flow and 66 in bodyweight at rank E, because XP is the reps and gym and flow read fixed tables (`sdcModBase`) while bodyweight scales with the fitness test; the gym reaches the first Umbral in 41 sessions at three a week, bodyweight in 90. A gym session takes more time and work than 35 bodyweight reps, bodyweight volume grows with the player's measured strength, and the Umbral test still demands the next rank's exercises. Do not "fix" it without asking.
 
-**There is no XP penalty any more.** Both sites that had one â a sub-50% session in `registrarRutina` and a missed day in `cargarPartida` â took a percentage of `currentXP`, which meant the game punished hardest right before a level-up and not at all just after. Losing the streak is the whole consequence now. If you reintroduce a penalty, do not make it proportional to `currentXP`.
+**There is no XP penalty any more.** Both sites that had one — a sub-50% session in `registrarRutina` and a missed day in `cargarPartida` — took a percentage of `currentXP`, which meant the game punished hardest right before a level-up and not at all just after. Losing the streak is the whole consequence now. If you reintroduce a penalty, do not make it proportional to `currentXP`.
 
 ### Fitness test and calibre
 
@@ -520,14 +520,14 @@ The multipliers stack in `registrarRutina`, each with its own `Math.round`: `mul
 
 **Results measured at the new cadence carry `testResults.ritmo = 5`,** set by `guardarPrueba(…, 5)` from the Perfil retest and by the onboarding when the numbers came from `PruebaAptitud` (`sdcRitOnb`; typing numbers or picking a self-assessment clears it). The volume model reads the raw numbers, so a retest lowers the daily targets in proportion — that is the point. The **calibre bands** are scaled for tagged results only: `sdcRitmoF(profile)` returns `sdcRitmoK` (0.6) or 1, `sdcBandaMin(k, f)` rounds `bandasCalibre[k].min × f` and `sdcBandaIx(n, f)` picks the last band whose scaled minimum `n` reaches; `bandaCalibre`/`claseCalibre` take that factor as a fifth argument. Perfil prints the scaled ranges (0–17, 18–39, 40–68, 69–100, 101–129, 130+) so the raw score, the formula line and the ladder still add up. Untagged saves — every save before this change, manual entries, self-assessments, the skip defaults — keep the original bands and targets until they retest. **0.6 is an estimate** (constant time-to-failure: 3 s ÷ 5 s per rep); re-measure it the first time a player has both an old and a new result for the same pattern.
 
-The four test exercises are `sq`, `pu`, `ab`, `bk` (inverted rows, superman as the equipment-free fallback). The arrays are `J` in `Inicio` (onboarding) and `repruebaEjercicios` in `App` (retest in Perfil) â they hold different hint text, so a new exercise has to be added to both, along with its state, its `onFinish` branch, the numeric shortcut and the summary row.
+The four test exercises are `sq`, `pu`, `ab`, `bk` (inverted rows, superman as the equipment-free fallback). The arrays are `J` in `Inicio` (onboarding) and `repruebaEjercicios` in `App` (retest in Perfil) — they hold different hint text, so a new exercise has to be added to both, along with its state, its `onFinish` branch, the numeric shortcut and the summary row.
 
-`puntajePrueba(sq, pu, ab, bk)` = `sq + 2Â·pu + ab + 2Â·bk`, and `bandaCalibre`/`claseCalibre` band it through `bandasCalibre`. The pull term was added later and the six band thresholds were **rescaled ~20%** to absorb it, so nobody changed calibre just because a term appeared. Results persist as `profile.testResults` and feed the volume model.
+`puntajePrueba(sq, pu, ab, bk)` = `sq + 2·pu + ab + 2·bk`, and `bandaCalibre`/`claseCalibre` band it through `bandasCalibre`. The pull term was added later and the six band thresholds were **rescaled ~20%** to absorb it, so nobody changed calibre just because a term appeared. Results persist as `profile.testResults` and feed the volume model.
 
 Two axes, kept separate on purpose:
 
 - **Rank** is what you earn. Same ladder and same ascensions for everybody.
-- **Calibre** is what you measure â `sdcCalibre(profile)` returns the `bandasCalibre` label, `sdcPuntaje(profile)` the score. It shows under the name, and Perfil â Prueba de aptitud lists all six bands with the current one marked and the points still missing.
+- **Calibre** is what you measure — `sdcCalibre(profile)` returns the `bandasCalibre` label, `sdcPuntaje(profile)` the score. It shows under the name, and Perfil → Prueba de aptitud lists all six bands with the current one marked and the points still missing.
 
 `bandasCalibre` also carries `rank` and `focus` fields. `focus` is display text; `rank` is dead by design (see Exercise selection).
 
@@ -628,9 +628,9 @@ It is a system in `sistemas` (`id:"animo"`, level 1), so it gets a switch in Per
 
 ### Backup reminder
 
-A card in Entreno asks for a backup once the player has 10 days of `history`, and hides for a week on "MÃ¡s tarde" or for a month after an actual export. Its two dates live in **`localStorage` directly** â `dominio-corporal:ultimoRespaldo` and `:respaldoPospuesto` â and deliberately **not** in the game state. They describe this device, not this player: restoring a backup on a new phone should not carry over "you already backed up". Keeping them out of the state object also means no new default in `cargarPartida` and no migration risk.
+A card in Entreno asks for a backup once the player has 10 days of `history`, and hides for a week on "Más tarde" or for a month after an actual export. Its two dates live in **`localStorage` directly** — `dominio-corporal:ultimoRespaldo` and `:respaldoPospuesto` — and deliberately **not** in the game state. They describe this device, not this player: restoring a backup on a new phone should not carry over "you already backed up". Keeping them out of the state object also means no new default in `cargarPartida` and no migration risk.
 
-`sdcRespaldoOk()` is called from both export paths (`bkDescargar` and `ug`). Neither of those dates triggers a re-render on its own, so the "MÃ¡s tarde" button also pushes a notice â that state change is what makes the card disappear.
+`sdcRespaldoOk()` is called from both export paths (`bkDescargar` and `ug`). Neither of those dates triggers a re-render on its own, so the "Más tarde" button also pushes a notice — that state change is what makes the card disappear.
 
 ### Achievements
 
@@ -674,7 +674,7 @@ The 56 added most recently are deliberately shaped:
 ### Missions
 
 
-Unlocked at level 10. `misRevisar` generates one weekly and one monthly objective from `lastTrained` (most-neglected muscle group) or from an unused modality, tracks them against `week`/`month` counters, and pays out. Targets are deliberately ~50% above what the prescribed routine yields, so they cannot be satisfied by training normally. There are intentionally **no daily missions** â the routine, dungeon, combat and Primal already fill that role.
+Unlocked at level 10. `misRevisar` generates one weekly and one monthly objective from `lastTrained` (most-neglected muscle group) or from an unused modality, tracks them against `week`/`month` counters, and pays out. Targets are deliberately ~50% above what the prescribed routine yields, so they cannot be satisfied by training normally. There are intentionally **no daily missions** — the routine, dungeon, combat and Primal already fill that role.
 
 ---
 
