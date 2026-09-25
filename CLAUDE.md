@@ -343,6 +343,8 @@ La última vez: 30 · 32,5 · 35 kg
 
 **The "= 450 kg movidos" line next to the exercise is gone.** Tonnage is a workload total; printed beside one exercise mid-set it reads as a claim about a single lift, and it is trivially misleading — 20 kg × 30 reps outscores 60 kg × 8. It was also the *only* place `lifetimeVolumeKg` was ever shown, despite 16 achievements depending on it. It now lives in Perfil → **Tus números**, which is where a lifetime figure belongs.
 
+**Body weight is entered in Perfil → Tus números too**, below the lifetime kilos, and only shown when the gym is one of the player's modalities or a weight is already stored. `profile.bodyWeight` feeds three achievements — *Tu Propio Peso*, *Uno y Medio*, *Doble Cuerpo* — through `bestLiftKg`, and nothing else. The field used to live in the "Poder actual" card; when that card was deleted (commit `048d961`, 2026-09-20) the field went with it and `ponerPesoCorporal` was left with no caller, so for five days those three achievements could not be earned by anyone who had not typed a weight before. ESLint found it as an unused function. It takes the text on blur (or Enter), like the old one, so a decimal comma types normally, and shows the stored number back with `sdcKgTxt`. `e2e/juego.spec.js` now fails if the field disappears again.
+
 > A reorder is invisible to the bracket check. Moving the kilos row above the "Llevás N de M reps" line by splitting a region and concatenating the halves the other way round left the `Fragment` unclosed, and `{}`/`[]`/`()` deltas were all still perfect because a permutation preserves them. **After reordering siblings, load the app** — and assert that each half ends with a comma before swapping.
 
 ### Unlocks

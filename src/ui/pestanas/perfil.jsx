@@ -18,7 +18,7 @@ import { modalidades } from "../../datos/ejercicios.js";
 import { Io, tu, q2, Ro } from "../../logica/atributos.js";
 import { movimientosPrimal } from "../../logica/primal.js";
 import { logros, sdcAnimoCuenta } from "../../datos/logros.js";
-import { sdcPrimeras, sdcJuego, sdcCalF, sdcCalT } from "../../logica/extras.js";
+import { sdcPrimeras, sdcJuego, sdcCalF, sdcCalT, sdcKgTxt } from "../../logica/extras.js";
 import { sdcTitulos } from "../../datos/rangos.js";
 import { BarraXp, Tarjeta } from "../base.jsx";
 import { Plegable } from "../tarjetas.jsx";
@@ -116,6 +116,7 @@ export function PestanaPerfil({
   modalidad,
   player,
   plegado,
+  ponerPesoCorporal,
   ponerModalidades,
   primal,
   profile,
@@ -496,6 +497,35 @@ export function PestanaPerfil({
               </div>
             ) : null}
           </div>
+          {modalidadesDe(profile).includes("gym") || profile.bodyWeight > 0 ? (
+            <div className="mt-3">
+              <div className="flex items-center justify-between gap-2 text-sm">
+                <label htmlFor="sdcPesoCorporal" style={{ color: "#9aa4bd" }}>
+                  Tu peso corporal
+                </label>
+                <input
+                  id="sdcPesoCorporal"
+                  type="text"
+                  inputMode="decimal"
+                  defaultValue={profile.bodyWeight > 0 ? sdcKgTxt(profile.bodyWeight) : ""}
+                  onBlur={(y) => ponerPesoCorporal(y.target.value)}
+                  onKeyDown={(y) => y.key === "Enter" && y.target.blur()}
+                  placeholder="kg"
+                  className="px-1 py-2 text-center text-xs"
+                  style={{
+                    width: 80,
+                    minHeight: 44,
+                    background: "rgba(255,255,255,0.05)",
+                    border: "1px solid rgba(255,255,255,0.15)",
+                    color: "#e8ecf7",
+                  }}
+                />
+              </div>
+              <div className="text-xs mt-1" style={{ color: "#7a83a0" }}>
+                En kilos. Lo usan los logros Tu Propio Peso, Uno y Medio y Doble Cuerpo.
+              </div>
+            </div>
+          ) : null}
         </div>
       </Plegable>
       <Plegable

@@ -1961,6 +1961,7 @@ function App({ player, setPlayer, initialNotices }) {
             modalidad={modalidad}
             player={player}
             plegado={plegado}
+            ponerPesoCorporal={ponerPesoCorporal}
             ponerModalidades={ponerModalidades}
             primal={primal}
             profile={profile}

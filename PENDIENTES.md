@@ -16,7 +16,7 @@ ni la dirección del sitio.
 - **Código fuente de verdad**: Vite + React 19, en módulos por tema, con nombres reales en vez
   de los del minificador, y en JSX. Cada paso se comprobó comparando el resultado con la versión
   publicada, pantalla por pantalla.
-- **Pruebas**: 114 automáticas (curva de XP, Umbral, buffos, deshacer, sonidos…) y 8 de punta a
+- **Pruebas**: 114 automáticas (curva de XP, Umbral, buffos, deshacer, sonidos…) y 9 de punta a
   punta en Edge. **Si alguna falla, no se publica nada**: el deploy lo hace GitHub Actions y las
   corre antes.
 - **App partida**: cada pestaña en su archivo (`src/ui/pestanas/`) y Entreno en tarjetas.
@@ -97,6 +97,10 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
 
 ## B2 · Errores encontrados jugando
 
+- ~~Los logros Tu Propio Peso, Uno y Medio y Doble Cuerpo eran imposibles~~ — resuelto
+  (25/09/2026). Comparan tu mejor levantamiento con tu peso corporal, y el campo para anotarlo
+  se había ido junto con la tarjeta "Poder actual" el 20/09. Volvió a Perfil → Tus números, y
+  aparece si entrenás en el gimnasio.
 - ~~En Combate el reloj arrancaba solo~~ — resuelto. Elegías el tren y la cuenta empezaba
   sin que tocaras nada; si no llegabas, perdías un corazón. Y volvía a pasar **después de
   cada golpe acertado**. Ahora hay una tarjeta *"Cuando estés listo"* que te dice cuántas

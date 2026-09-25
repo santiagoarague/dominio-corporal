@@ -166,6 +166,8 @@ flow           Gateo · Apoyo · Giro · Enlace · Inversión · Quietud · Vuel
   sube al subir. La prueba de aptitud usa los mismos tres.
 - En gimnasio: un campo de kilos por serie, "La última vez: 30 · 32,5 · 35 kg" y una sugerencia
   ("Hoy probá 65 kg →" o "Repetí 70 kg y cerralo →") que solo sube si cerraste todas las reps.
+  Tu peso corporal se anota en Perfil → Tus números (aparece si entrenás en el gimnasio) y lo usan
+  tres logros: levantar 1×, 1,5× y 2× tu peso en un ejercicio.
 - **Modo Recuperación**: la mitad de las reps, cuenta como entrenar.
 
 ### Calentamiento (nuevo)

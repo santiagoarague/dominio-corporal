@@ -21,6 +21,9 @@ async function empezarConValoresPorDefecto(page) {
 test("primera rutina: sube a nivel 2, se guarda y se puede deshacer", async ({ page }) => {
   const errores = [];
   page.on("pageerror", (e) => errores.push(e.message));
+  // El ejercicio de cada dia rota con la fecha, y con el la meta: los numeros de
+  // abajo son los de un jueves. El reloj arranca ahi y despues corre normal.
+  await page.clock.install({ time: new Date("2026-09-24T10:00:00-03:00") });
 
   await empezarConValoresPorDefecto(page);
   await boton(page, "Hoy no").click();
@@ -133,4 +136,26 @@ test("Primeras veces: se anota a mano desde la tarjeta, sin cuadro del navegador
   expect(p.texto).toBe("Colgarme 20 segundos de la barra");
   expect(p.origen).toBe("escrita");
   expect(errores).toEqual([]);
+});
+
+// El campo se perdio una vez al borrar la tarjeta que lo tenia, y con el tres
+// logros del gimnasio quedaron imposibles.
+test("el peso corporal se anota en Tus números cuando entrenás en el gimnasio", async ({
+  page,
+}) => {
+  await empezarConValoresPorDefecto(page);
+  await boton(page, "Perfil").click();
+  await page.getByRole("button", { name: /^Tus números/ }).click();
+  await expect(page.getByLabel("Tu peso corporal")).toHaveCount(0);
+
+  await page.getByRole("button", { name: /^Métodos de entrenamiento/ }).click();
+  await page.getByRole("button", { name: /^Fuerza de Acero/ }).click();
+  const campo = page.getByLabel("Tu peso corporal");
+  await campo.fill("72,5");
+  await campo.press("Enter");
+  await expect.poll(async () => (await partida(page)).profile.bodyWeight).toBe(72.5);
+
+  await page.reload();
+  await boton(page, "Perfil").click();
+  await expect(page.getByLabel("Tu peso corporal")).toHaveValue("72,5");
 });
