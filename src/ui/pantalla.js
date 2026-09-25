@@ -14,18 +14,18 @@ function sdcWakePedir() {
     sdcWakePend = !0;
     navigator.wakeLock
       .request("screen")
-      .then(function (w) {
+      .then(function (bloqueo) {
         sdcWakePend = !1;
-        if (sdcWakeN <= 0) return void w.release();
-        sdcWL = w;
-        w.addEventListener("release", function () {
-          sdcWL === w && (sdcWL = null);
+        if (sdcWakeN <= 0) return void bloqueo.release();
+        sdcWL = bloqueo;
+        bloqueo.addEventListener("release", function () {
+          sdcWL === bloqueo && (sdcWL = null);
         });
       })
       .catch(function () {
         sdcWakePend = !1;
       });
-  } catch (x) {
+  } catch (err) {
     sdcWakePend = !1;
   }
 }
@@ -38,19 +38,19 @@ function sdcWakeOff() {
   if (sdcWakeN > 0) return;
   try {
     sdcWL && sdcWL.release();
-  } catch (x) {}
+  } catch (err) {}
   sdcWL = null;
 }
 function usePantallaEncendida() {
   useEffect(() => {
     sdcWakeOn();
-    let x = () => {
+    let alVolver = () => {
       document.visibilityState === "visible" && sdcWakePedir();
     };
     return (
-      document.addEventListener("visibilitychange", x),
+      document.addEventListener("visibilitychange", alVolver),
       () => {
-        (document.removeEventListener("visibilitychange", x), sdcWakeOff());
+        (document.removeEventListener("visibilitychange", alVolver), sdcWakeOff());
       }
     );
   }, []);
@@ -59,13 +59,13 @@ function usePantallaSi(on) {
   useEffect(() => {
     if (!on) return;
     sdcWakeOn();
-    let x = () => {
+    let alVolver = () => {
       document.visibilityState === "visible" && sdcWakePedir();
     };
     return (
-      document.addEventListener("visibilitychange", x),
+      document.addEventListener("visibilitychange", alVolver),
       () => {
-        (document.removeEventListener("visibilitychange", x), sdcWakeOff());
+        (document.removeEventListener("visibilitychange", alVolver), sdcWakeOff());
       }
     );
   }, [on]);

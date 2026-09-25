@@ -6,18 +6,18 @@ import { sdcVib } from "../logica/series.js";
 import { pitido } from "./prueba.jsx";
 import { usePantallaEncendida } from "./pantalla.js";
 
-function BarraDescanso({ seconds: e, onSkip: a, ini: t0 }) {
-  let [n, tk] = useState(0),
-    l = Math.max(0, e - Math.floor((Date.now() - (t0 || Date.now())) / 1e3));
+function BarraDescanso({ seconds, onSkip, ini }) {
+  let [tic, setTic] = useState(0),
+    quedan = Math.max(0, seconds - Math.floor((Date.now() - (ini || Date.now())) / 1e3));
   usePantallaEncendida();
   useEffect(() => {
-    if (l <= 0) {
-      (pitido(880, 200), sdcVib([40, 60, 40]), a());
+    if (quedan <= 0) {
+      (pitido(880, 200), sdcVib([40, 60, 40]), onSkip());
       return;
     }
-    let o = setTimeout(() => tk((x) => x + 1), 250);
-    return () => clearTimeout(o);
-  }, [n, t0]);
+    let espera = setTimeout(() => setTic((previo) => previo + 1), 250);
+    return () => clearTimeout(espera);
+  }, [tic, ini]);
   return (
     <div
       style={{
@@ -45,11 +45,11 @@ function BarraDescanso({ seconds: e, onSkip: a, ini: t0 }) {
                 lineHeight: 1.1,
               }}
             >
-              {sdcEstMMSS(l)}
+              {sdcEstMMSS(quedan)}
             </div>
           </div>
           <button
-            onClick={a}
+            onClick={onSkip}
             style={{
               minHeight: 44,
               padding: "0 18px",
@@ -63,7 +63,7 @@ function BarraDescanso({ seconds: e, onSkip: a, ini: t0 }) {
           </button>
         </div>
         <div className="mt-2">
-          <BarraXp value={e - l} max={e} color="#ffb84f" />
+          <BarraXp value={seconds - quedan} max={seconds} color="#ffb84f" />
         </div>
       </div>
     </div>

@@ -73,7 +73,10 @@ export function PestanaEntreno({
             <button
               onClick={() => {
                 (sdcRespaldoPosponer(),
-                  avisar((d) => [...d, "Te vuelvo a recordar lo del respaldo en una semana."]));
+                  avisar((previos) => [
+                    ...previos,
+                    "Te vuelvo a recordar lo del respaldo en una semana.",
+                  ]));
               }}
               className="py-3 px-3 text-xs"
               style={{
@@ -166,13 +169,13 @@ export function PestanaEntreno({
         today={today}
       />
       {(function () {
-        var gs = ["squat", "pushup", "back", "abs"],
-          pd = sdcPodia(player),
+        var grupos = ["squat", "pushup", "back", "abs"],
+          podia = sdcPodia(player),
           pend = null;
-        for (var q = 0; q < gs.length; q++) {
-          var ex = ejercicioDe(gs[q], progress.rank, modalidad);
-          if (ex && ex.name && pd[ex.name] === void 0) {
-            pend = ex.name;
+        for (var i = 0; i < grupos.length; i++) {
+          var ej = ejercicioDe(grupos[i], progress.rank, modalidad);
+          if (ej && ej.name && podia[ej.name] === void 0) {
+            pend = ej.name;
             break;
           }
         }
@@ -241,8 +244,8 @@ export function PestanaEntreno({
         sdcTotalHechas() === 0 &&
         !sdcCalor(player).ini &&
         !sdcCalor(player).hecho &&
-        (function (h) {
-          return !h.no;
+        (function (animo) {
+          return !animo.no;
         })(sdcAnimoHoy(player)) && (
           <Tarjeta accent="#4f9dff" style={{ marginBottom: 16, order: -6 }}>
             <AnimoAntes

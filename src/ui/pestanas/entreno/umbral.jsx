@@ -27,20 +27,20 @@ export function TarjetaUmbral({ ascension, cruzarUmbral, modalidad, player, prof
           </div>
         </div>
         {(() => {
-          let f = sdcUmbralPrueba(player, modalidad);
+          let prueba = sdcUmbralPrueba(player, modalidad);
           return (
             <div className="mb-3">
               <div className="text-sm mb-1" style={{ color: "#e8ecf7", fontWeight: 600 }}>
-                {f.rounds} rondas encadenadas con los ejercicios de {sdcRango(f.rango, profile)}. En
-                cada ronda:
+                {prueba.rounds} rondas encadenadas con los ejercicios de{" "}
+                {sdcRango(prueba.rango, profile)}. En cada ronda:
               </div>
-              {["squat", "pushup", "back", "abs"].map((d) => (
-                <div key={d} className="text-sm" style={{ color: "#9aa4bd" }}>
-                  {f.reps[d]} × {f.nombres[d]}
+              {["squat", "pushup", "back", "abs"].map((grupo) => (
+                <div key={grupo} className="text-sm" style={{ color: "#9aa4bd" }}>
+                  {prueba.reps[grupo]} × {prueba.nombres[grupo]}
                 </div>
               ))}
               <div className="text-xs mt-2" style={{ color: "#ffb84f" }}>
-                {f.note}
+                {prueba.note}
               </div>
             </div>
           );

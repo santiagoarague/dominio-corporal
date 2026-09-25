@@ -1,37 +1,37 @@
 // Tarjeta simple y barra de XP.
 
-function Tarjeta({ children: e, accent: a = "#4f9dff", style: l = {} }) {
+function Tarjeta({ children, accent = "#4f9dff", style = {} }) {
   return (
     <div
       className="relative border"
       style={{
-        borderColor: a + "55",
+        borderColor: accent + "55",
         background: "linear-gradient(180deg, rgba(18,24,43,0.9), rgba(10,14,26,0.9))",
-        ...l,
+        ...style,
       }}
     >
       <span
         className="absolute w-3 h-3 border-t-2 border-l-2"
-        style={{ top: -1, left: -1, borderColor: a }}
+        style={{ top: -1, left: -1, borderColor: accent }}
       />
       <span
         className="absolute w-3 h-3 border-t-2 border-r-2"
-        style={{ top: -1, right: -1, borderColor: a }}
+        style={{ top: -1, right: -1, borderColor: accent }}
       />
       <span
         className="absolute w-3 h-3 border-b-2 border-l-2"
-        style={{ bottom: -1, left: -1, borderColor: a }}
+        style={{ bottom: -1, left: -1, borderColor: accent }}
       />
       <span
         className="absolute w-3 h-3 border-b-2 border-r-2"
-        style={{ bottom: -1, right: -1, borderColor: a }}
+        style={{ bottom: -1, right: -1, borderColor: accent }}
       />
-      <div className="p-4">{e}</div>
+      <div className="p-4">{children}</div>
     </div>
   );
 }
-function BarraXp({ value: e, max: a, color: l }) {
-  let n = a > 0 ? Math.min(100, (e / a) * 100) : 100;
+function BarraXp({ value, max, color }) {
+  let pct = max > 0 ? Math.min(100, (value / max) * 100) : 100;
   return (
     <div
       className="w-full h-2 overflow-hidden"
@@ -39,7 +39,7 @@ function BarraXp({ value: e, max: a, color: l }) {
     >
       <div
         className="h-full transition-all duration-500"
-        style={{ width: n + "%", background: `linear-gradient(90deg, ${l}, #ffffff66)` }}
+        style={{ width: pct + "%", background: `linear-gradient(90deg, ${color}, #ffffff66)` }}
       />
     </div>
   );

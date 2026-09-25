@@ -70,19 +70,20 @@ export function PanelPruebas({
         Saltar a un rango (para ver sus ejercicios y reps):
       </div>
       <div className="grid grid-cols-3 gap-2 mb-3">
-        {rangos.map((f) => (
+        {rangos.map((rango) => (
           <button
-            key={f}
-            onClick={() => saltarRango(f)}
+            key={rango}
+            onClick={() => saltarRango(rango)}
             className="py-2 text-xs"
             style={{
-              background: progress.rank === f ? colorRango[f] + "22" : "rgba(255,255,255,0.05)",
-              border: `1px solid ${colorRango[f]}88`,
-              color: colorRango[f],
+              background:
+                progress.rank === rango ? colorRango[rango] + "22" : "rgba(255,255,255,0.05)",
+              border: `1px solid ${colorRango[rango]}88`,
+              color: colorRango[rango],
               fontWeight: 700,
             }}
           >
-            {f}
+            {rango}
           </button>
         ))}
       </div>
