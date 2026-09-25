@@ -1,15 +1,7 @@
-// Tablas de ejercicios: peso corporal (by), gimnasio (F2) y flow (P2).
+// Tablas de ejercicios: peso corporal (ejerciciosPeso), gimnasio (ejerciciosGym) y flow
+// (ejerciciosFlow).
 
 var factorRango = { E: 0.6, D: 0.8, C: 1, B: 1.25, A: 1.5, S: 2, Z: 2 },
-  descRango = {
-    E: "Regresión base — menor carga gravitacional",
-    D: "Control motor inicial — rango parcial asistido",
-    C: "Patrón estándar — rango completo de movimiento",
-    B: "Intensificación — declinado, desequilibrio y pausas",
-    A: "Alta fuerza relativa — unilateral progresivo / explosivo",
-    S: "Dominio motriz — unilateral estricto / isometría compleja",
-    Z: "Variantes compuestas — récord personal",
-  },
   ejerciciosPeso = {
     pushup: {
       label: "Empuje",
@@ -2242,4 +2234,4 @@ var factorRango = { E: 0.6, D: 0.8, C: 1, B: 1.25, A: 1.5, S: 2, Z: 2 },
     },
   };
 
-export { factorRango, descRango, ejerciciosPeso, modalidades, ejerciciosGym, ejerciciosFlow };
+export { factorRango, ejerciciosPeso, modalidades, ejerciciosGym, ejerciciosFlow };

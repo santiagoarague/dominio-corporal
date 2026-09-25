@@ -11,15 +11,6 @@ var rangos = ["E", "D", "C", "B", "A", "S", "Z"],
     S: "#ffb84f",
     Z: "#ff5c7a",
   },
-  nombresRango = {
-    E: "Rango E",
-    D: "Rango D",
-    C: "Rango C",
-    B: "Rango B",
-    A: "Rango A",
-    S: "Rango S",
-    Z: "Rango Z",
-  },
   sdcTitulos = {
     bodyweight: {
       E: "Suelo",
@@ -81,13 +72,4 @@ var rangos = ["E", "D", "C", "B", "A", "S", "Z"],
     { name: "Sin Distancia", minKm: 350 },
   ];
 
-export {
-  rangos,
-  nivelUmbral,
-  colorRango,
-  nombresRango,
-  sdcTitulos,
-  sdcDescs,
-  metrosPorPaso,
-  escalaCaminante,
-};
+export { rangos, nivelUmbral, colorRango, sdcTitulos, sdcDescs, metrosPorPaso, escalaCaminante };

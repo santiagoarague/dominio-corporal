@@ -1,6 +1,5 @@
 // Primeras veces, titulos, racha, marcas de series, gimnasio y avisos.
-import { sdcDescs, sdcTitulos, nombresRango } from "../datos/rangos.js";
-import { descRango } from "../datos/ejercicios.js";
+import { sdcDescs, sdcTitulos } from "../datos/rangos.js";
 import { modalidadDelDia, fechaLocal, ejercicioDe, fechaHoy, bandasCalibre } from "./rutina.js";
 import { clonar, deshacerRegistroBase } from "./partida.js";
 
@@ -60,11 +59,11 @@ function sdcJuego(p) {
 }
 function sdcRango(r, p) {
   var t = sdcTitulos[sdcJuego(p)];
-  return (t && t[r]) || nombresRango[r] || String(r);
+  return (t && t[r]) || String(r);
 }
 function sdcDescRango(r, p) {
   var t = sdcDescs[sdcJuego(p)];
-  return (t && t[r]) || descRango[r] || "";
+  return (t && t[r]) || "";
 }
 var sdcCalTit = {
     bodyweight: [

@@ -20,7 +20,7 @@ ni la dirección del sitio.
 - **Revisor automático (ESLint)**: marca variables que no existen, código que nadie usa y hooks de
   React dentro de un `if`. Corre antes de publicar, igual que las pruebas. En la primera pasada
   encontró que el campo del peso corporal se había perdido y una docena de valores muertos.
-- **Pruebas**: 114 automáticas (curva de XP, Umbral, buffos, deshacer, sonidos…) y 9 de punta a
+- **Pruebas**: 119 automáticas (curva de XP, Umbral, buffos, deshacer, sonidos…) y 9 de punta a
   punta en Edge. **Si alguna falla, o el revisor encuentra un error, no se publica nada**: el deploy lo hace GitHub Actions y las
   corre antes.
 - **App partida**: cada pestaña en su archivo (`src/ui/pestanas/`) y Entreno en tarjetas. Entreno
@@ -439,9 +439,9 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
   primera serie hasta registrar, y el fin de un descanso ya no la apaga.
 - La notificación diaria no es trivial en una PWA: sin servidor no hay push, y las APIs que lo
   permitirían o no existen o son solo de Chrome y poco fiables.
-- `nombresRango` y `descRango` (antes `zl` y `J2`) quedaron como respaldo detrás de
-  `sdcRango`/`sdcDescRango`. No molestan, pero si
-  alguna vez se confirma que nunca se leen, se pueden borrar.
+- ~~`nombresRango` y `descRango` quedaban como respaldo que nunca se leía~~ — resuelto (25/09/2026):
+  borrados. Una prueba exige que las tres modalidades tengan título y descripción para los siete
+  rangos, que es lo que hacía inalcanzable el respaldo.
 
 ## E · Resuelto en pasadas anteriores
 
