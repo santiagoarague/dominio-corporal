@@ -3,67 +3,68 @@ import { sdcDescs, sdcTitulos } from "../datos/rangos.js";
 import { modalidadDelDia, fechaLocal, ejercicioDe, fechaHoy, bandasCalibre } from "./rutina.js";
 import { clonar, deshacerRegistroBase } from "./partida.js";
 
-function sdcPodia(e) {
-  return (e && e.podia) || {};
+function sdcPodia(partida) {
+  return (partida && partida.podia) || {};
 }
-function sdcVistos(e) {
-  return (e && e.vistos) || {};
+function sdcVistos(partida) {
+  return (partida && partida.vistos) || {};
 }
-function sdcPrimeras(e) {
-  return (e && e.primeras) || [];
+function sdcPrimeras(partida) {
+  return (partida && partida.primeras) || [];
 }
-function sdcPrimeraAdd(e, tx, og) {
-  var l = sdcPrimeras(e).slice();
-  l.unshift({ fecha: fechaHoy(), texto: tx, origen: og });
-  if (l.length > 120) l.length = 120;
-  e.primeras = l;
-  return e;
+function sdcPrimeraAdd(partida, texto, origen) {
+  var lista = sdcPrimeras(partida).slice();
+  lista.unshift({ fecha: fechaHoy(), texto: texto, origen: origen });
+  if (lista.length > 120) lista.length = 120;
+  partida.primeras = lista;
+  return partida;
 }
-function sdcPrimerasHook(r, rp) {
-  if (!r || !r.state) return r;
-  var e = r.state,
-    gs = ["squat", "pushup", "back", "abs"],
-    md = modalidadDelDia(e.profile, e.today.date, e.today.modality),
-    src = sdcPodia(e),
-    pd = {},
-    k;
-  for (k in src) pd[k] = src[k];
+function sdcPrimerasHook(resultado, repsSesion) {
+  if (!resultado || !resultado.state) return resultado;
+  var partida = resultado.state,
+    grupos = ["squat", "pushup", "back", "abs"],
+    modalidad = modalidadDelDia(partida.profile, partida.today.date, partida.today.modality),
+    podiaAntes = sdcPodia(partida),
+    podia = {},
+    clave;
+  for (clave in podiaAntes) podia[clave] = podiaAntes[clave];
   var hubo = !1,
-    vs = {},
-    sv = sdcVistos(e),
-    hv = !1;
-  for (k in sv) vs[k] = sv[k];
-  for (var q = 0; q < gs.length; q++) {
-    var g = gs[q];
-    if (!rp || !(rp[g] > 0)) continue;
-    var ex = ejercicioDe(g, e.progress.rank, md);
-    if (!ex || !ex.name) continue;
-    vs[ex.name] || ((vs[ex.name] = !0), (hv = !0));
-    if (pd[ex.name] !== !1) continue;
-    pd[ex.name] = !0;
+    vistos = {},
+    vistosAntes = sdcVistos(partida),
+    hayVisto = !1;
+  for (clave in vistosAntes) vistos[clave] = vistosAntes[clave];
+  for (var indice = 0; indice < grupos.length; indice++) {
+    var grupo = grupos[indice];
+    if (!repsSesion || !(repsSesion[grupo] > 0)) continue;
+    var ej = ejercicioDe(grupo, partida.progress.rank, modalidad);
+    if (!ej || !ej.name) continue;
+    vistos[ej.name] || ((vistos[ej.name] = !0), (hayVisto = !0));
+    if (podia[ej.name] !== !1) continue;
+    podia[ej.name] = !0;
     hubo = !0;
-    sdcPrimeraAdd(e, ex.name, "declarada");
-    r.notices = r.notices || [];
-    r.notices.push("Primera vez: " + ex.name + ". Antes no podías.");
+    sdcPrimeraAdd(partida, ej.name, "declarada");
+    resultado.notices = resultado.notices || [];
+    resultado.notices.push("Primera vez: " + ej.name + ". Antes no podías.");
   }
-  if (hubo) e.podia = pd;
-  if (hv) e.vistos = vs;
-  return r;
+  if (hubo) partida.podia = podia;
+  if (hayVisto) partida.vistos = vistos;
+  return resultado;
 }
-function sdcJuego(p) {
-  var j = p && p.tituloSet;
-  if (j && sdcTitulos[j]) return j;
-  var m = (p && p.modalities) || [];
-  for (var k = 0; k < m.length; k++) if (sdcTitulos[m[k]]) return m[k];
+function sdcJuego(perfil) {
+  var elegido = perfil && perfil.tituloSet;
+  if (elegido && sdcTitulos[elegido]) return elegido;
+  var mods = (perfil && perfil.modalities) || [];
+  for (var indice = 0; indice < mods.length; indice++)
+    if (sdcTitulos[mods[indice]]) return mods[indice];
   return "bodyweight";
 }
-function sdcRango(r, p) {
-  var t = sdcTitulos[sdcJuego(p)];
-  return (t && t[r]) || String(r);
+function sdcRango(rango, perfil) {
+  var titulos = sdcTitulos[sdcJuego(perfil)];
+  return (titulos && titulos[rango]) || String(rango);
 }
-function sdcDescRango(r, p) {
-  var t = sdcDescs[sdcJuego(p)];
-  return (t && t[r]) || "";
+function sdcDescRango(rango, perfil) {
+  var descs = sdcDescs[sdcJuego(perfil)];
+  return (descs && descs[rango]) || "";
 }
 var sdcCalTit = {
     bodyweight: [
@@ -117,175 +118,187 @@ var sdcCalTit = {
       "Secuencias completas sin cortes",
     ],
   };
-function sdcCalT(i, p) {
-  var t = sdcCalTit[sdcJuego(p)];
-  return (t && t[i]) || (bandasCalibre[i] && bandasCalibre[i].label) || "";
+function sdcCalT(banda, perfil) {
+  var titulos = sdcCalTit[sdcJuego(perfil)];
+  return (titulos && titulos[banda]) || (bandasCalibre[banda] && bandasCalibre[banda].label) || "";
 }
-function sdcCalF(i, p) {
-  var t = sdcCalFoco[sdcJuego(p)];
-  return (t && t[i]) || (bandasCalibre[i] && bandasCalibre[i].focus) || "";
+function sdcCalF(banda, perfil) {
+  var focos = sdcCalFoco[sdcJuego(perfil)];
+  return (focos && focos[banda]) || (bandasCalibre[banda] && bandasCalibre[banda].focus) || "";
 }
-function sdcRachaCalc(e) {
-  var h = (e && e.history) || {},
+function sdcRachaCalc(partida) {
+  var historia = (partida && partida.history) || {},
     hoy = fechaHoy(),
-    d = new Date(hoy + "T00:00:00"),
-    n = 0,
-    k,
-    f,
-    s;
-  for (k = 0; k < 400; k++) {
-    f = fechaLocal(d);
-    s = h[f];
-    if (f === hoy && !s) {
-      d.setDate(d.getDate() - 1);
+    dia = new Date(hoy + "T00:00:00"),
+    racha = 0,
+    vuelta,
+    fecha,
+    estado;
+  for (vuelta = 0; vuelta < 400; vuelta++) {
+    fecha = fechaLocal(dia);
+    estado = historia[fecha];
+    if (fecha === hoy && !estado) {
+      dia.setDate(dia.getDate() - 1);
       continue;
     }
-    if (s === "full" || s === "partial") n++;
-    else if (s !== "rest" && s !== "shield") break;
-    d.setDate(d.getDate() - 1);
+    if (estado === "full" || estado === "partial") racha++;
+    else if (estado !== "rest" && estado !== "shield") break;
+    dia.setDate(dia.getDate() - 1);
   }
-  return n;
+  return racha;
 }
-function sdcDiaPasado(e, f) {
-  var a = clonar(e),
-    l = [],
+function sdcDiaPasado(actual, fecha) {
+  var partida = clonar(actual),
+    avisos = [],
     hoy = fechaHoy();
-  if (!f || f >= hoy) return { state: a, notices: l };
-  var s = a.history[f];
-  if (s && s !== "skipped" && s !== "missed")
-    return { state: a, notices: ["Ese día ya estaba registrado."] };
-  ((a.history[f] = "partial"),
-    a.dayLog || (a.dayLog = {}),
-    a.dayLog[f] || (a.dayLog[f] = { acts: [], reps: null, xp: 0 }),
-    a.dayLog[f].acts.includes("Anotado después") || a.dayLog[f].acts.push("Anotado después"),
-    a.week.sessionDates || (a.week.sessionDates = []),
-    f >= a.week.weekStart &&
-      !a.week.sessionDates.includes(f) &&
-      (a.week.sessionDates.push(f), (a.week.trained = a.week.sessionDates.length)));
-  var nr = sdcRachaCalc(a);
+  if (!fecha || fecha >= hoy) return { state: partida, notices: avisos };
+  var estado = partida.history[fecha];
+  if (estado && estado !== "skipped" && estado !== "missed")
+    return { state: partida, notices: ["Ese día ya estaba registrado."] };
+  ((partida.history[fecha] = "partial"),
+    partida.dayLog || (partida.dayLog = {}),
+    partida.dayLog[fecha] || (partida.dayLog[fecha] = { acts: [], reps: null, xp: 0 }),
+    partida.dayLog[fecha].acts.includes("Anotado después") ||
+      partida.dayLog[fecha].acts.push("Anotado después"),
+    partida.week.sessionDates || (partida.week.sessionDates = []),
+    fecha >= partida.week.weekStart &&
+      !partida.week.sessionDates.includes(fecha) &&
+      (partida.week.sessionDates.push(fecha),
+      (partida.week.trained = partida.week.sessionDates.length)));
+  var racha = sdcRachaCalc(partida);
   return (
-    nr > (a.streak.current || 0) &&
-      ((a.streak.current = nr), (a.streak.best = Math.max(a.streak.best || 0, nr))),
-    l.push("Anotado: entrenaste el " + f + ". Cuenta como día entrenado, sin XP."),
-    { state: a, notices: l }
+    racha > (partida.streak.current || 0) &&
+      ((partida.streak.current = racha),
+      (partida.streak.best = Math.max(partida.streak.best || 0, racha))),
+    avisos.push("Anotado: entrenaste el " + fecha + ". Cuenta como día entrenado, sin XP."),
+    { state: partida, notices: avisos }
   );
 }
-function sdcMarcaK(md, mo) {
-  return String(md) + "|" + String(mo);
+function sdcMarcaK(modalidad, modo) {
+  return String(modalidad) + "|" + String(modo);
 }
-function sdcMarca(e, k) {
-  var t = e && e.today;
-  if (!t) return null;
-  var m = t.marcas && t.marcas[k];
-  if (m) return m;
-  var o = t.marca;
-  return o && sdcMarcaK(o.mod, o.mode) === k ? o : null;
+function sdcMarca(partida, clave) {
+  var hoy = partida && partida.today;
+  if (!hoy) return null;
+  var marca = hoy.marcas && hoy.marcas[clave];
+  if (marca) return marca;
+  var vieja = hoy.marca;
+  return vieja && sdcMarcaK(vieja.mod, vieja.mode) === clave ? vieja : null;
 }
-function sdcHoyReps(e) {
-  var t = e && e.today;
-  if (!t) return { squat: 0, pushup: 0, back: 0, abs: 0 };
-  var d = e.dayLog && e.dayLog[t.date],
-    r = d && d.reps;
-  return r || t.reps || { squat: 0, pushup: 0, back: 0, abs: 0 };
+function sdcHoyReps(partida) {
+  var hoy = partida && partida.today;
+  if (!hoy) return { squat: 0, pushup: 0, back: 0, abs: 0 };
+  var registro = partida.dayLog && partida.dayLog[hoy.date],
+    reps = registro && registro.reps;
+  return reps || hoy.reps || { squat: 0, pushup: 0, back: 0, abs: 0 };
 }
-function sdcHoyMeta(e, f) {
-  var t = e && e.today,
-    d = t && e.dayLog && e.dayLog[t.date],
-    m = d && d.meta;
-  return m || f || { squat: 0, pushup: 0, back: 0, abs: 0 };
+function sdcHoyMeta(partida, respaldo) {
+  var hoy = partida && partida.today,
+    registro = hoy && partida.dayLog && partida.dayLog[hoy.date],
+    meta = registro && registro.meta;
+  return meta || respaldo || { squat: 0, pushup: 0, back: 0, abs: 0 };
 }
-function sdcSumaReps(a, b) {
-  var g = ["squat", "pushup", "back", "abs"],
-    o = {},
-    k;
-  for (k = 0; k < g.length; k++) o[g[k]] = ((a && a[g[k]]) || 0) + ((b && b[g[k]]) || 0);
-  return o;
+function sdcSumaReps(unas, otras) {
+  var grupos = ["squat", "pushup", "back", "abs"],
+    suma = {},
+    indice;
+  for (indice = 0; indice < grupos.length; indice++)
+    suma[grupos[indice]] =
+      ((unas && unas[grupos[indice]]) || 0) + ((otras && otras[grupos[indice]]) || 0);
+  return suma;
 }
-function sdcDeshacerHook(ant, r) {
-  if (!r || !r.state || !r.state.undoSnapshot || !ant) return r;
-  r.state.undoSnapshot.ach = (ant.achievements || []).slice();
-  return r;
+function sdcDeshacerHook(antes, resultado) {
+  if (!resultado || !resultado.state || !resultado.state.undoSnapshot || !antes) return resultado;
+  resultado.state.undoSnapshot.ach = (antes.achievements || []).slice();
+  return resultado;
 }
-function sdcDeshacer(e) {
-  var u = e && e.undoSnapshot,
-    r = deshacerRegistroBase(e);
-  if (!u || !u.snap || !e.today || u.date !== e.today.date) return r;
-  var a = r.state,
-    rp = u.reps || {},
-    md = modalidadDelDia(a.profile, a.today.date, a.today.modality);
-  a.month &&
-    a.month.reps &&
-    ["squat", "pushup", "back", "abs"].forEach(function (g) {
-      a.month.reps[g] = Math.max(0, (a.month.reps[g] || 0) - (rp[g] || 0));
+function sdcDeshacer(actual) {
+  var snapshot = actual && actual.undoSnapshot,
+    resultado = deshacerRegistroBase(actual);
+  if (!snapshot || !snapshot.snap || !actual.today || snapshot.date !== actual.today.date)
+    return resultado;
+  var partida = resultado.state,
+    reps = snapshot.reps || {},
+    modalidad = modalidadDelDia(partida.profile, partida.today.date, partida.today.modality);
+  partida.month &&
+    partida.month.reps &&
+    ["squat", "pushup", "back", "abs"].forEach(function (grupo) {
+      partida.month.reps[grupo] = Math.max(
+        0,
+        (partida.month.reps[grupo] || 0) - (reps[grupo] || 0),
+      );
     });
-  [a.lifetimeModalities, a.week && a.week.modalities, a.month && a.month.modalities].forEach(
-    function (m) {
-      m && m[md] > 0 && (m[md] -= 1);
-    },
-  );
-  u.ach && (a.achievements = u.ach.slice());
-  return r;
+  [
+    partida.lifetimeModalities,
+    partida.week && partida.week.modalities,
+    partida.month && partida.month.modalities,
+  ].forEach(function (contador) {
+    contador && contador[modalidad] > 0 && (contador[modalidad] -= 1);
+  });
+  snapshot.ach && (partida.achievements = snapshot.ach.slice());
+  return resultado;
 }
-function sdcMetaHook(r, mt) {
-  if (!r || !r.state || !mt) return r;
-  var e = r.state,
-    t = e.today,
-    d = t && e.dayLog && e.dayLog[t.date];
-  if (d) d.meta = sdcSumaReps(d.meta, mt);
-  return r;
+function sdcMetaHook(resultado, meta) {
+  if (!resultado || !resultado.state || !meta) return resultado;
+  var partida = resultado.state,
+    hoy = partida.today,
+    registro = hoy && partida.dayLog && partida.dayLog[hoy.date];
+  if (registro) registro.meta = sdcSumaReps(registro.meta, meta);
+  return resultado;
 }
-function sdcIncKg(kg, g) {
-  var k = Number(kg) || 0;
-  if (g === "squat") return k >= 40 ? 5 : 2.5;
-  return k >= 20 ? 2.5 : 1;
+function sdcIncKg(kg, grupo) {
+  var kilos = Number(kg) || 0;
+  if (grupo === "squat") return kilos >= 40 ? 5 : 2.5;
+  return kilos >= 20 ? 2.5 : 1;
 }
-function sdcSugKg(e, g, nom) {
+function sdcSugKg(partida, grupo, nom) {
   if (!nom) return null;
-  var u = ((e && e.gymUlt) || {})[nom];
-  if (!u || !u.kgs || !u.kgs.length) return null;
-  var mx = 0,
-    i;
-  for (i = 0; i < u.kgs.length; i++) if (u.kgs[i] > mx) mx = u.kgs[i];
-  if (mx <= 0) return null;
-  var pc = u.pct === void 0 ? 1 : u.pct;
-  return pc >= 0.999
-    ? { kg: Math.round((mx + sdcIncKg(mx, g)) * 10) / 10, sube: !0 }
-    : { kg: mx, sube: !1 };
+  var ultima = ((partida && partida.gymUlt) || {})[nom];
+  if (!ultima || !ultima.kgs || !ultima.kgs.length) return null;
+  var maxKg = 0,
+    indice;
+  for (indice = 0; indice < ultima.kgs.length; indice++)
+    if (ultima.kgs[indice] > maxKg) maxKg = ultima.kgs[indice];
+  if (maxKg <= 0) return null;
+  var pct = ultima.pct === void 0 ? 1 : ultima.pct;
+  return pct >= 0.999
+    ? { kg: Math.round((maxKg + sdcIncKg(maxKg, grupo)) * 10) / 10, sube: !0 }
+    : { kg: maxKg, sube: !1 };
 }
-function sdcGymSer(e) {
-  return (e && e.gymSerieKg) || {};
+function sdcGymSer(partida) {
+  return (partida && partida.gymSerieKg) || {};
 }
-function sdcGymUlt(e) {
-  return (e && e.gymUlt) || {};
+function sdcGymUlt(partida) {
+  return (partida && partida.gymUlt) || {};
 }
-function sdcKgTxt(v) {
-  var n = Number(v) || 0;
-  return String(Math.round(n * 10) / 10).replace(".", ",");
+function sdcKgTxt(valor) {
+  var numero = Number(valor) || 0;
+  return String(Math.round(numero * 10) / 10).replace(".", ",");
 }
-function sdcTier(s) {
-  var t = String(s || "");
+function sdcTier(aviso) {
+  var texto = String(aviso || "");
   if (
-    t.indexOf("Primera vez:") >= 0 ||
-    t.indexOf("Cruzaste a") >= 0 ||
-    t.indexOf("Subiste a nivel") >= 0 ||
-    t.indexOf("Volviste al último rango") >= 0
+    texto.indexOf("Primera vez:") >= 0 ||
+    texto.indexOf("Cruzaste a") >= 0 ||
+    texto.indexOf("Subiste a nivel") >= 0 ||
+    texto.indexOf("Volviste al último rango") >= 0
   )
     return "epic";
   if (
-    t.indexOf("Sesión corta") >= 0 ||
-    t.indexOf("Ya no podés alcanzar") >= 0 ||
-    t.indexOf("vuelve a empezar") >= 0
+    texto.indexOf("Sesión corta") >= 0 ||
+    texto.indexOf("Ya no podés alcanzar") >= 0 ||
+    texto.indexOf("vuelve a empezar") >= 0
   )
     return "bad";
   if (
-    t.indexOf("Logro desbloqueado") >= 0 ||
-    t.indexOf("logros desbloqueados") >= 0 ||
-    t.indexOf("Nuevo sistema desbloqueado") >= 0 ||
-    t.indexOf("Recuperaste") >= 0 ||
-    t.indexOf("Rutina completa") >= 0 ||
-    t.indexOf("completada") >= 0 ||
-    t.indexOf("Bono") >= 0 ||
-    t.charAt(0) === "+"
+    texto.indexOf("Logro desbloqueado") >= 0 ||
+    texto.indexOf("logros desbloqueados") >= 0 ||
+    texto.indexOf("Nuevo sistema desbloqueado") >= 0 ||
+    texto.indexOf("Recuperaste") >= 0 ||
+    texto.indexOf("Rutina completa") >= 0 ||
+    texto.indexOf("completada") >= 0 ||
+    texto.indexOf("Bono") >= 0 ||
+    texto.charAt(0) === "+"
   )
     return "good";
   return "info";
