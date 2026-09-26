@@ -91,6 +91,8 @@ explícitamente cuál rompe y por qué.
    ya podías hacerlo. Una estimación nunca se disfraza de medición: los kilómetros estimados se
    ponen en el campo para que los confirmes.
 3. **No se castiga.** Nunca se pierde XP. La única consecuencia de fallar es que se corte la racha.
+   Y hacer poco nunca es peor que no hacer nada: una rutina de menos de la mitad no cuenta como día
+   entrenado, pero tampoco es falta; el día queda como si no hubieras entrenado.
    Si alguna vez vuelve una penalidad, **nunca proporcional a la XP acumulada**: eso castiga más
    justo antes de subir de nivel.
 4. **Las recompensas se ganan.** Nada paga por tildar casillas. Hubo un logro del tier más alto que

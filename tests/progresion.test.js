@@ -10,6 +10,7 @@ import {
   registrar,
   parte,
   suma,
+  nuevaSesion,
 } from "./ayuda.js";
 
 beforeEach(() => fijarFecha());
@@ -121,15 +122,85 @@ describe("la primera rutina", () => {
 });
 
 describe("sin castigo", () => {
-  it("una sesion corta no quita XP: solo corta la racha", () => {
+  // La misma partida abierta N dias despues (HOY es jueves 24/09).
+  function alOtroDia(e, dias = 1) {
+    fijarFecha(new Date(2026, 8, 24 + dias, 12));
+    return J.cargarPartida(e);
+  }
+
+  it("una sesion corta no quita XP, no corta la racha en el acto y no es falta", () => {
     const e = jugadorNuevo();
     e.progress.currentXP = 40;
     e.streak.current = 5;
     const { state: s, notices } = registrar(e, parte(e, 0.2));
-    expect(s.progress.currentXP).toBeGreaterThanOrEqual(40);
-    expect(s.streak.current).toBe(0);
-    expect(s.history[s.today.date]).toBe("missed");
-    expect(notices.some((n) => n.startsWith("Sesión corta"))).toBe(true);
+    // Con la racha intacta puede subir de nivel: se compara la XP total.
+    expect(J.xpTotal(s.progress.level, s.progress.currentXP)).toBeGreaterThan(J.xpTotal(1, 40));
+    expect(s.streak.current).toBe(5);
+    expect(s.streak.missed).toBe(0);
+    expect(s.history[s.today.date]).toBeUndefined();
+    const aviso = notices.find((n) => n.startsWith("Sesión corta"));
+    expect(aviso).toBeTruthy();
+    expect(J.sdcTier(aviso)).toBe("info");
+  });
+
+  it("al otro dia queda igual que no haber entrenado, no peor", () => {
+    const e = jugadorNuevo();
+    e.streak.current = 5;
+    const corta = registrar(e, parte(e, 0.2)).state;
+    const nada = alOtroDia(e).state;
+    const conCorta = alOtroDia(corta).state;
+    expect(nada.history["2026-09-24"]).toBe("skipped");
+    expect(conCorta.history["2026-09-24"]).toBe("skipped");
+    expect(conCorta.streak.current).toBe(nada.streak.current);
+    expect(conCorta.streak.missed).toBe(nada.streak.missed);
+  });
+
+  it("otra sesion el mismo dia hace que el dia cuente", () => {
+    const e = jugadorNuevo();
+    e.streak.current = 5;
+    const corta = registrar(e, parte(e, 0.2)).state;
+    const otra = nuevaSesion(corta, "flow");
+    const { state: s } = registrar(otra, parte(otra, 0.6));
+    expect(s.today.corta).toBeUndefined();
+    expect(s.streak.current).toBe(6);
+    const manana = alOtroDia(s).state;
+    expect(manana.history["2026-09-24"]).toBe("partial");
+    expect(manana.streak.current).toBe(6);
+  });
+
+  it("deshacer devuelve la racha diaria que habia antes", () => {
+    const e = jugadorNuevo();
+    e.streak.current = 5;
+    const corta = J.deshacerRegistroBase(registrar(e, parte(e, 0.2)).state).state;
+    expect(corta.streak.current).toBe(5);
+    expect(corta.today.corta).toBeUndefined();
+    const completa = J.deshacerRegistroBase(registrar(e).state).state;
+    expect(completa.streak.current).toBe(5);
+  });
+
+  it("un domingo sin rutina con la semana cumplida no es falta", () => {
+    fijarFecha(new Date(2026, 8, 27, 12));
+    const e = jugadorNuevo({ weeklyGoal: 3 });
+    e.week.sessionDates = ["2026-09-21", "2026-09-22", "2026-09-23"];
+    e.week.trained = 3;
+    fijarFecha(new Date(2026, 8, 28, 12));
+    const { state: s, notices } = J.cargarPartida(e);
+    expect(s.history["2026-09-27"]).toBe("skipped");
+    expect(s.streak.missed).toBe(0);
+    expect(notices.some((n) => n.startsWith("Semana cumplida"))).toBe(true);
+    expect(notices.some((n) => n.startsWith("Ya no podés alcanzar"))).toBe(false);
+  });
+
+  it("un domingo sin rutina con la semana sin cumplir si es falta", () => {
+    fijarFecha(new Date(2026, 8, 27, 12));
+    const e = jugadorNuevo({ weeklyGoal: 3 });
+    e.week.sessionDates = ["2026-09-21"];
+    e.week.trained = 1;
+    fijarFecha(new Date(2026, 8, 28, 12));
+    const { state: s, notices } = J.cargarPartida(e);
+    expect(s.history["2026-09-27"]).toBe("missed");
+    expect(s.streak.missed).toBe(1);
+    expect(notices.some((n) => n.startsWith("Ya no podés alcanzar"))).toBe(true);
   });
 
   it("una rutina parcial (50% o mas) da 1 PD y cuenta como dia entrenado", () => {

@@ -111,9 +111,11 @@ describe("avisos: sdcTier clasifica por el texto", () => {
     expect(J.sdcTier("Volviste al último rango. Las metas vuelven a salir de tus récords.")).toBe(
       "epic",
     );
-    expect(J.sdcTier("Sesión corta (20%). Conservas tu XP, pero la racha vuelve a empezar.")).toBe(
-      "bad",
-    );
+    expect(
+      J.sdcTier(
+        "Ya no podés alcanzar tus 3 sesiones esta semana. La racha vuelve a empezar, pero tu XP queda intacta.",
+      ),
+    ).toBe("bad");
     expect(J.sdcTier('¡Travesía completada! "El Motor" +40 XP.')).toBe("good");
     expect(J.sdcTier("+25 XP: nueva marca de carga. Prensa 60 → 65 kg")).toBe("good");
     expect(J.sdcTier("Logros: 7 logros desbloqueados (+9 PD).")).toBe("good");

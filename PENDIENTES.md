@@ -21,7 +21,7 @@ ni la dirección del sitio.
 - **Revisor automático (ESLint)**: marca variables que no existen, código que nadie usa, hooks de
   React dentro de un `if` y una variable que tapa a otra del mismo nombre. Corre antes de publicar, igual que las pruebas. En la primera pasada
   encontró que el campo del peso corporal se había perdido y una docena de valores muertos.
-- **Pruebas**: 138 automáticas (curva de XP, Umbral, buffos, deshacer, sonidos…) y 19 de punta a
+- **Pruebas**: 143 automáticas (curva de XP, Umbral, buffos, deshacer, sonidos…) y 19 de punta a
   punta en Edge, una de ellas mide la legibilidad de cada pestaña. **Si alguna falla, o el revisor encuentra un error, no se publica nada**: el deploy lo hace GitHub Actions y las
   corre antes.
 - **App partida**: cada pestaña en su archivo (`src/ui/pestanas/`) y Entreno en tarjetas. Entreno
@@ -103,6 +103,14 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
 
 ## B2 · Errores encontrados jugando
 
+- ~~Registrar menos de la mitad de la rutina castigaba más que no entrenar~~ — resuelto
+  (25/09/2026). Marcaba el día como falta y cortaba la racha en el momento; ahora el día queda como
+  si no hubieras entrenado (sin falta si todavía llegás a la meta de la semana), la XP se cobra con
+  el bono de racha y otra sesión ese día lo hace contar. Deshacer una sesión corta ya no deja la
+  racha en 0.
+- ~~Un domingo sin rutina quedaba como falta aunque la semana estuviera cumplida~~ — resuelto: la
+  app cerraba la semana antes de evaluar el domingo y lo medía contra la semana nueva. Salía
+  "Semana cumplida: 3 de 3" y justo abajo "Ya no podés alcanzar tus 3 sesiones esta semana".
 - ~~La tarjeta del compañero con el consejo pasaba desapercibida, y funciones como «Ajustar series»
   no las descubría nadie~~ — resuelto (25/09/2026). El compañero **se asoma** en el descanso entre
   series o en el resumen, una vez por sesión y nunca el primer día, y cuenta algo de la app que

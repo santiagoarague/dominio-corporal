@@ -284,11 +284,7 @@ function sdcTier(aviso) {
     texto.indexOf("Volviste al último rango") >= 0
   )
     return "epic";
-  if (
-    texto.indexOf("Sesión corta") >= 0 ||
-    texto.indexOf("Ya no podés alcanzar") >= 0 ||
-    texto.indexOf("vuelve a empezar") >= 0
-  )
+  if (texto.indexOf("Ya no podés alcanzar") >= 0 || texto.indexOf("vuelve a empezar") >= 0)
     return "bad";
   if (
     texto.indexOf("Logro desbloqueado") >= 0 ||

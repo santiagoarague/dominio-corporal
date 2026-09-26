@@ -277,7 +277,7 @@ function App({ player, setPlayer, initialNotices }) {
     diasGrilla = diasConstancia(
       history,
       today.date,
-      today.completed
+      today.completed && !today.corta
         ? today.mode === "rest"
           ? "rest"
           : today.fullCompletion

@@ -218,6 +218,60 @@ function cargarPartida(guardada) {
     partida.profile.weeklyGoal || (partida.profile.weeklyGoal = metaSemanalDefecto),
     partida.weeklyStreak === void 0 && (partida.weeklyStreak = 0),
     partida.bestWeeklyStreak === void 0 && (partida.bestWeeklyStreak = 0));
+  // El día que termina se evalúa antes de cerrar la semana, con los números de su propia
+  // semana: al revés, un domingo sin rutina se medía contra la semana nueva (0 sesiones)
+  // y quedaba como falta aunque la semana estuviera cumplida.
+  if (partida.today.date !== hoy) {
+    // Un día con solo una sesión corta (today.corta) se evalúa como un día sin entrenar.
+    let sinSesion =
+      (!partida.today.completed || partida.today.corta) &&
+      !(partida.week.sessionDates || []).includes(partida.today.date);
+    if (sinSesion && partida.dominion.shields > 0)
+      ((partida.dominion.shields -= 1),
+        (partida.history[partida.today.date] = "shield"),
+        avisos.push(
+          `Un Escudo de Racha absorbió el día ${partida.today.date}: tu racha sigue intacta. Te quedan ${partida.dominion.shields}.`,
+        ));
+    else if (sinSesion) {
+      let metaSem = metaSemanal(partida),
+        hechas = partida.week.trained || 0,
+        quedan = Math.max(0, diasRestantesSemana(partida.today.date) - 1),
+        alcanza = hechas + quedan >= metaSem;
+      if (((partida.streak.current = 0), alcanza))
+        ((partida.history[partida.today.date] = "skipped"),
+          hechas < metaSem &&
+            avisos.push(
+              `Día de descanso no planificado. Seguís en camino: ${hechas}/${metaSem} sesiones esta semana, te quedan ${quedan} días.`,
+            ));
+      else {
+        ((partida.streak.missed += 1), (partida.history[partida.today.date] = "missed"));
+        (avisos.push(
+          `Ya no podés alcanzar tus ${metaSem} sesiones esta semana. La racha vuelve a empezar, pero tu XP queda intacta.`,
+        ),
+          avisos.push(
+            fraseMascota(
+              frasesVolver,
+              partida.today.date,
+              partida.profile.pet && partida.profile.pet.name,
+              partida.profile.pet && partida.profile.pet.type,
+            ),
+          ));
+      }
+    }
+    ((partida.today = {
+      date: hoy,
+      mode: "pending",
+      modality: null,
+      rank: partida.progress.rank,
+      reps: { squat: 0, pushup: 0, back: 0, abs: 0 },
+      stretchDone: !1,
+      completed: !1,
+      fullCompletion: !1,
+      xpEarned: 0,
+      doneModalities: [],
+    }),
+      (partida.history = ultimos60Dias(partida.history, hoy)));
+  }
   let semana = inicioSemana(hoy);
   if (partida.week.weekStart !== semana) {
     partida.week.stretchCount >= 2
@@ -263,59 +317,6 @@ function cargarPartida(guardada) {
         reps: { squat: 0, pushup: 0, back: 0, abs: 0 },
         modalities: { bodyweight: 0, gym: 0, flow: 0 },
       }));
-  }
-  if (partida.today.date !== hoy) {
-    if (
-      !partida.today.completed &&
-      !(partida.week.sessionDates || []).includes(partida.today.date) &&
-      partida.dominion.shields > 0
-    )
-      ((partida.dominion.shields -= 1),
-        (partida.history[partida.today.date] = "shield"),
-        avisos.push(
-          `Un Escudo de Racha absorbió el día ${partida.today.date}: tu racha sigue intacta. Te quedan ${partida.dominion.shields}.`,
-        ));
-    else if (
-      !partida.today.completed &&
-      !(partida.week.sessionDates || []).includes(partida.today.date)
-    ) {
-      let metaSem = metaSemanal(partida),
-        hechas = partida.week.trained || 0,
-        quedan = Math.max(0, diasRestantesSemana(partida.today.date) - 1),
-        alcanza = hechas + quedan >= metaSem;
-      if (((partida.streak.current = 0), alcanza))
-        ((partida.history[partida.today.date] = "skipped"),
-          avisos.push(
-            `Día de descanso no planificado. Seguís en camino: ${hechas}/${metaSem} sesiones esta semana, te quedan ${quedan} días.`,
-          ));
-      else {
-        ((partida.streak.missed += 1), (partida.history[partida.today.date] = "missed"));
-        (avisos.push(
-          `Ya no podés alcanzar tus ${metaSem} sesiones esta semana. La racha vuelve a empezar, pero tu XP queda intacta.`,
-        ),
-          avisos.push(
-            fraseMascota(
-              frasesVolver,
-              partida.today.date,
-              partida.profile.pet && partida.profile.pet.name,
-              partida.profile.pet && partida.profile.pet.type,
-            ),
-          ));
-      }
-    }
-    ((partida.today = {
-      date: hoy,
-      mode: "pending",
-      modality: null,
-      rank: partida.progress.rank,
-      reps: { squat: 0, pushup: 0, back: 0, abs: 0 },
-      stretchDone: !1,
-      completed: !1,
-      fullCompletion: !1,
-      xpEarned: 0,
-      doneModalities: [],
-    }),
-      (partida.history = ultimos60Dias(partida.history, hoy)));
   }
   if (partida.progress.rank === "Z" && partida.lastFullDate) {
     let dias = diasEntre(partida.lastFullDate, hoy);
@@ -465,6 +466,7 @@ function registrarRutina(original, modo, repsSesion, modificadorOk, gvol) {
           ? clonar(original.dayLog[original.today.date])
           : null,
       streakBest: original.streak.best,
+      streakCurrent: original.streak.current,
       streakMissed: original.streak.missed,
       lastFullDate: original.lastFullDate,
       zDemoted: original.zDemoted,
@@ -561,11 +563,12 @@ function registrarRutina(original, modo, repsSesion, modificadorOk, gvol) {
   else if (sesionesPrevias > 0)
     avisos.push("Sesión extra demasiado corta. Sin bono, sin penalización.");
   else {
-    ((partida.streak.missed += 1),
-      (partida.streak.current = 0),
-      (partida.history[partida.today.date] = "missed"));
+    // Menos de la mitad no cuenta como día entrenado, pero tampoco castiga: el día queda
+    // como si no hubieras entrenado (se decide al cambiar el día, y otra sesión lo salva).
+    // Antes lo marcaba como falta y cortaba la racha en el acto, peor que no hacer nada.
+    partida.today.corta = !0;
     (avisos.push(
-      `Sesión corta (${Math.round(pct * 100)}%). Conservas tu XP, pero la racha vuelve a empezar.`,
+      `Sesión corta (${Math.round(pct * 100)}%): la XP es tuya, pero hace falta la mitad de la rutina para que el día cuente como entrenado.`,
     ),
       avisos.push(
         fraseMascota(
@@ -613,6 +616,7 @@ function registrarRutina(original, modo, repsSesion, modificadorOk, gvol) {
     (partida.progress.currentXP += xp),
     (partida = subirNiveles(partida, avisos)),
     (partida.today.completed = !0),
+    pct >= 0.5 && delete partida.today.corta,
     (partida.today.doneModalities = [...(partida.today.doneModalities || [])]),
     ((modalidad) => {
       (partida.today.doneModalities.includes(modalidad) ||
@@ -703,7 +707,10 @@ function deshacerRegistroBase(actual) {
         )),
         (partida.week.trained = partida.week.sessionDates.length),
         snap.hadSession ||
-          ((partida.streak.current = Math.max(0, partida.streak.current - 1)),
+          ((partida.streak.current =
+            snap.streakCurrent !== void 0
+              ? snap.streakCurrent
+              : Math.max(0, partida.streak.current - 1)),
           (partida.streak.best = snap.streakBest)),
         snap.history ? (partida.history[fecha] = snap.history) : delete partida.history[fecha],
         snap.dayLog ? (partida.dayLog[fecha] = snap.dayLog) : delete partida.dayLog[fecha])

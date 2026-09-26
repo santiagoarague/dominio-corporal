@@ -20,7 +20,7 @@ var guia = [
     {
       g: "PARA EMPEZAR",
       title: "Tu semana",
-      text: "Vos elegís cuántas sesiones querés hacer por semana. Cuenta como sesión la rutina, una travesía, ganar un combate, una sesión de Instinto Primal o terminar una expedición: cualquiera de ellas marca el día como entrenado. Tu racha solo se corta si te salteás tantos días que ya no te alcanza para llegar a la meta. Un día suelto sin entrenar no cuesta nada, y nunca perdés XP. Abajo de la meta están los cuadraditos de tus últimos días, cada uno con el color del tipo de día que fue; tocá cualquiera para ver qué hiciste.",
+      text: "Vos elegís cuántas sesiones querés hacer por semana. Cuenta como sesión la rutina (desde la mitad de las repeticiones), una travesía, ganar un combate, una sesión de Instinto Primal o terminar una expedición: cualquiera de ellas marca el día como entrenado. Si registrás menos de la mitad, la XP es tuya y el día queda como si no hubieras entrenado, sin falta; otra sesión ese mismo día lo hace contar. Tu racha solo se corta si te salteás tantos días que ya no te alcanza para llegar a la meta. Un día suelto sin entrenar no cuesta nada, y nunca perdés XP. Abajo de la meta están los cuadraditos de tus últimos días, cada uno con el color del tipo de día que fue; tocá cualquiera para ver qué hiciste.",
     },
     {
       g: "PARA EMPEZAR",
