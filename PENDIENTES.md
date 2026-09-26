@@ -21,7 +21,7 @@ ni la dirección del sitio.
 - **Revisor automático (ESLint)**: marca variables que no existen, código que nadie usa, hooks de
   React dentro de un `if` y una variable que tapa a otra del mismo nombre. Corre antes de publicar, igual que las pruebas. En la primera pasada
   encontró que el campo del peso corporal se había perdido y una docena de valores muertos.
-- **Pruebas**: 159 automáticas (curva de XP, Umbral, buffos, deshacer, sonidos…) y 25 de punta a
+- **Pruebas**: 159 automáticas (curva de XP, Umbral, buffos, deshacer, sonidos…) y 26 de punta a
   punta en Edge, una de ellas mide la legibilidad de cada pestaña. **Si alguna falla, o el revisor encuentra un error, no se publica nada**: el deploy lo hace GitHub Actions y las
   corre antes.
 - **App partida**: cada pestaña en su archivo (`src/ui/pestanas/`) y Entreno en tarjetas. Entreno

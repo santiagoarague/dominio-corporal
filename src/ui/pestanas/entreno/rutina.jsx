@@ -93,9 +93,14 @@ export function TarjetaRutina({
       <div className="flex items-center gap-2 mb-1">
         <IconoCheck size={16} color={colorDelRango} />
         <div className="text-sm" style={{ color: "#e8ecf7", fontWeight: 600 }}>
-          Misión de hoy completada
+          {today.corta ? "Sesión registrada" : "Misión de hoy completada"}
         </div>
       </div>
+      {today.corta ? (
+        <div className="text-xs mb-1" style={{ color: "#9aa4bd" }}>
+          Menos de la mitad de la rutina: el día todavía no cuenta como entrenado.
+        </div>
+      ) : null}
       <div className="text-xs" style={{ color: "#9aa4bd" }}>
         Modo:{" "}
         {today.mode === "normal"

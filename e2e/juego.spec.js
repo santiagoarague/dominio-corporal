@@ -597,3 +597,20 @@ test("Compartir mi semana: sin menú para compartir, la descarga", async ({ page
   expect((await descarga).suggestedFilename()).toMatch(/^mi-semana-.*\.png$/);
   await expect(page.getByText("Se descargó la imagen de tu semana.")).toBeVisible();
 });
+
+test("una sesión corta dice Sesión registrada, no Misión de hoy completada", async ({ page }) => {
+  await empezarConValoresPorDefecto(page);
+  await boton(page, "Hoy no").click();
+  const fila = page
+    .locator("div.py-2")
+    .filter({ has: page.locator(".sdc-chip") })
+    .first();
+  await fila.getByRole("button", { name: /^Marcar serie 1 de 3/ }).click();
+  await page.getByRole("button", { name: /^Completar rutina · \d+\/\d+ reps$/ }).click();
+  await expect(page.getByText("Sesión registrada", { exact: true })).toBeVisible();
+  await expect(
+    page.getByText("Menos de la mitad de la rutina: el día todavía no cuenta como entrenado."),
+  ).toBeVisible();
+  await expect(page.getByText("Misión de hoy completada")).toHaveCount(0);
+  expect((await partida(page)).today.corta).toBe(true);
+});

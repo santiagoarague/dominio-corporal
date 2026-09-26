@@ -213,8 +213,12 @@ entrenados, días perfectos, repeticiones, XP de tus rutinas y primeras veces, c
 el mes anterior (verde si subió; gris si bajó, sin alarma). Se cierra con *Entendido*.
 
 ### Constancia
-- El jugador elige **cuántas sesiones por semana**. La racha solo se corta si ya no se puede llegar
-  a esa meta: un día suelto no cuesta nada.
+- El jugador elige **cuántas sesiones por semana**. Hay dos rachas: la **semanal** (semanas seguidas
+  cumpliendo la meta; un día suelto no la corta mientras todavía se llegue) y la **diaria** (días
+  seguidos entrenando, +2% de XP por día hasta +30%; se corta el día que no se entrena, salvo el día
+  de descanso o un Escudo de Racha).
+- Una rutina de menos de la mitad se registra y da su XP, pero el resumen dice *Sesión registrada*
+  (no *Misión de hoy completada*): el día todavía no cuenta como entrenado.
 - Calendario con los últimos días; tocando un día pasado sin registro se puede anotar "Entrené este
   día y me olvidé": cuenta para la racha, sin XP.
 - Salidas para un mal día: Recuperación, **un día de descanso por semana** y **Escudo de Racha**
