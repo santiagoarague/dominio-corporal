@@ -61,7 +61,7 @@ describe("qué cuenta", () => {
   it("no cuenta lo que ya usaste ni lo que ya te contó", () => {
     let e = J.anotarPistaUsada(veterano(), "desmarcar", HOY);
     e = J.anotarPistaVista(e, "ajustar", HOY);
-    expect(J.elegirPista(e, "descanso", ids, HOY).id).toBe("sostener");
+    expect(J.elegirPista(e, "descanso", ids, HOY).id).toBe("relajar");
   });
 
   it("lo que la partida ya dice usado tampoco", () => {

@@ -459,3 +459,64 @@ test("¿Cuánto mejoraste?: a las cuatro semanas propone la prueba y Perfil comp
   await expect(fila).toHaveText("Sentadillas1520+5");
   expect(errores).toEqual([]);
 });
+
+test("Relajate: desde el descanso, respirar, salir y se cierra solo al terminar", async ({
+  page,
+}) => {
+  const errores = [];
+  page.on("pageerror", (e) => errores.push(e.message));
+  await page.clock.install({ time: new Date("2026-09-24T10:00:00-03:00") });
+  await page.clock.pauseAt(new Date("2026-09-24T10:00:01-03:00"));
+  await page.goto("/");
+  await page.clock.runFor(60_000);
+  await boton(page, "Continuar").click();
+  await boton(page, "Saltar y empezar con valores por defecto").click();
+  await expect(page.getByText("Rutina de hoy")).toBeVisible();
+  await boton(page, "Hoy no").click();
+  const pasar = async (ms) => {
+    for (let t = 0; t < ms; t += 100) {
+      await page.clock.runFor(100);
+      await page.waitForTimeout(5);
+    }
+  };
+  const fila = page
+    .locator("div.py-2")
+    .filter({ has: page.locator(".sdc-chip") })
+    .first();
+  await fila.getByRole("button", { name: /^Marcar serie 1 de 3/ }).click();
+  await boton(page, "Relajate").click();
+  const pantalla = page.getByRole("dialog", { name: "Relajate" });
+  await expect(pantalla).toBeVisible();
+  await expect(pantalla.getByText("DESCANSO", { exact: true })).toBeVisible();
+  await expect(boton(page, "Jugar")).toHaveAttribute("aria-pressed", "true");
+
+  // Tocar al compañero no rompe nada, y Respirar guía inhalar y exhalar.
+  await pasar(1000);
+  await pantalla.locator('[data-relax="companero"]').click();
+  await boton(page, "Respirar").click();
+  await pasar(1000);
+  await expect(pantalla.getByText(/^Inhalá… [1-4]$/)).toBeVisible();
+  await pasar(3500);
+  await expect(pantalla.getByText(/^Exhalá… [1-6]$/)).toBeVisible();
+
+  // Salir vuelve a la rutina con el descanso andando.
+  await boton(page, "Salir").click();
+  await expect(pantalla).toHaveCount(0);
+  await expect(page.getByText("DESCANSO", { exact: true })).toBeVisible();
+
+  // Abierto otra vez, se cierra solo cuando el descanso termina.
+  await boton(page, "Relajate").click();
+  await expect(pantalla).toBeVisible();
+  await page.clock.runFor(200_000);
+  await pasar(1000);
+  await expect(pantalla).toHaveCount(0);
+  await expect(page.getByText("DESCANSO", { exact: true })).toHaveCount(0);
+
+  // Tocando al compañero de arriba se abre sin descanso.
+  await page.getByRole("button", { name: "Relajate con tu compañero" }).click();
+  await expect(pantalla).toBeVisible();
+  await expect(pantalla.getByText("DESCANSO", { exact: true })).toHaveCount(0);
+  await boton(page, "Salir").click();
+  await expect(pantalla).toHaveCount(0);
+  expect(errores).toEqual([]);
+});

@@ -51,6 +51,7 @@ export function TarjetaRutina({
   sdcMarcarMod,
   sdcMarcarTodo,
   sdcDesmarcarTodo,
+  abrirRelax,
   sdcModOk,
   sdcSer,
   sdcSerie,
@@ -383,6 +384,7 @@ export function TarjetaRutina({
           seconds={sdcDesc || descansoBase[profile.focusProfile] || 60}
           ini={sdcDescIni}
           onSkip={() => setDescansando(!1)}
+          onRelajar={abrirRelax}
         />
       )}
       <FilaEjercicio

@@ -6,7 +6,8 @@ import { sdcVib } from "../logica/series.js";
 import { pitido } from "./prueba.jsx";
 import { usePantallaEncendida } from "./pantalla.js";
 
-function BarraDescanso({ seconds, onSkip, ini }) {
+// onRelajar: abre Relajate (el compañero) sin cortar el descanso.
+function BarraDescanso({ seconds, onSkip, ini, onRelajar }) {
   let [tic, setTic] = useState(0),
     quedan = Math.max(0, seconds - Math.floor((Date.now() - (ini || Date.now())) / 1e3));
   usePantallaEncendida();
@@ -34,7 +35,7 @@ function BarraDescanso({ seconds, onSkip, ini }) {
       <div className="mx-auto" style={{ maxWidth: 420, padding: "10px 16px 12px" }}>
         <div className="flex items-center justify-between gap-3">
           <div>
-            <div className="text-xs" style={{ color: "#9aa4bd", letterSpacing: 2 }}>
+            <div className="text-xs" style={{ color: "#9aa4bd", letterSpacing: 1 }}>
               DESCANSO
             </div>
             <div
@@ -48,11 +49,32 @@ function BarraDescanso({ seconds, onSkip, ini }) {
               {sdcEstMMSS(quedan)}
             </div>
           </div>
+          {onRelajar && (
+            <button
+              onClick={onRelajar}
+              data-pista="relajar"
+              style={{
+                marginLeft: "auto",
+                minHeight: 44,
+                padding: "0 10px",
+                fontSize: 15,
+                whiteSpace: "nowrap",
+                background: "rgba(95,211,181,0.12)",
+                border: "1px solid #5fd3b5",
+                color: "#5fd3b5",
+                fontWeight: 700,
+              }}
+            >
+              Relajate
+            </button>
+          )}
           <button
             onClick={onSkip}
             style={{
               minHeight: 44,
-              padding: "0 18px",
+              padding: onRelajar ? "0 10px" : "0 18px",
+              fontSize: onRelajar ? 15 : void 0,
+              whiteSpace: "nowrap",
               background: "rgba(255,184,79,0.12)",
               border: "1px solid #ffb84f",
               color: "#ffb84f",

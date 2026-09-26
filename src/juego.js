@@ -30,6 +30,7 @@ export * from "./logica/mejora.js";
 export * from "./datos/pistas.js";
 export * from "./logica/pistas.js";
 export * from "./ui/companero.jsx";
+export * from "./ui/relajate.jsx";
 export * from "./ui/pantalla.js";
 export * from "./ui/caminata.jsx";
 export * from "./ui/calentamiento.jsx";

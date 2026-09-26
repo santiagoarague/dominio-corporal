@@ -95,7 +95,7 @@ var guia = [
     {
       g: "LO DEMÁS",
       title: "Tu compañero",
-      text: "Es el que está arriba de todo con un consejo por día. En el descanso entre series, o cuando terminás la rutina, a veces se asoma abajo con un «¡Psst!»: tocalo y te cuenta algo de la app que todavía no usaste, y «Mostrame» te lleva al botón. Si no lo tocás, se va solo. Sale como mucho una vez por sesión y nunca el primer día. En Perfil lo cambiás por un perro, un gato o una cara, y en Sistemas del juego lo apagás.",
+      text: "Es el que está arriba de todo con un consejo por día. En el descanso entre series, o cuando terminás la rutina, a veces se asoma abajo con un «¡Psst!»: tocalo y te cuenta algo de la app que todavía no usaste, y «Mostrame» te lleva al botón. Si no lo tocás, se va solo. Sale como mucho una vez por sesión y nunca el primer día. Si lo tocás arriba, o tocás «Relajate» en la barra de descanso, tenés un rato para aflojar: jugar con él (las pesas que suben las levanta y las gotas llenan tu botella de agua) o respirar con él, inflándose 4 segundos y desinflándose 6. No da XP ni corta el descanso. En Perfil lo cambiás por un perro, un gato o una cara, y en Sistemas del juego lo apagás.",
     },
     {
       g: "LO DEMÁS",

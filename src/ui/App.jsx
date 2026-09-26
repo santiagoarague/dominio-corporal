@@ -124,6 +124,7 @@ import { PestanaEntreno } from "./pestanas/entreno.jsx";
 import { PestanaPerfil } from "./pestanas/perfil.jsx";
 import { PanelPruebas } from "./pestanas/pruebas.jsx";
 import { Companero } from "./companero.jsx";
+import { Relajate } from "./relajate.jsx";
 import { pitido } from "./prueba.jsx";
 import { anotarPistaUsada } from "../logica/pistas.js";
 
@@ -242,6 +243,9 @@ function App({ player, setPlayer, initialNotices }) {
     [confirmarRestaurar, setConfirmarRestaurar] = useState(!1),
     [metronomoOn, setMetronomoOn] = useState(!1),
     [descansando, setDescansando] = useState(!1),
+    // Relajate abierto: "descanso" (desde la barra de descanso) o "libre" (tocando al
+    // compañero de arriba); null, cerrado.
+    [relax, setRelax] = useState(null),
     descansoBase = { fuerza: 90, resistencia: 45, salud: 60 },
     metaSemana = metaSemanal(player),
     sdcYa = today.completed || (today.doneModalities || []).includes(modalidad),
@@ -1144,6 +1148,10 @@ function App({ player, setPlayer, initialNotices }) {
   }, [pestana, progress.level, progress.rank, player.unlockAll]);
   // Sin sonido: pitido deja de sonar en toda la app. Al desmontar (reiniciar la partida)
   // vuelve a sonar, para que el inicio de un jugador nuevo no herede el silencio.
+  // Abierto desde el descanso, se cierra solo cuando el descanso termina.
+  useEffect(() => {
+    relax === "descanso" && !descansando && setRelax(null);
+  }, [relax, descansando]);
   let silencio = !!(ui && ui.silencio);
   useEffect(() => {
     pitido.silencio = silencio;
@@ -1613,12 +1621,24 @@ function App({ player, setPlayer, initialNotices }) {
           </Tarjeta>
         )}
         <Avisos notices={avisos} onDismiss={cerrarAviso} onDismissAll={() => avisar([])} />
+        {relax && (
+          <Relajate
+            tipo={profile.pet ? profile.pet.type : "dog"}
+            colorInicial={colorDeRango(progress.rank)}
+            descanso={
+              relax === "descanso" && descansando
+                ? { ini: sdcDescIni, seg: sdcDesc || descansoBase[profile.focusProfile] || 60 }
+                : null
+            }
+            onSalir={() => setRelax(null)}
+          />
+        )}
         {sistemaActivo(player, "companero") && (
           <Companero
             player={player}
             setPlayer={setPlayer}
             momento={
-              pestana !== "training"
+              pestana !== "training" || relax
                 ? null
                 : descansando && !today.completed
                   ? "descanso"
@@ -1672,12 +1692,19 @@ function App({ player, setPlayer, initialNotices }) {
             </button>
           </div>
           <div className="flex items-center gap-3">
-            <DibujoMascota
-              type={profile.pet ? profile.pet.type : "dog"}
-              size={48}
-              color={colorDeRango(progress.rank)}
-              rank={progress.rank}
-            />
+            <button
+              onClick={() => setRelax("libre")}
+              aria-label="Relajate con tu compañero"
+              title="Relajate con tu compañero"
+              style={{ background: "transparent", padding: 0, flexShrink: 0 }}
+            >
+              <DibujoMascota
+                type={profile.pet ? profile.pet.type : "dog"}
+                size={48}
+                color={colorDeRango(progress.rank)}
+                rank={progress.rank}
+              />
+            </button>
             <div>
               <div
                 style={{
@@ -1958,6 +1985,7 @@ function App({ player, setPlayer, initialNotices }) {
               sdcMarcarMod,
               sdcMarcarTodo,
               sdcDesmarcarTodo,
+              abrirRelax: () => setRelax("descanso"),
               sdcModOk,
               sdcSer,
               sdcSerie,

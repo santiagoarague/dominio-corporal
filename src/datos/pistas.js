@@ -18,6 +18,12 @@ var pistas = [
       "¿Ya sabés cuántas vas a hacer en cada serie? Tocá Ajustar series y armá tu plan, por ejemplo 15, 15 y 12.",
   },
   {
+    id: "relajar",
+    cuando: "descanso",
+    texto:
+      "En el descanso tocá Relajate: podés jugar conmigo o respirar conmigo mientras corre el reloj.",
+  },
+  {
     id: "sostener",
     cuando: "descanso",
     texto:

@@ -255,6 +255,16 @@ nunca; cuando ya usaste todo, cuenta un consejo de entrenamiento.
   un toque errado puede marcar una serie. No suena si el metrónomo está sonando.
 - Se apaga en Perfil → Sistemas del juego.
 
+**Relajate** — un rato con el compañero, tipo salvapantallas, para el descanso entre series o para
+bajar los nervios. Sin puntos ni reloj en contra, y sin depender del sonido (mucha gente entrena con
+música): lo que da gusto es lo que se ve y la vibración.
+- *Jugar*: flota y rebota despacio, cambia de color en cada borde; tocarlo lo aplasta con chispas;
+  se arrastra y se lanza. Suben mancuernas, pesas rusas, discos (tocalos: vuelan y los levanta) y
+  gotas (llenan una botella; con 6, "Tomá un trago de agua").
+- *Respirar*: se infla 4 s y se desinfla 6, con los ojos cerrados.
+- Se abre con **Relajate** en la barra de descanso (arriba se ve el reloj y se cierra solo al
+  terminar el descanso) o tocando al compañero arriba de todo, cualquier día. No da XP.
+
 ### Primeras veces
 Registro del día en que hiciste algo que antes no podías. La app pregunta una sola vez por cada
 movimiento ("¿Alguna vez hiciste X?" → *Nunca pude* / *Ya podía*) y después lo detecta sola. También

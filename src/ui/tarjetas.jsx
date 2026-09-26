@@ -41,8 +41,24 @@ function Plegable({ id, title, accent, collapsed, onToggle, right, children, sty
 function colorDeRango(rango) {
   return colorRango[rango] || "#ffb84f";
 }
-// type: "dog", "cat" o "face" (una cara, para quien no quiere un animal). gesto solo
-// cambia la cara: "curioso" mira de costado con la boca en o, para cuando se asoma.
+// Los ojos de un gesto, para los tres compañeros: "feliz" (arcos hacia arriba) y "calma"
+// (cerrados, hacia abajo). null deja los ojos de siempre.
+function ojosGesto({ gesto, izq, der, y }) {
+  if (gesto !== "feliz" && gesto !== "calma") return null;
+  let arco = (x) =>
+    gesto === "feliz"
+      ? `M${x - 6},${y + 1} Q${x},${y - 6} ${x + 6},${y + 1}`
+      : `M${x - 6},${y} Q${x},${y + 5} ${x + 6},${y}`;
+  return (
+    <>
+      <path d={arco(izq)} stroke="#161b2e" strokeWidth="3.5" strokeLinecap="round" fill="none" />
+      <path d={arco(der)} stroke="#161b2e" strokeWidth="3.5" strokeLinecap="round" fill="none" />
+    </>
+  );
+}
+// type: "dog", "cat" o "face" (una cara, para quien no quiere un animal). gesto:
+// "curioso" (solo la cara: mira de costado con la boca en o, para cuando se asoma),
+// "feliz" y "calma" (los tres; los usa el rato para relajarse).
 function DibujoMascota({ type, size = 56, color = "#ffb84f", rank, gesto }) {
   let conCorona = rank && ["A", "S", "Z"].includes(rank),
     brilla = rank && ["S", "Z"].includes(rank),
@@ -63,9 +79,23 @@ function DibujoMascota({ type, size = 56, color = "#ffb84f", rank, gesto }) {
       <svg viewBox="0 0 100 100" style={estilo}>
         {corona}
         <circle cx="50" cy="55" r="30" fill={color} />
-        <ellipse cx={39 + mira} cy="50" rx="4" ry="5" fill="#161b2e" />
-        <ellipse cx={61 + mira} cy="50" rx="4" ry="5" fill="#161b2e" />
-        {curioso ? (
+        {ojosGesto({ gesto, izq: 39, der: 61, y: 50 }) || (
+          <>
+            <ellipse cx={39 + mira} cy="50" rx="4" ry="5" fill="#161b2e" />
+            <ellipse cx={61 + mira} cy="50" rx="4" ry="5" fill="#161b2e" />
+          </>
+        )}
+        {gesto === "feliz" ? (
+          <path d="M34,62 Q50,80 66,62 Z" fill="#161b2e" />
+        ) : gesto === "calma" ? (
+          <path
+            d="M42,66 Q50,71 58,66"
+            stroke="#161b2e"
+            strokeWidth="3"
+            strokeLinecap="round"
+            fill="none"
+          />
+        ) : curioso ? (
           <>
             <path d="M33,39 Q39,35 45,39" stroke="#161b2e" strokeWidth="2.5" fill="none" />
             <circle cx="52" cy="68" r="4.5" fill="#161b2e" />
@@ -90,8 +120,12 @@ function DibujoMascota({ type, size = 56, color = "#ffb84f", rank, gesto }) {
       <path d="M75,38 L67,10 L55,32 Z" fill={color} />
       {corona}
       <circle cx="50" cy="55" r="28" fill={color} />
-      <circle cx="40" cy="52" r="4" fill="#161b2e" />
-      <circle cx="60" cy="52" r="4" fill="#161b2e" />
+      {ojosGesto({ gesto, izq: 40, der: 60, y: 52 }) || (
+        <>
+          <circle cx="40" cy="52" r="4" fill="#161b2e" />
+          <circle cx="60" cy="52" r="4" fill="#161b2e" />
+        </>
+      )}
       <path d="M46,62 L54,62 L50,67 Z" fill="#161b2e" />
       <path d="M50,67 Q50,71 44,71" stroke="#161b2e" strokeWidth="2" fill="none" />
       <path d="M50,67 Q50,71 56,71" stroke="#161b2e" strokeWidth="2" fill="none" />
@@ -107,8 +141,12 @@ function DibujoMascota({ type, size = 56, color = "#ffb84f", rank, gesto }) {
       {corona}
       <circle cx="50" cy="55" r="27" fill={color} />
       <ellipse cx="50" cy="66" rx="15" ry="11" fill="#ffe0b3" />
-      <circle cx="41" cy="50" r="4" fill="#161b2e" />
-      <circle cx="59" cy="50" r="4" fill="#161b2e" />
+      {ojosGesto({ gesto, izq: 41, der: 59, y: 50 }) || (
+        <>
+          <circle cx="41" cy="50" r="4" fill="#161b2e" />
+          <circle cx="59" cy="50" r="4" fill="#161b2e" />
+        </>
+      )}
       <ellipse cx="50" cy="63" rx="4" ry="3" fill="#161b2e" />
       <path d="M50,66 Q50,70 44,71" stroke="#161b2e" strokeWidth="2" fill="none" />
       <path d="M50,66 Q50,70 56,71" stroke="#161b2e" strokeWidth="2" fill="none" />
