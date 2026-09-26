@@ -157,3 +157,17 @@ describe("el compañero se anuncia con un sonido que no es de ninguna señal", (
     expect(Math.min(...silbo.map((t) => t.desde))).toBeGreaterThan(700);
   });
 });
+
+describe("sin sonido", () => {
+  it("con pitido.silencio no suena nada: ni el metrónomo, ni el Primal, ni el compañero", () => {
+    J.pitido.silencio = true;
+    try {
+      expect(oir(() => J.sdcSonidoFase("down"))).toHaveLength(0);
+      expect(oir(() => J.sdcPrimalSon("fin"))).toHaveLength(0);
+      expect(oir(() => J.sonidoCompanero())).toHaveLength(0);
+    } finally {
+      J.pitido.silencio = false;
+    }
+    expect(oir(() => J.sdcSonidoFase("down"))).toHaveLength(1);
+  });
+});

@@ -5,7 +5,10 @@ import { usePantallaEncendida } from "./pantalla.js";
 
 // pitido(hz, ms) suena un tono que se apaga solo. Con hasta, el tono se desliza
 // de hz a hasta; con tipo, cambia el timbre ("triangle" suena mas seco que "sine").
+// pitido.silencio lo pone App desde la partida (ui.silencio, el parlante de
+// arriba): todos los sonidos de la app pasan por acá, así que uno solo los calla todos.
 function pitido(hz, ms, hasta, tipo) {
+  if (pitido.silencio) return;
   try {
     let Contexto = window.AudioContext || window.webkitAudioContext;
     if (!Contexto) return;

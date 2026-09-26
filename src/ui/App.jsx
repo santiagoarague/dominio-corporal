@@ -124,6 +124,7 @@ import { PestanaEntreno } from "./pestanas/entreno.jsx";
 import { PestanaPerfil } from "./pestanas/perfil.jsx";
 import { PanelPruebas } from "./pestanas/pruebas.jsx";
 import { Companero } from "./companero.jsx";
+import { pitido } from "./prueba.jsx";
 import { anotarPistaUsada } from "../logica/pistas.js";
 
 var sdcDevN = 0;
@@ -1015,6 +1016,12 @@ function App({ player, setPlayer, initialNotices }) {
       return ((partida.profile.bodyWeight = peso), partida);
     });
   }
+  function alternarSonido() {
+    setPlayer((previa) => {
+      let partida = clonar(previa);
+      return ((partida.ui.silencio = !partida.ui.silencio), partida);
+    });
+  }
   function ponerCompanero(tipo, nombre) {
     setPlayer((previa) => {
       let partida = clonar(previa);
@@ -1118,6 +1125,15 @@ function App({ player, setPlayer, initialNotices }) {
     }[pestana];
     sistema && !sistemaActivo(player, sistema) && setPestana("training");
   }, [pestana, progress.level, progress.rank, player.unlockAll]);
+  // Sin sonido: pitido deja de sonar en toda la app. Al desmontar (reiniciar la partida)
+  // vuelve a sonar, para que el inicio de un jugador nuevo no herede el silencio.
+  let silencio = !!(ui && ui.silencio);
+  useEffect(() => {
+    pitido.silencio = silencio;
+    return () => {
+      pitido.silencio = !1;
+    };
+  }, [silencio]);
   // Tocar un botón del que habla el compañero (los que llevan data-pista) lo anota como
   // usado, venga o no de "Mostrame": así el compañero no cuenta lo que ya sabés.
   useEffect(() => {
@@ -1599,7 +1615,27 @@ function App({ player, setPlayer, initialNotices }) {
           />
         )}
         <Tarjeta accent="#ffb84f" style={{ marginBottom: 16 }}>
-          <div className="w-full flex items-center mb-2" style={{ justifyContent: "flex-end" }}>
+          <div
+            className="w-full flex items-center gap-2 mb-2"
+            style={{ justifyContent: "flex-end" }}
+          >
+            <button
+              onClick={alternarSonido}
+              aria-label={silencio ? "Activar sonidos" : "Silenciar sonidos"}
+              title={silencio ? "Activar sonidos" : "Silenciar sonidos"}
+              style={{
+                cursor: "pointer",
+                background: silencio ? "rgba(255,255,255,0.08)" : "transparent",
+                border: "1px solid rgba(255,255,255,0.28)",
+                width: 44,
+                height: 44,
+                padding: 0,
+                lineHeight: 1,
+                fontSize: 20,
+              }}
+            >
+              {silencio ? "🔇" : "🔊"}
+            </button>
             <button
               onClick={() => alternarPlegable("ayuda")}
               data-pista="guia"

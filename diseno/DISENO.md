@@ -235,6 +235,10 @@ pregunta, es la comparación: la app te muestra con tus números que entrenar te
 - No es un test de salud mental: pregunta por ganas y cuerpo para entrenar, nada más. Se apaga en
   Perfil → Sistemas del juego.
 
+### Sonido
+Un parlante 🔊 arriba de todo, al lado de *¿Cómo funciona?*, silencia la app entera (metrónomo,
+series, relojes, compañero). La vibración sigue. Queda guardado.
+
 ### Tu compañero
 Perro, gato o **una cara** (para quien no quiere un animal); se elige al empezar, con nombre
 opcional, y se cambia en Perfil. Arriba de todo muestra un consejo por día. Además **se asoma**:

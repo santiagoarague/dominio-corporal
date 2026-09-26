@@ -186,7 +186,11 @@ test("sostén: 10 s para ponerse, 3-2-1, arranque, y al terminar marca la serie"
   await expect(page.getByRole("button", { name: "Serie 1 de 3, hecha" })).toBeVisible();
   await expect(page.getByText("DESCANSO", { exact: true })).toBeVisible();
   await expect(boton(page, "Sostener 9 s")).toBeVisible();
-  expect((await partida(page)).today.marcas["bodyweight|normal"].ser.abs).toEqual([true, false, false]);
+  expect((await partida(page)).today.marcas["bodyweight|normal"].ser.abs).toEqual([
+    true,
+    false,
+    false,
+  ]);
   expect(errores).toEqual([]);
 });
 
@@ -213,4 +217,34 @@ test("sostén: la pausa congela el reloj y Terminé antes anota lo que sostuvist
   expect(marca.ser.abs).toEqual([true, false, false]);
   expect(marca.aj.abs).toEqual({ 0: 2 });
   expect(errores).toEqual([]);
+});
+
+test("el parlante de arriba calla toda la app y queda guardado", async ({ page }) => {
+  await empezar(page);
+  await boton(page, "Hoy no").click();
+  const fila = page
+    .locator("div.py-2")
+    .filter({ has: page.locator(".sdc-chip") })
+    .first();
+  let t0 = await ahora(page);
+  await fila.getByRole("button", { name: /^Marcar serie 1 de 3/ }).click();
+  await pasar(page, 300);
+  expect((await tonosDesde(page, t0)).length).toBeGreaterThan(0);
+
+  await boton(page, "Silenciar sonidos").click();
+  await expect(boton(page, "Activar sonidos")).toBeVisible();
+  t0 = await ahora(page);
+  await fila.getByRole("button", { name: /^Marcar serie 2 de 3/ }).click();
+  await page.getByRole("button", { name: /^Metrónomo OFF/ }).click();
+  await pasar(page, 3_000);
+  expect(await tonosDesde(page, t0)).toEqual([]);
+
+  // Se guarda y sobrevive a recargar.
+  const s = await page.evaluate(() =>
+    JSON.parse(localStorage.getItem("dominio-corporal:player/state")),
+  );
+  expect(s.ui.silencio).toBe(true);
+  await page.reload();
+  await page.clock.runFor(5_000);
+  await expect(boton(page, "Activar sonidos")).toBeVisible();
 });

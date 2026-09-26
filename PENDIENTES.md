@@ -21,7 +21,7 @@ ni la dirección del sitio.
 - **Revisor automático (ESLint)**: marca variables que no existen, código que nadie usa, hooks de
   React dentro de un `if` y una variable que tapa a otra del mismo nombre. Corre antes de publicar, igual que las pruebas. En la primera pasada
   encontró que el campo del peso corporal se había perdido y una docena de valores muertos.
-- **Pruebas**: 143 automáticas (curva de XP, Umbral, buffos, deshacer, sonidos…) y 19 de punta a
+- **Pruebas**: 144 automáticas (curva de XP, Umbral, buffos, deshacer, sonidos…) y 20 de punta a
   punta en Edge, una de ellas mide la legibilidad de cada pestaña. **Si alguna falla, o el revisor encuentra un error, no se publica nada**: el deploy lo hace GitHub Actions y las
   corre antes.
 - **App partida**: cada pestaña en su archivo (`src/ui/pestanas/`) y Entreno en tarjetas. Entreno
@@ -103,6 +103,8 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
 
 ## B2 · Errores encontrados jugando
 
+- ~~No había forma de callar la app (solo el metrónomo)~~ — resuelto (26/09/2026). Un parlante
+  🔊 arriba de todo silencia todos los sonidos; la vibración sigue.
 - ~~Registrar menos de la mitad de la rutina castigaba más que no entrenar~~ — resuelto
   (25/09/2026). Marcaba el día como falta y cortaba la racha en el momento; ahora el día queda como
   si no hubieras entrenado (sin falta si todavía llegás a la meta de la semana), la XP se cobra con
