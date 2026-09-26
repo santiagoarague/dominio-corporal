@@ -201,6 +201,12 @@ vez por día y se puede repetir sin XP antes de una segunda sesión.
 - **Mapa del cuerpo**: figura que se pinta más fuerte en las zonas más entrenadas (hoy, semana,
   desarrollo). Antes de entrenar baja; después de entrenar vuelve arriba, como premio.
 
+### Compartir mi semana
+Al final de Constancia, **Compartir mi semana** arma en el teléfono una imagen vertical (1080 × 1350)
+con la semana: sesiones contra la meta, los siete días con sus colores, repeticiones, racha, nivel,
+tu nombre y tu compañero. Se manda con el menú de compartir del teléfono (o se descarga si el
+navegador no puede). No lleva la dirección de la app, porque va a cambiar para Play Store.
+
 ### Resumen del mes
 En los primeros 10 días de cada mes, arriba del informe semanal: **Tu mes: septiembre** con días
 entrenados, días perfectos, repeticiones, XP de tus rutinas y primeras veces, cada uno comparado con

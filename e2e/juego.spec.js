@@ -563,3 +563,37 @@ test("resumen del mes: al empezar el mes muestra el anterior comparado", async (
   expect((await partida(page)).ui.resumenMesVisto).toBe("2026-09");
   expect(errores).toEqual([]);
 });
+
+test("Compartir mi semana: arma la imagen y la manda al menú del teléfono", async ({ page }) => {
+  const errores = [];
+  page.on("pageerror", (e) => errores.push(e.message));
+  await page.addInitScript(() => {
+    navigator.canShare = () => true;
+    navigator.share = async (d) => {
+      const f = d.files[0];
+      window.__compartido = { nombre: f.name, tipo: f.type, peso: f.size, texto: d.text };
+    };
+  });
+  await empezarConValoresPorDefecto(page);
+  await page.getByRole("button", { name: /Constancia/ }).click();
+  await boton(page, "Compartir mi semana").click();
+  await expect.poll(() => page.evaluate(() => window.__compartido)).toBeTruthy();
+  const hecho = await page.evaluate(() => window.__compartido);
+  expect(hecho.nombre).toMatch(/^mi-semana-\d{4}-\d{2}-\d{2}\.png$/);
+  expect(hecho.tipo).toBe("image/png");
+  expect(hecho.peso).toBeGreaterThan(20_000);
+  expect(hecho.texto).toMatch(/^Mi semana en Dominio Corporal: \d+ de \d+ sesiones\.$/);
+  expect(errores).toEqual([]);
+});
+
+test("Compartir mi semana: sin menú para compartir, la descarga", async ({ page }) => {
+  await page.addInitScript(() => {
+    navigator.canShare = undefined;
+  });
+  await empezarConValoresPorDefecto(page);
+  await page.getByRole("button", { name: /Constancia/ }).click();
+  const descarga = page.waitForEvent("download");
+  await boton(page, "Compartir mi semana").click();
+  expect((await descarga).suggestedFilename()).toMatch(/^mi-semana-.*\.png$/);
+  await expect(page.getByText("Se descargó la imagen de tu semana.")).toBeVisible();
+});

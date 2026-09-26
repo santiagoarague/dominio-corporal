@@ -13,6 +13,7 @@ import { misProgreso, misTexto } from "../../../logica/partida.js";
 import { Plegable } from "../../tarjetas.jsx";
 import { IconoLlama } from "../../iconos.jsx";
 import { BarraXp } from "../../base.jsx";
+import { BotonCompartir } from "../../compartir.jsx";
 
 export function TarjetaConstancia({
   alternarPlegable,
@@ -198,6 +199,7 @@ export function TarjetaConstancia({
           })}
         </div>
       )}
+      <BotonCompartir player={player} aplicar={aplicar} />
     </Plegable>
   );
 }
