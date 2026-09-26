@@ -1326,7 +1326,7 @@ function avisoCarga(actual) {
       partida.loadWarnedDate !== hoy &&
       ((partida.loadWarnedDate = hoy),
       avisos.push(
-        "Hoy le diste durísimo a tu cuerpo. Considera parar por hoy y dejar que descanse — mañana el plan sigue en pie.",
+        "Hoy le diste durísimo a tu cuerpo. Considerá parar por hoy y dejar que descanse — mañana el plan sigue en pie.",
       )),
     { state: partida, notices: avisos }
   );

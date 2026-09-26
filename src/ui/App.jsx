@@ -584,12 +584,12 @@ function App({ player, setPlayer, initialNotices }) {
           .catch(() =>
             avisar((previos) => [
               ...previos,
-              "No se pudo copiar automáticamente. Tocá el cuadro de texto y selecciona todo para copiarlo a mano.",
+              "No se pudo copiar automáticamente. Tocá el cuadro de texto y seleccioná todo para copiarlo a mano.",
             ]),
           )
       : avisar((previos) => [
           ...previos,
-          "Tocá el cuadro de texto y selecciona todo para copiarlo a mano.",
+          "Tocá el cuadro de texto y seleccioná todo para copiarlo a mano.",
         ]);
   }
   function restaurarRespaldo() {
@@ -1020,7 +1020,7 @@ function App({ player, setPlayer, initialNotices }) {
     let activas = modalidadesDe(profile),
       nuevas = activas.includes(mod) ? activas.filter((otra) => otra !== mod) : [...activas, mod];
     if (!nuevas.length) {
-      avisar((previos) => [...previos, "Debes mantener al menos un método activo."]);
+      avisar((previos) => [...previos, "Tenés que dejar al menos un método activo."]);
       return;
     }
     ponerModalidades(nuevas);
@@ -1453,7 +1453,7 @@ function App({ player, setPlayer, initialNotices }) {
           ? avisar((previos) => [...previos, ...aviso.notices])
           : avisar((previos) => [
               ...previos,
-              '[Prueba] Ya se mostró el aviso hoy, usa "reiniciar contador diario" primero.',
+              '[Prueba] Ya se mostró el aviso hoy, usá "reiniciar contador diario" primero.',
             ]),
         aviso.state
       );

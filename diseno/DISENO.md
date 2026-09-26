@@ -382,7 +382,6 @@ No hace falta saber programar, pero sí qué es posible:
 - La meta del día se puede bajar con el − de cada ejercicio, pero vuelve al valor original al día
   siguiente. Si alguien no llega nunca a una meta, la app le propone repetir la prueba cuando tres
   veces seguidas marca que la rutina le quedó "mucha"; no ajusta sola el volumen.
-- Quedan textos en tuteo que deberían estar en voseo ("Conservas tu XP", "Pega aquí tu respaldo"…).
 - Tamaño de texto ajustable: fuera de alcance por ahora, no descartado.
 - Que el compañero se "escape" y corra por la pantalla para atraparlo quedó como idea para el
   resumen de la rutina, donde no hay nada en juego. Durante la rutina se asoma quieto, a propósito.

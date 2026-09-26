@@ -43,7 +43,7 @@ var rangos = ["E", "D", "C", "B", "A", "S", "Z"],
       Z: "Variantes compuestas — las metas salen de tus récords",
     },
     gym: {
-      E: "Aprendes el gesto — la barra sola, sin carga",
+      E: "Aprendés el gesto — la barra sola, sin carga",
       D: "Primera carga real — técnica antes que peso",
       C: "Rango completo bajo carga — sin acortar el recorrido",
       B: "Progresión de peso — el mismo gesto, más caro",

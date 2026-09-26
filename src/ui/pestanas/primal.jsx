@@ -336,7 +336,7 @@ export function PestanaPrimal({
                   <IconoCorazon size={24} color="#4f9dff" />
                 </div>
                 <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
-                  Protocolos para las articulaciones que más sufren entrenando. Da XP; úsalo cuando
+                  Protocolos para las articulaciones que más sufren entrenando. Da XP; usalo cuando
                   lo necesites.
                 </div>
                 <div

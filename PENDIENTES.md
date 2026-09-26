@@ -103,6 +103,9 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
 
 ## B2 · Errores encontrados jugando
 
+- ~~Quedaban textos en "tú" en la voz del juego~~ — resuelto (26/09/2026): 13 cambios ("Pegá acá
+  tu respaldo", "Preparate…", "asegurate", "Considerá parar por hoy"…). Siguen en neutro, a
+  propósito, las instrucciones de los ejercicios y el texto médico.
 - ~~No había forma de mostrarle a nadie tu semana~~ — resuelto (26/09/2026): **Compartir mi
   semana**, en Constancia, arma una imagen en el teléfono y la manda con el menú de compartir.
   Cuando la app tenga su dirección definitiva, se puede sumar a la imagen.

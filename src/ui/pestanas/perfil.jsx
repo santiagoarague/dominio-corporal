@@ -858,7 +858,7 @@ export function PestanaPerfil({
           seguridad o pasar tu progreso a otro dispositivo.
         </div>
         <div className="text-xs mb-1" style={{ color: "#9aa4bd" }}>
-          Exportar — copia este texto y guárdalo en un lugar seguro:
+          Exportar — copiá este texto y guardalo en un lugar seguro:
         </div>
         <textarea
           readOnly={!0}
@@ -897,7 +897,7 @@ export function PestanaPerfil({
         <textarea
           value={respaldoTexto}
           onChange={(evento) => setRespaldoTexto(evento.target.value)}
-          placeholder="Pega aquí tu texto de respaldo"
+          placeholder="Pegá acá tu texto de respaldo"
           rows={3}
           className="w-full mb-2 px-2 py-2 text-xs"
           style={{

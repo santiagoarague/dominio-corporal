@@ -116,14 +116,14 @@ function Inicio({ onFinish, onLoadBackup }) {
             {restaurando ? (
               <>
                 <div className="text-xs mb-2" style={{ color: "#9aa4bd" }}>
-                  Pega aquí tu respaldo y recuperarás tu progreso sin repetir la calibración.
+                  Pegá acá tu respaldo y recuperás tu progreso sin repetir la calibración.
                 </div>
                 <textarea
                   value={respaldo}
                   onChange={(evento) => {
                     (setRespaldo(evento.target.value), setErrorRespaldo(""));
                   }}
-                  placeholder="Pega aquí tu texto de respaldo"
+                  placeholder="Pegá acá tu texto de respaldo"
                   rows={4}
                   className="w-full mb-2 px-2 py-2 text-xs"
                   style={{
@@ -385,7 +385,7 @@ function Inicio({ onFinish, onLoadBackup }) {
                 ? "Ritmo suave: ideal para empezar sin romperte."
                 : meta <= 4
                   ? "Ritmo equilibrado: el más sostenible a largo plazo."
-                  : "Ritmo exigente: asegúrate de descansar bien."}
+                  : "Ritmo exigente: asegurate de descansar bien."}
             </div>
             <div className="flex gap-2">
               <button
@@ -440,7 +440,7 @@ function Inicio({ onFinish, onLoadBackup }) {
                     ¿Ya conocés tus números?
                   </div>
                   <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
-                    Anotalos aquí y te saltás la prueba con cadencia.
+                    Anotalos acá y te saltás la prueba con cadencia.
                   </div>
                   {[
                     { lb: "Sentadillas", vl: sentadillas, st: setSentadillas },

@@ -280,7 +280,7 @@ export function PestanaCombate({
         <Tarjeta accent="#ff5c7a" style={{ marginBottom: 16 }}>
           <div className="text-center">
             <div className="text-xs" style={{ color: "#9aa4bd" }}>
-              Prepárate...
+              Preparate...
             </div>
             <div
               style={{
