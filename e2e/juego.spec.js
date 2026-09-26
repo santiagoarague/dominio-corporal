@@ -520,3 +520,46 @@ test("Relajate: desde el descanso, respirar, salir y se cierra solo al terminar"
   await expect(pantalla).toHaveCount(0);
   expect(errores).toEqual([]);
 });
+
+test("resumen del mes: al empezar el mes muestra el anterior comparado", async ({ page }) => {
+  const errores = [];
+  page.on("pageerror", (e) => errores.push(e.message));
+  await page.clock.install({ time: new Date("2026-10-02T10:00:00-03:00") });
+  await page.clock.pauseAt(new Date("2026-10-02T10:00:01-03:00"));
+  await page.goto("/");
+  await page.clock.runFor(60_000);
+  await boton(page, "Continuar").click();
+  await boton(page, "Saltar y empezar con valores por defecto").click();
+  await expect(page.getByText("Rutina de hoy")).toBeVisible();
+  await page.evaluate((k) => {
+    const s = JSON.parse(localStorage.getItem(k));
+    const r = { squat: 12, pushup: 9, back: 6, abs: 8 };
+    s.dayLog = {
+      "2026-08-10": {
+        acts: ["Rutina parcial"],
+        reps: { squat: 10, pushup: 5, back: 3, abs: 7 },
+        xp: 40,
+      },
+      "2026-09-01": { acts: ["Rutina completa"], reps: r, xp: 66 },
+      "2026-09-02": { acts: ["Travesía"], reps: null, xp: 0 },
+      "2026-09-03": { acts: ["Rutina completa"], reps: r, xp: 70 },
+    };
+    localStorage.setItem(k, JSON.stringify(s));
+  }, CLAVE);
+  await page.reload();
+  await expect(page.getByText("Rutina de hoy")).toBeVisible();
+  await page.clock.runFor(5000);
+
+  const tarjeta = page.getByText("Tu mes: septiembre").locator("..");
+  await expect(page.getByText("Tu mes: septiembre")).toBeVisible();
+  await expect(page.getByText("Comparado con agosto")).toBeVisible();
+  const dias = page.locator("div.text-sm", { hasText: /^Días entrenados/ });
+  await expect(dias).toHaveText("Días entrenados3+2");
+  await expect(page.locator("div.text-sm", { hasText: /^Repeticiones/ })).toHaveText(
+    "Repeticiones70+45",
+  );
+  await tarjeta.getByRole("button", { name: "Entendido" }).click();
+  await expect(page.getByText("Tu mes: septiembre")).toHaveCount(0);
+  expect((await partida(page)).ui.resumenMesVisto).toBe("2026-09");
+  expect(errores).toEqual([]);
+});

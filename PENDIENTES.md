@@ -21,7 +21,7 @@ ni la dirección del sitio.
 - **Revisor automático (ESLint)**: marca variables que no existen, código que nadie usa, hooks de
   React dentro de un `if` y una variable que tapa a otra del mismo nombre. Corre antes de publicar, igual que las pruebas. En la primera pasada
   encontró que el campo del peso corporal se había perdido y una docena de valores muertos.
-- **Pruebas**: 153 automáticas (curva de XP, Umbral, buffos, deshacer, sonidos…) y 22 de punta a
+- **Pruebas**: 157 automáticas (curva de XP, Umbral, buffos, deshacer, sonidos…) y 23 de punta a
   punta en Edge, una de ellas mide la legibilidad de cada pestaña. **Si alguna falla, o el revisor encuentra un error, no se publica nada**: el deploy lo hace GitHub Actions y las
   corre antes.
 - **App partida**: cada pestaña en su archivo (`src/ui/pestanas/`) y Entreno en tarjetas. Entreno
@@ -103,6 +103,8 @@ mundo**. Se reemplazó por una sola: *tu cuerpo es el territorio que estás rele
 
 ## B2 · Errores encontrados jugando
 
+- ~~Solo había informe de la semana~~ — resuelto (26/09/2026): en los primeros 10 días de cada
+  mes, **Tu mes** compara el mes que terminó con el anterior.
 - ~~Faltaba algo para el descanso entre series o para los nervios~~ — resuelto (26/09/2026):
   **Relajate**, un rato con el compañero tipo salvapantallas (jugar con pesas y gotas de agua, o
   respirar con él), desde la barra de descanso o tocando al compañero.

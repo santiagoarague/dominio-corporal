@@ -201,6 +201,11 @@ vez por día y se puede repetir sin XP antes de una segunda sesión.
 - **Mapa del cuerpo**: figura que se pinta más fuerte en las zonas más entrenadas (hoy, semana,
   desarrollo). Antes de entrenar baja; después de entrenar vuelve arriba, como premio.
 
+### Resumen del mes
+En los primeros 10 días de cada mes, arriba del informe semanal: **Tu mes: septiembre** con días
+entrenados, días perfectos, repeticiones, XP de tus rutinas y primeras veces, cada uno comparado con
+el mes anterior (verde si subió; gris si bajó, sin alarma). Se cierra con *Entendido*.
+
 ### Constancia
 - El jugador elige **cuántas sesiones por semana**. La racha solo se corta si ya no se puede llegar
   a esa meta: un día suelto no cuesta nada.

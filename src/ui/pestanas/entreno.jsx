@@ -2,6 +2,13 @@
 // travesia y Umbral. Las variables de App que usa llegan como props.
 import { sdcAvisaRespaldo, sdcRespaldoPosponer } from "../../logica/respaldo.js";
 import {
+  claveMesAnterior,
+  nombreMes,
+  resumenMes,
+  tocaResumenMes,
+  cerrarResumenMes,
+} from "../../logica/mes.js";
+import {
   tocaRepetirPrueba,
   diasDesdePrueba,
   historialPruebas,
@@ -21,6 +28,62 @@ import { TarjetaConstancia } from "./entreno/constancia.jsx";
 import { TarjetaCuerpo } from "./entreno/cuerpo.jsx";
 import { TarjetaTravesia } from "./entreno/travesia.jsx";
 import { TarjetaUmbral } from "./entreno/umbral.jsx";
+
+// El mes que terminó, comparado con el de antes (si ese tuvo algo).
+function ResumenMes({ mes, antes, onCerrar }) {
+  let hayAntes = antes.dias > 0,
+    numero = (n) => n.toLocaleString("es-AR"),
+    filas = [
+      ["Días entrenados", mes.dias, antes.dias],
+      ["Días perfectos", mes.perfectos, antes.perfectos],
+      ["Repeticiones", mes.reps, antes.reps],
+      ["XP de tus rutinas", mes.xp, antes.xp],
+      ["Primeras veces", mes.primeras, antes.primeras],
+    ].filter((fila) => fila[1] || fila[2]),
+    columnas = { display: "grid", gridTemplateColumns: "1fr auto 56px", columnGap: 12 };
+  return (
+    <Tarjeta accent="#9278ff" style={{ marginBottom: 16 }}>
+      <div
+        className="mb-1"
+        style={{ fontFamily: "Chakra Petch, sans-serif", color: "#b9a5ff", fontWeight: 700 }}
+      >
+        Tu mes: {nombreMes(mes.clave)}
+      </div>
+      {hayAntes ? (
+        <div className="text-xs mb-2" style={{ color: "#8a93ad" }}>
+          Comparado con {nombreMes(antes.clave)}
+        </div>
+      ) : null}
+      {filas.map(([nombre, ahora, previo]) => {
+        let dif = ahora - previo;
+        return (
+          <div key={nombre} className="text-sm mb-1" style={columnas}>
+            <span style={{ color: "#9aa4bd" }}>{nombre}</span>
+            <span style={{ color: "#e8ecf7", textAlign: "right" }}>{numero(ahora)}</span>
+            <span
+              className="text-xs"
+              style={{
+                textAlign: "right",
+                alignSelf: "center",
+                fontWeight: 700,
+                color: dif > 0 ? "#3ecf8e" : "#9aa4bd",
+              }}
+            >
+              {hayAntes ? (dif > 0 ? "+" + numero(dif) : dif < 0 ? "−" + numero(-dif) : "=") : ""}
+            </span>
+          </div>
+        );
+      })}
+      <button
+        onClick={onCerrar}
+        className="w-full py-2 text-xs mt-2"
+        style={{ background: "#9278ff", color: "#0a0e1a", fontWeight: 700 }}
+      >
+        Entendido
+      </button>
+    </Tarjeta>
+  );
+}
 
 export function PestanaEntreno({
   alternarPlegable,
@@ -144,6 +207,18 @@ export function PestanaEntreno({
           </div>
         </Tarjeta>
       )}
+      {(() => {
+        let mes = tocaResumenMes(player, today.date);
+        return mes ? (
+          <ResumenMes
+            mes={mes}
+            antes={resumenMes(player, claveMesAnterior(mes.clave + "-01"))}
+            onCerrar={() =>
+              aplicar((partida) => ({ state: cerrarResumenMes(partida, mes.clave), notices: [] }))
+            }
+          />
+        ) : null;
+      })()}
       {lastWeekSummary && !lastWeekSummary.seen && (
         <Tarjeta accent="#ffb84f" style={{ marginBottom: 16 }}>
           <div
