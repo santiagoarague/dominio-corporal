@@ -61,6 +61,7 @@ function GrillaConstancia({ days, onPick, selected }) {
         <button
           key={dia.date}
           onClick={() => onPick && onPick(dia.date)}
+          data-pista="constancia"
           title={dia.date}
           style={{
             height: 40,

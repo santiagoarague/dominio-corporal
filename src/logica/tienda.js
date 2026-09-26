@@ -1,6 +1,6 @@
 // Tienda de PD, modificadores del dia, mascota y multiplicadores de XP.
 import { xpTravesia, travesiaDelDia, sdcPortales } from "./explorar.js";
-import { hashDia, sesionesPrimalBase } from "./primal.js";
+import { hashDia, sesionesPrimalBase, gestoCompanero } from "./primal.js";
 import { fechaHoy } from "./rutina.js";
 import { clonar } from "./partida.js";
 
@@ -133,9 +133,12 @@ function sdcMascota(partida, pct, hayRecord) {
         : pct >= 1
           ? sdcPetFull
           : sdcPetParcial;
-  return frases[hashDia(String(partida.today.date) + "|" + clave, frases.length)]
-    .replace("{name}", nombre)
-    .replace("{d}", racha);
+  return gestoCompanero(
+    frases[hashDia(String(partida.today.date) + "|" + clave, frases.length)]
+      .replace("{name}", nombre)
+      .replace("{d}", racha),
+    partida.profile && partida.profile.pet && partida.profile.pet.type,
+  );
 }
 function sdcRacha(partida) {
   let racha = (partida.streak && partida.streak.current) || 0;

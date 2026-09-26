@@ -25,7 +25,8 @@ import { logros, sdcAnimoCuenta } from "../../datos/logros.js";
 import { sdcPrimeras, sdcJuego, sdcCalF, sdcCalT, sdcKgTxt } from "../../logica/extras.js";
 import { sdcTitulos } from "../../datos/rangos.js";
 import { BarraXp, Tarjeta } from "../base.jsx";
-import { Plegable } from "../tarjetas.jsx";
+import { Plegable, colorDeRango } from "../tarjetas.jsx";
+import { EditarCompanero } from "../companero.jsx";
 import { IconoPersona, IconoCandado } from "../iconos.jsx";
 import { PruebaAptitud } from "../prueba.jsx";
 
@@ -121,6 +122,7 @@ export function PestanaPerfil({
   player,
   plegado,
   ponerPesoCorporal,
+  ponerCompanero,
   ponerModalidades,
   primal,
   profile,
@@ -177,6 +179,11 @@ export function PestanaPerfil({
         <div className="text-xs mt-1" style={{ color: "#9aa4bd" }}>
           Clasificación: {profile.classification}
         </div>
+        <EditarCompanero
+          pet={profile.pet}
+          color={colorDeRango(progress.rank)}
+          onGuardar={ponerCompanero}
+        />
       </Tarjeta>
       <Plegable
         id="sistemas"

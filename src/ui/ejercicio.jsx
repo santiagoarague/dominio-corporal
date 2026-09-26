@@ -287,6 +287,7 @@ function FilaEjercicio({
             {(tip || guia) && (
               <button
                 onClick={() => setGuiaTocada(!guiaAbierta)}
+                data-pista="comoSeHace"
                 className="text-xs"
                 style={{
                   color: "#ffb84f",
@@ -366,6 +367,7 @@ function FilaEjercicio({
                 onClick={function () {
                   onSerie(i, !hecha);
                 }}
+                data-pista={hecha ? "desmarcar" : void 0}
                 className="sdc-chip flex-1 py-3"
                 aria-label={
                   "Serie " + (i + 1) + " de " + nSeries + (hecha ? ", hecha" : ", pendiente")
@@ -471,6 +473,7 @@ function FilaEjercicio({
       {onSerie && segsPendiente > 0 && !reloj && (
         <button
           onClick={empezarSosten}
+          data-pista="sostener"
           disabled={sostenLibre === !1}
           className="w-full mt-2 flex items-center justify-center gap-2 text-sm disabled:opacity-40"
           style={{
@@ -532,6 +535,7 @@ function FilaEjercicio({
           {sug && sug.s ? (
             <button
               onClick={() => sug.fn(sug.s.kg)}
+              data-pista="kilos"
               className="text-xs text-left"
               style={{
                 display: "block",
@@ -570,6 +574,7 @@ function FilaEjercicio({
               onClick={function () {
                 setEditando(!editando);
               }}
+              data-pista="ajustar"
               className="text-xs"
               style={{
                 color: "#ffb84f",

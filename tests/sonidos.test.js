@@ -141,3 +141,19 @@ describe("Instinto Primal: cada ronda avisa cuando arranca y cuando termina", ()
     expect(J.sdcPrimalPrep).toBe(5);
   });
 });
+
+describe("el compañero se anuncia con un sonido que no es de ninguna señal", () => {
+  it("dos silbidos que suben, más agudos que el metrónomo y el Primal", () => {
+    const silbo = oir(() => J.sonidoCompanero());
+    expect(silbo).toHaveLength(2);
+    for (const t of silbo) expect(t.hasta).toBeGreaterThan(t.desde);
+    let masAgudo = 0;
+    for (const f of ["down", "hold", "up"])
+      for (const t of oir(() => J.sdcSonidoFase(f)))
+        masAgudo = Math.max(masAgudo, t.desde, t.hasta || 0);
+    for (const s of ["tic", "prepara", "arranca", "fin", "listo"])
+      for (const t of oir(() => J.sdcPrimalSon(s))) masAgudo = Math.max(masAgudo, t.desde);
+    for (const t of silbo) expect(t.hasta).toBeGreaterThan(masAgudo);
+    expect(Math.min(...silbo.map((t) => t.desde))).toBeGreaterThan(700);
+  });
+});

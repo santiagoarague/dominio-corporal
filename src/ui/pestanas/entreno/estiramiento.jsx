@@ -46,6 +46,7 @@ export function TarjetaEstiramiento({
   return (
     <Plegable
       id="stretch"
+      pista="estirar"
       title="Estiramiento"
       accent="#3ecf8e"
       collapsed={plegado("stretch")}

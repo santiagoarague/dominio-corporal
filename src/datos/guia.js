@@ -94,6 +94,11 @@ var guia = [
     },
     {
       g: "LO DEMÁS",
+      title: "Tu compañero",
+      text: "Es el que está arriba de todo con un consejo por día. En el descanso entre series, o cuando terminás la rutina, a veces se asoma abajo con un «¡Psst!»: tocalo y te cuenta algo de la app que todavía no usaste, y «Mostrame» te lleva al botón. Si no lo tocás, se va solo. Sale como mucho una vez por sesión y nunca el primer día. En Perfil lo cambiás por un perro, un gato o una cara, y en Sistemas del juego lo apagás.",
+    },
+    {
+      g: "LO DEMÁS",
       title: "Guardá tu progreso",
       text: "Esto es importante. Todo lo tuyo se guarda en este teléfono y en ningún otro lado. No hay cuenta ni servidor: nadie ve tus datos, pero tampoco hay una copia esperándote si perdés el teléfono o borrás los datos del navegador. Andá a Perfil, abrí Respaldo de tu progreso, copiá el texto y guardalo donde quieras (un mail a vos mismo alcanza). Con ese texto recuperás todo, o lo pasás a un teléfono nuevo.",
     },

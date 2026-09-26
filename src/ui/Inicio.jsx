@@ -14,6 +14,7 @@ import {
 import { Tarjeta } from "./base.jsx";
 import { sdcCalF, sdcCalT, sdcRango } from "../logica/extras.js";
 import { DibujoMascota } from "./tarjetas.jsx";
+import { OpcionesCompanero } from "./companero.jsx";
 import { Bienvenida } from "./intro.jsx";
 import { PruebaAptitud } from "./prueba.jsx";
 
@@ -588,41 +589,17 @@ function Inicio({ onFinish, onLoadBackup }) {
               Un compañero se acerca
             </div>
             <div className="text-xs mb-4" style={{ color: "#9aa4bd" }}>
-              Te acompañará en tu camino con consejos de entrenamiento y salud.
+              Te acompaña con consejos y, de vez en cuando, se asoma para mostrarte algo de la app.
+              Si no querés un animal, elegí la cara.
             </div>
             <div className="flex justify-center mb-4">
               <DibujoMascota type={mascota} size={90} color="#ffb84f" />
             </div>
-            <div className="flex gap-2 mb-4">
-              <button
-                onClick={() => setMascota("dog")}
-                className="flex-1 py-3 text-sm"
-                style={{
-                  background:
-                    mascota === "dog" ? "rgba(255,184,79,0.15)" : "rgba(255,255,255,0.03)",
-                  border:
-                    mascota === "dog" ? "1px solid #ffb84f" : "1px solid rgba(255,255,255,0.1)",
-                  color: "#e8ecf7",
-                }}
-              >
-                🐶 Perro
-              </button>
-              <button
-                onClick={() => setMascota("cat")}
-                className="flex-1 py-3 text-sm"
-                style={{
-                  background:
-                    mascota === "cat" ? "rgba(255,184,79,0.15)" : "rgba(255,255,255,0.03)",
-                  border:
-                    mascota === "cat" ? "1px solid #ffb84f" : "1px solid rgba(255,255,255,0.1)",
-                  color: "#e8ecf7",
-                }}
-              >
-                🐱 Gato
-              </button>
+            <div className="mb-4">
+              <OpcionesCompanero tipo={mascota} onTipo={setMascota} />
             </div>
             <label className="block text-xs mb-1" style={{ color: "#9aa4bd" }}>
-              ¿Cómo se llama?
+              ¿Cómo se llama? (si querés)
             </label>
             <input
               value={nombreMascota}
@@ -649,9 +626,8 @@ function Inicio({ onFinish, onLoadBackup }) {
                 Atrás
               </button>
               <button
-                disabled={!nombreMascota.trim()}
                 onClick={() => setPaso(3)}
-                className="flex-1 flex items-center justify-center gap-1 py-3 text-sm disabled:opacity-40"
+                className="flex-1 flex items-center justify-center gap-1 py-3 text-sm"
                 style={{ background: "#ffb84f", color: "#0a0e1a", fontWeight: 700 }}
               >
                 Continuar <IconoFlecha size={16} />
@@ -710,7 +686,8 @@ function Inicio({ onFinish, onLoadBackup }) {
                 >
                   <DibujoMascota type={mascota} size={40} color="#ffb84f" />
                   <div className="text-xs" style={{ color: "#e8ecf7" }}>
-                    <b>{nombreMascota}</b> te acompañará y te dará consejos en el camino.
+                    <b>{nombreMascota.trim() || "Tu compañero"}</b> te acompañará y te dará consejos
+                    en el camino.
                   </div>
                 </div>
                 <button

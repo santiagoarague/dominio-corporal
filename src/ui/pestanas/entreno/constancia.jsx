@@ -34,6 +34,7 @@ export function TarjetaConstancia({
   return (
     <Plegable
       id="racha"
+      pista="constancia"
       title="Constancia"
       accent="#3ecf8e"
       style={{ marginBottom: 16 }}

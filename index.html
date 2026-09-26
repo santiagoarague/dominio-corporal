@@ -99,7 +99,14 @@ button:disabled.disabled\:opacity-40{opacity:.6;}
 .sdc-rise{animation:sdcRise .28s ease-out;}
 .sdc-chip{transition:background .12s,border-color .12s,transform .1s;}
 .sdc-chip:active{transform:scale(.92);}
-@media (prefers-reduced-motion: reduce){.sdc-pop{animation:none !important;opacity:1;}.sdc-rise{animation:none !important;}}
+/* El compañero: entra desde el costado, cada tanto mueve la cabeza, y "Mostrame" ilumina el botón. */
+@keyframes sdcAsoma{0%{transform:translateX(-130%);}100%{transform:translateX(0);}}
+@keyframes sdcMenea{0%,80%,100%{transform:rotate(0);}85%{transform:rotate(-9deg);}90%{transform:rotate(9deg);}95%{transform:rotate(-4deg);}}
+@keyframes sdcLuz{0%,100%{box-shadow:0 0 0 3px #ffb84f;}50%{box-shadow:0 0 0 8px rgba(255,184,79,.3);}}
+.sdc-asoma{animation:sdcAsoma .45s ease-out both;}
+.sdc-menea{animation:sdcMenea 2.6s ease-in-out .5s infinite;}
+.sdc-luz{outline:3px solid #ffb84f;outline-offset:2px;animation:sdcLuz 1.1s ease-in-out 4;}
+@media (prefers-reduced-motion: reduce){.sdc-pop{animation:none !important;opacity:1;}.sdc-rise,.sdc-asoma,.sdc-menea,.sdc-luz{animation:none !important;}}
 </style>
 <meta name="theme-color" content="#0a0e1a">
 <link rel="manifest" href="./manifest.webmanifest">

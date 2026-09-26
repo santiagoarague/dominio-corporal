@@ -234,6 +234,7 @@ export function TarjetaRutina({
         </button>
         <button
           onClick={() => setModo("recovery")}
+          data-pista="recuperacion"
           className="flex-1 py-2 text-xs"
           style={{
             background: modo === "recovery" ? colorDelRango : "transparent",

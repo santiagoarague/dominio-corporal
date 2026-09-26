@@ -3,12 +3,14 @@ import { IconoFlecha } from "./iconos.jsx";
 import { colorRango } from "../datos/rangos.js";
 import { Tarjeta } from "./base.jsx";
 
-function Plegable({ id, title, accent, collapsed, onToggle, right, children, style }) {
+// pista: el id del consejo del compañero que habla de esta tarjeta (ver datos/pistas.js).
+function Plegable({ id, title, accent, collapsed, onToggle, right, children, style, pista }) {
   let abierto = !collapsed;
   return (
     <Tarjeta accent={accent} style={style}>
       <button
         onClick={() => onToggle(id, !!collapsed)}
+        data-pista={pista}
         className="w-full flex items-center justify-between"
         style={{ background: "transparent", border: "none", padding: "12px 0", margin: "-12px 0" }}
       >
@@ -39,18 +41,49 @@ function Plegable({ id, title, accent, collapsed, onToggle, right, children, sty
 function colorDeRango(rango) {
   return colorRango[rango] || "#ffb84f";
 }
-function DibujoMascota({ type, size = 56, color = "#ffb84f", rank }) {
+// type: "dog", "cat" o "face" (una cara, para quien no quiere un animal). gesto solo
+// cambia la cara: "curioso" mira de costado con la boca en o, para cuando se asoma.
+function DibujoMascota({ type, size = 56, color = "#ffb84f", rank, gesto }) {
   let conCorona = rank && ["A", "S", "Z"].includes(rank),
     brilla = rank && ["S", "Z"].includes(rank),
     estilo = {
       width: size,
       height: size,
       display: "block",
+      flexShrink: 0,
       filter: brilla ? `drop-shadow(0 0 6px ${color})` : "none",
     },
     corona = conCorona ? (
       <path d="M32,6 L40,16 L50,4 L60,16 L68,6 L66,22 L34,22 Z" fill={color} opacity="0.95" />
     ) : null;
+  if (type === "face") {
+    let curioso = gesto === "curioso",
+      mira = curioso ? 3 : 0;
+    return (
+      <svg viewBox="0 0 100 100" style={estilo}>
+        {corona}
+        <circle cx="50" cy="55" r="30" fill={color} />
+        <ellipse cx={39 + mira} cy="50" rx="4" ry="5" fill="#161b2e" />
+        <ellipse cx={61 + mira} cy="50" rx="4" ry="5" fill="#161b2e" />
+        {curioso ? (
+          <>
+            <path d="M33,39 Q39,35 45,39" stroke="#161b2e" strokeWidth="2.5" fill="none" />
+            <circle cx="52" cy="68" r="4.5" fill="#161b2e" />
+          </>
+        ) : (
+          <path
+            d="M37,63 Q50,75 63,63"
+            stroke="#161b2e"
+            strokeWidth="3.5"
+            strokeLinecap="round"
+            fill="none"
+          />
+        )}
+        <circle cx="31" cy="61" r="5" fill="#ff8f7a" opacity="0.35" />
+        <circle cx="69" cy="61" r="5" fill="#ff8f7a" opacity="0.35" />
+      </svg>
+    );
+  }
   return type === "cat" ? (
     <svg viewBox="0 0 100 100" style={estilo}>
       <path d="M25,38 L33,10 L45,32 Z" fill={color} />

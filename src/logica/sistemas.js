@@ -28,6 +28,14 @@ var sistemas = [
     tab: null,
   },
   {
+    id: "companero",
+    name: "Tu compañero",
+    level: 1,
+    rank: "E",
+    why: "De vez en cuando se asoma para mostrarte algo de la app que todavía no usaste.",
+    tab: null,
+  },
+  {
     id: "care",
     name: "Articulaciones",
     level: 8,

@@ -82,6 +82,11 @@ function sdcPrimalSon(tipo) {
     setTimeout(() => sdcBeep(1568, 380), 360),
     sdcVib([40, 60, 140]));
 }
+// El compañero que se asoma: dos silbidos cortos que suben ("fiu-fiú"), más agudos y
+// rápidos que cualquier señal del entrenamiento, para que no se confunda con ninguna.
+function sonidoCompanero() {
+  (sdcBeep(1250, 90, 1900), setTimeout(() => sdcBeep(1250, 130, 2300), 150));
+}
 function sdcVib(patron) {
   try {
     navigator.vibrate && navigator.vibrate(patron);
@@ -89,6 +94,7 @@ function sdcVib(patron) {
 }
 
 export {
+  sonidoCompanero,
   sdcPrimalSon,
   sdcSostenPrep,
   sdcSostenEstado,

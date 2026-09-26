@@ -123,6 +123,8 @@ import { PestanaPrimal } from "./pestanas/primal.jsx";
 import { PestanaEntreno } from "./pestanas/entreno.jsx";
 import { PestanaPerfil } from "./pestanas/perfil.jsx";
 import { PanelPruebas } from "./pestanas/pruebas.jsx";
+import { Companero } from "./companero.jsx";
+import { anotarPistaUsada } from "../logica/pistas.js";
 
 var sdcDevN = 0;
 function App({ player, setPlayer, initialNotices }) {
@@ -1013,6 +1015,12 @@ function App({ player, setPlayer, initialNotices }) {
       return ((partida.profile.bodyWeight = peso), partida);
     });
   }
+  function ponerCompanero(tipo, nombre) {
+    setPlayer((previa) => {
+      let partida = clonar(previa);
+      return ((partida.profile.pet = { type: tipo, name: nombre.trim() }), partida);
+    });
+  }
   function alternarDesbloqueo() {
     setPlayer((previa) => {
       let partida = clonar(previa);
@@ -1110,6 +1118,16 @@ function App({ player, setPlayer, initialNotices }) {
     }[pestana];
     sistema && !sistemaActivo(player, sistema) && setPestana("training");
   }, [pestana, progress.level, progress.rank, player.unlockAll]);
+  // Tocar un botón del que habla el compañero (los que llevan data-pista) lo anota como
+  // usado, venga o no de "Mostrame": así el compañero no cuenta lo que ya sabés.
+  useEffect(() => {
+    let alTocar = (evento) => {
+      let el = evento.target && evento.target.closest && evento.target.closest("[data-pista]");
+      el && setPlayer((previa) => previa && anotarPistaUsada(previa, el.dataset.pista, fechaHoy()));
+    };
+    document.addEventListener("click", alTocar, !0);
+    return () => document.removeEventListener("click", alTocar, !0);
+  }, []);
   function cerrarResumenSemana() {
     setPlayer((previa) => {
       let partida = clonar(previa);
@@ -1562,10 +1580,29 @@ function App({ player, setPlayer, initialNotices }) {
           </Tarjeta>
         )}
         <Avisos notices={avisos} onDismiss={cerrarAviso} onDismissAll={() => avisar([])} />
+        {sistemaActivo(player, "companero") && (
+          <Companero
+            player={player}
+            setPlayer={setPlayer}
+            momento={
+              pestana !== "training"
+                ? null
+                : descansando && !today.completed
+                  ? "descanso"
+                  : today.completed && today.mode !== "rest"
+                    ? "resumen"
+                    : null
+            }
+            clave={today.date + "|" + modalidad}
+            callado={metronomoOn}
+            color={colorDeRango(progress.rank)}
+          />
+        )}
         <Tarjeta accent="#ffb84f" style={{ marginBottom: 16 }}>
           <div className="w-full flex items-center mb-2" style={{ justifyContent: "flex-end" }}>
             <button
               onClick={() => alternarPlegable("ayuda")}
+              data-pista="guia"
               style={{
                 cursor: "pointer",
                 background: "transparent",
@@ -1777,6 +1814,7 @@ function App({ player, setPlayer, initialNotices }) {
         <div className="flex justify-end mb-2">
           <button
             onClick={alternarTodo}
+            data-pista="minimizar"
             className="text-xs"
             style={{ color: "#9aa4bd", padding: "15px 8px", margin: "-15px -8px" }}
           >
@@ -2054,6 +2092,7 @@ function App({ player, setPlayer, initialNotices }) {
             player={player}
             plegado={plegado}
             ponerPesoCorporal={ponerPesoCorporal}
+            ponerCompanero={ponerCompanero}
             ponerModalidades={ponerModalidades}
             primal={primal}
             profile={profile}

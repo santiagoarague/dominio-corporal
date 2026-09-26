@@ -319,3 +319,81 @@ test("combate: cada serie se marca sola y GOLPEAR espera a todas", async ({ page
   await expect(golpear).toBeDisabled();
   expect(errores).toEqual([]);
 });
+
+test("el compañero se asoma en el descanso, cuenta algo y Mostrame lleva al botón", async ({
+  page,
+}) => {
+  const errores = [];
+  page.on("pageerror", (e) => errores.push(e.message));
+  await page.clock.install({ time: new Date("2026-09-24T10:00:00-03:00") });
+  await page.clock.pauseAt(new Date("2026-09-24T10:00:01-03:00"));
+  await page.goto("/");
+  await page.clock.runFor(60_000);
+  await boton(page, "Continuar").click();
+  await boton(page, "Saltar y empezar con valores por defecto").click();
+  await expect(page.getByText("Rutina de hoy")).toBeVisible();
+  await boton(page, "Hoy no").click();
+  const fila = page
+    .locator("div.py-2")
+    .filter({ has: page.locator(".sdc-chip") })
+    .first();
+  const asomado = page.getByRole("button", { name: "Tu compañero quiere contarte algo" });
+
+  // El primer día no sale.
+  await fila.getByRole("button", { name: /^Marcar serie 1 de 3/ }).click();
+  await page.clock.runFor(5000);
+  await expect(page.getByText("DESCANSO", { exact: true })).toBeVisible();
+  await expect(asomado).toHaveCount(0);
+
+  // Con un día entrenado antes, sí: a los 3 s del descanso.
+  await page.evaluate((k) => {
+    const s = JSON.parse(localStorage.getItem(k));
+    s.history["2026-09-22"] = "full";
+    localStorage.setItem(k, JSON.stringify(s));
+  }, CLAVE);
+  await page.reload();
+  await expect(page.getByText("Rutina de hoy")).toBeVisible();
+  await page.clock.runFor(5000);
+  await fila.getByRole("button", { name: /^Marcar serie 2 de 3/ }).click();
+  await page.clock.runFor(1000);
+  await expect(asomado).toHaveCount(0);
+  await page.clock.runFor(2500);
+  await expect(asomado).toBeVisible();
+  let s = await partida(page);
+  expect(s.pistas.sesion).toBe("2026-09-24|bodyweight");
+  expect(s.seenUnlocks).toContain("companero");
+
+  // Tocarlo cuenta lo primero que no usaste: desmarcar una serie.
+  await asomado.click();
+  const globo = page.getByRole("dialog", { name: "Tu compañero" });
+  await expect(globo).toContainText("tocala de nuevo y se desmarca");
+  expect((await partida(page)).pistas.vistas).toEqual({ desmarcar: "2026-09-24" });
+
+  // Mostrame ilumina la serie marcada; tocarla la desmarca y lo anota como usado.
+  await globo.getByRole("button", { name: "Mostrame" }).click();
+  await expect(globo).toHaveCount(0);
+  const hecha = fila.getByRole("button", { name: "Serie 1 de 3, hecha" });
+  await expect(hecha).toHaveClass(/sdc-luz/);
+  await hecha.click();
+  await expect(fila.getByRole("button", { name: "Serie 2 de 3, hecha" })).toBeVisible();
+  s = await partida(page);
+  expect(s.pistas.usadas).toEqual({ desmarcar: "2026-09-24" });
+  expect(s.today.marcas["bodyweight|normal"].ser.squat).toEqual([false, true, false]);
+
+  // Una vez por sesión: otro descanso no lo trae de nuevo.
+  await fila.getByRole("button", { name: /^Marcar serie 1 de 3/ }).click();
+  await page.clock.runFor(5000);
+  await expect(asomado).toHaveCount(0);
+  expect(errores).toEqual([]);
+});
+
+test("el compañero se cambia en Perfil, también por una cara", async ({ page }) => {
+  await empezarConValoresPorDefecto(page);
+  await boton(page, "Perfil").click();
+  await boton(page, "Cambiar").click();
+  await boton(page, "🙂 Cara").click();
+  await page.getByPlaceholder("Nombre de tu compañero").fill("Sol");
+  await boton(page, "Guardar").click();
+  await expect(page.getByText("Sol", { exact: true }).first()).toBeVisible();
+  expect((await partida(page)).profile.pet).toEqual({ type: "face", name: "Sol" });
+});

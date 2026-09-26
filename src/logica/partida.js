@@ -298,6 +298,7 @@ function cargarPartida(guardada) {
               frasesVolver,
               partida.today.date,
               partida.profile.pet && partida.profile.pet.name,
+              partida.profile.pet && partida.profile.pet.type,
             ),
           ));
       }
@@ -571,6 +572,7 @@ function registrarRutina(original, modo, repsSesion, modificadorOk, gvol) {
           frasesDiaDificil,
           partida.today.date,
           partida.profile.pet && partida.profile.pet.name,
+          partida.profile.pet && partida.profile.pet.type,
         ),
       ));
   }

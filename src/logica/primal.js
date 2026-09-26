@@ -183,8 +183,27 @@ var frasesVolver = [
     '{name} te anima: "Cualquier esfuerzo cuenta más que quedarte quieto. Mañana con más fuerza."',
     '{name} asiente: "Hoy fue un día difícil, y está bien. Lo que importa es que apareciste."',
   ];
-function fraseMascota(frases, fecha, nombre) {
-  return frases[hashDia(fecha, frases.length)].replace("{name}", nombre || "Tu compañero");
+// Las frases del compañero describen gestos de perro o de gato. Con la cara, los que
+// necesitan un cuerpo se cambian por uno que una cara puede hacer; el resto queda igual.
+var gestosCara = [
+  ["te espera en la puerta", "te recibe con una sonrisa"],
+  ["te da un empujoncito", "te guiña un ojo"],
+  ["da vueltas sin parar", "no para de sonreír"],
+  ["te empuja la mano con la cabeza", "levanta las cejas"],
+  ["apoya la cabeza en tu pierna", "te sonríe"],
+  ["se estira a tu lado", "te guiña un ojo"],
+  ["levanta la cabeza", "levanta las cejas"],
+];
+function gestoCompanero(frase, tipo) {
+  if (tipo !== "face") return frase;
+  for (let [animal, cara] of gestosCara) frase = frase.replace(animal, cara);
+  return frase;
+}
+function fraseMascota(frases, fecha, nombre, tipo) {
+  return gestoCompanero(
+    frases[hashDia(fecha, frases.length)].replace("{name}", nombre || "Tu compañero"),
+    tipo,
+  );
 }
 
 // Que muestra la sesion en cada segundo. El descanso entre rondas (cy) termina
@@ -215,6 +234,7 @@ export {
   frasesVolver,
   frasesDiaDificil,
   fraseMascota,
+  gestoCompanero,
   sdcPrimalPrep,
   sdcPrimalEtapa,
   sdcPrimalTic,

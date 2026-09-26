@@ -9,7 +9,7 @@ instancia de Claude (Claude Code, en la PC), que tiene el código y un manual t�
 ## 1. Qué es
 
 Una app de entrenamiento con peso corporal, gimnasio y "flow" (movimiento en el suelo), convertida
-en juego: niveles, XP, rangos, rachas, logros, un compañero (perro o gato) y sistemas que se van
+en juego: niveles, XP, rangos, rachas, logros, un compañero (perro, gato o una cara) y sistemas que se van
 abriendo con el nivel. Está en **español rioplatense** y es para el teléfono.
 
 - Es una **web app (PWA)** instalable, publicada en GitHub Pages. El objetivo es llevarla a Play Store.
@@ -74,7 +74,8 @@ Reglas del mundo:
   entender "patrón", "Umbral" o "flow" sin adivinar.
 - Tono: directo, cálido y breve. El compañero habla distinto según el caso: celebra una marca
   personal o una racha y acompaña una sesión floja. Las frases del compañero sirven igual para un
-  perro que para un gato.
+  perro que para un gato; con la cara, los gestos de animal ("apoya la cabeza en tu pierna") se
+  cambian por gestos de cara ("te sonríe").
 
 ## 5. Principios de diseño
 
@@ -232,6 +233,22 @@ pregunta, es la comparación: la app te muestra con tus números que entrenar te
 - No es un test de salud mental: pregunta por ganas y cuerpo para entrenar, nada más. Se apaga en
   Perfil → Sistemas del juego.
 
+### Tu compañero
+Perro, gato o **una cara** (para quien no quiere un animal); se elige al empezar, con nombre
+opcional, y se cambia en Perfil. Arriba de todo muestra un consejo por día. Además **se asoma**:
+en el descanso entre series (a los 3 s) o en el resumen de la rutina (a los 4 s) aparece quieto en
+una esquina, arriba de la barra de descanso, con un **¡Psst!** y un silbido corto. Tocarlo cuenta
+**algo de la app que todavía no usaste** (desmarcar una serie, Ajustar series, Sostener, ¿Cómo se
+hace?, la sugerencia de kilos, estirar, Constancia, Recuperación, Minimizar todo, la guía) con un
+botón **Mostrame** que baja hasta ese botón y lo ilumina. Si ya lo usaste, ese consejo no sale
+nunca; cuando ya usaste todo, cuenta un consejo de entrenamiento.
+- **No obliga a nada**: si no lo tocás se va solo a los 20 s, o cuando termina el descanso.
+- Como mucho **una vez por sesión** y **nunca el primer día** (ese día las explicaciones de los
+  ejercicios ya se abren solas).
+- No se mueve por la pantalla ni tapa botones: a los 70 años un blanco que se mueve no se toca, y
+  un toque errado puede marcar una serie. No suena si el metrónomo está sonando.
+- Se apaga en Perfil → Sistemas del juego.
+
 ### Primeras veces
 Registro del día en que hiciste algo que antes no podías. La app pregunta una sola vez por cada
 movimiento ("¿Alguna vez hiciste X?" → *Nunca pude* / *Ya podía*) y después lo detecta sola. También
@@ -274,6 +291,7 @@ flow           Primeras posiciones · Piso firme · Aguante continuo · Tránsit
 | Nivel | Sistema | Qué es |
 |---|---|---|
 | 1 | Cómo llegás | chequeo de ánimo antes y después de entrenar (apagable) |
+| 1 | Tu compañero | se asoma en el descanso o en el resumen con algo de la app que todavía no usaste (apagable) |
 | 1 | Logros | 147 logros, con dificultad: fácil · accesible · exigente · difícil · muy difícil · para pocos · excepcional |
 | 3 | Explorar | kilómetros caminados o corridos; revelan lugares y reliquias |
 | 8 | Articulaciones | protocolos de cuidado por zona (registro médico, neutro) |
@@ -296,7 +314,7 @@ flow           Primeras posiciones · Piso firme · Aguante continuo · Tránsit
   +50% día), Escudo de Racha y dos mejoras permanentes (+5% y +10% de XP).
 
 ### La guía ("¿Cómo funciona?")
-18 temas en cuatro grupos: Para empezar · Cómo progresás · Los sistemas · Lo demás. Cada tema tiene
+19 temas en cuatro grupos: Para empezar · Cómo progresás · Los sistemas · Lo demás. Cada tema tiene
 que ser **una pregunta que un jugador haría de verdad**. Cuando un sistema cambia, su tema cambia en
 el mismo momento.
 
@@ -334,7 +352,8 @@ No hace falta saber programar, pero sí qué es posible:
   veces seguidas marca que la rutina le quedó "mucha"; no ajusta sola el volumen.
 - Quedan textos en tuteo que deberían estar en voseo ("Conservas tu XP", "Pega aquí tu respaldo"…).
 - Tamaño de texto ajustable: fuera de alcance por ahora, no descartado.
-- El botón manual de Primeras veces usa una ventanita del navegador; merece una pantalla propia.
+- Que el compañero se "escape" y corra por la pantalla para atraparlo quedó como idea para el
+  resumen de la rutina, donde no hay nada en juego. Durante la rutina se asoma quieto, a propósito.
 - La fuente "récord superado" de Primeras veces se dejó afuera a propósito: al principio casi toda
   sesión bate un récord y la lista se llenaría de ruido.
 - Una notificación diaria no es viable sin servidor.
