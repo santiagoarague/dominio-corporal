@@ -1,6 +1,12 @@
 // Pestana Entreno: rutina de hoy, calentamiento, mapa del cuerpo, constancia, estiramiento,
 // travesia y Umbral. Las variables de App que usa llegan como props.
 import { sdcAvisaRespaldo, sdcRespaldoPosponer } from "../../logica/respaldo.js";
+import {
+  tocaRepetirPrueba,
+  diasDesdePrueba,
+  historialPruebas,
+  posponerPrueba,
+} from "../../logica/mejora.js";
 import { ejercicioDe } from "../../logica/rutina.js";
 import { sistemaActivo } from "../../logica/sistemas.js";
 import { sdcAnimoOn, sdcAnimoHoy, AnimoAntes } from "../animo.jsx";
@@ -23,6 +29,7 @@ export function PestanaEntreno({
   bkDescargar,
   cerrarResumenSemana,
   dungeon,
+  irAPrueba,
   lastWeekSummary,
   lifetimeReps,
   metaSemana,
@@ -46,8 +53,54 @@ export function PestanaEntreno({
   propsTravesia,
   propsUmbral,
 }) {
+  let pruebas = historialPruebas(player),
+    conFecha = pruebas.length && pruebas[pruebas.length - 1].fecha;
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
+      {tocaRepetirPrueba(player, today.date) &&
+        !today.completed &&
+        !(today.doneModalities || []).length &&
+        sdcTotalHechas() === 0 && (
+          <Tarjeta accent="#3ecf8e" style={{ marginBottom: 16, order: -7 }}>
+            <div className="text-sm mb-1" style={{ color: "#3ecf8e", fontWeight: 700 }}>
+              ¿Cuánto mejoraste?
+            </div>
+            <div className="text-xs mb-3" style={{ color: "#9aa4bd" }}>
+              {conFecha
+                ? "Pasaron " +
+                  Math.floor(diasDesdePrueba(player, today.date) / 7) +
+                  " semanas desde tu última prueba de aptitud."
+                : "Hace un tiempo que no hacés la prueba de aptitud."}{" "}
+              Repetila hoy, antes de entrenar, y compará.
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={irAPrueba}
+                className="flex-1 py-3 text-xs"
+                style={{ minHeight: 48, background: "#3ecf8e", color: "#0a0e1a", fontWeight: 700 }}
+              >
+                Hacer la prueba
+              </button>
+              <button
+                onClick={() =>
+                  aplicar((partida) => ({
+                    state: posponerPrueba(partida, today.date),
+                    notices: ["Te recuerdo la prueba en una semana."],
+                  }))
+                }
+                className="py-3 px-3 text-xs"
+                style={{
+                  minHeight: 48,
+                  background: "rgba(255,255,255,0.06)",
+                  border: "1px solid rgba(255,255,255,0.18)",
+                  color: "#9aa4bd",
+                }}
+              >
+                Más tarde
+              </button>
+            </div>
+          </Tarjeta>
+        )}
       {sdcAvisaRespaldo(player) && (
         <Tarjeta accent="#ffb84f" style={{ marginBottom: 16, order: -3 }}>
           <div className="text-sm mb-1" style={{ color: "#ffb84f", fontWeight: 700 }}>

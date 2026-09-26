@@ -274,6 +274,11 @@ hay un botón para anotar a mano. Es la tesis hecha pantalla.
   impulsos de la tienda aceleran poco (~10%) y no se tocaron. Tiempos
   aproximados entrenando 4 veces por semana: 2º rango ~5 meses, 3º ~1,3 años, 4º ~2,6, 5º ~4,4,
   6º ~6,7 y 7º ~9,4 años. En el último rango la meta diaria es superar tu propio récord un 1%.
+- **¿Cuánto mejoraste?**: cada prueba de aptitud queda guardada con su fecha. En Perfil → Prueba de
+  aptitud se ve la primera contra la última, ejercicio por ejercicio, con la diferencia en verde (si
+  bajó, en gris, sin alarma). Cada 4 semanas, antes de la primera serie del día, arriba de Entreno
+  aparece *¿Cuánto mejoraste?* con **Hacer la prueba** (abre Perfil con la prueba empezada) y **Más
+  tarde** (una semana). Solo se comparan pruebas medidas por la app al mismo ritmo.
 - **Calibre**: sale de la prueba de aptitud (4 ejercicios de peso corporal **al mismo ritmo que el
   metrónomo de la rutina: 2 s baja, 1 s pausa, 2 s sube**, o eligiendo entre seis descripciones sin
   ir al fallo). Antes medía a 3 s por repetición y daba metas más altas de las que se podían cumplir

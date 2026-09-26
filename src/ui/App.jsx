@@ -60,7 +60,6 @@ import {
   fechaLocal,
   ejercicioDe,
   metaSemanal,
-  guardarPrueba,
   costoNivel,
   modalidadesDe,
   sdcCalibre,
@@ -115,7 +114,8 @@ import { DibujoMascota, Plegable, colorDeRango } from "./tarjetas.jsx";
 import { sdcRespaldoOk } from "../logica/respaldo.js";
 import { usePantallaSi } from "./pantalla.js";
 import { sdcEstDesde, sdcPasoEspera, sdcPasosHook, sdcPasosV } from "./calentamiento.jsx";
-import { sdcAnimoHoy } from "./animo.jsx";
+import { sdcAnimoHoy, sdcAbrirCard } from "./animo.jsx";
+import { guardarPruebaConHistoria } from "../logica/mejora.js";
 import { PestanaLogros } from "./pestanas/logros.jsx";
 import { PestanaExplorar } from "./pestanas/explorar.jsx";
 import { PestanaCombate } from "./pestanas/combate.jsx";
@@ -512,12 +512,29 @@ function App({ player, setPlayer, initialNotices }) {
       flexiones = Math.max(0, parseInt(repFlexiones || "0", 10)),
       abdominales = Math.max(0, parseInt(repAbdominales || "0", 10)),
       remo = Math.max(0, parseInt(sdcRbk || "0", 10));
-    (aplicar((partida) => guardarPrueba(partida, sentadillas, flexiones, abdominales, remo, 5)),
+    (aplicar((partida) =>
+      guardarPruebaConHistoria(partida, sentadillas, flexiones, abdominales, remo, 5, fechaHoy()),
+    ),
       setRepruebaAbierta(!1),
       setRepSentadillas(""),
       setRepFlexiones(""),
       setRepAbdominales(""),
       sdcSetRbk(""));
+  }
+  // Desde el recordatorio de Entreno: abre Perfil con la prueba ya empezada.
+  function irAPrueba() {
+    (setPestana("profile"),
+      aplicar((partida) => sdcAbrirCard(partida, "aptitud")),
+      setRepruebaPaso(0),
+      setRepSentadillas(""),
+      setRepFlexiones(""),
+      setRepAbdominales(""),
+      sdcSetRbk(""),
+      setRepruebaAbierta(!0),
+      setTimeout(() => {
+        let prueba = document.getElementById("sdc-reprueba");
+        prueba && prueba.scrollIntoView({ block: "start" });
+      }, 80));
   }
   function bkDescargar() {
     try {
@@ -1999,6 +2016,7 @@ function App({ player, setPlayer, initialNotices }) {
             aplicar={aplicar}
             avisar={avisar}
             bkDescargar={bkDescargar}
+            irAPrueba={irAPrueba}
             cerrarResumenSemana={cerrarResumenSemana}
             dungeon={dungeon}
             lastWeekSummary={lastWeekSummary}

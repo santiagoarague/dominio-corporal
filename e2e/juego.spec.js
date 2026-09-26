@@ -397,3 +397,65 @@ test("el compañero se cambia en Perfil, también por una cara", async ({ page }
   await expect(page.getByText("Sol", { exact: true }).first()).toBeVisible();
   expect((await partida(page)).profile.pet).toEqual({ type: "face", name: "Sol" });
 });
+
+test("¿Cuánto mejoraste?: a las cuatro semanas propone la prueba y Perfil compara", async ({
+  page,
+}) => {
+  const errores = [];
+  page.on("pageerror", (e) => errores.push(e.message));
+  await page.clock.install({ time: new Date("2026-09-24T10:00:00-03:00") });
+  await page.clock.pauseAt(new Date("2026-09-24T10:00:01-03:00"));
+  await page.goto("/");
+  await page.clock.runFor(60_000);
+  await boton(page, "Continuar").click();
+  await boton(page, "Saltar y empezar con valores por defecto").click();
+  await expect(page.getByText("Rutina de hoy")).toBeVisible();
+  const medida = { squat: 15, pushup: 10, abs: 15, back: 6, ritmo: 5 };
+  await page.evaluate(
+    ([k, m]) => {
+      const s = JSON.parse(localStorage.getItem(k));
+      s.profile.testResults = m;
+      s.pruebas = [{ fecha: "2026-08-20", ...m }];
+      localStorage.setItem(k, JSON.stringify(s));
+    },
+    [CLAVE, medida],
+  );
+  await page.reload();
+  await expect(page.getByText("Rutina de hoy")).toBeVisible();
+  await page.clock.runFor(5000);
+
+  // 35 días después: la propone arriba, antes de entrenar.
+  await expect(
+    page.getByText("Pasaron 5 semanas desde tu última prueba de aptitud."),
+  ).toBeVisible();
+  await boton(page, "Hacer la prueba").click();
+  await expect(page.getByText(/^Punto de Partida \(1\/4\)/)).toBeVisible();
+
+  // Más tarde la guarda una semana.
+  await boton(page, "Entreno").click();
+  await boton(page, "Más tarde").first().click();
+  await expect(page.getByText("¿Cuánto mejoraste?")).toHaveCount(0);
+  expect((await partida(page)).ui.pruebaPospuesta).toBe("2026-09-24");
+
+  // Con dos pruebas, Perfil muestra la primera contra la última.
+  await page.evaluate(
+    ([k, m]) => {
+      const s = JSON.parse(localStorage.getItem(k));
+      const nueva = { fecha: "2026-09-20", squat: 20, pushup: 12, abs: 18, back: 8, ritmo: 5 };
+      s.pruebas = [{ fecha: "2026-08-20", ...m }, nueva];
+      s.profile.testResults = nueva;
+      localStorage.setItem(k, JSON.stringify(s));
+    },
+    [CLAVE, medida],
+  );
+  await page.reload();
+  await expect(page.getByText("Rutina de hoy")).toBeVisible();
+  await page.clock.runFor(5000);
+  // La tarjeta quedó abierta desde «Hacer la prueba».
+  await boton(page, "Perfil").click();
+  await expect(page.getByText("¿Cuánto mejoraste?")).toBeVisible();
+  await expect(page.getByText("Tu última prueba fue hace 4 días.")).toBeVisible();
+  const fila = page.locator("div.text-xs", { hasText: /^Sentadillas/ }).first();
+  await expect(fila).toHaveText("Sentadillas1520+5");
+  expect(errores).toEqual([]);
+});

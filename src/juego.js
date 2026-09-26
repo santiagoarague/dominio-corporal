@@ -26,6 +26,7 @@ export * from "./ui/intro.jsx";
 export * from "./ui/prueba.jsx";
 export * from "./ui/metronomo.jsx";
 export * from "./logica/respaldo.js";
+export * from "./logica/mejora.js";
 export * from "./datos/pistas.js";
 export * from "./logica/pistas.js";
 export * from "./ui/companero.jsx";

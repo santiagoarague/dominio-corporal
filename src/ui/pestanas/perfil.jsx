@@ -29,9 +29,93 @@ import { Plegable, colorDeRango } from "../tarjetas.jsx";
 import { EditarCompanero } from "../companero.jsx";
 import { IconoPersona, IconoCandado } from "../iconos.jsx";
 import { PruebaAptitud } from "../prueba.jsx";
+import {
+  diasParaRepetir,
+  historialPruebas,
+  diasDesdePrueba,
+  compararPruebas,
+  primeraYUltima,
+} from "../../logica/mejora.js";
 
 // "Hoy pude algo que antes no podía": un campo dentro de la tarjeta, en vez del
 // cuadro del navegador (window.prompt). Se abre al tocar el boton y se cierra al anotar.
+// ¿Cuánto mejoraste? La primera prueba contra la última, ejercicio por ejercicio.
+var nombresPrueba = {
+  squat: "Sentadillas",
+  pushup: "Flexiones",
+  back: "Remo invertido",
+  abs: "Abdominales",
+};
+function fechaCorta(fecha) {
+  return fecha ? fecha.slice(8, 10) + "/" + fecha.slice(5, 7) : "antes";
+}
+function Diferencia({ dif }) {
+  return (
+    <span style={{ color: dif > 0 ? "#3ecf8e" : "#9aa4bd", fontWeight: 700, textAlign: "right" }}>
+      {dif > 0 ? "+" + dif : dif < 0 ? "−" + -dif : "="}
+    </span>
+  );
+}
+function ComparacionPrueba({ player }) {
+  let par = primeraYUltima(player),
+    cambio = par && compararPruebas(par.primera, par.ultima),
+    historia = historialPruebas(player),
+    ultima = historia[historia.length - 1],
+    dias = diasDesdePrueba(player, fechaHoy()),
+    fila = { display: "grid", gridTemplateColumns: "1fr auto auto 44px", columnGap: 12 };
+  return (
+    <div className="mb-3">
+      {cambio ? (
+        <div
+          className="p-3 mb-2"
+          style={{ border: "1px solid rgba(62,207,142,0.35)", background: "rgba(62,207,142,0.06)" }}
+        >
+          <div className="text-sm mb-2" style={{ color: "#e8ecf7", fontWeight: 700 }}>
+            ¿Cuánto mejoraste?
+          </div>
+          <div className="text-xs mb-1" style={{ ...fila, color: "#8a93ad" }}>
+            <span />
+            <span>{fechaCorta(par.primera.fecha)}</span>
+            <span>{fechaCorta(par.ultima.fecha)}</span>
+            <span />
+          </div>
+          {cambio.grupos.map((grupo) => (
+            <div key={grupo.grupo} className="text-xs mb-1" style={{ ...fila, color: "#c8d0e4" }}>
+              <span>{nombresPrueba[grupo.grupo]}</span>
+              <span style={{ textAlign: "right" }}>{grupo.antes}</span>
+              <span style={{ textAlign: "right", color: "#e8ecf7" }}>{grupo.ahora}</span>
+              <Diferencia dif={grupo.dif} />
+            </div>
+          ))}
+          <div
+            className="text-xs pt-1"
+            style={{
+              ...fila,
+              color: "#e8ecf7",
+              fontWeight: 700,
+              borderTop: "1px solid rgba(255,255,255,0.08)",
+            }}
+          >
+            <span>Puntaje</span>
+            <span style={{ textAlign: "right" }}>{cambio.antes}</span>
+            <span style={{ textAlign: "right" }}>{cambio.ahora}</span>
+            <Diferencia dif={cambio.dif} />
+          </div>
+        </div>
+      ) : null}
+      <div className="text-xs" style={{ color: "#9aa4bd" }}>
+        {ultima && ultima.fecha
+          ? "Tu última prueba fue hace " + dias + (dias === 1 ? " día." : " días.")
+          : null}
+        {dias !== null && dias >= diasParaRepetir
+          ? " Ya podés repetirla para ver cuánto mejoraste."
+          : cambio
+            ? null
+            : " Cuando la repitas, acá vas a ver cuánto mejoraste."}
+      </div>
+    </div>
+  );
+}
 function AnotarPrimera({ onAnotar }) {
   let [abierto, setAbierto] = useState(false),
     [texto, setTexto] = useState(""),
@@ -550,6 +634,7 @@ export function PestanaPerfil({
           Clasificación actual: {profile.classification}. Repetirla no cambia tu rango ni tu
           progreso, solo ajusta el volumen de tu rutina y tu calibre.
         </div>
+        <ComparacionPrueba player={player} />
         {(() => {
           let puntaje = sdcPuntaje(profile),
             factor = sdcRitmoF(profile),
@@ -607,6 +692,7 @@ export function PestanaPerfil({
             </div>
           );
         })()}
+        <div id="sdc-reprueba" />
         {repruebaAbierta ? (
           repruebaPaso < repruebaEjercicios.length ? (
             <>

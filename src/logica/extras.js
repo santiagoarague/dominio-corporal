@@ -294,6 +294,7 @@ function sdcTier(aviso) {
     texto.indexOf("Rutina completa") >= 0 ||
     texto.indexOf("completada") >= 0 ||
     texto.indexOf("Bono") >= 0 ||
+    texto.indexOf("Mejoraste") >= 0 ||
     texto.charAt(0) === "+"
   )
     return "good";

@@ -37,6 +37,12 @@ function crearPartida(perfil) {
   let hoy = fechaHoy();
   return {
     profile: { ...perfil, createdDate: hoy, weeklyGoal: perfil.weeklyGoal || metaSemanalDefecto },
+    // La prueba del inicio queda con su fecha solo si la midió la app (ritmo 5): los
+    // números escritos o los de por defecto no se comparan (ver logica/mejora.js).
+    pruebas:
+      perfil.testResults && perfil.testResults.ritmo === 5
+        ? [{ fecha: hoy, ...perfil.testResults }]
+        : void 0,
     progress: { rank: perfil.startRank || "E", level: 1, currentXP: 0 },
     today: {
       date: hoy,

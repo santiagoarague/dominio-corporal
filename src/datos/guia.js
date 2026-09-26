@@ -40,7 +40,7 @@ var guia = [
     {
       g: "CÓMO PROGRESÁS",
       title: "Tu calibre",
-      text: "Es lo que dice abajo de tu nombre: Principiante, Intermedio, Avanzado y así. Sale de la prueba de aptitud y no es lo mismo que el rango. El rango es lo que ganás entrenando; el calibre es lo que medís hoy. Solo sirve para ajustar cuántas repeticiones te toca hacer. Podés repetir la prueba cuando quieras desde tu Perfil, y repetirla no te cambia el rango ni te borra nada.",
+      text: "Es lo que dice abajo de tu nombre, por ejemplo «Base firme». Sale de la prueba de aptitud y no es lo mismo que el rango. El rango es lo que ganás entrenando; el calibre es lo que medís hoy. Solo sirve para ajustar cuántas repeticiones te toca hacer. Podés repetir la prueba cuando quieras desde tu Perfil, y repetirla no te cambia el rango ni te borra nada. Cada prueba queda guardada con su fecha, y en Perfil ves cuánto mejoraste desde la primera, ejercicio por ejercicio. A las cuatro semanas de la última, la app te propone repetirla antes de entrenar, que es cuando mejor se mide.",
     },
     {
       g: "LOS SISTEMAS",
